@@ -1,8 +1,9 @@
 import FlexBox from '@component/FlexBox'
-import Login from '@component/sessions/Login'
 import React from 'react'
+import LoginOrSignup from "../src/components/sessions/LoginOrSignup";
 
 const LoginPage = () => {
+
   return (
     <FlexBox
       flexDirection="column"
@@ -10,7 +11,7 @@ const LoginPage = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <Login />
+      <LoginOrSignup/>
     </FlexBox>
   )
 }

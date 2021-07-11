@@ -2,20 +2,30 @@ import FlexBox from '@component/FlexBox'
 import ProductCard9 from '@component/product-cards/ProductCard9'
 import productDatabase from '@data/product-database'
 import { Pagination } from '@material-ui/core'
-import React from 'react'
+import React, {useState} from 'react'
 import { Span } from '../Typography'
+import {FilterProps} from "@component/products/ProductFilterCard";
 
-export interface ProductCard9ListProps {}
+export interface ProductCard9ListProps {
+    filter: FilterProps,
+    query: String
+}
 
-const ProductCard9List: React.FC<ProductCard9ListProps> = () => {
+const ProductCard9List: React.FC<ProductCard9ListProps> = ({filter, query}) => {
+    //const initialProduct =
+
+    const [products, setProducts] = useState([]);
+
     function changePagination() {
-        alert("page change")
+        //alert("page change")
     }
 
     return (
     <div>
         <p>ProductCard9List</p>
-      {productDatabase.slice(95, 104).map((item, ind) => (
+      {productDatabase.slice(95, 104)
+          .filter(product => filter.selectedCategory == null || product.category == filter.selectedCategory)
+          .map((item, ind) => (
         <ProductCard9 key={ind} {...item} />
       ))}
 

@@ -3,7 +3,15 @@ import Image from '@component/BazarImage'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
 import { H3, H6, Small } from '@component/Typography'
-import { Box, Card, CardProps, Divider, IconButton } from '@material-ui/core'
+import {
+  Box,
+  Card,
+  CardProps,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  IconButton,
+} from '@material-ui/core'
 import { styled } from '@material-ui/core/styles'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -12,10 +20,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useState } from 'react'
 import * as yup from 'yup'
-import localStrings from "../../localStrings";
-import useAuth from '../../hooks/useAuth';
-import {executeQueryUtil, executeQueryUtilSync} from "../../apolloClient/gqlUtil";
-import {getSiteUserByIdQuery} from "../../gql/siteUserGql";
+import GoogleMapsAutocomplete from '../map/GoogleMapsAutocomplete'
 
 const fbStyle = {
   background: '#3B5998',
@@ -39,7 +44,6 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 
   '.content': {
-    textAlign: 'center',
     padding: '3rem 3.75rem 0px',
     [theme.breakpoints.down('xs')]: {
       padding: '1.5rem 1rem 0px',
@@ -63,10 +67,8 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 }))
 
-const Login = ({closeCallBack}) => {
+const CompleteProfile = () => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
-
-  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId} = useAuth();
 
   const router = useRouter()
 
@@ -86,28 +88,12 @@ const Login = ({closeCallBack}) => {
       validationSchema: formSchema,
     })
 
-  async function handleGoogleClick() {
-    try {
-      var user = await signInWithGoogle();
-
-      //alert(JSON.stringify(user));
-      let result = await executeQueryUtil(getSiteUserByIdQuery(getBrandId(), user.uid));
-
-      if (result.data.getSiteUser) {
-        closeCallBack();
-      }
-
-    } catch(err) {
-      console.error(err);
-    }
-  }
-
   return (
     <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
       <form className="content" onSubmit={handleSubmit}>
-        {/*<H3 textAlign="center" mb={1}>*/}
-        {/*  Welcome To Ecommerce*/}
-        {/*</H3>*/}
+        <H3 textAlign="center" mb={1}>
+          Create Your Account
+        </H3>
         <Small
           fontWeight="600"
           fontSize="12px"
@@ -116,8 +102,23 @@ const Login = ({closeCallBack}) => {
           mb={4.5}
           display="block"
         >
-          {localStrings.logEmailAndPassword}
+          Please fill all fields to continue
         </Small>
+
+        <GoogleMapsAutocomplete
+          mb={1.5}
+          name="name"
+          label="Full Name"
+          placeholder="Ralph Adwards"
+          variant="outlined"
+          size="small"
+          fullWidth
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={values.name || ''}
+          error={!!touched.name && !!errors.name}
+          helperText={touched.name && errors.name}
+        />
 
         <BazarTextField
           mb={1.5}
@@ -136,7 +137,7 @@ const Login = ({closeCallBack}) => {
         />
 
         <BazarTextField
-          mb={2}
+          mb={1.5}
           name="password"
           label="Password"
           placeholder="*********"
@@ -167,20 +168,73 @@ const Login = ({closeCallBack}) => {
           helperText={touched.password && errors.password}
         />
 
+        <BazarTextField
+          name="re_password"
+          label="Retype Password"
+          placeholder="*********"
+          autoComplete="on"
+          type={passwordVisibility ? 'text' : 'password'}
+          variant="outlined"
+          size="small"
+          fullWidth
+          InputProps={{
+            endAdornment: (
+              <IconButton
+                size="small"
+                type="button"
+                onClick={togglePasswordVisibility}
+              >
+                {passwordVisibility ? (
+                  <Visibility className="passwordEye" fontSize="small" />
+                ) : (
+                  <VisibilityOff className="passwordEye" fontSize="small" />
+                )}
+              </IconButton>
+            ),
+          }}
+          onBlur={handleBlur}
+          onChange={handleChange}
+          value={values.re_password || ''}
+          error={!!touched.re_password && !!errors.re_password}
+          helperText={touched.re_password && errors.re_password}
+        />
+
+        <FormControlLabel
+          className="agreement"
+          name="agreement"
+          onChange={handleChange}
+          control={
+            <Checkbox
+              size="small"
+              color="secondary"
+              checked={values.agreement || false}
+            />
+          }
+          label={
+            <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+              By signing up, you agree to
+              <a href="/" target="_blank" rel="noreferrer noopener">
+                <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                  Terms & Condtion
+                </H6>
+              </a>
+            </FlexBox>
+          }
+        />
+
         <BazarButton
           variant="contained"
           color="primary"
           type="submit"
           fullWidth
           sx={{
-            mb: '1.65rem',
             height: 44,
           }}
         >
-          Login
+          Create Account
         </BazarButton>
 
-        <Box mb={2}>
+        <Box mb={2} mt={3.3}>
           <Box width="200px" mx="auto">
             <Divider />
           </Box>
@@ -192,27 +246,25 @@ const Login = ({closeCallBack}) => {
           </FlexBox>
         </Box>
 
-        {/*<BazarButton*/}
-        {/*  className="facebookButton"*/}
-        {/*  size="medium"*/}
-        {/*  fullWidth*/}
-        {/*  sx={{*/}
-        {/*    mb: '10px',*/}
-        {/*    height: 44,*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <Image*/}
-        {/*    src="/assets/images/icons/facebook-filled-white.svg"*/}
-        {/*    alt="facebook"*/}
-        {/*  />*/}
-        {/*  <Box fontSize="12px" ml={1}>*/}
-        {/*    Continue with Facebook*/}
-        {/*  </Box>*/}
-        {/*</BazarButton>*/}
+        <BazarButton
+          className="facebookButton"
+          size="medium"
+          fullWidth
+          sx={{
+            height: 44,
+          }}
+        >
+          <Image
+            src="/assets/images/icons/facebook-filled-white.svg"
+            alt="facebook"
+          />
+          <Box fontSize="12px" ml={1}>
+            Continue with Facebook
+          </Box>
+        </BazarButton>
         <BazarButton
           className="googleButton"
           size="medium"
-          onClick={handleGoogleClick}
           fullWidth
           sx={{
             height: 44,
@@ -220,16 +272,16 @@ const Login = ({closeCallBack}) => {
         >
           <Image src="/assets/images/icons/google-1.svg" alt="facebook" />
           <Box fontSize="12px" ml={1}>
-            {localStrings.continueWithGoogle}
+            Continue with Google
           </Box>
         </BazarButton>
 
         <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
-          <Box>{localStrings.dontHaveAccount}</Box>
-          <Link href="/signup">
+          <Box>Don’t have account?</Box>
+          <Link href="/login">
             <a>
               <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                {localStrings.signup}
+                Log In
               </H6>
             </a>
           </Link>
@@ -237,11 +289,11 @@ const Login = ({closeCallBack}) => {
       </form>
 
       <FlexBox justifyContent="center" bgcolor="grey.200" py={2.5}>
-        {localStrings.forgotPassword}Forgot your password?
+        Forgot your password?
         <Link href="/">
           <a>
             <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-              {localStrings.resetPassword}
+              Reset It
             </H6>
           </a>
         </Link>
@@ -251,13 +303,29 @@ const Login = ({closeCallBack}) => {
 }
 
 const initialValues = {
+  name: '',
   email: '',
   password: '',
+  re_password: '',
+  agreement: false,
 }
 
 const formSchema = yup.object().shape({
+  name: yup.string().required('${path} is required'),
   email: yup.string().email('invalid email').required('${path} is required'),
   password: yup.string().required('${path} is required'),
+  re_password: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Passwords must match')
+    .required('Please re-type password'),
+  agreement: yup
+    .bool()
+    .test(
+      'agreement',
+      'You have to agree with our Terms and Conditions!',
+      (value) => value === true
+    )
+    .required('You have to agree with our Terms and Conditions!'),
 })
 
-export default Login
+export default CompleteProfile

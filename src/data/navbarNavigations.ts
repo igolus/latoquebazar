@@ -182,7 +182,7 @@ const navbarNavigations = [
   },
   {
     title: 'Shop',
-    url: '/shop',
+    url: '/product/shop/all',
   },
   {
     title: 'Back to Demos',

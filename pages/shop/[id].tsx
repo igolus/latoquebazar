@@ -1,16 +1,25 @@
 import NavbarLayout from '@component/layout/NavbarLayout'
-import ProductCardList from '@component/products/ProductCard1List'
+import ProductCard1List from '@component/products/ProductCard1List'
 import ProductFilterCard from '@component/products/ProductFilterCard'
 import ShopIntroCard from '@component/shop/ShopIntroCard'
 import Sidenav from '@component/sidenav/Sidenav'
 import useWindowSize from '@hook/useWindowSize'
 import { Grid, IconButton } from '@material-ui/core'
 import FilterList from '@material-ui/icons/FilterList'
-import React from 'react'
+import React, {useCallback, useState} from 'react'
 
 const Shop = () => {
   const width = useWindowSize()
   const isTablet = width < 1025
+  const [filter, setFilter] = useState(null);
+
+  const productFilter = useCallback(
+        (filterValue) => () => {
+            //alert("Filter " + JSON.stringify(filterValue))
+            setFilter(v)
+        },
+        []
+    )
 
   return (
     <NavbarLayout>
@@ -26,7 +35,7 @@ const Shop = () => {
             },
           }}
         >
-          <ProductFilterCard />
+          <ProductFilterCard callBackFilter={(v) => alert(v)}/>
         </Grid>
 
         <Grid item md={9} xs={12}>
@@ -44,10 +53,10 @@ const Shop = () => {
                 </IconButton>
               }
             >
-              <ProductFilterCard />
+                <ProductFilterCard callBackFilter={(v) => alert(v)}/>
             </Sidenav>
           )}
-          <ProductCardList />
+          <ProductCard1List />
         </Grid>
       </Grid>
     </NavbarLayout>

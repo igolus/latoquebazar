@@ -26,6 +26,9 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import SearchBox from '../search-box/SearchBox'
+import Account from './Account'
+import useAuth from "@hook/useAuth";
+import LoginOrSignup from "@component/sessions/LoginOrSignup";
 
 type HeaderProps = {
   className?: string
@@ -50,6 +53,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
   const [sidenavOpen, setSidenavOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
 
+  const {currentUser} = useAuth();
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
@@ -119,20 +123,28 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
             ml={2}
             p={1.25}
             bgcolor="grey.200"
-            onClick={toggleDialog}
+
+            onClick={() => {
+              if (!currentUser()) {
+                toggleDialog();
+              }
+            }}
           >
-            <PersonOutline />
+            {currentUser() ?
+                <Account />
+                :
+                <PersonOutline />
+            }
           </Box>
           {cartHandle}
         </FlexBox>
-
         <Dialog
           open={dialogOpen}
           fullWidth={isMobile}
           scroll="body"
           onClose={toggleDialog}
         >
-          <Login />
+          <LoginOrSignup closeCallBack={() => setDialogOpen(false)}/>
         </Dialog>
 
         <Drawer open={sidenavOpen} anchor="right" onClose={toggleSidenav}>
