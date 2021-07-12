@@ -26,6 +26,7 @@ export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
         fallback: true //indicates the type of fallback
     }
 }
+
 export const getStaticProps: GetStaticProps = async (context) => {
     const config = require("../../../src/conf/config.json")
     const resProducts = await getProductsQueryNoApollo(config.brandId);

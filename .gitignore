@@ -28,3 +28,9 @@ yarn-debug.log*
 yarn-error.log*
 
 /.next
+
+# Local Netlify folder
+.netlify
+
+/netlify
+/out
