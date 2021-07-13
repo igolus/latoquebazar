@@ -5,7 +5,12 @@ import {GetStaticPaths, GetStaticProps} from "next";
 import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {getCategoriesQueryNoApollo} from "../../../src/gqlNoApollo/categoriesGqlNoApollo";
 
-const ProductsSearchResult = ({ products, categories}) => {
+export interface ProductsSearchResultProps {
+    products?: any
+    categories?: any
+}
+
+const ProductsSearchResult:React.FC<ProductsSearchResultProps> = ({ products, categories}) => {
     const router = useRouter()
     const { query } = router.query
 
@@ -43,11 +48,11 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
 }
 
-const sortOptions = [
-    { label: 'Relevance', value: 'Relevance' },
-    { label: 'Date', value: 'Date' },
-    { label: 'Price Low to High', value: 'Price Low to High' },
-    { label: 'Price High to Low', value: 'Price High to Low' },
-]
+// const sortOptions = [
+//     { label: 'Relevance', value: 'Relevance' },
+//     { label: 'Date', value: 'Date' },
+//     { label: 'Price Low to High', value: 'Price Low to High' },
+//     { label: 'Price High to Low', value: 'Price High to Low' },
+// ]
 
 export default ProductsSearchResult

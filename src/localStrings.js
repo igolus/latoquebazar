@@ -23,6 +23,16 @@ let localStrings = new LocalizedStrings({
         signup: "Creer un compte",
         resetPassword: "Réinitialiser le mot de passe",
         forgotPassword: "Mot de passe oublié",
+        adress: "Adresse",
+        email: "Email",
+        firstName: "Prenom",
+        lastName: "Nom",
+        termsAndConditions: "Termes et conditions",
+        activateAccount: "Activer mon compte",
+        fillInfoToContinue: "Reseignez les champs pour continuer",
+        login: "Se connecter",
+        bySigningTermsAndConditions: "En cochant cette cas vous acceptez les termes et conditions",
+        requiredField: "Le champ {0} est obligatoire",
     }
 });
 

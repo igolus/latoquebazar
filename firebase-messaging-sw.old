@@ -1,0 +1,13 @@
+importScripts('https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.7.1/firebase-messaging.js');
+
+
+import { firebaseConfig } from './src/config';
+
+import firebase from './src/lib/firebase'
+
+// firebase.initializeApp({
+//     messagingSenderId: firebaseConfig.messagingSenderId,
+// });
+
+firebase.messaging();

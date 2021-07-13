@@ -10,14 +10,19 @@ import localStrings from "../localStrings";
 import {CURRENCY_EUR} from "../utils/Currencies";
 import {useToasts} from "react-toast-notifications";
 import {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
+import '@firebase/messaging';
 import {getSiteUserByIdQuery} from "../gql/siteUserGql";
 import moment from "moment";
+import {establishmentsQuery} from "../gql/establishmentGql";
+import {getBrandByIdQuery} from "../gql/brandGql";
+
 
 const CURRENCY = 'CURRENCY';
 const BRAND = 'BRAND';
 const DB_USER = 'DB_USER';
 const USER = 'USER';
 const ESTABLISHMENT = 'ESTABLISHMENT';
+const ESTABLISHMENT_LIST = 'ESTABLISHMENT_LIST';
 const AUTH_STATE_CHANGE = 'AUTH_STATE_CHANGED';
 
 const initialAuthState = {
@@ -31,6 +36,7 @@ const initialAuthState = {
   brand: null,
   dbUser: null,
   establishment: null,
+  establishmentList: [],
   sortCategory: null,
   sortTags: [],
   sortOption: null,
@@ -41,7 +47,6 @@ const initialAuthState = {
 };
 
 const config = require('../conf/config.json');
-
 const reducer = (state, action) => {
   switch (action.type) {
 
@@ -88,6 +93,16 @@ const reducer = (state, action) => {
       };
     }
 
+    case ESTABLISHMENT_LIST: {
+      const { establishmentList } = action.payload;
+      return {
+        ...state,
+        establishmentList: establishmentList
+      };
+    }
+
+
+
     default: {
       return { ...state };
     }
@@ -126,6 +141,14 @@ export const AuthProvider = ({ children }) => {
   firebase.auth().useDeviceLanguage();
   const [state, dispatch] = useReducer(reducer, initialAuthState);
   const { addToast } = useToasts();
+
+  useEffect(async () => {
+
+    const messaging = firebase.messaging();
+    await messaging.requestPermission();
+    const token = await messaging.getToken();
+    console.log("token ", token);
+  }, []);
 
   const createUserWithEmailAndPassword = async (email, password) => {
     return firebase.auth().createUserWithEmailAndPassword(email, password);
@@ -214,6 +237,18 @@ export const AuthProvider = ({ children }) => {
   }
 
   const setBrand = async (brand) => {
+    let res = await executeQueryUtil(establishmentsQuery(brand.id));
+    let estas = res.data.getEstablishmentByBrandId;
+    if (estas && estas.length > 0) {
+      dispatch({
+        type: ESTABLISHMENT_LIST,
+        payload: {
+          establishmentList: estas,
+        }
+      });
+      setEstablishment(estas[0]);
+    }
+
     dispatch({
       type: BRAND,
       payload: {
@@ -235,23 +270,40 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  const setEstablishmentList = async (establishmentList) => {
+    dispatch({
+      type: ESTABLISHMENT_LIST,
+      payload: {
+        establishmentList: establishmentList,
+      }
+    });
+  }
+
   const currentUser = () => {
     var user = firebase.auth().currentUser;
     return user;
   };
+
+  useEffect(async () => {
+    let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
+    if (res && res.data) {
+      setBrand(res.data.getBrand)
+    }
+  }, [])
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         // Here you should extract the complete user profile to make it available in your entire app.
         // The auth state only provides basic information.
-        console.log("User" + JSON.stringify(user, null, 2))
+        //console.log("User unsubscribe" + JSON.stringify(user, null, 2))
 
         let token = await firebase.auth().currentUser.getIdToken(true)
         localStorage.setItem("authToken", token)
         localStorage.setItem("genTimeToken", moment().unix())
-
+        //alert("user " + JSON.stringify(user))
         executeQueryUtilSync(getSiteUserByIdQuery(getBrandId(), user.uid)).then(result => {
+          //alert("result.data.getSiteUser " + JSON.stringify(result.data.getSiteUser))
           setDbUser(result.data.getSiteUser);
         });
 

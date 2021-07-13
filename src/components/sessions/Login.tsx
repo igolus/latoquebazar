@@ -17,6 +17,8 @@ import useAuth from '../../hooks/useAuth';
 import {executeQueryUtil, executeQueryUtilSync} from "../../apolloClient/gqlUtil";
 import {getSiteUserByIdQuery} from "../../gql/siteUserGql";
 
+const config = require("../../conf/config.json")
+
 const fbStyle = {
   background: '#3B5998',
   color: 'white',
@@ -63,6 +65,8 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 }))
 
+
+
 const Login = ({closeCallBack}) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
 
@@ -90,10 +94,11 @@ const Login = ({closeCallBack}) => {
     try {
       var user = await signInWithGoogle();
 
-      //alert(JSON.stringify(user));
-      let result = await executeQueryUtil(getSiteUserByIdQuery(getBrandId(), user.uid));
-
+      //alert("handleGoogleClick " + JSON.stringify(user));
+      let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
+      //alert("handleGoogleClick res " + JSON.stringify(result));
       if (result.data.getSiteUser) {
+        //alert("closeCallBack");
         closeCallBack();
       }
 
@@ -177,20 +182,20 @@ const Login = ({closeCallBack}) => {
             height: 44,
           }}
         >
-          Login
+          {localStrings.login}
         </BazarButton>
 
-        <Box mb={2}>
-          <Box width="200px" mx="auto">
-            <Divider />
-          </Box>
+        {/*<Box mb={2}>*/}
+        {/*  <Box width="200px" mx="auto">*/}
+        {/*    <Divider />*/}
+        {/*  </Box>*/}
 
-          <FlexBox justifyContent="center" mt={-1.625}>
-            <Box color="grey.600" bgcolor="background.paper" px={2}>
-              on
-            </Box>
-          </FlexBox>
-        </Box>
+          {/*<FlexBox justifyContent="center" mt={-1.625}>*/}
+          {/*  <Box color="grey.600" bgcolor="background.paper" px={2}>*/}
+          {/*    on*/}
+          {/*  </Box>*/}
+          {/*</FlexBox>*/}
+        {/*</Box>*/}
 
         {/*<BazarButton*/}
         {/*  className="facebookButton"*/}

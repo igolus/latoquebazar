@@ -65,7 +65,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, qu
             filteredProduct);
 
         setPage(0);
-        setMaxPage(Math.floor(productsLoaded.length / itemPerPage));
+        setMaxPage(Math.floor(filteredProduct.length / itemPerPage) + 1);
         setProductDisplay(filteredProduct.slice(0,
             Math.min(filteredProduct.length, itemPerPage)))
 
@@ -102,7 +102,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, qu
                         }
                         return (
                             <Grid item lg={4} sm={6} xs={12} key={ind}>
-                                <ProductCard1 {...itemShop} />
+                                <ProductCard1 {...itemShop} product={item} />
                                 {/*<ProductCard1 {...item} />*/}
                             </Grid>
                         )

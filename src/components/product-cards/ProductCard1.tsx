@@ -35,6 +35,7 @@ export interface ProductCard1Props {
   price: number
   off?: number
   id: string | number
+  product: any
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -122,11 +123,20 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   id,
   imgUrl,
   title,
-  price,
+  price= 200,
   off = 0,
   rating,
   hoverEffect,
+  product
 }) => {
+
+  if (!product) {
+    product = {
+      name: title,
+
+    }
+  }
+
   const [isFavorite, setIsFavorite] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -142,6 +152,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   const toggleIsFavorite = async () => {
     setIsFavorite((fav) => !fav)
+  }
+
+  let url = "https://icons.iconarchive.com/icons/icons8/windows-8/512/City-No-Camera-icon.png";
+  if (product && product.files && product.files.length > 0) {
+    url = product.files[0].url;
+  }
+  else if (imgUrl) {
+    url = imgUrl;
   }
 
   const handleCartAmountChange = useCallback(
@@ -163,14 +181,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   return (
     <BazarCard className={classes.root} hoverEffect={hoverEffect}>
       <div className={classes.imageHolder}>
-        {!!off && (
-          <Chip
-            className={classes.offerChip}
-            color="primary"
-            size="small"
-            label={`${off}% off`}
-          />
-        )}
+        {/*{!!off && (*/}
+        {/*  <Chip*/}
+        {/*    className={classes.offerChip}*/}
+        {/*    color="primary"*/}
+        {/*    size="small"*/}
+        {/*    label={`${off}% off`}*/}
+        {/*  />*/}
+        {/*)}*/}
 
         <div className="extra-icons">
           <IconButton sx={{ p: '6px' }} onClick={toggleDialog}>
@@ -188,15 +206,22 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         <Link href={`/product/${id}`}>
           <a>
             <LazyImage
-              src={imgUrl}
+              src={url}
               width="100%"
               height="auto"
               layout="responsive"
-              alt={title}
+              alt={product.name}
             />
           </a>
         </Link>
       </div>
+
+
+      {/*id: item.id,*/}
+      {/*imgUrl: url,*/}
+      {/*title: item.name,*/}
+      {/*price: 200,*/}
+      {/*hoverEffect: true*/}
 
       <div className={classes.details}>
         <FlexBox>
@@ -210,9 +235,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   fontWeight="600"
                   color="text.secondary"
                   mb={1}
-                  title={title}
+                  title={product.name}
                 >
-                  {title}
+                  {product.name}
                 </H3>
               </a>
             </Link>

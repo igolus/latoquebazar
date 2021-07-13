@@ -90,9 +90,7 @@ const Account = (props) => {
                 {/*    {localStrings.account}*/}
                 {/*  </Link>*/}
                 {/*</div>*/}
-                <MenuItem onClick={handleLogout}>
-                    {localStrings.logout}
-                </MenuItem>
+
                 <MenuItem>
                     <Link href={"/profile"}>
                         {localStrings.myAccount}
@@ -107,6 +105,9 @@ const Account = (props) => {
                     <Link href={"/adresses"}>
                         {localStrings.myAdresse}
                     </Link>
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                    {localStrings.logout}
                 </MenuItem>
             </Menu>
         </>

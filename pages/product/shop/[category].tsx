@@ -5,8 +5,12 @@ import {GetStaticPaths, GetStaticProps} from "next";
 import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {getCategoriesQueryNoApollo} from "../../../src/gqlNoApollo/categoriesGqlNoApollo";
 
+export interface ProductsByCategoryProps {
+    products?: any
+    categories?: any
+}
 
-const ProductsByCategory = ({ products, categories}) => {
+const ProductsByCategory:React.FC<ProductsByCategoryProps> = ({ products, categories}) => {
     const router = useRouter()
     const { category } = router.query
     //alert("products " + products)

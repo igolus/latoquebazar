@@ -2,8 +2,9 @@
   command = "npm run build"
   publish = "out"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"
+#
 # [context.production.environment]
-#   NEXTAUTH_URL="https://rdvvidisite.netlify.app/"
+# NEXT_SERVERLESS = "true"
+# NODE_ENV = "prodution"

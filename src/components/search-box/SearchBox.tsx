@@ -3,9 +3,10 @@ import SearchOutlined from '@material-ui/icons/SearchOutlined'
 import {makeStyles} from '@material-ui/styles'
 import {MuiThemeProps} from '@theme/theme'
 import React, {useRef, useState} from 'react'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import Link from 'next/link'
 import localStrings from "../../localStrings";
+
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   searchIcon: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
 
 const SearchBox = () => {
   const router = useRouter()
-
+  const linkSearch = useRef(null);
   //const [category, setCategory] = useState('All Categories')
   const [searchText, setSearchText] = useState("")
   const [redirect, setRedirect] = useState(false)
@@ -97,10 +98,20 @@ const SearchBox = () => {
   // )
 
   async function searchTrigger() {
-    //alert("searchTrigger " + searchText)
-    if (searchText !== "") {
-      router.push("/product/search/" + searchText);
-    }
+
+    alert("searchTrigger " + searchText);
+    //let origin = window.location.origin;
+    //window.location = origin + "/product/search/" + searchText
+    router.push("/product/search/" + searchText);
+    //linkSearch.current.click();
+    // if (searchText !== "") {
+    //
+    //   let origin = window.location.origin;
+    //   window.location = origin + "/product/search/" + searchText
+    //   //window.location = "/product/search/" + searchText
+    //   //Router.push("/product/search/" + searchText);
+    //   //Router.push("/qsdqsdqs" + searchText);
+    // }
 
     //router.push('/cart')
     //alert("searchTrigger")
@@ -109,19 +120,10 @@ const SearchBox = () => {
   function changeSearchValue(event) {
     let value = event.target.value;
     setSearchText(value);
-    // if (value && value.length > 0) {
-    //
-    // }
-    //
-    //
-    // setRedirect
   }
 
   return (
       <>
-        {/*{redirect &&*/}
-        {/* <Redirect to={"/product/search/" + searchText}/>*/}
-        {/*}*/}
         <Box
             position="relative"
             flex="1 1 0"
@@ -130,7 +132,8 @@ const SearchBox = () => {
             {...{ ref: parentRef }}
         >
 
-          <form onSubmit={searchTrigger}>
+          {/*<form onSubmit={searchTrigger}>*/}
+          <form>
             <TextField
 
                 variant="outlined"
@@ -147,9 +150,7 @@ const SearchBox = () => {
                   },
                   //endAdornment: categoryDropdown,
                   endAdornment: (
-
                       <>
-
                         {searchText !== "" ?
                             <Link href={`/product/search/${searchText}`}
                             >

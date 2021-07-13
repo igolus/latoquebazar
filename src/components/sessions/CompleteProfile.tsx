@@ -21,6 +21,10 @@ import { useRouter } from 'next/router'
 import React, { useCallback, useState } from 'react'
 import * as yup from 'yup'
 import GoogleMapsAutocomplete from '../map/GoogleMapsAutocomplete'
+import localStrings from "../../localStrings";
+import useAuth from "@hook/useAuth";
+import {executeMutationUtil} from "../../apolloClient/gqlUtil";
+import {createSiteUserMutation} from "../../gql/siteUserGql";
 
 const fbStyle = {
   background: '#3B5998',
@@ -36,7 +40,7 @@ type StyledCardProps = {
 }
 
 const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
-  ({ children, passwordVisibility, ...rest }) => <Card {...rest}>{children}</Card>
+    ({ children, passwordVisibility, ...rest }) => <Card {...rest}>{children}</Card>
 )<CardProps>(({ theme, passwordVisibility }) => ({
   width: 500,
   [theme.breakpoints.down('sm')]: {
@@ -67,265 +71,269 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 }))
 
-const CompleteProfile = () => {
+const CompleteProfile = ({closeCallBack}) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
+  const { user, currentBrand, currentEstablishment, establishmentList, setDbUser } = useAuth();
+  const router = useRouter();
 
-  const router = useRouter()
+  const initialValues = {
+    email: user.email || '',
+    firstName: user.name && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
+    lastName: user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : '',
+    agreement: false,
+    address: '',
+    placeId: '',
+    city: '',
+    postcode: '',
+    citycode: '',
+    lat: '',
+    lng: '',
+  }
 
   const togglePasswordVisibility = useCallback(() => {
     setPasswordVisibility((visible) => !visible)
   }, [])
 
   const handleFormSubmit = async (values: any) => {
-    router.push('/profile')
+
+    let data = {}
+    data.establishmentIds = establishmentList ? establishmentList.map(item => item.id) : []
+    data.defaultEstablishmentId = currentEstablishment().id
+    data.brandId = currentBrand().id;
+    data.id = user.id;
+    let valueCopy = { ...values };
+    delete valueCopy.agreement;
+    delete valueCopy.submit
+    delete valueCopy.establishments
+    data.userProfileInfo = { ...valueCopy };
+    alert("user.uid " + user.uid)
+    alert("user " + JSON.stringify(user));
+    alert("data " + JSON.stringify(data))
+    const res = await executeMutationUtil(createSiteUserMutation(currentBrand().id, data));
+    alert("res " + JSON.stringify(res))
+    if (res.data) {
+      setDbUser(res.data.addSiteUser)
+    }
+
+    if (closeCallBack) {
+      closeCallBack();
+    }
+    //router.push('/');
+    alert(JSON.stringify(values))
     console.log(values)
   }
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      onSubmit: handleFormSubmit,
-      initialValues,
-      validationSchema: formSchema,
-    })
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } =
+      useFormik({
+        onSubmit: handleFormSubmit,
+        initialValues,
+        validationSchema: formSchema,
+      })
 
   return (
-    <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
-      <form className="content" onSubmit={handleSubmit}>
-        <H3 textAlign="center" mb={1}>
-          Create Your Account
-        </H3>
-        <Small
-          fontWeight="600"
-          fontSize="12px"
-          color="grey.800"
-          textAlign="center"
-          mb={4.5}
-          display="block"
-        >
-          Please fill all fields to continue
-        </Small>
+      <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
+        <form className="content" onSubmit={handleSubmit}>
+          <H3 textAlign="center" mb={1}>
+            {localStrings.activateAccount}
+          </H3>
+          <Small
+              fontWeight="600"
+              fontSize="12px"
+              color="grey.800"
+              textAlign="center"
+              mb={4.5}
+              display="block"
+          >
+            {localStrings.fillInfoToContinue}
+          </Small>
 
-        <GoogleMapsAutocomplete
-          mb={1.5}
-          name="name"
-          label="Full Name"
-          placeholder="Ralph Adwards"
-          variant="outlined"
-          size="small"
-          fullWidth
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.name || ''}
-          error={!!touched.name && !!errors.name}
-          helperText={touched.name && errors.name}
-        />
+          <GoogleMapsAutocomplete noKeyKnown
+                                  required
+                                  title={localStrings.adress}
+                                  error={!!touched.address && !!errors.address}
+                                  helperText={touched.address && errors.address}
+                                  setValueCallback={(label, placeId, city, postcode, citycode, lat, lng) => {
+                                    setFieldValue("address", label);
+                                    setFieldValue("placeId", placeId);
+                                    setFieldValue("city", city);
+                                    setFieldValue("postcode", postcode);
+                                    setFieldValue("citycode", citycode);
+                                    setFieldValue("lat", lat);
+                                    setFieldValue("lng", lng);
+                                  }}/>
 
-        <BazarTextField
-          mb={1.5}
-          name="email"
-          label="Email or Phone Number"
-          placeholder="exmple@mail.com"
-          variant="outlined"
-          size="small"
-          type="email"
-          fullWidth
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.email || ''}
-          error={!!touched.email && !!errors.email}
-          helperText={touched.email && errors.email}
-        />
+          {/*adress: "Adresse",*/}
+          {/*email: "Email",*/}
+          {/*firstName: "Prenom",*/}
+          {/*lastName: "Nom"*/}
 
-        <BazarTextField
-          mb={1.5}
-          name="password"
-          label="Password"
-          placeholder="*********"
-          autoComplete="on"
-          type={passwordVisibility ? 'text' : 'password'}
-          variant="outlined"
-          size="small"
-          fullWidth
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                size="small"
-                type="button"
-                onClick={togglePasswordVisibility}
-              >
-                {passwordVisibility ? (
-                  <Visibility className="passwordEye" fontSize="small" />
-                ) : (
-                  <VisibilityOff className="passwordEye" fontSize="small" />
-                )}
-              </IconButton>
-            ),
-          }}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.password || ''}
-          error={!!touched.password && !!errors.password}
-          helperText={touched.password && errors.password}
-        />
-
-        <BazarTextField
-          name="re_password"
-          label="Retype Password"
-          placeholder="*********"
-          autoComplete="on"
-          type={passwordVisibility ? 'text' : 'password'}
-          variant="outlined"
-          size="small"
-          fullWidth
-          InputProps={{
-            endAdornment: (
-              <IconButton
-                size="small"
-                type="button"
-                onClick={togglePasswordVisibility}
-              >
-                {passwordVisibility ? (
-                  <Visibility className="passwordEye" fontSize="small" />
-                ) : (
-                  <VisibilityOff className="passwordEye" fontSize="small" />
-                )}
-              </IconButton>
-            ),
-          }}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.re_password || ''}
-          error={!!touched.re_password && !!errors.re_password}
-          helperText={touched.re_password && errors.re_password}
-        />
-
-        <FormControlLabel
-          className="agreement"
-          name="agreement"
-          onChange={handleChange}
-          control={
-            <Checkbox
+          <BazarTextField
+              mb={1.5}
+              disabled
+              name="email"
+              label={localStrings.email}
+              placeholder={localStrings.email}
+              variant="outlined"
               size="small"
-              color="secondary"
-              checked={values.agreement || false}
-            />
-          }
-          label={
-            <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
-              By signing up, you agree to
-              <a href="/" target="_blank" rel="noreferrer noopener">
-                <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                  Terms & Condtion
-                </H6>
-              </a>
-            </FlexBox>
-          }
-        />
-
-        <BazarButton
-          variant="contained"
-          color="primary"
-          type="submit"
-          fullWidth
-          sx={{
-            height: 44,
-          }}
-        >
-          Create Account
-        </BazarButton>
-
-        <Box mb={2} mt={3.3}>
-          <Box width="200px" mx="auto">
-            <Divider />
-          </Box>
-
-          <FlexBox justifyContent="center" mt={-1.625}>
-            <Box color="grey.600" bgcolor="background.paper" px={2}>
-              on
-            </Box>
-          </FlexBox>
-        </Box>
-
-        <BazarButton
-          className="facebookButton"
-          size="medium"
-          fullWidth
-          sx={{
-            height: 44,
-          }}
-        >
-          <Image
-            src="/assets/images/icons/facebook-filled-white.svg"
-            alt="facebook"
+              type="email"
+              fullWidth
+              onBlur={handleBlur}
+              onChange={handleChange}
+              //defaultValue={}
+              value={user.email}
           />
-          <Box fontSize="12px" ml={1}>
-            Continue with Facebook
-          </Box>
-        </BazarButton>
-        <BazarButton
-          className="googleButton"
-          size="medium"
-          fullWidth
-          sx={{
-            height: 44,
-          }}
-        >
-          <Image src="/assets/images/icons/google-1.svg" alt="facebook" />
-          <Box fontSize="12px" ml={1}>
-            Continue with Google
-          </Box>
-        </BazarButton>
 
-        <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
-          <Box>Don’t have account?</Box>
-          <Link href="/login">
-            <a>
-              <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                Log In
-              </H6>
-            </a>
-          </Link>
-        </FlexBox>
-      </form>
+          <BazarTextField
+              mb={1.5}
+              name="firstName"
+              label={localStrings.firstName}
+              placeholder={localStrings.firstName}
+              variant="outlined"
+              size="small"
+              fullWidth
+              onBlur={handleBlur}
+              onChange={handleChange}
+              //defaultValue={user.name && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : ''}
+              value={values.firstName}
+              error={!!touched.firstName && !!errors.firstName}
+              helperText={touched.firstName && errors.firstName}
+          />
 
-      <FlexBox justifyContent="center" bgcolor="grey.200" py={2.5}>
-        Forgot your password?
-        <Link href="/">
-          <a>
-            <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-              Reset It
-            </H6>
-          </a>
-        </Link>
-      </FlexBox>
-    </StyledCard>
+          <BazarTextField
+              mb={1.5}
+              name="lastName"
+              label={localStrings.lastName}
+              placeholder={localStrings.lastName}
+              variant="outlined"
+              size="small"
+              fullWidth
+              onBlur={handleBlur}
+              onChange={handleChange}
+              defaultValue={user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : ''}
+              value={values.lastName}
+              error={!!touched.lastName && !!errors.lastName}
+              helperText={touched.lastName && errors.lastName}
+          />
+
+
+          <FormControlLabel
+              className="agreement"
+              name="agreement"
+              onChange={handleChange}
+              control={
+                <Checkbox
+                    size="small"
+                    color="secondary"
+                    checked={values.agreement || false}
+                />
+              }
+              label={
+                <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                  {localStrings.bySigningTermsAndConditions}
+                  <a href="/" target="_blank" rel="noreferrer noopener">
+                    <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                      {localStrings.termsAndConditions}
+                    </H6>
+                  </a>
+                </FlexBox>
+              }
+          />
+
+          <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
+            <BazarButton
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth
+                sx={{
+                  height: 44,
+                }}
+            >
+              {localStrings.activateAccount}
+            </BazarButton>
+          </FlexBox>
+
+          {/*<Box mb={2} mt={3.3}>*/}
+          {/*  <Box width="200px" mx="auto">*/}
+          {/*    <Divider />*/}
+          {/*  </Box>*/}
+
+          {/*  <FlexBox justifyContent="center" mt={-1.625}>*/}
+          {/*    <Box color="grey.600" bgcolor="background.paper" px={2}>*/}
+          {/*      on*/}
+          {/*    </Box>*/}
+          {/*  </FlexBox>*/}
+          {/*</Box>*/}
+
+          {/*<BazarButton*/}
+          {/*  className="facebookButton"*/}
+          {/*  size="medium"*/}
+          {/*  fullWidth*/}
+          {/*  sx={{*/}
+          {/*    height: 44,*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <Image*/}
+          {/*    src="/assets/images/icons/facebook-filled-white.svg"*/}
+          {/*    alt="facebook"*/}
+          {/*  />*/}
+          {/*  <Box fontSize="12px" ml={1}>*/}
+          {/*    Continue with Facebook*/}
+          {/*  </Box>*/}
+          {/*</BazarButton>*/}
+          {/*<BazarButton*/}
+          {/*  className="googleButton"*/}
+          {/*  size="medium"*/}
+          {/*  fullWidth*/}
+          {/*  sx={{*/}
+          {/*    height: 44,*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <Image src="/assets/images/icons/google-1.svg" alt="facebook" />*/}
+          {/*  <Box fontSize="12px" ml={1}>*/}
+          {/*    Continue with Google*/}
+          {/*  </Box>*/}
+          {/*</BazarButton>*/}
+
+          {/*<FlexBox justifyContent="center" alignItems="center" my="1.25rem">*/}
+          {/*  <Box>Don’t have account?</Box>*/}
+          {/*  <Link href="/login">*/}
+          {/*    <a>*/}
+          {/*      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
+          {/*        Log In*/}
+          {/*      </H6>*/}
+          {/*    </a>*/}
+          {/*  </Link>*/}
+          {/*</FlexBox>*/}
+        </form>
+
+        {/*<FlexBox justifyContent="center" bgcolor="grey.200" py={2.5}>*/}
+        {/*  Forgot your password?*/}
+        {/*  <Link href="/">*/}
+        {/*    <a>*/}
+        {/*      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
+        {/*        Reset It*/}
+        {/*      </H6>*/}
+        {/*    </a>*/}
+        {/*  </Link>*/}
+        {/*</FlexBox>*/}
+      </StyledCard>
   )
 }
 
-const initialValues = {
-  name: '',
-  email: '',
-  password: '',
-  re_password: '',
-  agreement: false,
-}
+
 
 const formSchema = yup.object().shape({
-  name: yup.string().required('${path} is required'),
-  email: yup.string().email('invalid email').required('${path} is required'),
-  password: yup.string().required('${path} is required'),
-  re_password: yup
-    .string()
-    .oneOf([yup.ref('password'), null], 'Passwords must match')
-    .required('Please re-type password'),
+  lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+  address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
   agreement: yup
-    .bool()
-    .test(
-      'agreement',
-      'You have to agree with our Terms and Conditions!',
-      (value) => value === true
-    )
-    .required('You have to agree with our Terms and Conditions!'),
+      .bool()
+      .test(
+          'agreement',
+          'You have to agree with our Terms and Conditions!',
+          (value) => value === true
+      )
+      .required('You have to agree with our Terms and Conditions!'),
 })
 
 export default CompleteProfile
