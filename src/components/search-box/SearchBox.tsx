@@ -99,7 +99,7 @@ const SearchBox = () => {
 
   async function searchTrigger() {
 
-    alert("searchTrigger " + searchText);
+    //alert("searchTrigger " + searchText);
     //let origin = window.location.origin;
     //window.location = origin + "/product/search/" + searchText
     router.push("/product/search/" + searchText);
