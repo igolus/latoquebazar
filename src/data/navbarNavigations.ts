@@ -1,24 +1,11 @@
 const navbarNavigations = [
   {
     title: 'Home',
-    child: [
-      {
-        title: 'Super Store',
-        url: '/',
-      },
-      {
-        title: 'Grocery',
-        url: '/home-2',
-      },
-      //   {
-      //     title: "Niche Market 1",
-      //     url: "/home-3",
-      //   },
-      //   {
-      //     title: "Niche Market 2",
-      //     url: "/home-4",
-      //   },
-    ],
+    url: '/',
+  },
+  {
+    title: 'Grocery',
+    url: '/home-2',
   },
   {
     title: 'Pages',

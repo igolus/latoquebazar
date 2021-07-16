@@ -54,6 +54,7 @@ const common = `
     productName
     extraCharge
     shortCode
+    
   }
 `
 

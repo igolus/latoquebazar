@@ -15,26 +15,41 @@ import {
 } from '@material-ui/core'
 import { CartItem } from '@reducer/cartReducer'
 import Link from 'next/link'
+import useAuth from "@hook/useAuth";
+import {GetStaticPaths, GetStaticProps} from "next";
+import {getStaticPathsUtil, getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
+import React from "react";
+import {getCartItems} from "../src/util/cartUtil";
+import {getBrandCurrency} from "../src/util/displayUtil";
 
-const Cart = () => {
-  const { state } = useAppContext()
-  const cartList: CartItem[] = state.cart.cartList
+export interface CartProps {
+  contextData?: any
+}
 
+const Cart:React.FC<CartProps> = ({contextData}) => {
+  //const { state } = useAppContext()
+  //const cartList: CartItem[] = state.cart.cartList
+  const { orderInCreation } = useAuth();
+  const currency = getBrandCurrency(contextData ? contextData.brand : null)
   const getTotalPrice = () => {
-    return (
-      cartList.reduce(
-        (accumulator, item) => accumulator + item.price * item.qty,
-        0
-      ) || 0
-    )
+    return 100
+    // return (
+    //   cartList.reduce(
+    //     (accumulator, item) => accumulator + item.price * item.qty,
+    //     0
+    //   ) || 0
+    // )
   }
+
+
 
   return (
     <CheckoutNavLayout>
+
       <Grid container spacing={3}>
         <Grid item lg={8} md={8} xs={12}>
-          {cartList.map((item) => (
-            <ProductCard7 key={item.id} {...item} />
+          {getCartItems(orderInCreation).map((item) => (
+            <ProductCard7 key={item.id} item={item} currency={currency} products={contextData ? contextData.products : []}/>
           ))}
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
@@ -166,6 +181,10 @@ const Cart = () => {
       </Grid>
     </CheckoutNavLayout>
   )
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return await getStaticPropsUtil();
 }
 
 const stateList = [

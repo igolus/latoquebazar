@@ -104,7 +104,7 @@ const GroceryHeader: React.FC<GroceryHeaderProps> = ({ isFixed }) => {
                 <BazarButton color="inherit">
                   <Category fontSize="small" color="inherit" />
                   <KeyboardArrowDown fontSize="small" color="inherit" />
-                </BazarButton>
+                </BazarButton>F
               </FlexBox>
             </CategoryMenu>
           )}

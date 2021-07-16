@@ -10,13 +10,17 @@ import { Box } from '@material-ui/system'
 import Link from 'next/link'
 import React, { useCallback } from 'react'
 import ProductCard7Style from './ProductCard7Style'
+import useAuth from "@hook/useAuth";
+import {decreaseCartQte, getPriceWithOptions, increaseCartQte} from '../../util/cartUtil'
 
 export interface ProductCard7Props {
   id: string | number
   name: string
   qty: number
   price: number
-  imgUrl?: string
+  products: any
+  item: any,
+  currency: string
 }
 
 const ProductCard7: React.FC<ProductCard7Props> = ({
@@ -24,29 +28,42 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   name,
   qty,
   price,
-  imgUrl,
+  products,
+  item,
+  currency
 }) => {
-  const { dispatch } = useAppContext()
-  const handleCartAmountChange = useCallback(
-    (amount) => () => {
-      dispatch({
-        type: 'CHANGE_CART_AMOUNT',
-        payload: {
-          qty: amount,
-          name,
-          price,
-          imgUrl,
-          id,
-        },
-      })
-    },
-    []
-  )
+
+  const {orderInCreation, setOrderInCreation} = useAuth();
+  //const { dispatch } = useAppContext()
+  // const handleCartAmountChange = useCallback(
+  //   (amount) => () => {
+  //     dispatch({
+  //       type: 'CHANGE_CART_AMOUNT',
+  //       payload: {
+  //         qty: amount,
+  //         name,
+  //         price,
+  //         imgUrl,
+  //         id,
+  //       },
+  //     })
+  //   },
+  //   []
+  // )
+  let product = products.find(p => p.id === item.productId);
+  let imgUrl = "/assets/images/Icon_Sandwich.png";
+  if (product && product.files && product.files.length > 0) {
+    imgUrl = product.files[0].url;
+  }
+  else if (imgUrl) {
+    imgUrl = imgUrl;
+  }
 
   return (
     <ProductCard7Style>
+
       <Image
-        src={imgUrl || '/assets/images/products/iphone-xi.png'}
+        src={imgUrl}
         height={140}
         width={140}
         display="block"
@@ -59,13 +76,37 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
         minWidth="0px"
         width="100%"
       >
-        <Link href={`/product/${id}`}>
+        <Link href={`/product/detail/${item.productId}`}>
           <a>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
-              {name}
+              {(item.productName + " " + item.name).trim()}
             </Span>
           </a>
+
+
         </Link>
+        {/*{JSON.stringify(item.options)}*/}
+        {
+          item.options.map((option, key) =>
+            // <h1>{option.name}</h1>
+              <FlexBox flexWrap="wrap" alignItems="center">
+                <Span color="grey.600" fontSize="14px"  mr={1}>
+                 {option.name}
+                </Span>
+                <Span color="grey.600" fontSize="14px"  mr={1}>
+                  {option.price +  " " + currency} x {item.quantity}
+                </Span>
+                <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
+                  {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}
+                </Span>
+              </FlexBox>
+
+            //   <Span key={key} className="title" fontWeight="200" fontSize="14px" mb={1}>
+            //   {option.name} {}
+            // </Span>
+
+          )
+        }
         <Box position="absolute" right="1rem" top="1rem">
           <IconButton
             size="small"
@@ -73,25 +114,27 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               padding: '4px',
               ml: '12px',
             }}
-            onClick={handleCartAmountChange(0)}
+            //onClick={handleCartAmountChange(0)}
           >
             <Close fontSize="small" />
           </IconButton>
         </Box>
 
         <FlexBox
-          // width="100%"
           justifyContent="space-between"
           alignItems="flex-end"
         >
           <FlexBox flexWrap="wrap" alignItems="center">
             <Span color="grey.600" mr={1}>
-              ${price.toFixed(2)} x {qty}
+              {getPriceWithOptions(item, true) + " " + currency} x {item.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              ${(price * qty).toFixed(2)}
+              {getPriceWithOptions(item) + " " + currency}
             </Span>
           </FlexBox>
+
+
+
 
           <FlexBox alignItems="center">
             <Button
@@ -100,14 +143,14 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               // padding="5px"
               // size="none"
               // borderColor="primary.light"
-              disabled={qty === 1}
+              disabled={item.quantity === 1}
               sx={{ p: '5px' }}
-              onClick={handleCartAmountChange(qty - 1)}
+              onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.extRef)}
             >
               <Remove fontSize="small" />
             </Button>
             <Span mx={1} fontWeight="600" fontSize="15px">
-              {qty}
+              {item.quantity}
             </Span>
             <Button
               variant="outlined"
@@ -116,7 +159,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               // size="none"
               // borderColor="primary.light"
               sx={{ p: '5px' }}
-              onClick={handleCartAmountChange(qty + 1)}
+              onClick={() => increaseCartQte(orderInCreation, setOrderInCreation, item.extRef)}
             >
               <Add fontSize="small" />
             </Button>

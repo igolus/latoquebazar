@@ -31,3 +31,19 @@ export const getProfileName = (user) => {
     let lastName = user.userProfileInfo ? (user.userProfileInfo.lastName || '') : '';
     return (firstName + " " + lastName).trim();
 }
+
+export const getBrandCurrency = (brand) => {
+    let currency = "€"
+    if (!brand || !brand.config || !brand.config.currency) {
+        return currency;
+    }
+    //alert(brand.config.currency)
+    switch (brand.config.currency) {
+        case 'EUR':
+            return "€"
+        case 'USD':
+            return "$"
+        case 'GBP':
+            return "£"
+    }
+}

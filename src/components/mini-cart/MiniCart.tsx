@@ -14,6 +14,7 @@ import Remove from '@material-ui/icons/Remove'
 import { CartItem } from '@reducer/cartReducer'
 import Link from 'next/link'
 import React, { useCallback } from 'react'
+import useAuth from "@hook/useAuth";
 
 type MiniCartProps = {
   toggleSidenav?: () => void
@@ -23,6 +24,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav }) => {
   const { palette } = useTheme()
   const { state, dispatch } = useAppContext()
   const { cartList } = state.cart
+  const { orderInCreation } = useAuth();
 
   const handleCartAmountChange = useCallback(
     (amount, product) => () => {
@@ -48,6 +50,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav }) => {
 
   return (
     <Box width="380px">
+
+      {JSON.stringify(orderInCreation())}
       <Box
         overflow="auto"
         height={`calc(100vh - ${!!cartList.length ? '80px - 3.25rem' : '0px'})`}

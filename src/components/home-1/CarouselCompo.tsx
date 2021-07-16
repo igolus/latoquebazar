@@ -4,7 +4,7 @@ import Navbar from '@component/navbar/Navbar'
 import { Box, Container } from '@material-ui/core'
 import React, { Fragment } from 'react'
 
-const Section1 = () => {
+const CarouselCompo = () => {
   return (
     <Fragment>
       <Navbar />
@@ -31,4 +31,4 @@ const Section1 = () => {
   )
 }
 
-export default Section1
+export default CarouselCompo

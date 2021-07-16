@@ -33,6 +33,9 @@ let localStrings = new LocalizedStrings({
         login: "Se connecter",
         bySigningTermsAndConditions: "En cochant cette cas vous acceptez les termes et conditions",
         requiredField: "Le champ {0} est obligatoire",
+        addToCart: "Ajouter au panier",
+        description: "Description",
+        additionalInformation: "Information additionelle"
     }
 });
 

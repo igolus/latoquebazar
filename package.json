@@ -58,6 +58,7 @@
     "react-dropzone": "^11.3.2",
     "react-firebase-hooks": "^3.0.4",
     "react-localization": "^1.0.17",
+    "react-markdown": "^6.0.2",
     "react-scroll": "^1.8.2",
     "react-simple-image-viewer": "0.0.8",
     "react-toast-notifications": "^2.5.0",

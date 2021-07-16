@@ -1,24 +1,24 @@
 import FlexBox from '@component/FlexBox'
 import ProductCard1 from '@component/product-cards/ProductCard1'
 import { Span } from '@component/Typography'
-import productDatabase from '@data/product-database'
 import { Grid, Pagination } from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {FilterProps} from "@component/products/ProductFilterCard";
+import {getBrandCurrency} from "../../util/displayUtil";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
     filter: FilterProps
     query: String
     category: string,
-    products: [any],
+    contextData: any,
 }
 
 export const ALL_CAT = "all";
 
 const itemPerPage = 9;
 
-const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, query, category}) => {
+const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, category, contextData}) => {
 
     var productMapper = (product) => {
         return {
@@ -29,14 +29,14 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, qu
     }
 
 
-    const [allProducts, setAllProducts] = useState(products || []);
+    const [allProducts, setAllProducts] = useState(contextData ? (contextData.products || []) : []);
     const [productDisplay, setProductDisplay] = React.useState([]);
     const [maxPage, setMaxPage] = React.useState(0);
     const [page, setPage] = React.useState(1);
 
     useEffect( () => {
         let filteredProduct = [];
-        let productsLoaded = products || []
+        let productsLoaded = contextData ? (contextData.products || []) : []
 
         if (query) {
             var index = elasticlunr();
@@ -69,7 +69,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, qu
         setProductDisplay(filteredProduct.slice(0,
             Math.min(filteredProduct.length, itemPerPage)))
 
-    }, [category, filter, products])
+    }, [category, filter, contextData])
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         if (!allProducts) {
@@ -87,7 +87,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, qu
             <Grid container spacing={3}>
                 {productDisplay.map((item, ind) => {
 
-                        let url = "https://icons.iconarchive.com/icons/icons8/windows-8/512/City-No-Camera-icon.png";
+                        let url = "/assets/images/Icon_Sandwich.png";
 
                         if (item.files && item.files.length > 0) {
                             url = item.files[0].url;
@@ -102,7 +102,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({products, filter, qu
                         }
                         return (
                             <Grid item lg={4} sm={6} xs={12} key={ind}>
-                                <ProductCard1 {...itemShop} product={item} />
+                                <ProductCard1 {...itemShop} product={item}
+                                              options={contextData.options} currency={getBrandCurrency(contextData.brand)}/>
                                 {/*<ProductCard1 {...item} />*/}
                             </Grid>
                         )

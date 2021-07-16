@@ -1,7 +1,6 @@
 import FlexBox from '@component/FlexBox'
 import NavbarLayout from '@component/layout/NavbarLayout'
 import ProductCard1List from '@component/products/ProductCard1List'
-import ProductCard9List from '@component/products/ProductCard9List'
 import ProductFilterCard from '@component/products/ProductFilterCard'
 import Sidenav from '@component/sidenav/Sidenav'
 import {H5, Paragraph} from '@component/Typography'
@@ -17,11 +16,10 @@ import localStrings from '../../localStrings';
 export interface ProductList {
     query: string
     category: string
-    products: Array<any>
-    categories: Array<string>
+    contextData: any
 }
 
-const ProductList: React.FC<ProductList> = ({query, category, products, categories}) => {
+const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
 
 
     const [view, setView] = useState('grid')
@@ -49,6 +47,7 @@ const ProductList: React.FC<ProductList> = ({query, category, products, categori
 
     return (
         <NavbarLayout>
+            {/*<p>PLIST</p>*/}
             <Box pt={2.5}>
                 <Card
                     sx={{
@@ -124,7 +123,9 @@ const ProductList: React.FC<ProductList> = ({query, category, products, categori
                                         </IconButton>
                                     }
                                 >
-                                    <ProductFilterCard categories={categories}/>
+                                    {contextData &&
+                                    <ProductFilterCard categories={contextData.categories}/>
+                                    }
                                 </Sidenav>
                             )}
                         </FlexBox>
@@ -142,11 +143,14 @@ const ProductList: React.FC<ProductList> = ({query, category, products, categori
                             },
                         }}
                     >
-                        <ProductFilterCard categories={categories}/>
+                        {contextData &&
+                            <ProductFilterCard categories={contextData.categories}/>
+                        }
                     </Grid>
 
                     <Grid item lg={9} xs={12}>
-                        {view === 'grid' ? <ProductCard1List filter={filter} query={query} category={category} products={products}/> : <ProductCard9List filter={filter} query={query}/>}
+                        <ProductCard1List filter={filter} query={query}
+                                          category={category} contextData={contextData}/>
                     </Grid>
                 </Grid>
             </Box>

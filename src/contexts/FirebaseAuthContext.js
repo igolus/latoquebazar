@@ -15,7 +15,7 @@ import {getSiteUserByIdQuery} from "../gql/siteUserGql";
 import moment from "moment";
 import {establishmentsQuery} from "../gql/establishmentGql";
 import {getBrandByIdQuery} from "../gql/brandGql";
-
+import {ORDER_DELIVERY_MODE_DELIVERY} from "../util/constants"
 
 const CURRENCY = 'CURRENCY';
 const BRAND = 'BRAND';
@@ -24,6 +24,7 @@ const USER = 'USER';
 const ESTABLISHMENT = 'ESTABLISHMENT';
 const ESTABLISHMENT_LIST = 'ESTABLISHMENT_LIST';
 const AUTH_STATE_CHANGE = 'AUTH_STATE_CHANGED';
+const ORDER_IN_CREATION = 'ORDER_IN_CREATION';
 
 const initialAuthState = {
   loginDone: false,
@@ -43,7 +44,19 @@ const initialAuthState = {
   language: localStrings.getLanguage(),
   currency: CURRENCY_EUR,
   totalCartPrice: -1,
-  globalProductVariants: null
+  globalProductVariants: null,
+  orderInCreation: {
+    deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
+    order: {
+      items: [],
+      deals: []
+    },
+    customer: null,
+    payments: null,
+    deliveryAddress: null,
+    bookingSlot: null,
+    additionalInfo: null,
+  },
 };
 
 const config = require('../conf/config.json');
@@ -101,6 +114,14 @@ const reducer = (state, action) => {
       };
     }
 
+    case ORDER_IN_CREATION: {
+      const { orderInCreation } = action.payload;
+      return {
+        ...state,
+        orderInCreation: orderInCreation,
+      };
+    }
+
 
 
     default: {
@@ -133,6 +154,11 @@ const AuthContext = createContext({
   getBrandId: () => {},
   currentEstablishment: () => {},
   setEstablishment: () => {},
+
+  setOrderInCreation: () => {},
+  orderInCreation: () => {},
+  resetOrderInCreation: () => {},
+
 
 });
 
@@ -284,6 +310,39 @@ export const AuthProvider = ({ children }) => {
     return user;
   };
 
+  const orderInCreation = () => {
+    return state.orderInCreation;
+  }
+
+  const setOrderInCreation = (orderInCreation) => {
+    dispatch({
+      type: ORDER_IN_CREATION,
+      payload: {
+        orderInCreation: orderInCreation,
+      }
+    });
+  }
+
+  const resetOrderInCreation = () => {
+    dispatch({
+      type: ORDER_IN_CREATION,
+      payload: {
+        orderInCreation: {
+          deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
+          order: {
+            items: [],
+            deals: []
+          },
+          payments: null,
+          customer: null,
+          deliveryAddress: null,
+          bookingSlot: null,
+          additionalInfo: null,
+        }
+      }
+    });
+  }
+
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
     if (res && res.data) {
@@ -364,6 +423,10 @@ export const AuthProvider = ({ children }) => {
             setEstablishment,
 
             currentUser,
+
+            setOrderInCreation,
+            orderInCreation,
+            resetOrderInCreation,
           }}
       >
         {children}
