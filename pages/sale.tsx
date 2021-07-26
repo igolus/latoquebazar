@@ -12,6 +12,7 @@ const Sale = () => {
 
     return (
         <AppLayout navbar={<Navbar />}>
+            <h1>AppLayout</h1>
             <Container sx={{ mt: '2rem' }}>
                 <div>About</div>
             </Container>

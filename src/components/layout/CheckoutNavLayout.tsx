@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import AppLayout from './AppLayout'
 
-const CheckoutNavLayout: React.FC = ({ children }) => {
+const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
   const [selectedStep, setSelectedStep] = useState(0)
 
   const router = useRouter()
@@ -48,7 +48,7 @@ const CheckoutNavLayout: React.FC = ({ children }) => {
   }, [pathname])
 
   return (
-    <AppLayout navbar={<Navbar />}>
+    <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>} >
       <Container sx={{ my: '2rem' }}>
         <Box mb={3}>
           <Grid container spacing={3}>

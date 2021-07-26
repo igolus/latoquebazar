@@ -7,6 +7,7 @@ import useWindowSize from '@hook/useWindowSize'
 import { Grid, IconButton } from '@material-ui/core'
 import FilterList from '@material-ui/icons/FilterList'
 import React, {useCallback, useState} from 'react'
+import {getBrandCurrency} from "../../src/util/displayUtil";
 
 const Shop = () => {
   const width = useWindowSize()
@@ -22,44 +23,45 @@ const Shop = () => {
     )
 
   return (
-    <NavbarLayout>
-      <ShopIntroCard />
-      <Grid container spacing={3}>
-        <Grid
-          item
-          md={3}
-          xs={12}
-          sx={{
-            '@media only screen and (max-width: 1024px)': {
-              display: 'none',
-            },
-          }}
-        >
-          <ProductFilterCard callBackFilter={(v) => alert(v)}/>
-        </Grid>
-
-        <Grid item md={9} xs={12}>
-          {isTablet && (
-            <Sidenav
-              position="left"
-              handle={
-                <IconButton
-                  sx={{
-                    marginLeft: 'auto',
-                    display: 'block',
-                  }}
-                >
-                  <FilterList fontSize="small" />
-                </IconButton>
-              }
-            >
-                <ProductFilterCard callBackFilter={(v) => alert(v)}/>
-            </Sidenav>
-          )}
-          <ProductCard1List />
-        </Grid>
-      </Grid>
-    </NavbarLayout>
+      <></>
+    // <NavbarLayout contextData={contextData}>
+    //   <ShopIntroCard />
+    //   <Grid container spacing={3}>
+    //     <Grid
+    //       item
+    //       md={3}
+    //       xs={12}
+    //       sx={{
+    //         '@media only screen and (max-width: 1024px)': {
+    //           display: 'none',
+    //         },
+    //       }}
+    //     >
+    //       <ProductFilterCard callBackFilter={(v) => alert(v)}/>
+    //     </Grid>
+    //
+    //     <Grid item md={9} xs={12}>
+    //       {isTablet && (
+    //         <Sidenav
+    //           position="left"
+    //           handle={
+    //             <IconButton
+    //               sx={{
+    //                 marginLeft: 'auto',
+    //                 display: 'block',
+    //               }}
+    //             >
+    //               <FilterList fontSize="small" />
+    //             </IconButton>
+    //           }
+    //         >
+    //             <ProductFilterCard callBackFilter={(v) => alert(v)}/>
+    //         </Sidenav>
+    //       )}
+    //       <ProductCard1List />
+    //     </Grid>
+    //   </Grid>
+    // </NavbarLayout>
   )
 }
 

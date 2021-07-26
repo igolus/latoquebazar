@@ -21,6 +21,8 @@ import {getStaticPathsUtil, getStaticPropsUtil} from "../src/nextUtil/propsBuild
 import React from "react";
 import {getCartItems} from "../src/util/cartUtil";
 import {getBrandCurrency} from "../src/util/displayUtil";
+import {TYPE_DEAL, TYPE_PRODUCT} from "../src/util/constants";
+import DealCard7 from "@component/product-cards/DealCard7";
 
 export interface CartProps {
   contextData?: any
@@ -44,13 +46,19 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 
 
   return (
-    <CheckoutNavLayout>
-
+    <CheckoutNavLayout contextData={contextData}>
+      {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
       <Grid container spacing={3}>
         <Grid item lg={8} md={8} xs={12}>
-          {getCartItems(orderInCreation).map((item) => (
-            <ProductCard7 key={item.id} item={item} currency={currency} products={contextData ? contextData.products : []}/>
-          ))}
+          {getCartItems(orderInCreation).map((item) => {
+              //<p>{JSON.stringify(item)}</p>
+              if (item.type === TYPE_DEAL) {
+                return(<DealCard7 key={item.id} item={item} currency={currency} products={contextData ? contextData.products : []}/>)
+              }
+              else if (item.type === TYPE_PRODUCT) {
+                return(<ProductCard7 key={item.id} item={item} currency={currency} products={contextData ? contextData.products : []}/>)
+              }
+          })}
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
           <Card

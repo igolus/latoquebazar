@@ -1,4 +1,5 @@
 import { request, gql } from 'graphql-request'
+import {TYPE_DEAL, TYPE_PRODUCT} from "../util/constants";
 
 const config = require('../conf/config.json')
 const common = `
@@ -59,16 +60,16 @@ const common = `
 `
 
 export const getProductsQueryNoApollo = async (brandId) => {
-  var debug = `
+    var debug = `
      {
       getProductsByBrandId(brandId : "${brandId}") {
           ${common}
         }
       }
   `
-  console.log(debug);
+    //console.log(debug);
 
-  const query = gql`
+    const query = gql`
     {
       getProductsByBrandId(brandId : "${brandId}") {
         ${common}
@@ -76,7 +77,11 @@ export const getProductsQueryNoApollo = async (brandId) => {
     }
   `
 
-  let data = await request(config.graphQlUrl, query);
-  return data;
+    let products = await request(config.graphQlUrl, query);
+
+    //let deals = await request(config.graphQlUrl, query);
+    products.getProductsByBrandId.forEach(deal => deal.type = TYPE_PRODUCT)
+
+    return products;
 }
 

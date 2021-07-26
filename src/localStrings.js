@@ -3,6 +3,19 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        categories: "Categories",
+        tags: "Tags",
+        selectDeal: "Choisir le detail",
+        cancel: "Annuller",
+        next: "Selectionner le produit suivant",
+        select: "Selectionner le produit",
+        addMenuToCart: "Ajouter le menu au panier",
+        checkOutNow: "Checkout (passer a la caisse)",
+        viewCart: "Voir le detail du panier",
+        emptyBasket: "Votre panier est vide",
+        cartItemNumber: "{0} produits dans le panier",
+        selectOptions: "Choisir les options",
+        deals: "Menu et offres",
         sortBy: "Trier par ",
         ourProducts: "Nos produits",
         view: "Vue",
@@ -35,7 +48,12 @@ let localStrings = new LocalizedStrings({
         requiredField: "Le champ {0} est obligatoire",
         addToCart: "Ajouter au panier",
         description: "Description",
-        additionalInformation: "Information additionelle"
+        additionalInformation: "Information additionelle",
+        check: {
+            fieldRequired: "Le champ {0} est obligatoire",
+            required: "Obligatoire",
+        }
+
     }
 });
 

@@ -1,5 +1,6 @@
 import localStrings from '../localStrings';
 
+export const SEP = "-";
 export const ORDER_STATUS_NEW = "new";
 export const ORDER_STATUS_COMPLETE = "complete";
 export const ORDER_STATUS_FINISHED = "finished";
@@ -149,4 +150,7 @@ export const CHARGE_OTHER = "other";
 
 export const PRINTER_MODEL_STAR = "STAR";
 export const PRINTER_MODEL_EPSON = "EPSON";
+
+export const TYPE_DEAL = "deal"
+export const TYPE_PRODUCT = "product"
 

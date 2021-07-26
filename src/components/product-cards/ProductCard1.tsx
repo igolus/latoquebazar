@@ -1,30 +1,30 @@
 import BazarCard from '@component/BazarCard'
-import BazarRating from '@component/BazarRating'
 import LazyImage from '@component/LazyImage'
-import { H3 } from '@component/Typography'
-import { useAppContext } from '@context/app/AppContext'
-import {
-  Box,
-  Button,
-  Chip,
-  Dialog,
-  DialogContent,
-  IconButton,
-} from '@material-ui/core'
+import {H3} from '@component/Typography'
+import {useAppContext} from '@context/app/AppContext'
+import {Box, Button, Chip, Dialog, DialogContent, IconButton,} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
-import Favorite from '@material-ui/icons/Favorite'
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder'
 import Remove from '@material-ui/icons/Remove'
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye'
-import { CSSProperties, makeStyles } from '@material-ui/styles'
-import { CartItem } from '@reducer/cartReducer'
-import { MuiThemeProps } from '@theme/theme'
+import {CSSProperties, makeStyles} from '@material-ui/styles'
+import {CartItem} from '@reducer/cartReducer'
+import {MuiThemeProps} from '@theme/theme'
 import Link from 'next/link'
 import React, {Fragment, useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
 import ProductIntro from '../products/ProductIntro'
 import BazarButton from "@component/BazarButton";
+import {SEP} from "../../util/constants";
+import {
+  addToCartOrder,
+  buildProductAndSkus,
+  decreaseCartQte,
+  getQteInCart,
+  isProductAndSkuGetOption
+} from "../../util/cartUtil";
+import useAuth from "@hook/useAuth";
+import localStrings from "../../localStrings";
 
 export interface ProductCard1Props {
   className?: string
@@ -89,13 +89,14 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
     },
   },
   offerChip: {
-    position: 'absolute',
-    fontSize: '10px',
+    //position: 'absolute',
+    opacity:0.8,
+    fontSize: '15px',
     fontWeight: 600,
     paddingLeft: 3,
     paddingRight: 3,
-    top: '10px',
-    left: '10px',
+
+    zIndex: 999,
   },
   details: {
     padding: '1rem',
@@ -143,12 +144,18 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   useEffect(() => {
-    setSelectedSku(product && product.skus ? product.skus[0] : null)
+    let productAndSkusRes = buildProductAndSkus(product, orderInCreation);
+    setProductAndSkus(productAndSkusRes);
+    setSelectedProductSku(productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null)
+    //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
+    setSelectedSkuIndex(0)
   }, [product])
 
-
-  const [selectedSku, setSelectedSku] = useState(product && product.skus ? product.skus[0] : null)
-  const [open, setOpen] = useState(false)
+  const [productAndSkus, setProductAndSkus] = useState([])
+  const [selectedProductAndSku, setSelectedProductSku] = useState(null)
+  const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
+  const [open, setOpen] = useState(false);
+  const {orderInCreation, setOrderInCreation} = useAuth();
 
   const classes = useStyles({ hoverEffect })
   const { state, dispatch } = useAppContext()
@@ -185,17 +192,35 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
       []
   )
 
+  function buildProductDetailRef() {
+    if (!product.skus || product.skus.length == 1) {
+      return `/product/detail/${id}`;
+    }
+    return `/product/detail/${id}` + SEP + selectedSkuIndex;
+
+  }
+
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
+
+        {/*<p>{JSON.stringify(product.tags || [])}</p>*/}
         <div className={classes.imageHolder}>
-          {/*{!!off && (*/}
-          {/*  <Chip*/}
-          {/*    className={classes.offerChip}*/}
-          {/*    color="primary"*/}
-          {/*    size="small"*/}
-          {/*    label={`${off}% off`}*/}
-          {/*  />*/}
-          {/*)}*/}
+          <Box
+              display="flex"
+              flexWrap="wrap"
+              sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
+          >
+            {product.tags && product.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  <Chip
+                      className={classes.offerChip}
+                      color="primary"
+                      size="small"
+                      label={tag.tag}
+                  />
+                </Box>
+            )}
+          </Box>
 
           <div className="extra-icons">
             <IconButton sx={{ p: '6px' }} onClick={toggleDialog}>
@@ -203,7 +228,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             </IconButton>
           </div>
 
-          <Link href={`/product/detail/${id}`}>
+          <Link href={buildProductDetailRef()} >
             <a>
               <LazyImage
                   src={url}
@@ -217,18 +242,21 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-          {product.skus && product.skus.length > 1 &&
+          {productAndSkus && productAndSkus.length > 1 &&
           <div style={{ width: '100%' }}>
             <Box display="flex" justifyContent="center" m={1}>
-              {product.skus.map((sku, key) =>
+              {productAndSkus.map((productAndSkuItem, key) =>
                   <Box key={key}>
                     {/*<BazarButton>grande</BazarButton>*/}
                     <BazarButton
-                        onClick={() => setSelectedSku(sku)}
+                        onClick={() => {
+                          setSelectedProductSku(productAndSkuItem)
+                          setSelectedSkuIndex(key)
+                        }}
                         variant="contained"
-                        color={selectedSku.extRef === sku.extRef ? "primary" : undefined}
+                        color={selectedProductAndSku.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
                         sx={{ padding: "3px", mr: "3px" }}>
-                      {sku.name}
+                      {productAndSkuItem.sku.name}
                     </BazarButton>
                   </Box>
               )}
@@ -251,15 +279,17 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   >
                     {product.name}
                   </H3>
+
+
                 </a>
               </Link>
 
               {/*<BazarRating value={rating || 0} color="warn" readOnly />*/}
 
-              {selectedSku && selectedSku.price &&
+              {selectedProductAndSku && selectedProductAndSku.sku.price &&
               <FlexBox alignItems="center" mt={0.5}>
                 <Box pr={1} fontWeight="600" color="primary.main">
-                  {selectedSku.price} {currency}
+                  {selectedProductAndSku.sku.price} {currency}
                 </Box>
                 {/*{!!off && (*/}
                 {/*  <Box color="grey.600" fontWeight="600">*/}
@@ -326,27 +356,51 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 flexDirection="row"
                 alignItems="center"
                 justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
-                width="65px"
+                //width="65px"
             >
               <Button
                   variant="outlined"
                   color="primary"
-                  sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
-                  onClick={handleCartAmountChange((cartItem?.qty || 0) + 1)}
+                  sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                  onClick={() => {
+                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                      addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation)
+                    }
+                    else {
+                      setOpen(true);
+                    }
+                  }}
               >
-                <Add fontSize="small" />
-              </Button>
+                {isProductAndSkuGetOption(selectedProductAndSku) ?
+                    localStrings.selectOptions
+                    :
+                    <Add fontSize="small" />
+                }
 
-              {!!cartItem?.qty && (
+              </Button>
+              {/*<p>{selectedProductAndSku.extRef}</p>*/}
+              {/*{selectedProductAndSku && selectedProductAndSku.sku &&*/}
+              {/*  <p>{JSON.stringify(selectedProductAndSku.sku)}</p>*/}
+              {/*}*/}
+
+              {selectedProductAndSku && selectedProductAndSku.sku &&
+              !isProductAndSkuGetOption(selectedProductAndSku) &&
+              getQteInCart(selectedProductAndSku, orderInCreation) > 0 && (
                   <Fragment>
                     <Box color="text.primary" fontWeight="600">
-                      {cartItem?.qty}
+                      {getQteInCart(selectedProductAndSku, orderInCreation)}
                     </Box>
                     <Button
                         variant="outlined"
                         color="primary"
                         sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
-                        onClick={handleCartAmountChange(cartItem?.qty - 1)}
+                        disabled={getQteInCart(selectedProductAndSku, orderInCreation) == 1}
+                        onClick={() => {
+                          //alert(selectedProductAndSku.sku.uuid)
+                          if (selectedProductAndSku.sku.uuid) {
+                            decreaseCartQte(orderInCreation, setOrderInCreation, selectedProductAndSku.sku.uuid)
+                          }
+                        }}
                     >
                       <Remove fontSize="small" />
                     </Button>
@@ -359,7 +413,12 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
-                          product={product} options={options} currency={currency}/>
+                          skuIndex={selectedSkuIndex}
+                          product={product}
+                          options={options}
+                          currency={currency}
+                          addCallBack={() => setOpen(false)}
+            />
             <IconButton
                 sx={{ position: 'absolute', top: '0', right: '0' }}
                 onClick={toggleDialog}

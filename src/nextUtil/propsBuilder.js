@@ -2,7 +2,9 @@ import {getProductsQueryNoApollo} from "../gqlNoApollo/productGqlNoApollo";
 import {getCategoriesQueryNoApollo} from "../gqlNoApollo/categoriesGqlNoApollo";
 import {getOptionsListQueryNoApollo} from "../gqlNoApollo/productOptionListGqlNoApollo";
 import {getBrandByIdQueryNoApollo} from "../gqlNoApollo/brandGqlNoApollo";
+import {getDealsQueryNoApollo} from "../gqlNoApollo/dealGqlNoApollo";
 import {GetStaticPaths} from "next";
+import {getTagsQueryNoApollo} from "../gqlNoApollo/tagsGqlNoApollo";
 
 
 export async function getStaticPathsUtil() {
@@ -21,11 +23,26 @@ export async function getStaticPropsUtil() {
         products = resProducts.getProductsByBrandId;
     }
 
+
+    const resDeals = await getDealsQueryNoApollo(config.brandId);
+    let deals = [];
+
+    if (resDeals && resDeals.getDealsByBrandId) {
+        deals = resDeals.getDealsByBrandId;
+    }
+
     let categories = [];
     const resCats = await getCategoriesQueryNoApollo(config.brandId)
     if (resCats && resCats.getProductCategoriesByBrandId) {
         categories = resCats.getProductCategoriesByBrandId;
     }
+
+    let tags = [];
+    const resTags = await getTagsQueryNoApollo(config.brandId)
+    if (resTags && resTags.getProductTagsByBrandId) {
+        tags = resTags.getProductTagsByBrandId;
+    }
+
 
     let options = [];
     const resOptions = await getOptionsListQueryNoApollo(config.brandId);
@@ -43,9 +60,11 @@ export async function getStaticPropsUtil() {
         props: {
             contextData: {
                 products: products,
+                deals: deals,
                 categories: categories,
                 brand: brand,
-                options: options
+                options: options,
+                tags: tags
             }
         },
     }

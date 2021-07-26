@@ -6,6 +6,7 @@ import CategoryMenuCard from './CategoryMenuCard'
 export interface CategoryMenuProps {
   open?: boolean
   children: React.ReactElement
+  contextData: any
 }
 
 const useStyles = makeStyles(() => ({
@@ -26,6 +27,7 @@ const useStyles = makeStyles(() => ({
 const CategoryMenu: React.FC<CategoryMenuProps> = ({
   open: isOpen = false,
   children,
+  contextData,
 }) => {
   const [open, setOpen] = useState(isOpen)
   const popoverRef = useRef(open)
@@ -51,12 +53,14 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 
   return (
     <Box className={classes.root}>
+
       {React.cloneElement(children, {
         open,
         className: `${children.props.className} cursor-pointer`,
         onClick: toggleMenu,
       })}
-      <CategoryMenuCard open={open} />
+      {/*<p>{JSON.stringify(contextData.categories)}</p>*/}
+      <CategoryMenuCard open={open} contextData={contextData}/>
     </Box>
   )
 }

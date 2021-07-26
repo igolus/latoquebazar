@@ -11,7 +11,7 @@ import {
     TextField,
 } from '@material-ui/core'
 import { Box } from '@material-ui/system'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {StyledCategory} from "@component/layout/CategoryStyle";
 import localStrings from "../../localStrings";
 import {StyledDashboardNav} from "@component/layout/DashboardStyle";
@@ -23,17 +23,20 @@ export type FilterProps = {
 }
 
 export type ProductFilterCardProps = {
-   categories: [string]
+   categories: [string],
+   tags: any,
+    haveDeals: boolean,
 }
 
 
-const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories}) => {
+const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, haveDeals, tags}) => {
     const { asPath } = useRouter()
+    const [tagsSelected, setTagsSelected] = useState([]);
 
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
             <H6 mb={1.25}>{localStrings.categories}</H6>
-
+            {tagsSelected && JSON.stringify(tagsSelected)}
             <StyledDashboardNav
                 isCurrentPath={asPath.includes(ALL_CAT)}
                 href={"/product/shop/all"}
@@ -44,6 +47,17 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories}) => {
                 </FlexBox>
                 {/*<span>{item.count}</span>*/}
             </StyledDashboardNav>
+            {/*{haveDeals &&*/}
+            {/*    <StyledDashboardNav*/}
+            {/*        isCurrentPath={asPath.includes(localStrings.deals)}*/}
+            {/*        href={"/product/shop/" + localStrings.deals}*/}
+            {/*    >*/}
+            {/*        <FlexBox alignItems="center">*/}
+            {/*            <span>{localStrings.deals}</span>*/}
+            {/*        </FlexBox>*/}
+            {/*    </StyledDashboardNav>*/}
+            {/*}*/}
+
 
             {(categories || []).map((item) => {
                 //alert(asPath)
@@ -53,13 +67,6 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories}) => {
                     key={item.category}
                 >
                     <FlexBox alignItems="center">
-                        {/*<item.icon*/}
-                        {/*    className="nav-icon"*/}
-                        {/*    fontSize="small"*/}
-                        {/*    color="inherit"*/}
-                        {/*    sx={{ mr: '10px' }}*/}
-                        {/*/>*/}
-
                         <span>{item.category}</span>
                     </FlexBox>
                 </StyledDashboardNav>
@@ -97,57 +104,68 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories}) => {
 
             <Divider sx={{ my: '1.5rem' }} />
 
-            <H6 mb={2}>Brands</H6>
-            {brandList.map((item) => (
+            <H6 mb={2}>{localStrings.tags}</H6>
+            {tags.map((tag) => (
                 <FormControlLabel
-                    control={<Checkbox size="small" color="secondary" />}
-                    label={<Span color="inherit">{item}</Span>}
-                    sx={{ display: 'flex' }}
-                    key={item}
-                />
-            ))}
-
-            <Divider sx={{ my: '1.5rem' }} />
-
-            {otherOptions.map((item) => (
-                <FormControlLabel
-                    control={<Checkbox size="small" color="secondary" />}
-                    label={<Span color="inherit">{item}</Span>}
-                    sx={{ display: 'flex' }}
-                    key={item}
-                />
-            ))}
-
-            <Divider sx={{ my: '1.5rem' }} />
-
-            <H6 mb={2}>Ratings</H6>
-            {[5, 4, 3, 2, 1].map((item) => (
-                <FormControlLabel
-                    control={<Checkbox size="small" color="secondary" />}
-                    label={<Rating size="small" value={item} color="warn" readOnly />}
-                    sx={{ display: 'flex' }}
-                    key={item}
-                />
-            ))}
-
-            <Divider sx={{ my: '1.5rem' }} />
-
-            <H6 mb={2}>Colors</H6>
-            <FlexBox mb={2}>
-                {colorList.map((item) => (
-                    <Box
-                        sx={{
-                            bgcolor: item,
-                            height: '25px',
-                            width: '25px',
-                            mr: '10px',
-                            borderRadius: 300,
-                            cursor: 'pointer',
+                    control={<Checkbox
+                        size="small"
+                        color="secondary"
+                        onChange={e => {
+                            if (e.target.checked) {
+                                setTagsSelected([...tagsSelected, tag])
+                            }
+                            else {
+                                setTagsSelected([...tagsSelected].filter(item => item.tag !== tag.tag));
+                            }
                         }}
-                        key={item}
-                    />
-                ))}
-            </FlexBox>
+                    />}
+                    label={<Span color="inherit">{tag.tag}</Span>}
+                    sx={{ display: 'flex' }}
+                    key={tag.tag}
+                />
+            ))}
+
+            {/*<Divider sx={{ my: '1.5rem' }} />*/}
+
+            {/*{otherOptions.map((item) => (*/}
+            {/*    <FormControlLabel*/}
+            {/*        control={<Checkbox size="small" color="secondary" />}*/}
+            {/*        label={<Span color="inherit">{item}</Span>}*/}
+            {/*        sx={{ display: 'flex' }}*/}
+            {/*        key={item}*/}
+            {/*    />*/}
+            {/*))}*/}
+
+            {/*<Divider sx={{ my: '1.5rem' }} />*/}
+
+            {/*<H6 mb={2}>Ratings</H6>*/}
+            {/*{[5, 4, 3, 2, 1].map((item) => (*/}
+            {/*    <FormControlLabel*/}
+            {/*        control={<Checkbox size="small" color="secondary" />}*/}
+            {/*        label={<Rating size="small" value={item} color="warn" readOnly />}*/}
+            {/*        sx={{ display: 'flex' }}*/}
+            {/*        key={item}*/}
+            {/*    />*/}
+            {/*))}*/}
+
+            {/*<Divider sx={{ my: '1.5rem' }} />*/}
+
+            {/*<H6 mb={2}>Colors</H6>*/}
+            {/*<FlexBox mb={2}>*/}
+            {/*    {colorList.map((item) => (*/}
+            {/*        <Box*/}
+            {/*            sx={{*/}
+            {/*                bgcolor: item,*/}
+            {/*                height: '25px',*/}
+            {/*                width: '25px',*/}
+            {/*                mr: '10px',*/}
+            {/*                borderRadius: 300,*/}
+            {/*                cursor: 'pointer',*/}
+            {/*            }}*/}
+            {/*            key={item}*/}
+            {/*        />*/}
+            {/*    ))}*/}
+            {/*</FlexBox>*/}
         </Card>
     )
 }

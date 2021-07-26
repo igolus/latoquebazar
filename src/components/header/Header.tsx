@@ -5,8 +5,6 @@ import FlexBox from '@component/FlexBox'
 import Category from '@component/icons/Category'
 import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import MiniCart from '@component/mini-cart/MiniCart'
-import Login from '@component/sessions/Login'
-import { useAppContext } from '@context/app/AppContext'
 import {
   Badge,
   Box,
@@ -29,10 +27,12 @@ import SearchBox from '../search-box/SearchBox'
 import Account from './Account'
 import useAuth from "@hook/useAuth";
 import LoginOrSignup from "@component/sessions/LoginOrSignup";
+import {getItemNumberInCart} from "../../util/cartUtil";
 
 type HeaderProps = {
   className?: string
   isFixed?: boolean
+  contextData: any
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -49,24 +49,22 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   },
 }))
 
-const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
+const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
   const [sidenavOpen, setSidenavOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const {currentUser} = useAuth();
+  const {currentUser, orderInCreation} = useAuth();
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const toggleSidenav = () => setSidenavOpen(!sidenavOpen)
   const toggleDialog = () => setDialogOpen(!dialogOpen)
 
-  const { state } = useAppContext()
-  const { cartList } = state.cart
 
   const classes = useStyles()
 
   const cartHandle = (
-    <Badge badgeContent={cartList.length} color="primary">
+    <Badge badgeContent={getItemNumberInCart(orderInCreation)} color="primary">
       <Box
         component={IconButton}
         ml={2.5}
@@ -102,7 +100,8 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
           </Link>
 
           {isFixed && (
-            <CategoryMenu>
+
+            <CategoryMenu contextData={contextData}>
               <FlexBox color="grey.600" alignItems="center" ml={2}>
                 <BazarButton color="inherit">
                   <Category fontSize="small" color="inherit" />
@@ -130,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
               }
             }}
           >
-            {currentUser() ?
+            {currentUser() != null ?
                 <Account />
                 :
                 <PersonOutline />
@@ -148,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className }) => {
         </Dialog>
 
         <Drawer open={sidenavOpen} anchor="right" onClose={toggleSidenav}>
-          <MiniCart />
+          <MiniCart contextData={contextData}/>
         </Drawer>
       </Container>
     </div>

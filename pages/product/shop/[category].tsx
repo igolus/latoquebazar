@@ -21,7 +21,13 @@ const ProductsByCategory:React.FC<ProductsByCategoryProps> = ({ contextData }) =
 }
 
 export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
+
+    return {
+        paths: [], //indicates that no page needs be created at build time
+        fallback: true //indicates the type of fallback
+    }
+
+    //return getStaticPathsUtil()
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {

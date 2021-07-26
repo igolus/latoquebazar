@@ -10,6 +10,7 @@ import MegaMenu2 from './mega-menu/MegaMenu2'
 export interface CategoryMenuCardProps {
   open?: boolean
   position?: 'absolute' | 'relative'
+  contextData: any,
 }
 
 const useStyles = makeStyles(({ palette, shadows }: MuiThemeProps) => ({
@@ -26,31 +27,39 @@ const useStyles = makeStyles(({ palette, shadows }: MuiThemeProps) => ({
     boxShadow: shadows[2],
     transition: 'all 250ms ease-in-out',
     zIndex: 98,
+
   }),
 }))
 
 const CategoryMenuCard: React.FC<CategoryMenuCardProps> = (props) => {
   const classes = useStyles(props)
+  //alert("CategoryMenuCard " + props.contextData.categories)
+  // const megaMenu: any = {
+  //   MegaMenu1,
+  //   MegaMenu2,
+  // }
 
-  const megaMenu: any = {
-    MegaMenu1,
-    MegaMenu2,
-  }
-
+  //console.log("categories " + JSON.stringify(props.contextData.categories, null, 2));
   return (
     <Box className={classes.root}>
-      {navigations.map((item) => {
-        let MegaMenu = megaMenu[item.menuComponent]
+      {/*<p>TOTO</p>*/}
+      {/*<p>{props.contextData ? JSON.stringify(props.contextData) : "NO contextData"}</p>*/}
+      {props.contextData && props.contextData.categories && props.contextData.categories.map((item) => {
+        //let MegaMenu = megaMenu[item.menuComponent]
+        let icon = "";
+        if (item.files && item.files.length > 0) {
+          icon = item.files[0].url;
+        }
 
         return (
           <CategoryMenuItem
-            title={item.title}
-            href={item.href}
-            icon={item.icon}
-            caret={!!item.menuData}
-            key={item.title}
+            title={item.category}
+            href={"/product/shop/" + item.category}
+            icon={icon}
+            caret={false}
+            key={item.category}
           >
-            <MegaMenu data={item.menuData || {}} />
+            {/*<MegaMenu data={item.menuData || {}} />*/}
           </CategoryMenuItem>
         )
       })}

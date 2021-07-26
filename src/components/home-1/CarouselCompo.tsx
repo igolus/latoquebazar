@@ -3,11 +3,18 @@ import Carousel from '@component/carousel/Carousel'
 import Navbar from '@component/navbar/Navbar'
 import { Box, Container } from '@material-ui/core'
 import React, { Fragment } from 'react'
+import {IndexPageProps} from "../../../pages";
 
-const CarouselCompo = () => {
+export interface CarouselCompoProps {
+    contextData?: any
+}
+
+
+const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
   return (
     <Fragment>
-      <Navbar />
+      <Navbar contextData={contextData}/>
+        {/*<p>{JSON.stringify(contextData.categories)}</p>*/}
       <Box bgcolor="white" mb={7.5}>
         <Container sx={{ py: '2rem' }}>
           <Carousel

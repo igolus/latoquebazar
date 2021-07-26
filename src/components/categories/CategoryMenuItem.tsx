@@ -1,4 +1,4 @@
-import { Box, MenuItem } from '@material-ui/core'
+import {Avatar, Box, MenuItem} from '@material-ui/core'
 import ChevronRight from '@material-ui/icons/ChevronRight'
 import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
@@ -41,6 +41,11 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
       },
     },
   },
+  // small: {
+  //   width: spacing(3),
+  //   height: spacing(3),
+  // },
+
 }))
 
 const CategoryMenuItem: React.FC<CategoryMenuItemProps> = ({
@@ -56,7 +61,8 @@ const CategoryMenuItem: React.FC<CategoryMenuItemProps> = ({
     <Box className={classes.root}>
       <Link href={href}>
         <MenuItem className="category-dropdown-link">
-          {rest.icon && <rest.icon fontSize="small" color="inherit" />}
+          {/*{rest.icon && <rest.icon fontSize="small" color="inherit" />}*/}
+          {rest.icon && <img width={35} src={rest.icon}/>}
           <span className="title">{title}</span>
           {caret && <ChevronRight fontSize="small" />}
         </MenuItem>
@@ -67,7 +73,7 @@ const CategoryMenuItem: React.FC<CategoryMenuItemProps> = ({
 }
 
 CategoryMenuItem.defaultProps = {
-  caret: true,
+  caret: false,
 }
 
 export default CategoryMenuItem

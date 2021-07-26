@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import localStrings from "../../../src/localStrings";
 import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import {getBrandCurrency} from "../../../src/util/displayUtil";
+import {SEP} from "../../../src/util/constants";
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 80,
@@ -28,9 +29,31 @@ export interface ProductDetailsProps {
 }
 
 const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+
     const router = useRouter();
+
     const { id } = router.query
-    const selectedProduct = (contextData && contextData.products) ? contextData.products.find(p => p.id === id) : null;
+    let productId = id;
+    let skuIndex;
+    let split;
+    if (id) {
+
+        split = id.split(SEP)
+        //alert("split" + split)
+        productId = split[0];
+
+        if (split.length > 1) {
+            //alert("skuRef" + split[1])
+            skuIndex = split[1];
+        }
+    }
+
+
+    //const { selectedSku } = router.query
+    //alert(" ---------------------- selectedSku -------------- " +  contextData.req.url);
+    //console.log(" ---------- contextData.req.url " +  JSON.stringify(contextData.url, null, 2));
+
+    const selectedProduct = (contextData && contextData.products) ? contextData.products.find(p => p.id === productId) : null;
 
     const [selectedOption, setSelectedOption] = useState(0)
 
@@ -39,10 +62,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <NavbarLayout>
-            {/*{JSON.stringify(selectedProduct)}*/}
+        <NavbarLayout contextData={contextData}>
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
+                          skuIndex={skuIndex}
                           options={contextData.options} currency={getBrandCurrency(contextData.brand)}/>
             }
 

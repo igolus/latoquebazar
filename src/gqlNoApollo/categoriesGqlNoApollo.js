@@ -10,6 +10,10 @@ const common = `
         extId
         extRef
         description
+        files {
+            path
+            url
+        }
 `
 
 export const getCategoriesQueryNoApollo = async (brandId) => {

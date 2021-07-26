@@ -12,7 +12,7 @@ module.exports = {
   images: {
     domains: ['icons.iconarchive.com', 'firebasestorage.googleapis.com'],
   },
-  target: 'serverless'
+  //target: 'serverless'
   // Supported targets are "serverless" and "experimental-serverless-trace"
   //target: "experimental-serverless-trace"
 }

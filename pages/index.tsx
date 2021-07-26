@@ -12,11 +12,21 @@ import Section7 from '@component/home-1/Section7'
 import Section8 from '@component/home-1/Section8'
 import Section9 from '@component/home-1/Section9'
 import AppLayout from '@component/layout/AppLayout'
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
+import {getBrandCurrency} from "../src/util/displayUtil";
+import React from "react";
+import {CartProps} from "./cart";
 
-const IndexPage = () => {
+export interface IndexPageProps {
+    contextData?: any
+}
+
+const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
   return (
-    <AppLayout>
-      <CarouselCompo />
+    <AppLayout contextData={contextData}>
+      {/*<h1>TOTO IndexPage</h1>*/}
+        <CarouselCompo contextData={contextData}/>
       {/*<Section2 />*/}
       {/*<Section3 />*/}
       {/*<Section4 />*/}
@@ -31,6 +41,10 @@ const IndexPage = () => {
       {/*<Section12 />*/}
     </AppLayout>
   )
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
 }
 
 export default IndexPage

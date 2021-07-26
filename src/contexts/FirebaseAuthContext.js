@@ -25,6 +25,7 @@ const ESTABLISHMENT = 'ESTABLISHMENT';
 const ESTABLISHMENT_LIST = 'ESTABLISHMENT_LIST';
 const AUTH_STATE_CHANGE = 'AUTH_STATE_CHANGED';
 const ORDER_IN_CREATION = 'ORDER_IN_CREATION';
+const DEAL_EDIT = 'DEAL_EDIT';
 
 const initialAuthState = {
   loginDone: false,
@@ -45,6 +46,7 @@ const initialAuthState = {
   currency: CURRENCY_EUR,
   totalCartPrice: -1,
   globalProductVariants: null,
+  dealEdit: null,
   orderInCreation: {
     deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
     order: {
@@ -122,6 +124,14 @@ const reducer = (state, action) => {
       };
     }
 
+    case DEAL_EDIT: {
+      const { dealEdit } = action.payload;
+      return {
+        ...state,
+        dealEdit: dealEdit,
+      };
+    }
+
 
 
     default: {
@@ -159,7 +169,7 @@ const AuthContext = createContext({
   orderInCreation: () => {},
   resetOrderInCreation: () => {},
 
-
+  setDealEdit: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
@@ -343,6 +353,15 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  const setDealEdit = (dealEdit) => {
+    dispatch({
+      type: DEAL_EDIT,
+      payload: {
+        dealEdit: dealEdit,
+      }
+    });
+  }
+
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
     if (res && res.data) {
@@ -427,6 +446,7 @@ export const AuthProvider = ({ children }) => {
             setOrderInCreation,
             orderInCreation,
             resetOrderInCreation,
+            setDealEdit,
           }}
       >
         {children}

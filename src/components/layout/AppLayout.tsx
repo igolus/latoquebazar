@@ -5,16 +5,19 @@ import Sticky from '@component/sticky/Sticky'
 import Topbar from '@component/topbar/Topbar'
 import Head from 'next/head'
 import React, { Fragment, useCallback, useState } from 'react'
+import {getBrandCurrency} from "../../util/displayUtil";
 
 type AppLayoutProps = {
   title?: string
   navbar?: React.ReactChild
+  contextData: any
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
   children,
   navbar,
   title = 'React Next.js Ecommerce Template',
+  contextData
 }) => {
   const [isFixed, setIsFixed] = useState(false)
 
@@ -33,7 +36,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       {/*<Topbar />*/}
 
       <Sticky fixedOn={0} onSticky={toggleIsFixed}>
-        <Header isFixed={isFixed} />
+        <Header isFixed={isFixed} contextData={contextData}/>
       </Sticky>
 
       {navbar && <div className="section-after-sticky">{navbar}</div>}

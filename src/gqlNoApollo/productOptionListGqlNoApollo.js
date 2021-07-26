@@ -32,7 +32,7 @@ export const getOptionsListQueryNoApollo = async (brandId) => {
       }
     }
   `
-  console.log(debug);
+  //console.log(debug);
 
   const query = gql`
     query {

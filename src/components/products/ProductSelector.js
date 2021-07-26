@@ -8,7 +8,7 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
-  RadioGroup,
+  RadioGroup, Typography,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 //import ClipLoaderComponent from '../ClipLoaderComponent';
@@ -17,6 +17,7 @@ import Radio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import {makeStyles} from "@material-ui/styles";
+import FlexBox from "@component/FlexBox";
 
 export const OPTION_LIST_SINGLE = "single";
 export const OPTION_LIST_MULTIPLE = "multiple";
@@ -50,7 +51,7 @@ export function formatName(itemSkuBooking) {
   return itemSkuBooking.productName + " " + itemSkuBooking.name;
 }
 
-function ProductSelector({ productAndSku, options, selectProductCallBack, cancelProductCallBack,
+function ProductSelector({ productAndSku, options,
                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
                            setterSkuEdit, currency}) {
 
@@ -138,7 +139,7 @@ function ProductSelector({ productAndSku, options, selectProductCallBack, cancel
     let valid = true;
     let optionListMatching = productAndSku && productAndSku.optionListExtIds ? productAndSku.optionListExtIds.map(optionId => {
       return options
-        .find(optionsList => optionsList.extId === optionId)
+          .find(optionsList => optionsList.extId === optionId)
     }).filter(element => element !== undefined) : []
 
     optionListMatching.forEach(optionList => {
@@ -150,11 +151,8 @@ function ProductSelector({ productAndSku, options, selectProductCallBack, cancel
       if (optionList.maxValue != -1) {
         valid &= countSelect <= optionList.maxValue;
       }
-
     })
-
     return valid;
-
   }
 
   // function selectProductSku() {
@@ -167,10 +165,10 @@ function ProductSelector({ productAndSku, options, selectProductCallBack, cancel
 
   function formatTitleOptionList(optionList) {
     return localStrings.formatString(localStrings.optionListWithLimit,
-      optionList.name,
-      optionList.minValue,
-      optionList.maxValue,
-      optionList.mandatory ? localStrings.check.required : "",
+        optionList.name,
+        optionList.minValue,
+        optionList.maxValue,
+        optionList.mandatory ? localStrings.check.required : "",
     ).trim()
   }
 
@@ -183,158 +181,166 @@ function ProductSelector({ productAndSku, options, selectProductCallBack, cancel
     let optionListComplete = optionList.options.map(option => buildOption(optionList, option))
     // alert("optionList.type " + optionList.type)
     // alert("optionList.mandatory " + optionList.mandatory)
-    if (optionList.type === OPTION_LIST_SINGLE && optionList.mandatory) {
+    if (optionList.type === OPTION_LIST_SINGLE) {
       return (
-        <>
+          <>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>
 
-          <FormControl component="fieldset">
+              <RadioGroup aria-label="gender"
+                          value={getValueRadio(optionList)}
+                          onChange={(event) => handleChangeRadio(optionListComplete, optionList, event.target.value)}>
+                <Box
+                    display="flex"
+                    flexWrap="wrap"
+                >
+                {optionListComplete.map((optionComplete, key) =>
+                    <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio />}
+                                      label={displayWithPrice(optionComplete.name, optionComplete.price, currency)} />
+                )}
+                </Box>
+              </RadioGroup>
 
-            <FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>
-            <RadioGroup aria-label="gender"
-                        value={getValueRadio(optionList)}
-                        onChange={(event) => handleChangeRadio(optionListComplete, optionList, event.target.value)}>
-              {optionListComplete.map((optionComplete, key) =>
-                <FormControlLabel key={key} value={optionComplete.ref} control={<Radio />}
-                                  label={displayWithPrice(optionComplete.name, optionComplete.price, currency)} />
-              )}
-            </RadioGroup>
-          </FormControl>
-          <Divider/>
-        </>
+            </FormControl>
+          </>
       )
     }
     else  {
       //if (optionList.type === OPTION_LIST_MULTIPLE) {
-        return (
+      return (
           <>
             <FormControl component="fieldset" >
               <FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>
               <FormGroup>
                 <Box
-                  display="flex"
-                  flexWrap="wrap"
+                    display="flex"
+                    flexWrap="wrap"
                 >
 
                   {optionListComplete.map((optionComplete, key) =>
-                    // <FormControlLabel key={key} value={option.extRef} control={<Radio />} label={option.name} />
-                    <Box p={1} className={classes.boxSelect}>
-                      <FormControlLabel
-                        control={<Checkbox value={optionComplete}
-                                           disabled={!checkQuantity(optionList, optionComplete)}
-                                           checked={isCheckSelect(optionComplete)}
-                                           //checked={false}
-                                           onChange={(event) => handleChangeSelect(optionComplete)} />}
-                        label={displayWithPrice(optionComplete.name, optionComplete.price, currency)}
-                      />
-                    </Box>
+                          <FormControlLabel style={{marginRight:'20px'}}
+                            control={<Checkbox value={optionComplete}
+                                               disabled={!checkQuantity(optionList, optionComplete)}
+                                               checked={isCheckSelect(optionComplete)}
+                                               onChange={(event) => handleChangeSelect(optionComplete)} />}
+                            label={displayWithPrice(optionComplete.name, optionComplete.price, currency)}
+                        />
                   )}
                 </Box>
               </FormGroup>
             </FormControl>
-            <Divider/>
+            {/*<Divider/>*/}
           </>
-        )
+      )
       //}
     }
   }
 
   return (
-    <>
-      {JSON.stringify(productAndSku)}
-      {' '}
-      {/*{JSON.stringify(options)}*/}
-      <Card>
-          <CardHeader title={formatName(productAndSku)}/>
-          <CardContent>
-            <Box
-              mt={1}
-              mb={1}
-            >
-              {productAndSku && productAndSku.sku.optionListExtIds && productAndSku.sku.optionListExtIds.map((optionId, key) => {
-                let optionListMatching = options
-                  .find(optionsList => optionsList.extId === optionId)
+      <>
+        <Box
+            // mt={1}
+            // mb={1}
+        >
+          {productAndSku && productAndSku.sku.optionListExtIds && productAndSku.sku.optionListExtIds.map((optionId, key) => {
+            let optionListMatching = options
+                .find(optionsList => optionsList.extId === optionId)
 
-                //option
-                if (optionListMatching) {
-                  return (
-                    <Box key={key}
-                         mt={1}
-                         mb={1}
-                    >
-                      <p>{JSON.stringify(optionListMatching)}</p>
-                      {getSelector(optionListMatching)}
-                      {/*<p>SELECTOR</p>*/}
-                      {/*{JSON.stringify(optionListMatching)}*/}
+            //option
+            if (optionListMatching) {
+              return (
+                  <Box key={key}
+                       mb={1}
+                  >
+                    <Box display="flex" flexDirection="row-reverse" p={1} m={1}>
+                      <Typography fontSize="14px" fontWeight="600" lineHeight="1">
+                        {optionListMatching.name}
+                      </Typography>
                     </Box>
-                  )
-                }
+                    {/*<FlexBox justifyContent="space-between" alignItems="flex-end" mb={2} alignContent="flex-end">*/}
+                    {/*  <Typography color="grey.600"></Typography>*/}
+                    {/*  <FlexBox alignItems="flex-end">*/}
+                    {/*    <Typography fontSize="14px" fontWeight="600" lineHeight="1">*/}
+                    {/*      {optionListMatching.name}*/}
+                    {/*    </Typography>*/}
+                    {/*  </FlexBox>*/}
+                    {/*</FlexBox>*/}
 
-              })
-              }
+                    <Divider sx={{ mb: '2px', borderColor: 'grey.300', padding: '0' }} />
 
-              <Box
-                p={2}
-                display="flex"
-                justifyContent="flex-end"
-                alignContent="space-around"
-              >
-                {cancelProductCallBack &&
-                <Box ml={2}>
-                  <Button
-                    color="secondary"
-                    variant="contained"
-                    type="submit"
-                    onClick={cancelProductCallBack}
-                  >
-                    {localStrings.cancel}
-                  </Button>
-                </Box>
-                }
-                {/*{selectProductCallBack &&*/}
-                {/*<Box ml={2}>*/}
-                {/*  <Button ml={2}*/}
-                {/*          color="secondary"*/}
-                {/*          variant="contained"*/}
-                {/*          type="submit"*/}
-                {/*          disabled={!checkValidity()}*/}
-                {/*          onClick={selectProductSku}*/}
-                {/*  >*/}
-                {/*    {getterSkuEdit().selectId ? localStrings.updateProduct : localStrings.selectProduct}*/}
-                {/*  </Button>*/}
-                {/*</Box>*/}
-                {/*}*/}
+                    {/*<p></p>*/}
+                    {/*<p>{JSON.stringify(optionListMatching)}</p>*/}
+                    {getSelector(optionListMatching)}
+                    {/*<p>SELECTOR</p>*/}
+                    {/*{JSON.stringify(optionListMatching)}*/}
+                  </Box>
+              )
+            }
 
-                {previousCallBack &&
-                <Box ml={2}>
-                  <Button ml={2}
-                          color="secondary"
-                          variant="contained"
-                          type="submit"
-                          disabled={!canGoPrevious() }
-                          onClick={previousCallBack}
-                  >
-                    {localStrings.previous}
-                  </Button>
-                </Box>
-                }
-                {nextCallBack &&
-                <Box ml={2}>
-                  <Button ml={2}
-                          color="secondary"
-                          variant="contained"
-                          type="submit"
-                          disabled={!checkValidity()}
-                          onClick={nextCallBack}
-                  >
-                    {nextTitle}
-                  </Button>
-                </Box>
-                }
+          })
+          }
 
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
+          {/*<Box*/}
+          {/*    p={2}*/}
+          {/*    display="flex"*/}
+          {/*    justifyContent="flex-end"*/}
+          {/*    alignContent="space-around"*/}
+          {/*>*/}
+          {/*  {cancelProductCallBack &&*/}
+          {/*  <Box ml={2}>*/}
+          {/*    <Button*/}
+          {/*        color="secondary"*/}
+          {/*        variant="contained"*/}
+          {/*        type="submit"*/}
+          {/*        onClick={cancelProductCallBack}*/}
+          {/*    >*/}
+          {/*      {localStrings.cancel}*/}
+          {/*    </Button>*/}
+          {/*  </Box>*/}
+          {/*  }*/}
+          {/*  {selectProductCallBack &&*/}
+          {/*  <Box ml={2}>*/}
+          {/*    <Button ml={2}*/}
+          {/*            color="secondary"*/}
+          {/*            variant="contained"*/}
+          {/*            type="submit"*/}
+          {/*            disabled={!checkValidity()}*/}
+          {/*            onClick={selectProductSku}*/}
+          {/*    >*/}
+          {/*      {getterSkuEdit().selectId ? localStrings.updateProduct : localStrings.selectProduct}*/}
+          {/*    </Button>*/}
+          {/*  </Box>*/}
+          {/*  }*/}
+
+          {/*  {previousCallBack &&*/}
+          {/*  <Box ml={2}>*/}
+          {/*    <Button ml={2}*/}
+          {/*            color="secondary"*/}
+          {/*            variant="contained"*/}
+          {/*            type="submit"*/}
+          {/*            disabled={!canGoPrevious() }*/}
+          {/*            onClick={previousCallBack}*/}
+          {/*    >*/}
+          {/*      {localStrings.previous}*/}
+          {/*    </Button>*/}
+          {/*  </Box>*/}
+          {/*  }*/}
+          {/*  {nextCallBack &&*/}
+          {/*  <Box ml={2}>*/}
+          {/*    <Button ml={2}*/}
+          {/*            color="secondary"*/}
+          {/*            variant="contained"*/}
+          {/*            type="submit"*/}
+          {/*            disabled={!checkValidity()}*/}
+          {/*            onClick={nextCallBack}*/}
+          {/*    >*/}
+          {/*      {nextTitle}*/}
+          {/*    </Button>*/}
+          {/*  </Box>*/}
+          {/*  }*/}
+
+          {/*</Box>*/}
+        </Box>
       </>
   );
 }

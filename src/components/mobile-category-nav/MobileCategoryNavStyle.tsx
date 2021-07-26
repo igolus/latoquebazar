@@ -12,7 +12,11 @@ const MobileCategoryNavStyle = styled('div')(({ theme }) => ({
   },
 
   '& .main-category-holder': {
+    // display: 'flex',
+    // flexDirection: 'wrap',
+    justifyContent: 'center',
     position: 'fixed',
+    width: '100%',
     left: 0,
     top: layoutConstant.mobileHeaderHeight,
     bottom: layoutConstant.mobileNavHeight,
@@ -26,7 +30,7 @@ const MobileCategoryNavStyle = styled('div')(({ theme }) => ({
       justifyContent: 'center',
       padding: '0.5rem',
       height: '80px',
-      width: '90px',
+      width: '100%',
       borderBottom: '1px solid',
       borderBottomColor: theme.palette.grey[300],
       borderLeftColor: theme.palette.grey[600],

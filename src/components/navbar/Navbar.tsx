@@ -11,9 +11,11 @@ import ChevronRight from '@material-ui/icons/ChevronRight'
 import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
 import React from 'react'
+import localStrings from "../../localStrings";
 
 export interface NavbarProps {
   navListOpen?: boolean
+  contextData: any
 }
 
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
@@ -72,7 +74,7 @@ interface Nav {
   extLink?: boolean
 }
 
-const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
+const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
   const classes = useStyles()
 
   const renderNestedNav = (list: any[], isRoot = false) => {
@@ -164,6 +166,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
       }}
       hoverEffect={false}
     >
+      {/*<p>{JSON.stringify(contextData)}</p>*/}
       <Container
         sx={{
           display: 'flex',
@@ -172,7 +175,8 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
           height: '100%',
         }}
       >
-        <CategoryMenu open={navListOpen}>
+        <CategoryMenu open={navListOpen} contextData={contextData}>
+          {/*<p>{JSON.stringify(contextData)}</p>*/}
           <BazarButton className={classes.categoryMenuButton} variant="text">
             <Category fontSize="small" />
             <Box
@@ -182,7 +186,8 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen }) => {
               ml={1.25}
               color="grey.600"
             >
-              Categories
+              {localStrings.categories}
+              {/*Categories 2*/}
             </Box>
             <ChevronRight className="dropdown-icon" fontSize="small" />
           </BazarButton>

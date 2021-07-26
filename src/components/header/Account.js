@@ -51,6 +51,7 @@ const Account = (props) => {
                 onClick={() => setOpen(true)}
                 ref={ref}
             >
+
                 <Avatar
                     alt="User"
                     className={classes.avatar}

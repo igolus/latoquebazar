@@ -11,7 +11,8 @@ import Link from 'next/link'
 import React, { useCallback } from 'react'
 import ProductCard7Style from './ProductCard7Style'
 import useAuth from "@hook/useAuth";
-import {decreaseCartQte, getPriceWithOptions, increaseCartQte} from '../../util/cartUtil'
+import {decreaseCartQte, deleteItemInCart, getPriceWithOptions, increaseCartQte} from '../../util/cartUtil'
+import {formatProductAndSkuName} from "../../util/displayUtil";
 
 export interface ProductCard7Props {
   id: string | number
@@ -61,7 +62,6 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
 
   return (
     <ProductCard7Style>
-
       <Image
         src={imgUrl}
         height={140}
@@ -79,15 +79,13 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
         <Link href={`/product/detail/${item.productId}`}>
           <a>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
-              {(item.productName + " " + item.name).trim()}
+              {formatProductAndSkuName(item)}
             </Span>
           </a>
-
-
         </Link>
         {/*{JSON.stringify(item.options)}*/}
         {
-          item.options.map((option, key) =>
+          item.options && item.options.map((option, key) =>
             // <h1>{option.name}</h1>
               <FlexBox flexWrap="wrap" alignItems="center">
                 <Span color="grey.600" fontSize="14px"  mr={1}>
@@ -114,7 +112,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               padding: '4px',
               ml: '12px',
             }}
-            //onClick={handleCartAmountChange(0)}
+            onClick={() => deleteItemInCart(orderInCreation, setOrderInCreation, item.uuid)}
           >
             <Close fontSize="small" />
           </IconButton>
@@ -133,9 +131,6 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             </Span>
           </FlexBox>
 
-
-
-
           <FlexBox alignItems="center">
             <Button
               variant="outlined"
@@ -145,7 +140,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               // borderColor="primary.light"
               disabled={item.quantity === 1}
               sx={{ p: '5px' }}
-              onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.extRef)}
+              onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
             >
               <Remove fontSize="small" />
             </Button>
@@ -159,7 +154,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               // size="none"
               // borderColor="primary.light"
               sx={{ p: '5px' }}
-              onClick={() => increaseCartQte(orderInCreation, setOrderInCreation, item.extRef)}
+              onClick={() => increaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
             >
               <Add fontSize="small" />
             </Button>
