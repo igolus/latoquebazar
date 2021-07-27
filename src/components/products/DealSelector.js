@@ -21,8 +21,11 @@ function DealSelector({ deal, contextData }) {
     const {setDealEdit, dealEdit, orderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
 
     useEffect(() => {
-        let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
-        setSkuRefs(skusInLine);
+        if (deal && deal.lines && deal.lines[currentLine] && deal.lines[currentLine].skus) {
+            let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
+            setSkuRefs(skusInLine);
+        }
+
     }, [currentLine])
 
     useEffect(() => {
@@ -30,7 +33,7 @@ function DealSelector({ deal, contextData }) {
     }, [])
 
     function getStepperList() {
-        return deal.lines.map(line => {
+        return deal && deal.lines && deal.lines.map(line => {
                 return(
                     {
                         title: line.name,
