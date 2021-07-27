@@ -47,3 +47,45 @@ export const getBrandCurrency = (brand) => {
             return "£"
     }
 }
+
+export function getProductFirstImgUrl(product) {
+    if (product && product.files && product.files.length > 0) {
+        return  product.files[0].url;
+    }
+    return null
+}
+
+
+export const getTotalPriceOrderInCreation = (orderInCreation) => {
+    if (!orderInCreation || !orderInCreation() || !orderInCreation().order || !orderInCreation().order.items) {
+        return "";
+    }
+    let totalPrice = 0;
+    orderInCreation().order.items.forEach(item => {
+        totalPrice += computeTotalPriceValue(item)
+    })
+    // (orderInCreation().order.deals || []).forEach(deal => {
+    //     deal.productAndSkusLines.forEach(line => {
+    //         totalPrice += computeTotalPriceValue(line, deal.quantity);
+    //     })
+    //
+    // })
+    return totalPrice.toFixed(2);
+}
+
+export const computeTotalPriceValue = (itemSkuBooking, mul = 1) => {
+    let sum = parseFloat(itemSkuBooking.price);
+    if (itemSkuBooking.options) {
+        itemSkuBooking.options.forEach(option => sum+= parseFloat(option.price))
+    }
+    return (sum  * itemSkuBooking.quantity * mul);
+}
+
+export const formatProductAndSkuName = (sku) => {
+
+    if (sku.productName === sku.name) {
+        return productName;
+    }
+    return (sku.productName + " " + sku.name).trim()
+
+}
