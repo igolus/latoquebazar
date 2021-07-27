@@ -34,6 +34,7 @@
     "apollo-link-timeout": "^4.0.0",
     "autosuggest-highlight": "^3.1.1",
     "chart.js": "^3.3.2",
+    "clone-deep": "^4.0.1",
     "clsx": "^1.1.1",
     "date-fns": "^2.22.1",
     "elasticlunr": "^0.9.5",
@@ -63,6 +64,7 @@
     "react-simple-image-viewer": "0.0.8",
     "react-toast-notifications": "^2.5.0",
     "react-use-flexsearch": "^0.1.1",
+    "uuidv4": "^6.2.11",
     "yup": "^0.32.9"
   },
   "devDependencies": {
