@@ -12,6 +12,7 @@ import ViewList from '@material-ui/icons/ViewList'
 import {Box} from '@material-ui/system'
 import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
+import {getBrandCurrency} from "../../util/displayUtil";
 
 export interface ProductList {
     query: string
@@ -46,7 +47,7 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
     )
 
     return (
-        <NavbarLayout>
+        <NavbarLayout contextData={contextData}>
             {/*<p>PLIST</p>*/}
             <Box pt={2.5}>
                 <Card
@@ -98,37 +99,39 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                             </TextField>
                         </FlexBox>
 
-                        <FlexBox alignItems="center" my="0.25rem">
-                            <Paragraph color="grey.600" mr={1}>
-                                {localStrings.view}
-                            </Paragraph>
-                            <IconButton onClick={toggleView('grid')}>
-                                <Apps
-                                    color={view === 'grid' ? 'primary' : 'inherit'}
-                                    fontSize="small"
-                                />
-                            </IconButton>
-                            <IconButton onClick={toggleView('list')}>
-                                <ViewList
-                                    color={view === 'list' ? 'primary' : 'inherit'}
-                                    fontSize="small"
-                                />
-                            </IconButton>
+                        {/*<FlexBox alignItems="center" my="0.25rem">*/}
+                        {/*    <Paragraph color="grey.600" mr={1}>*/}
+                        {/*        {localStrings.view}*/}
+                        {/*    </Paragraph>*/}
+                        {/*    <IconButton onClick={toggleView('grid')}>*/}
+                        {/*        <Apps*/}
+                        {/*            color={view === 'grid' ? 'primary' : 'inherit'}*/}
+                        {/*            fontSize="small"*/}
+                        {/*        />*/}
+                        {/*    </IconButton>*/}
+                        {/*    <IconButton onClick={toggleView('list')}>*/}
+                        {/*        <ViewList*/}
+                        {/*            color={view === 'list' ? 'primary' : 'inherit'}*/}
+                        {/*            fontSize="small"*/}
+                        {/*        />*/}
+                        {/*    </IconButton>*/}
 
-                            {!!isTablet && (
-                                <Sidenav
-                                    handle={
-                                        <IconButton>
-                                            <FilterList fontSize="small" />
-                                        </IconButton>
-                                    }
-                                >
-                                    {contextData &&
-                                    <ProductFilterCard categories={contextData.categories}/>
-                                    }
-                                </Sidenav>
-                            )}
-                        </FlexBox>
+                        {/*    {!!isTablet && (*/}
+                        {/*        <Sidenav*/}
+                        {/*            handle={*/}
+                        {/*                <IconButton>*/}
+                        {/*                    <FilterList fontSize="small" />*/}
+                        {/*                </IconButton>*/}
+                        {/*            }*/}
+                        {/*        >*/}
+
+                        {/*            {contextData &&*/}
+                        {/*                <ProductFilterCard tags={contextData.tags}*/}
+                        {/*                                   categories={contextData.categories} haveDeals={contextData.deals.length > 0}/>*/}
+                        {/*            }*/}
+                        {/*        </Sidenav>*/}
+                        {/*    )}*/}
+                        {/*</FlexBox>*/}
                     </FlexBox>
                 </Card>
 
@@ -144,13 +147,15 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                         }}
                     >
                         {contextData &&
-                            <ProductFilterCard categories={contextData.categories}/>
+                        <ProductFilterCard tags={contextData.tags}
+                                           categories={contextData.categories} haveDeals={contextData.deals.length > 0}/>
                         }
                     </Grid>
 
                     <Grid item lg={9} xs={12}>
-                        <ProductCard1List filter={filter} query={query}
-                                          category={category} contextData={contextData}/>
+                        <ProductCard1List
+                            filter={filter} query={query}
+                            category={category} contextData={contextData}/>
                     </Grid>
                 </Grid>
             </Box>

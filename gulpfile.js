@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const zip = require('gulp-zip');
 const prompt = require('gulp-prompt');
 var file = require('gulp-file');
+var ftp = require( 'vinyl-ftp' );
 
 function generateZip(cb) {
     return gulp.src([
@@ -18,6 +19,28 @@ function generateZip(cb) {
         '!latoquesite.zip']) // Here I'm excluding .min.js files
         .pipe(zip('latoquesite.zip'))
         .pipe(gulp.dest('.'));
+}
+
+
+function uploadFtp(cb) {
+    var conn = ftp.create( {
+        host:     'goyave.o2switch.net',
+        user:     'rogu6473',
+        password: 'T5VADWq7fkz2',
+        parallel: 10,
+        // log:      gutil.log
+    } );
+
+    var globs = [
+        'latoquesite.zip',
+    ];
+
+    // using base = '.' will transfer everything to /public_html correctly
+    // turn off buffering in gulp.src for best performance
+
+    return gulp.src( globs, { base: '.', buffer: false } )
+        .pipe( conn.newer( '/bookingsorcerer.com' ) )
+        .pipe( conn.dest( '/bookingsorcerer.com' ) );
 }
 
 
@@ -61,5 +84,6 @@ function generateConf(cb) {
     // .pipe(gulp.dest('.'))
 }
 
+exports.uploadFtp = uploadFtp;
 exports.generateZip = generateZip;
 exports.generateConf = generateConf;

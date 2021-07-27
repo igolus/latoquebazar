@@ -5,6 +5,11 @@ import { Grid, Pagination } from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {FilterProps} from "@component/products/ProductFilterCard";
 import {getBrandCurrency} from "../../util/displayUtil";
+import localStrings from "../../localStrings";
+import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
+import DealCard1 from "@component/product-cards/DealCard1";
+import {cloneDeep} from "@apollo/client/utilities";
+import ProductCardDeal1 from "@component/product-cards/ProductCardDeal1";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -12,13 +17,25 @@ export interface ProductCard1ListProps {
     query: String
     category: string,
     contextData: any,
+    modeFullScren: boolean
+    restrictedskuRefs: any
+    lineNumber: number,
+    deal: any
 }
 
 export const ALL_CAT = "all";
 
 const itemPerPage = 9;
 
-const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, category, contextData}) => {
+const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
+                                                               query,
+                                                               category,
+                                                               contextData,
+                                                               modeFullScren,
+                                                               restrictedskuRefs,
+                                                               lineNumber,
+                                                               deal
+                                                           }) => {
 
     var productMapper = (product) => {
         return {
@@ -28,16 +45,21 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, categ
         }
     }
 
+    const getProductsAndDeals = () => {
+        return contextData.products.concat(contextData.deals)
+        //return contextData.products;
+    }
 
-    const [allProducts, setAllProducts] = useState(contextData ? (contextData.products || []) : []);
+    const [allProducts, setAllProducts] = useState(contextData ? (getProductsAndDeals() || []) : []);
+    //const [allDeals, setAllDeals] = useState(contextData ? (contextData.deals || []) : []);
     const [productDisplay, setProductDisplay] = React.useState([]);
     const [maxPage, setMaxPage] = React.useState(0);
     const [page, setPage] = React.useState(1);
 
     useEffect( () => {
         let filteredProduct = [];
-        let productsLoaded = contextData ? (contextData.products || []) : []
-
+        let productsLoaded = contextData ? (getProductsAndDeals() || []) : []
+        //alert("productsLoaded " + productsLoaded.length)
         if (query) {
             var index = elasticlunr();
             index.addField('category');
@@ -54,22 +76,48 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, categ
             //alert("size search  " + filteredProduct.length)
         }
         else {
+            // if (category === localStrings.deals) {
+            //     //alert("DEAL CAt")
+            //     alert("dealsLoaded length " + dealsLoaded.length)
+            //     filteredProduct = dealsLoaded;
+            // }
+            //
+            // else {
+            //console.log("productsLoaded " + JSON.stringify(productsLoaded, null, 2))
+            //alert("filteredProduct.length " + filteredProduct.length)
+            if (category == ALL_CAT) {
+                filteredProduct = productsLoaded
+            }
+            else {
+                filteredProduct = productsLoaded.filter(product =>
+                    product.category && product.category.category== category);
+            }
+
+            //alert("filteredProduct.length " + filteredProduct.length)
+            // }
             //filteredProduct = productsLoaded
-            filteredProduct = productsLoaded.filter(product =>
-                product.category == null ||
-                category == ALL_CAT ||
-                product.category && product.category.category== category);
+
+        }
+
+        if (restrictedskuRefs) {
+            //filteredProduct = filteredProduct.filter(p => p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
+            filteredProduct = filteredProduct.filter(p => p.skus && p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
+            filteredProduct = cloneDeep(filteredProduct);
+            filteredProduct.forEach(product => {
+                product.skus = product.skus.filter(sku => restrictedskuRefs.includes(sku.extRef))
+            })
         }
 
         setAllProducts(
             filteredProduct);
 
+        //console.log("filteredProduct " + JSON.stringify(filteredProduct, null, 2))
         setPage(0);
         setMaxPage(Math.floor(filteredProduct.length / itemPerPage) + 1);
         setProductDisplay(filteredProduct.slice(0,
             Math.min(filteredProduct.length, itemPerPage)))
 
-    }, [category, filter, contextData])
+    }, [category, filter, contextData, restrictedskuRefs])
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         if (!allProducts) {
@@ -81,10 +129,26 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, categ
         setPage(value);
     };
 
+
+    function getLgSize(modeFullScren) {
+        // let minProduct = Math.floor(12 / productDisplay.length);
+        // return Math.max(modeFullScren? 3 : 4, minProduct);
+
+        return modeFullScren? 3 : 4
+    }
+
+    function getSmSize(modeFullScren) {
+        // let minProduct = Math.floor(12 / productDisplay.length);
+        // return Math.max(modeFullScren? 4 : 6, minProduct);
+
+        return modeFullScren? 4 : 6
+    }
+
     return (
         <div>
-            {/*<p>{JSON.stringify(products)}</p>*/}
-            <Grid container spacing={3}>
+            {/*<p>{JSON.stringify(allProducts)}</p>*/}
+            {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
+            <Grid container spacing={3} justifyContent="center" >
                 {productDisplay.map((item, ind) => {
 
                         let url = "/assets/images/Icon_Sandwich.png";
@@ -101,9 +165,29 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, categ
                             hoverEffect: true
                         }
                         return (
-                            <Grid item lg={4} sm={6} xs={12} key={ind}>
+                            <Grid item
+                                  lg={getLgSize(modeFullScren)}
+                                  sm={getSmSize(modeFullScren)}
+                                  xs={12} key={ind}>
+
+                                {/*<h1>{item.name}</h1>*/}
+                                {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
                                 <ProductCard1 {...itemShop} product={item}
-                                              options={contextData.options} currency={getBrandCurrency(contextData.brand)}/>
+                                              options={contextData.options}
+                                              currency={getBrandCurrency(contextData.brand)}/>
+                                }
+                                {/*{item.type === TYPE_PRODUCT && restrictedskuRefs &&*/}
+                                {/*<ProductCardDeal1 {...itemShop} product={item}*/}
+                                {/*                  deal={deal}*/}
+                                {/*                  options={contextData.options}*/}
+                                {/*                  lineNumber={lineNumber}*/}
+                                {/*                  currency={getBrandCurrency(contextData.brand)}/>*/}
+                                {/*}*/}
+                                {item.type === TYPE_DEAL &&
+                                <DealCard1 {...itemShop} deal={item}
+                                           options={contextData.options}
+                                           currency={getBrandCurrency(contextData.brand)}/>
+                                }
                                 {/*<ProductCard1 {...item} />*/}
                             </Grid>
                         )
@@ -114,11 +198,12 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter, query, categ
 
             <FlexBox
                 flexWrap="wrap"
+                flexDirection="row-reverse"
                 justifyContent="space-between"
                 alignItems="center"
                 mt={4}
             >
-                <Span color="grey.600">Showing 1-9 of 1.3k Products</Span>
+                {/*<Span color="grey.600">Showing 1-9 of 1.3k Products</Span>*/}
                 <Pagination count={maxPage} variant="outlined" color="primary" page={page} onChange={handleChange}/>
             </FlexBox>
         </div>

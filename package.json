@@ -65,6 +65,7 @@
     "react-toast-notifications": "^2.5.0",
     "react-use-flexsearch": "^0.1.1",
     "uuidv4": "^6.2.11",
+    "vinyl-ftp": "^0.6.1",
     "yup": "^0.32.9"
   },
   "devDependencies": {
