@@ -1,8 +1,34 @@
 import LocalizedStrings from 'react-localization';
 import React from 'react';
+import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        backToCart: "Revenir au panier",
+
+        phone: "Telephone",
+        bookWithoutAccount: "Commander sans creer de compte",
+        profileInformation: "Information de compte",
+        tooFarAddress: "Adresse en dehors de la zone de livraison",
+        formatDuration: "HH [heure(s) et] mm [minute(s)]",
+        formatDurationNoHour: "mm [minute(s)]",
+
+        distanceTime: ", distance jusqu'a l'etablissement: {0} km / {1}",
+        timeSlot: "Creneau de reservation",
+        priceDetail: "Montant a payer",
+        totalNoTax: "Total hors taxes",
+        totalTax: "Total taxes",
+        totalTTC: "Total TTC",
+        deliveryFee: "Frais de livraisons",
+
+        deliverToOtherAddress: "Livrer a une autre adresse",
+        validateAdress: "Valider l'adresse",
+        clickAndCollect: "Click and collect",
+        delivery: "Livraison",
+        deliveryMode: "Mode de livraison",
+        cart: "Panier",
+        confirm: "Confirmation",
+        order: "Commande",
         categories: "Categories",
         tags: "Tags",
         selectDeal: "Choisir le detail",
@@ -10,7 +36,7 @@ let localStrings = new LocalizedStrings({
         next: "Selectionner le produit suivant",
         select: "Selectionner le produit",
         addMenuToCart: "Ajouter le menu au panier",
-        checkOutNow: "Checkout (passer a la caisse)",
+        checkOutNow: "Commander",
         viewCart: "Voir le detail du panier",
         emptyBasket: "Votre panier est vide",
         cartItemNumber: "{0} produits dans le panier",
@@ -25,6 +51,7 @@ let localStrings = new LocalizedStrings({
         searchResults: 'Resultats de recherche pour: "{0}"',
         searchFor: "Rechercher un produit ....",
         continueWithGoogle: "Continuer avec google",
+        continueWithFaceook: "Continuer avec facebook",
         profile: "Profile",
         myAccount: "Mon compte",
         myOrders: "Mes commandes",
@@ -36,7 +63,8 @@ let localStrings = new LocalizedStrings({
         signup: "Creer un compte",
         resetPassword: "Réinitialiser le mot de passe",
         forgotPassword: "Mot de passe oublié",
-        adress: "Adresse",
+        address: "Adresse",
+        deliveryAdress: "Adresse de livraison",
         email: "Email",
         firstName: "Prenom",
         lastName: "Nom",
@@ -49,9 +77,46 @@ let localStrings = new LocalizedStrings({
         addToCart: "Ajouter au panier",
         description: "Description",
         additionalInformation: "Information additionelle",
+        priceAsc: "Prix croissant",
+        priceDesc: "Prix décroissant",
+
+        orderSourceOnline: "Commande internet",
+        orderSourceOffline: "Commande restaurant",
+
+        deliveryStatusOnGoing: "On going",
+        deliveryStatusNotStarted: "Not started",
+        deliveryStatusDone: "Done",
+
+        orderStatusNew: "Nouveau",
+        orderStatusPreparation: "Prepararation",
+        orderStatusReady: "Pret",
+        orderStatusDelivering: "En livraison",
+        orderStatusComplete: "Finalisé",
+        orderStatusFinished: "Terminé",
+
+        paymentMethodsOffline: "Offline payment methods",
+        paymentMethodsOnline: "Online payment methods",
+        paymentMethodCash: "Cash",
+        paymentMethodCC: "Credit card",
+        paymentMethodCheque: "Cheque",
+        paymentMethodTicket: "Ticket",
+        paymentMethodStripe: "Stripe",
+
         check: {
             fieldRequired: "Le champ {0} est obligatoire",
             required: "Obligatoire",
+            requiredField: "Champ obligatoire",
+            badPhoneFormat: "Numero de telephone invalide",
+        },
+
+        info: {
+            checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
+            connectToOrder: "Afin de garder une trace de vos commandes et de garantir une meilleur suivi merci de vous connecter. Si vous avez un compte google cela prendra quelques secondes !!"
+        },
+
+        warningMessage: {
+            maxDistanceDelivery: "L'adresse est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
+            maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
         }
 
     }

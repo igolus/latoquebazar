@@ -56,6 +56,7 @@ export async function getStaticPropsUtil() {
         brand = resBrand.getBrand;
     }
 
+
     return {
         props: {
             contextData: {
@@ -65,8 +66,9 @@ export async function getStaticPropsUtil() {
                 brand: brand,
                 options: options,
                 tags: tags
-            }
+            },
         },
+        revalidate: 60,
     }
 
 }

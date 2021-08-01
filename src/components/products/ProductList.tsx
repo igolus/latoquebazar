@@ -2,17 +2,12 @@ import FlexBox from '@component/FlexBox'
 import NavbarLayout from '@component/layout/NavbarLayout'
 import ProductCard1List from '@component/products/ProductCard1List'
 import ProductFilterCard from '@component/products/ProductFilterCard'
-import Sidenav from '@component/sidenav/Sidenav'
 import {H5, Paragraph} from '@component/Typography'
 import useWindowSize from '@hook/useWindowSize'
-import {Card, Grid, IconButton, MenuItem, TextField} from '@material-ui/core'
-import Apps from '@material-ui/icons/Apps'
-import FilterList from '@material-ui/icons/FilterList'
-import ViewList from '@material-ui/icons/ViewList'
+import {Card, Grid, MenuItem, Select, TextField} from '@material-ui/core'
 import {Box} from '@material-ui/system'
 import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
-import {getBrandCurrency} from "../../util/displayUtil";
 
 export interface ProductList {
     query: string
@@ -20,9 +15,14 @@ export interface ProductList {
     contextData: any
 }
 
+
+export const PRICE_ASC = 'PriceAsc';
+export const PRICE_DESC = 'PriceDesc';
+
 const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
 
-
+    const [tagsSelected, setTagsSelected] = useState([]);
+    const [sortOption, setSortOption] = useState("priceAsc");
     const [view, setView] = useState('grid')
     const [filter, setFilter]  = useState({
         selectedCategory: null,
@@ -91,11 +91,21 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                                     minWidth: '150px',
                                 }}
                             >
-                                {sortOptions.map((item) => (
-                                    <MenuItem value={item.value} key={item.value}>
-                                        {item.label}
-                                    </MenuItem>
-                                ))}
+                                {/*<Select*/}
+                                {/*    value={sortOption}*/}
+                                {/*    onChange={(event) => setSortOption(event.target.value)}>*/}
+                                    {sortOptions.map((item) => (
+                                        <MenuItem value={item.value} key={item.value}
+                                                  selected={item.value === sortOption}
+                                                  onClick={(event) => {
+                                                      setSortOption(item.value)
+                                                  }
+                                                  }
+                                        >
+                                            {item.label}
+                                        </MenuItem>
+                                    ))}
+                                {/*</Select>*/}
                             </TextField>
                         </FlexBox>
 
@@ -148,13 +158,16 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                     >
                         {contextData &&
                             <ProductFilterCard tags={contextData.tags}
-                                               categories={contextData.categories} haveDeals={contextData.deals.length > 0}/>
+                                               tagsSelected={tagsSelected} setTagsSelected={setTagsSelected}
+                                               categories={contextData.categories}/>
                         }
                     </Grid>
 
                     <Grid item lg={9} xs={12}>
                         <ProductCard1List
+                            sortOption={sortOption}
                             filter={filter} query={query}
+                            tagsSelected={tagsSelected}
                             category={category} contextData={contextData}/>
                     </Grid>
                 </Grid>
@@ -164,10 +177,8 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
 }
 
 const sortOptions = [
-    { label: 'Relevance', value: 'Relevance' },
-    { label: 'Date', value: 'Date' },
-    { label: 'Price Low to High', value: 'Price Low to High' },
-    { label: 'Price High to Low', value: 'Price High to Low' },
+    { label: localStrings.priceAsc, value: PRICE_ASC },
+    { label: localStrings.priceDesc, value: PRICE_DESC },
 ]
 
 export default ProductList

@@ -1,18 +1,7 @@
-import Accordion from '@component/accordion/Accordion'
-import AccordionHeader from '@component/accordion/AccordionHeader'
 import FlexBox from '@component/FlexBox'
-import { H5, H6, Paragraph, Span } from '@component/Typography'
-import {
-    Card,
-    Checkbox,
-    Divider,
-    FormControlLabel,
-    Rating,
-    TextField,
-} from '@material-ui/core'
-import { Box } from '@material-ui/system'
-import React, {useEffect, useState} from 'react'
-import {StyledCategory} from "@component/layout/CategoryStyle";
+import {H6, Span} from '@component/Typography'
+import {Card, Checkbox, Divider, FormControlLabel,} from '@material-ui/core'
+import React, {useState} from 'react'
 import localStrings from "../../localStrings";
 import {StyledDashboardNav} from "@component/layout/DashboardStyle";
 import {useRouter} from "next/router";
@@ -23,20 +12,21 @@ export type FilterProps = {
 }
 
 export type ProductFilterCardProps = {
-   categories: [string],
-   tags: any,
-    haveDeals: boolean,
+    categories: [string],
+    tags: any,
+    tagsSelected: any,
+    setTagsSelected: any,
 }
 
 
-const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, haveDeals, tags}) => {
+const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, tags, tagsSelected, setTagsSelected}) => {
     const { asPath } = useRouter()
-    const [tagsSelected, setTagsSelected] = useState([]);
+
 
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
             <H6 mb={1.25}>{localStrings.categories}</H6>
-            {tagsSelected && JSON.stringify(tagsSelected)}
+            {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
             <StyledDashboardNav
                 isCurrentPath={asPath.includes(ALL_CAT)}
                 href={"/product/shop/all"}
@@ -60,34 +50,34 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, haveDe
 
 
             {(categories || []).map((item) => {
-                //alert(asPath)
-                return ( <StyledDashboardNav
-                    isCurrentPath={asPath.includes(item.category)}
-                    href={"/product/shop/" + item.category}
-                    key={item.category}
-                >
-                    <FlexBox alignItems="center">
-                        <span>{item.category}</span>
-                    </FlexBox>
-                </StyledDashboardNav>
-                )
-            }
-                    // <StyledCategory
-                    //     isSelected={selectedCat === item.id}
-                    //     title={item.title}
-                    //     key={item.id}
-                    //     id={item.id}
-                    //     sx={{ cursor: 'pointer' }}
-                    //     onClick={() => {
-                    //         //alert(callBackFilter)
-                    //         setSelectedCat(item.id);
-                    //
-                    //         if (callBackFilter) {
-                    //             callBackFilter( { selectedCategory : item.id});
-                    //         }
-                    //     }}
-                    // >
-                    // </StyledCategory>
+                    //alert(asPath)
+                    return ( <StyledDashboardNav
+                            isCurrentPath={asPath.includes(item.category)}
+                            href={"/product/shop/" + item.category}
+                            key={item.category}
+                        >
+                            <FlexBox alignItems="center">
+                                <span>{item.category}</span>
+                            </FlexBox>
+                        </StyledDashboardNav>
+                    )
+                }
+                // <StyledCategory
+                //     isSelected={selectedCat === item.id}
+                //     title={item.title}
+                //     key={item.id}
+                //     id={item.id}
+                //     sx={{ cursor: 'pointer' }}
+                //     onClick={() => {
+                //         //alert(callBackFilter)
+                //         setSelectedCat(item.id);
+                //
+                //         if (callBackFilter) {
+                //             callBackFilter( { selectedCategory : item.id});
+                //         }
+                //     }}
+                // >
+                // </StyledCategory>
 
             )}
 

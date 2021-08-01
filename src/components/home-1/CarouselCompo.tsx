@@ -27,7 +27,7 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
             spacing="0px"
           >
             <CarouselCard1 />
-            <CarouselCard1 />
+            {/*<CarouselCard1 />*/}
             {/* <CarouselCard1 /> */}
             {/* <CarouselCard1 /> */}
             {/* <CarouselCard1 /> */}

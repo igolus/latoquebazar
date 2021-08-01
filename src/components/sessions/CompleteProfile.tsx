@@ -25,6 +25,7 @@ import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {createSiteUserMutation} from "../../gql/siteUserGql";
+import {DIST_INFO} from "@component/address/AdressCheck";
 
 const fbStyle = {
   background: '#3B5998',
@@ -81,13 +82,14 @@ const CompleteProfile = ({closeCallBack}) => {
     firstName: user.name && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
     lastName: user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : '',
     agreement: false,
-    address: '',
+    address: JSON.parse(localStorage.getItem(DIST_INFO)).address || '',
     placeId: '',
     city: '',
     postcode: '',
     citycode: '',
     lat: '',
     lng: '',
+    phoneNumber: '',
   }
 
   const togglePasswordVisibility = useCallback(() => {
@@ -102,15 +104,21 @@ const CompleteProfile = ({closeCallBack}) => {
     data.brandId = currentBrand().id;
     data.id = user.id;
     let valueCopy = { ...values };
+
+    if (values.placeId == "") {
+      let localStorageValue=JSON.parse(localStorage.getItem(DIST_INFO));
+      valueCopy = {...valueCopy, ...localStorageValue}
+    }
+
     delete valueCopy.agreement;
     delete valueCopy.submit
     delete valueCopy.establishments
     data.userProfileInfo = { ...valueCopy };
-    alert("user.uid " + user.uid)
-    alert("user " + JSON.stringify(user));
-    alert("data " + JSON.stringify(data))
+    // alert("user.uid " + user.uid)
+    // alert("user " + JSON.stringify(user));
+    // alert("data " + JSON.stringify(data))
     const res = await executeMutationUtil(createSiteUserMutation(currentBrand().id, data));
-    alert("res " + JSON.stringify(res))
+    // alert("res " + JSON.stringify(res))
     if (res.data) {
       setDbUser(res.data.addSiteUser)
     }
@@ -119,7 +127,7 @@ const CompleteProfile = ({closeCallBack}) => {
       closeCallBack();
     }
     //router.push('/');
-    alert(JSON.stringify(values))
+    alert(JSON.stringify(valueCopy))
     console.log(values)
   }
 
@@ -130,9 +138,21 @@ const CompleteProfile = ({closeCallBack}) => {
         validationSchema: formSchema,
       })
 
+  // function setFieldValueFromLocalStorage(setFieldValue: (field: string, value: any, shouldValidate?: (boolean | undefined)) => (Promise<FormikErrors<any>> | Promise<void>)) {
+  //
+  //   let localStorageValue=JSON.parse(localStorage.getItem(DIST_INFO)).address;
+  //
+  //   setFieldValue("address", localStorageValue.address);
+  //   setFieldValue("placeId", localStorageValue.placeId);
+  //   setFieldValue("lat", localStorageValue.lat);
+  //   setFieldValue("lng", localStorageValue.lng);
+  //
+  // }
+
   return (
       <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
         <form className="content" onSubmit={handleSubmit}>
+          <p>{localStorage.getItem(DIST_INFO)}</p>
           <H3 textAlign="center" mb={1}>
             {localStrings.activateAccount}
           </H3>
@@ -146,18 +166,17 @@ const CompleteProfile = ({closeCallBack}) => {
           >
             {localStrings.fillInfoToContinue}
           </Small>
-
+          {/*{setFieldValueFromLocalStorage(setFieldValue)}*/}
           <GoogleMapsAutocomplete noKeyKnown
                                   required
-                                  title={localStrings.adress}
+                                  initialValue={JSON.parse(localStorage.getItem(DIST_INFO)).address}
+                                  title={localStrings.address}
                                   error={!!touched.address && !!errors.address}
                                   helperText={touched.address && errors.address}
                                   setValueCallback={(label, placeId, city, postcode, citycode, lat, lng) => {
+                                    alert("value callback add")
                                     setFieldValue("address", label);
                                     setFieldValue("placeId", placeId);
-                                    setFieldValue("city", city);
-                                    setFieldValue("postcode", postcode);
-                                    setFieldValue("citycode", citycode);
                                     setFieldValue("lat", lat);
                                     setFieldValue("lng", lng);
                                   }}/>
@@ -213,6 +232,22 @@ const CompleteProfile = ({closeCallBack}) => {
               value={values.lastName}
               error={!!touched.lastName && !!errors.lastName}
               helperText={touched.lastName && errors.lastName}
+          />
+
+          <BazarTextField
+              mb={1.5}
+              name="phoneNumber"
+              label={localStrings.phone}
+              placeholder={localStrings.phone}
+              variant="outlined"
+              size="small"
+              fullWidth
+              onBlur={handleBlur}
+              onChange={handleChange}
+              defaultValue={''}
+              value={values.phoneNumber}
+              error={!!touched.phoneNumber && !!errors.phoneNumber}
+              helperText={touched.phoneNumber && errors.phoneNumber}
           />
 
 
@@ -321,11 +356,12 @@ const CompleteProfile = ({closeCallBack}) => {
   )
 }
 
-
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const formSchema = yup.object().shape({
   lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
   address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+  phoneNumber: yup.string().matches(phoneRegExp, localStrings.check.badPhoneFormat),
   agreement: yup
       .bool()
       .test(

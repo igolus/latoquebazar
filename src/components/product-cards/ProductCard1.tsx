@@ -284,72 +284,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 </a>
               </Link>
 
-              {/*<BazarRating value={rating || 0} color="warn" readOnly />*/}
-
               {selectedProductAndSku && selectedProductAndSku.sku.price &&
               <FlexBox alignItems="center" mt={0.5}>
                 <Box pr={1} fontWeight="600" color="primary.main">
-                  {selectedProductAndSku.sku.price} {currency}
+                  {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
                 </Box>
-                {/*{!!off && (*/}
-                {/*  <Box color="grey.600" fontWeight="600">*/}
-                {/*    <del>{price?.toFixed(2)}</del>*/}
-                {/*  </Box>*/}
-                {/*)}*/}
               </FlexBox>
               }
             </Box>
-
-
-            {/*<FlexBox*/}
-            {/*    className="add-cart"*/}
-            {/*    flexDirection="column-reverse"*/}
-            {/*    alignItems="center"*/}
-            {/*    justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}*/}
-            {/*    width="30px"*/}
-            {/*>*/}
-            {/*  <Box pr={1} fontWeight="600" color="primary.main">*/}
-            {/*    <Chip*/}
-            {/*        //disabled={step.disabled}*/}
-            {/*        label={`grande`}*/}
-            {/*        //onClick={handleStepClick(step, ind)}*/}
-            {/*        sx={{*/}
-            {/*          //backgroundColor: ind <= selected ? 'primary.main' : 'primary.light',*/}
-            {/*          backgroundColor: 'primary.main',*/}
-            {/*          color: 'primary.contrastText',*/}
-            {/*          p: '0.5rem 1rem',*/}
-            {/*          fontSize: '14px',*/}
-            {/*          fontWeight: '600',*/}
-            {/*          my: '4px',*/}
-            {/*          '&:hover:not(:disabled)': {*/}
-            {/*            backgroundColor: 'primary.main',*/}
-            {/*            color: 'primary.contrastText',*/}
-            {/*          },*/}
-            {/*        }}*/}
-            {/*    />*/}
-            {/*  </Box>*/}
-
-            {/*  <Box pr={1} fontWeight="600" color="primary.main">*/}
-            {/*  <Chip*/}
-            {/*      //disabled={step.disabled}*/}
-            {/*      label={`petite`}*/}
-            {/*      //onClick={handleStepClick(step, ind)}*/}
-            {/*      sx={{*/}
-            {/*        //backgroundColor: ind <= selected ? 'primary.main' : 'primary.light',*/}
-            {/*        backgroundColor: 'primary.main',*/}
-            {/*        color: 'primary.contrastText',*/}
-            {/*        p: '0.5rem 1rem',*/}
-            {/*        fontSize: '14px',*/}
-            {/*        fontWeight: '600',*/}
-            {/*        my: '4px',*/}
-            {/*        '&:hover:not(:disabled)': {*/}
-            {/*          backgroundColor: 'primary.main',*/}
-            {/*          color: 'primary.contrastText',*/}
-            {/*        },*/}
-            {/*      }}*/}
-            {/*  />*/}
-            {/*</Box>*/}
-            {/*</FlexBox>*/}
 
             <FlexBox
                 className="add-cart"

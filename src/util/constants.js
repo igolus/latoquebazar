@@ -1,4 +1,4 @@
-import localStrings from '../localStrings';
+import localStrings from "../localStrings";
 
 export const SEP = "-";
 export const ORDER_STATUS_NEW = "new";
@@ -34,98 +34,107 @@ export const DELIVERY_STATUS_DONE = 'done';
 export const USER_STATUS_NONE = "none";
 export const USER_STATUS_DELIVERING = "delivering";
 
-export const orderSource = [
-  {
-    name: localStrings.orderSourceOnline,
-    value: ORDER_SOURCE_ONLINE,
-  },
-  {
-    name: localStrings.orderSourceOffline,
-    value: ORDER_SOURCE_OFFLINE,
-  },
-]
+// export const orderSource = [
+//   {
+//     name: localStrings.orderSourceOnline,
+//     value: ORDER_SOURCE_ONLINE,
+//   },
+//   {
+//     name: localStrings.orderSourceOffline,
+//     value: ORDER_SOURCE_OFFLINE,
+//   },
+// ]
+//
 
-export const orderDeliveryMode = [
-  {
-    name: localStrings.delivery,
-    value: ORDER_DELIVERY_MODE_DELIVERY,
-  },
-  {
-    name: localStrings.pickUp,
-    value: ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
-  },
-  {
-    name: localStrings.onTheSpot,
-    value: ORDER_DELIVERY_MODE_ON_THE_SPOT,
-  },
-]
-
-
-export const deliveryStatus = [
-  {
-    name: localStrings.deliveryStatusOnGoing,
-    value: DELIVERY_STATUS_ON_GOING,
-  },
-  {
-    name: localStrings.deliveryStatusNotStarted,
-    value: DELIVERY_STATUS_NOT_STARTED,
-  },
-  {
-    name: localStrings.deliveryStatusDone,
-    value: DELIVERY_STATUS_DONE,
-  },
-
-]
-
-export const orderStatus = [
-  {
-    name: localStrings.orderStatusNew,
-    value: ORDER_STATUS_NEW,
-  },
-  {
-    name: localStrings.orderStatusComplete,
-    value: ORDER_STATUS_COMPLETE,
-  },
-  {
-    name: localStrings.orderStatusDelivering,
-    value: ORDER_STATUS_DELIVERING,
-  },
-  {
-    name: localStrings.orderStatusPreparation,
-    value: ORDER_STATUS_PREPARATION,
-  },
-  {
-    name: localStrings.orderStatusReady,
-    value: ORDER_STATUS_READY,
-  },
-  {
-    name: localStrings.orderStatusFinished,
-    value: ORDER_STATUS_FINISHED,
-  }
-]
-
-export const paymentMethods = [
-  {
-    name: localStrings.paymentMethodCash,
-    valuePayment: "PAYMENT_METHOD_CASH",
-  },
-  {
-    name: localStrings.paymentMethodCC,
-    valuePayment: "PAYMENT_METHOD_CC",
-  },
-  {
-    name: localStrings.paymentMethodTicket,
-    valuePayment: "PAYMENT_METHOD_TICKET",
-  },
-  {
-    name: localStrings.paymentMethodCheque,
-    valuePayment: "PAYMENT_METHOD_CHEQUE",
-  },
-  {
-    name: localStrings.paymentMethodStripe,
-    valuePayment: "PAYMENT_METHOD_STRIPE",
-  }
-]
+export const getOrderDeliveryMode = (localStrings) => {
+  return[
+    {
+      name: localStrings.delivery,
+      value: ORDER_DELIVERY_MODE_DELIVERY,
+    },
+    {
+      name: localStrings.clickAndCollect,
+      value: ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
+    },
+  ]
+}
+// export const orderDeliveryMode = [
+//   {
+//     name: localStrings.delivery,
+//     value: ORDER_DELIVERY_MODE_DELIVERY,
+//   },
+//   {
+//     name: localStrings ? localStrings.clickAndCollect : "toto",
+//     value: ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
+//   },
+// ]
+//
+//
+// export const deliveryStatus = [
+//   {
+//     name: localStrings.deliveryStatusOnGoing,
+//     value: DELIVERY_STATUS_ON_GOING,
+//   },
+//   {
+//     name: localStrings.deliveryStatusNotStarted,
+//     value: DELIVERY_STATUS_NOT_STARTED,
+//   },
+//   {
+//     name: localStrings.deliveryStatusDone,
+//     value: DELIVERY_STATUS_DONE,
+//   },
+//
+// ]
+//
+// export const orderStatus = [
+//   {
+//     name: localStrings.orderStatusNew,
+//     value: ORDER_STATUS_NEW,
+//   },
+//   {
+//     name: localStrings.orderStatusComplete,
+//     value: ORDER_STATUS_COMPLETE,
+//   },
+//   {
+//     name: localStrings.orderStatusDelivering,
+//     value: ORDER_STATUS_DELIVERING,
+//   },
+//   {
+//     name: localStrings.orderStatusPreparation,
+//     value: ORDER_STATUS_PREPARATION,
+//   },
+//   {
+//     name: localStrings.orderStatusReady,
+//     value: ORDER_STATUS_READY,
+//   },
+//   {
+//     name: localStrings.orderStatusFinished,
+//     value: ORDER_STATUS_FINISHED,
+//   }
+// ]
+//
+// export const paymentMethods = [
+//   {
+//     name: localStrings.paymentMethodCash,
+//     valuePayment: "PAYMENT_METHOD_CASH",
+//   },
+//   {
+//     name: localStrings.paymentMethodCC,
+//     valuePayment: "PAYMENT_METHOD_CC",
+//   },
+//   {
+//     name: localStrings.paymentMethodTicket,
+//     valuePayment: "PAYMENT_METHOD_TICKET",
+//   },
+//   {
+//     name: localStrings.paymentMethodCheque,
+//     valuePayment: "PAYMENT_METHOD_CHEQUE",
+//   },
+//   {
+//     name: localStrings.paymentMethodStripe,
+//     valuePayment: "PAYMENT_METHOD_STRIPE",
+//   }
+// ]
 
 export const establishmentSetting = {
   printerUrl: "printerUrl",
@@ -153,4 +162,3 @@ export const PRINTER_MODEL_EPSON = "EPSON";
 
 export const TYPE_DEAL = "deal"
 export const TYPE_PRODUCT = "product"
-

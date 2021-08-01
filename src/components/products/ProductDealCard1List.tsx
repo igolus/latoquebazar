@@ -1,13 +1,10 @@
 import FlexBox from '@component/FlexBox'
-import ProductCard1 from '@component/product-cards/ProductCard1'
 import {Grid, Pagination} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {FilterProps} from "@component/products/ProductFilterCard";
-import {getMininimalSkuPrice, getBrandCurrency} from "../../util/displayUtil";
-import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
-import DealCard1 from "@component/product-cards/DealCard1";
+import {getBrandCurrency} from "../../util/displayUtil";
 import {cloneDeep} from "@apollo/client/utilities";
-import {PRICE_ASC, PRICE_DESC} from "@component/products/ProductList";
+import ProductCardDeal1 from "@component/product-cards/ProductCardDeal1";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -17,8 +14,8 @@ export interface ProductCard1ListProps {
     contextData: any,
     modeFullScren: boolean
     restrictedskuRefs: any
-    tagsSelected: any
-    sortOption: string
+    lineNumber: number,
+    deal: any
 }
 
 export const ALL_CAT = "all";
@@ -31,8 +28,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                contextData,
                                                                modeFullScren,
                                                                restrictedskuRefs,
-                                                               tagsSelected,
-                                                               sortOption,
+                                                               lineNumber,
+                                                                deal
 }) => {
 
     var productMapper = (product) => {
@@ -74,6 +71,15 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             //alert("size search  " + filteredProduct.length)
         }
         else {
+            // if (category === localStrings.deals) {
+            //     //alert("DEAL CAt")
+            //     alert("dealsLoaded length " + dealsLoaded.length)
+            //     filteredProduct = dealsLoaded;
+            // }
+            //
+            // else {
+            //console.log("productsLoaded " + JSON.stringify(productsLoaded, null, 2))
+            //alert("filteredProduct.length " + filteredProduct.length)
             if (category == ALL_CAT) {
                 filteredProduct = productsLoaded
             }
@@ -81,6 +87,11 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                 filteredProduct = productsLoaded.filter(product =>
                     product.category && product.category.category== category);
             }
+
+            //alert("filteredProduct.length " + filteredProduct.length)
+            // }
+            //filteredProduct = productsLoaded
+
         }
 
         if (restrictedskuRefs) {
@@ -92,50 +103,23 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             })
         }
 
-        if (tagsSelected && tagsSelected.length > 0) {
-            filteredProduct = filteredProduct.filter(product => {
-                return product.tags.map(t => t.id).some(id => tagsSelected.map(t => t.id).includes(id));
-            })
-        }
-
-        if (sortOption && sortOption === PRICE_ASC) {
-            filteredProduct.sort((p1, p2) => getMininimalSkuPrice(p1) - getMininimalSkuPrice(p2))
-        }
-
-        if (sortOption && sortOption === PRICE_DESC) {
-            filteredProduct = filteredProduct.sort((p1, p2) => getMininimalSkuPrice(p2) - getMininimalSkuPrice(p1))
-        }
-
-
         setAllProducts(
             filteredProduct);
 
        //console.log("filteredProduct " + JSON.stringify(filteredProduct, null, 2))
         setPage(0);
-        // alert("MaxPag " + Math.floor(filteredProduct ? filteredProduct.length : 0 / itemPerPage) + 1)
-        // alert("filteredProduct.length " + filteredProduct.length);
-
-        let pSize = filteredProduct ? filteredProduct.length : 0
-
-
-        let maxPage = Math.floor(pSize/ itemPerPage) + 1;
-        if (pSize % itemPerPage == 0) {
-            maxPage = pSize/itemPerPage;
-        }
-        //alert("maxPage " + maxPage)
-
-        setMaxPage(maxPage);
+        setMaxPage(Math.floor(filteredProduct.length / itemPerPage) + 1);
         setProductDisplay(filteredProduct.slice(0,
-            Math.min(filteredProduct.length + 1, itemPerPage)))
+            Math.min(filteredProduct.length, itemPerPage)))
 
-    }, [category, filter, contextData, restrictedskuRefs, tagsSelected, sortOption])
+    }, [category, filter, contextData, restrictedskuRefs])
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         if (!allProducts) {
             return;
         }
         setProductDisplay(allProducts.slice((value - 1)* itemPerPage,
-            Math.min(allProducts.length, value * itemPerPage)))
+            Math.min(allProducts.length-1, value * itemPerPage)))
 
         setPage(value);
     };
@@ -161,6 +145,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
             <Grid container spacing={3} justifyContent="center" >
                 {productDisplay.map((item, ind) => {
+
                         let url = "/assets/images/Icon_Sandwich.png";
 
                         if (item.files && item.files.length > 0) {
@@ -180,18 +165,11 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                   sm={getSmSize(modeFullScren)}
                                   xs={12} key={ind}>
 
-                                {/*<h1>{item.name}</h1>*/}
-                                {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
-                                <ProductCard1 {...itemShop} product={item}
+                                <ProductCardDeal1 product={item}
+                                              deal={deal}
                                               options={contextData.options}
+                                              lineNumber={lineNumber}
                                               currency={getBrandCurrency(contextData.brand)}/>
-                                }
-                                {item.type === TYPE_DEAL &&
-                                <DealCard1 {...itemShop} deal={item}
-                                              options={contextData.options}
-                                              currency={getBrandCurrency(contextData.brand)}/>
-                                }
-                                {/*<ProductCard1 {...item} />*/}
                             </Grid>
                         )
                     }

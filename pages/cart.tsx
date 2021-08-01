@@ -1,28 +1,20 @@
 import FlexBox from '@component/FlexBox'
 import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
 import ProductCard7 from '@component/product-cards/ProductCard7'
-import { Span } from '@component/Typography'
-import { useAppContext } from '@context/app/AppContext'
+import {Span} from '@component/Typography'
 import countryList from '@data/countryList'
-import {
-  Autocomplete,
-  Button,
-  Card,
-  Divider,
-  Grid,
-  MenuItem,
-  TextField,
-} from '@material-ui/core'
-import { CartItem } from '@reducer/cartReducer'
+import {Autocomplete, Box, Button, Card, Divider, Grid, MenuItem, TextField,} from '@material-ui/core'
 import Link from 'next/link'
 import useAuth from "@hook/useAuth";
-import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import React from "react";
 import {getCartItems} from "../src/util/cartUtil";
 import {getBrandCurrency} from "../src/util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../src/util/constants";
 import DealCard7 from "@component/product-cards/DealCard7";
+import LazyImage from "@component/LazyImage";
+import localStrings from "../src/localStrings";
 
 export interface CartProps {
   contextData?: any
@@ -59,6 +51,31 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
                 return(<ProductCard7 key={item.id} item={item} currency={currency} products={contextData ? contextData.products : []}/>)
               }
           })}
+
+
+          {getCartItems(orderInCreation).length == 0 && (
+              <FlexBox
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  height="calc(100% - 74px)"
+              >
+                <LazyImage
+                    src="/assets/images/logos/shopping-bag.svg"
+                    width="90px"
+                    height="100%"
+                />
+                <Box
+                    component="p"
+                    mt={2}
+                    color="grey.600"
+                    textAlign="center"
+                    maxWidth="200px"
+                >
+                  {localStrings.emptyBasket}
+                </Box>
+              </FlexBox>
+          )}
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
           <Card

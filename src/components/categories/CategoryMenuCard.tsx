@@ -6,6 +6,7 @@ import React from 'react'
 import CategoryMenuItem from './CategoryMenuItem'
 import MegaMenu1 from './mega-menu/MegaMenu1'
 import MegaMenu2 from './mega-menu/MegaMenu2'
+import localStrings from "../../localStrings";
 
 export interface CategoryMenuCardProps {
   open?: boolean
@@ -42,8 +43,24 @@ const CategoryMenuCard: React.FC<CategoryMenuCardProps> = (props) => {
   //console.log("categories " + JSON.stringify(props.contextData.categories, null, 2));
   return (
     <Box className={classes.root}>
+
+      <CategoryMenuItem
+          title={localStrings.allCategories}
+          href={"/product/shop/all"}
+          icon={"/assets/images/icons/icons8-four-squares-48.png"}
+          caret={false}
+      >
+        {/*<MegaMenu data={item.menuData || {}} />*/}
+      </CategoryMenuItem>
+
+
       {/*<p>TOTO</p>*/}
       {/*<p>{props.contextData ? JSON.stringify(props.contextData) : "NO contextData"}</p>*/}
+
+
+
+
+
       {props.contextData && props.contextData.categories && props.contextData.categories.map((item) => {
         //let MegaMenu = megaMenu[item.menuComponent]
         let icon = "";

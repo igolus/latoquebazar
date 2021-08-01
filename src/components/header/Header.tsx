@@ -51,14 +51,14 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
 
 const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
   const [sidenavOpen, setSidenavOpen] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
 
-  const {currentUser, orderInCreation} = useAuth();
+  const {currentUser, orderInCreation, loginDialogOpen, setLoginDialogOpen} = useAuth();
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
 
   const toggleSidenav = () => setSidenavOpen(!sidenavOpen)
-  const toggleDialog = () => setDialogOpen(!dialogOpen)
+  const toggleDialog = () => setLoginDialogOpen(!loginDialogOpen)
 
 
   const classes = useStyles()
@@ -138,12 +138,12 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
           {cartHandle}
         </FlexBox>
         <Dialog
-          open={dialogOpen}
+          open={loginDialogOpen}
           fullWidth={isMobile}
           scroll="body"
-          onClose={toggleDialog}
+          //onClose={toggleDialog}
         >
-          <LoginOrSignup closeCallBack={() => setDialogOpen(false)}/>
+          <LoginOrSignup closeCallBack={() => setLoginDialogOpen(false)}/>
         </Dialog>
 
         <Drawer open={sidenavOpen} anchor="right" onClose={toggleSidenav}>

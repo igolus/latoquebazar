@@ -50,7 +50,7 @@ const App = ({ Component, pageProps }: any) => {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
             </Head>
-            <AppProvider>
+            {/*<AppProvider>*/}
                 <ToastProvider placement="bottom-left">
                     <AuthProvider>
                         <MuiTheme>
@@ -60,7 +60,7 @@ const App = ({ Component, pageProps }: any) => {
                         </MuiTheme>
                     </AuthProvider>
                 </ToastProvider>
-            </AppProvider>
+            {/*</AppProvider>*/}
 
         </CacheProvider>
     )

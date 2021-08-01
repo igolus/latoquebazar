@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Grid} from "@material-ui/core";
-import ProductCard1List, {ALL_CAT} from "@component/products/ProductCard1List";
+import {ALL_CAT} from "@component/products/ProductCard1List";
 import Stepper from "@component/stepper/Stepper";
 import {Box} from "@material-ui/system";
-import Link from "next/link";
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import cloneDeep from "clone-deep";
-import {uuid} from "uuidv4";
 import {useRouter} from "next/router";
 import {addDealToCart} from "../../util/cartUtil";
+import ProductDealCard1List from "@component/products/ProductDealCard1List";
 
 function DealSelector({ deal, contextData }) {
 
@@ -21,10 +20,13 @@ function DealSelector({ deal, contextData }) {
     const {setDealEdit, dealEdit, orderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
 
     useEffect(() => {
-        if (deal && deal.lines && deal.lines[currentLine] && deal.lines[currentLine].skus) {
-            let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
-            setSkuRefs(skusInLine);
-        }
+        let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
+        setSkuRefs(skusInLine);
+
+        // if (deal && deal.lines && deal.lines[currentLine] && deal.lines[currentLine].skus) {
+        //     let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
+        //     setSkuRefs(skusInLine);
+        // }
 
     }, [currentLine])
 
@@ -53,7 +55,8 @@ function DealSelector({ deal, contextData }) {
     }
 
     function addMenuToCart() {
-        addDealToCart(dealEdit, orderInCreation, setOrderInCreation)
+        addDealToCart(dealEdit, orderInCreation, setOrderInCreation);
+        router.push("/cart")
     }
 
     function cancelDeal() {
@@ -79,7 +82,7 @@ function DealSelector({ deal, contextData }) {
                     </Grid>
 
                     <Grid item lg={12} xs={12}>
-                        <ProductCard1List
+                        <ProductDealCard1List
                             deal={deal}
                             lineNumber={currentLine}
                             restrictedskuRefs = {skuRefs}

@@ -2,16 +2,16 @@ import BazarCard from '@component/BazarCard'
 import LazyImage from '@component/LazyImage'
 import {H3} from '@component/Typography'
 import {useAppContext} from '@context/app/AppContext'
-import {Box, Button, Chip, IconButton,} from '@material-ui/core'
-import RemoveRedEye from '@material-ui/icons/RemoveRedEye'
+import {Box, Button, Chip,} from '@material-ui/core'
 import {CSSProperties, makeStyles} from '@material-ui/styles'
 import {CartItem} from '@reducer/cartReducer'
 import {MuiThemeProps} from '@theme/theme'
 import Link from 'next/link'
-import React, {useCallback} from 'react'
+import React from 'react'
 import FlexBox from '../FlexBox'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
+import {getPriceDeal} from "../../util/displayUtil";
 
 export interface DealCard1Props {
   className?: string
@@ -202,6 +202,12 @@ const DealCard1: React.FC<DealCard1Props> = ({
                   </H3>
                 </a>
               </Link>
+
+              <FlexBox alignItems="center" mt={0.5}>
+                <Box pr={1} fontWeight="600" color="primary.main">
+                  {getPriceDeal(deal).toFixed(2)} {currency}
+                </Box>
+              </FlexBox>
 
             </Box>
 

@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
 import Link from 'next/link'
 import React from 'react'
+import BazarImage from "@component/BazarImage";
 
 interface CategoryMenuItemProps {
   href: string
@@ -62,7 +63,7 @@ const CategoryMenuItem: React.FC<CategoryMenuItemProps> = ({
       <Link href={href}>
         <MenuItem className="category-dropdown-link">
           {/*{rest.icon && <rest.icon fontSize="small" color="inherit" />}*/}
-          {rest.icon && <img width={35} src={rest.icon}/>}
+          {rest.icon && <BazarImage width={35} src={rest.icon}/>}
           <span className="title">{title}</span>
           {caret && <ChevronRight fontSize="small" />}
         </MenuItem>

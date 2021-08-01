@@ -35,7 +35,7 @@ type StyledCardProps = {
 const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   ({ children, passwordVisibility, ...rest }) => <Card {...rest}>{children}</Card>
 )<CardProps>(({ theme, passwordVisibility }) => ({
-  width: 500,
+  //width: 500,
   [theme.breakpoints.down('sm')]: {
     width: '100%',
   },
@@ -70,7 +70,7 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
 const Login = ({closeCallBack}) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
 
-  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId} = useAuth();
+  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId, signInWithFaceBook} = useAuth();
 
   const router = useRouter()
 
@@ -93,13 +93,27 @@ const Login = ({closeCallBack}) => {
   async function handleGoogleClick() {
     try {
       var user = await signInWithGoogle();
-
-      //alert("handleGoogleClick " + JSON.stringify(user));
       let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
-      //alert("handleGoogleClick res " + JSON.stringify(result));
       if (result.data.getSiteUser) {
-        //alert("closeCallBack");
-        closeCallBack();
+        if (closeCallBack) {
+          closeCallBack();
+        }
+      }
+
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function handleFacebookClick() {
+    try {
+      var user = await signInWithFaceBook();
+      alert()
+      let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
+      if (result.data.getSiteUser) {
+        if (closeCallBack) {
+          closeCallBack();
+        }
       }
 
     } catch(err) {
@@ -197,23 +211,26 @@ const Login = ({closeCallBack}) => {
           {/*</FlexBox>*/}
         {/*</Box>*/}
 
-        {/*<BazarButton*/}
-        {/*  className="facebookButton"*/}
-        {/*  size="medium"*/}
-        {/*  fullWidth*/}
-        {/*  sx={{*/}
-        {/*    mb: '10px',*/}
-        {/*    height: 44,*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  <Image*/}
-        {/*    src="/assets/images/icons/facebook-filled-white.svg"*/}
-        {/*    alt="facebook"*/}
-        {/*  />*/}
-        {/*  <Box fontSize="12px" ml={1}>*/}
-        {/*    Continue with Facebook*/}
-        {/*  </Box>*/}
-        {/*</BazarButton>*/}
+        <BazarButton
+          className="facebookButton"
+          onClick={handleFacebookClick}
+          size="medium"
+          fullWidth
+          sx={{
+            mb: '10px',
+            height: 44,
+          }}
+        >
+          <Image
+            src="/assets/images/icons/facebook-filled-white.svg"
+            alt="facebook"
+          />
+          <Box fontSize="12px" ml={1}>
+            {localStrings.continueWithFaceook}
+          </Box>
+        </BazarButton>
+
+
         <BazarButton
           className="googleButton"
           size="medium"
@@ -242,7 +259,7 @@ const Login = ({closeCallBack}) => {
       </form>
 
       <FlexBox justifyContent="center" bgcolor="grey.200" py={2.5}>
-        {localStrings.forgotPassword}Forgot your password?
+        {localStrings.forgotPassword}
         <Link href="/">
           <a>
             <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">

@@ -4,20 +4,20 @@ import {styled} from '@material-ui/core/styles'
 import {useRouter} from "next/router";
 import React from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
+import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import DealSelector from '../../../src/components/products/DealSelector'
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-    marginTop: 80,
-    marginBottom: 24,
-    minHeight: 0,
-    borderBottom: `1px solid ${theme.palette.text.disabled}`,
-    '& .inner-tab': {
-        fontWeight: 600,
-        minHeight: 40,
-        textTransform: 'capitalize',
-    },
-}))
+// const StyledTabs = styled(Tabs)(({ theme }) => ({
+//     marginTop: 80,
+//     marginBottom: 24,
+//     minHeight: 0,
+//     borderBottom: `1px solid ${theme.palette.text.disabled}`,
+//     '& .inner-tab': {
+//         fontWeight: 600,
+//         minHeight: 40,
+//         textTransform: 'capitalize',
+//     },
+// }))
 
 
 export interface ProductDetailsProps {

@@ -1,7 +1,7 @@
 import React, {
   createContext,
   useEffect,
-  useReducer
+  useReducer, useState
 } from 'react';
 import firebase from '../lib/firebase';
 import SplashScreen from "../components/SplashScreen";
@@ -16,8 +16,16 @@ import moment from "moment";
 import {establishmentsQuery} from "../gql/establishmentGql";
 import {getBrandByIdQuery} from "../gql/brandGql";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../util/constants"
+import {Button, Dialog, DialogContent} from "@material-ui/core";
+import ProductIntro from "@component/products/ProductIntro";
+import BazarIconButton from "@component/BazarIconButton";
+import Close from "@material-ui/icons/Close";
+import {makeStyles} from "@material-ui/styles";
+import {MuiThemeProps} from "@theme/theme";
+import AdressCheck, {DIST_INFO} from "@component/address/AdressCheck";
 
 const CURRENCY = 'CURRENCY';
+const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
 const BRAND = 'BRAND';
 const DB_USER = 'DB_USER';
 const USER = 'USER';
@@ -26,6 +34,14 @@ const ESTABLISHMENT_LIST = 'ESTABLISHMENT_LIST';
 const AUTH_STATE_CHANGE = 'AUTH_STATE_CHANGED';
 const ORDER_IN_CREATION = 'ORDER_IN_CREATION';
 const DEAL_EDIT = 'DEAL_EDIT';
+const MAX_DISTANCE_REACHED = 'MAX_DISTANCE_REACHED';
+const LOGIN_DIALOG_OPEN = 'LOGIN_DIALOG_OPEN';
+
+const useStyles = makeStyles(() => ({
+  dialogContent: {
+    paddingBottom: '1.25rem',
+  },
+}))
 
 const initialAuthState = {
   loginDone: false,
@@ -59,6 +75,9 @@ const initialAuthState = {
     bookingSlot: null,
     additionalInfo: null,
   },
+  bookingSlotStartDate: moment(),
+  maxDistanceReached: false,
+  loginDialogOpen: false,
 };
 
 const config = require('../conf/config.json');
@@ -132,6 +151,29 @@ const reducer = (state, action) => {
       };
     }
 
+    case BOOKING_SLOT_START_DATE: {
+      const { bookingSlotStartDate } = action.payload;
+      return {
+        ...state,
+        bookingSlotStartDate: bookingSlotStartDate,
+      };
+    }
+
+    case MAX_DISTANCE_REACHED: {
+      const { maxDistanceReached } = action.payload;
+      return {
+        ...state,
+        maxDistanceReached: maxDistanceReached,
+      };
+    }
+
+    case LOGIN_DIALOG_OPEN: {
+      const { loginDialogOpen } = action.payload;
+      return {
+        ...state,
+        loginDialogOpen: loginDialogOpen,
+      };
+    }
 
 
     default: {
@@ -153,12 +195,15 @@ const AuthContext = createContext({
   sendEmailVerification: () => Promise.resolve(),
   resetPassword: () => Promise.resolve(),
   signInWithGoogle: () => Promise.resolve(),
+  signInWithFaceBook: () => Promise.resolve(),
   logout: () => Promise.resolve(),
   getDbUser: () => {},
   setDbUser: () => {},
 
   getCurrency: () => {},
   setCurrency: () => {},
+
+  setBookingSlotStartDate: () => {},
 
   currentBrand: () => {},
   getBrandId: () => {},
@@ -169,21 +214,37 @@ const AuthContext = createContext({
   orderInCreation: () => {},
   resetOrderInCreation: () => {},
 
+  setMaxDistanceReached:() => {},
+
   setDealEdit: () => {},
+
+  setLoginDialogOpen: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
-
+  const [adressDialogOpen, setAdressDialogOpen] = useState(false)
+  const classes = useStyles();
   firebase.auth().useDeviceLanguage();
   const [state, dispatch] = useReducer(reducer, initialAuthState);
   const { addToast } = useToasts();
 
-  useEffect(async () => {
+  useEffect(() => {
+    if (!localStorage.getItem(DIST_INFO)) {
+      setAdressDialogOpen(true);
+    }
+  }, []);
 
-    const messaging = firebase.messaging();
-    await messaging.requestPermission();
-    const token = await messaging.getToken();
-    console.log("token ", token);
+  useEffect(async () => {
+    try {
+      const messaging = firebase.messaging();
+      await messaging.requestPermission();
+      const token = await messaging.getToken();
+      console.log("token ", token);
+    }
+    catch (err) {
+      console.log(err);
+    }
+
   }, []);
 
   const createUserWithEmailAndPassword = async (email, password) => {
@@ -220,6 +281,11 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
+    return firebase.auth().signInWithPopup(provider);
+  };
+
+  const signInWithFaceBook = () => {
+    const provider = new firebase.auth.FacebookAuthProvider();
     return firebase.auth().signInWithPopup(provider);
   };
 
@@ -260,6 +326,15 @@ export const AuthProvider = ({ children }) => {
       type: CURRENCY,
       payload: {
         currency: currency,
+      }
+    });
+  }
+
+  const setBookingSlotStartDate = (bookingSlotStartDate) => {
+    dispatch({
+      type: BOOKING_SLOT_START_DATE,
+      payload: {
+        bookingSlotStartDate: bookingSlotStartDate,
       }
     });
   }
@@ -362,6 +437,27 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  const setMaxDistanceReached = (value) => {
+    dispatch({
+      type: MAX_DISTANCE_REACHED,
+      payload: {
+        maxDistanceReached: value,
+      }
+    });
+  }
+
+
+  const setLoginDialogOpen = (value) => {
+    dispatch({
+      type: LOGIN_DIALOG_OPEN,
+      payload: {
+        loginDialogOpen: value,
+      }
+    });
+  }
+
+
+
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
     if (res && res.data) {
@@ -412,10 +508,6 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, [dispatch]);
 
-  // if (!state.isInitialised) {
-  //   return <SplashScreen />;
-  // }
-
   return (
       <AuthContext.Provider
           value={{
@@ -427,6 +519,8 @@ export const AuthProvider = ({ children }) => {
             sendEmailVerification,
             resetPassword,
             signInWithGoogle,
+            signInWithFaceBook,
+
             logout,
             getDbUser,
             setDbUser,
@@ -447,9 +541,22 @@ export const AuthProvider = ({ children }) => {
             orderInCreation,
             resetOrderInCreation,
             setDealEdit,
+            setBookingSlotStartDate,
+            setMaxDistanceReached,
+            setLoginDialogOpen
           }}
       >
         {children}
+        <Button onClick={() => setAdressDialogOpen(true)}>display diag</Button>
+        {currentEstablishment() &&
+        <Dialog open={adressDialogOpen} maxWidth="sm"
+        >
+          <DialogContent className={classes.dialogContent}>
+            <AdressCheck closeCallBack={() => setAdressDialogOpen(false)}/>
+          </DialogContent>
+        </Dialog>
+        }
+
       </AuthContext.Provider>
   );
 };

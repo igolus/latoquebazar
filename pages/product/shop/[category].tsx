@@ -2,7 +2,7 @@ import React from 'react'
 import {useRouter} from "next/router";
 import ProductList from "@component/products/ProductList";
 import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder"
+import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder"
 
 export interface ProductsByCategoryProps {
     contextData?: any
@@ -21,13 +21,10 @@ const ProductsByCategory:React.FC<ProductsByCategoryProps> = ({ contextData }) =
 }
 
 export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-
     return {
         paths: [], //indicates that no page needs be created at build time
         fallback: true //indicates the type of fallback
     }
-
-    //return getStaticPathsUtil()
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {

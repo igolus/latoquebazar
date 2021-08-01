@@ -45,7 +45,9 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
 
   useEffect(() => {
     setItemNumber(getItemNumberInCart(orderInCreation))
-    setcurrency(getBrandCurrency(contextData.brand))
+    if (contextData) {
+      setcurrency(getBrandCurrency(contextData.brand));
+    }
   }, [orderInCreation, contextData])
 
   const handleCartAmountChange = useCallback(

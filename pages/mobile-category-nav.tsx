@@ -11,6 +11,8 @@ import React, { Fragment, useEffect, useState } from 'react'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import {IndexPageProps} from "./index";
+import BazarImage from "@component/BazarImage";
+import localStrings from "../src/localStrings";
 
 export interface MobileCategoryNavProps {
   contextData?: any
@@ -39,6 +41,24 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
 
       <div className="main-category-holder">
 
+        <Link href={"/product/shop/all"}>
+          <Box
+              className="main-category-box"
+              borderLeft="3px solid"
+          >
+            <BazarImage width={35} height={35} src={"/assets/images/icons/icons8-four-squares-48.png"}/>
+            <Typography
+                className="ellipsis"
+                textAlign="center"
+                fontSize="11px"
+                lineHeight="1"
+            >
+              {localStrings.allCategories}
+            </Typography>
+          </Box>
+        </Link>
+
+
         {/*<p>{JSON.stringify(contextData)}</p>*/}
         {contextData && contextData.categories && contextData.categories.map((item) => {
 
@@ -52,12 +72,9 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
           <Box
             className="main-category-box"
             borderLeft={`${category?.href === item.href ? '3' : '0'}px solid`}
-            //onClick={handleCategoryClick(item)}
             key={item.category}
           >
-            {/*<p>ITEM</p>*/}
-            <img width={35} alt="Remy Sharp" src={icon}/>
-            {/*<item.icon sx={{ fontSize: '28px', mb: '0.5rem' }} />*/}
+            <BazarImage width={35} height={35} src={icon}/>
             <Typography
               className="ellipsis"
               textAlign="center"

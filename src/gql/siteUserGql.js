@@ -8,6 +8,7 @@ const common = `
     brandId
     userProfileInfo {
         createdAt
+        address
         email
         firstName
         lastLoginAt
@@ -15,6 +16,9 @@ const common = `
         phoneNumber
         photoURL
         city
+        placeId
+        lng
+        lat
     }
     
 `

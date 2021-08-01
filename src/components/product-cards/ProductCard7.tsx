@@ -127,7 +127,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               {getPriceWithOptions(item, true) + " " + currency} x {item.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              {getPriceWithOptions(item) + " " + currency}
+              {getPriceWithOptions(item, true) *  item.quantity + " " + currency}
             </Span>
           </FlexBox>
 
@@ -135,9 +135,6 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             <Button
               variant="outlined"
               color="primary"
-              // padding="5px"
-              // size="none"
-              // borderColor="primary.light"
               disabled={item.quantity === 1}
               sx={{ p: '5px' }}
               onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}

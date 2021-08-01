@@ -5,9 +5,13 @@ import { Box } from '@material-ui/system'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import AppLayout from './AppLayout'
+import localStrings from "../../localStrings";
+import useAuth from "@hook/useAuth";
+import {getCartItems} from "../../util/cartUtil";
 
 const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
   const [selectedStep, setSelectedStep] = useState(0)
+  const {orderInCreation} = useAuth()
 
   const router = useRouter()
   const { pathname } = router
@@ -47,6 +51,32 @@ const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
     }
   }, [pathname])
 
+  function getStepperList() {
+    if (getCartItems(orderInCreation).length == 0) {
+      return [
+        {
+          title: localStrings.cart,
+          disabled: false,
+        }
+      ]
+    }
+
+    return [
+      {
+        title: localStrings.cart,
+        disabled: false,
+      },
+      {
+        title: localStrings.order,
+        disabled: false,
+      },
+      {
+        title: localStrings.confirm,
+        disabled: false,
+      },
+    ]
+  }
+
   return (
     <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>} >
       <Container sx={{ my: '2rem' }}>
@@ -54,7 +84,7 @@ const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
           <Grid container spacing={3}>
             <Grid item lg={8} md={8} xs={12}>
               <Stepper
-                stepperList={stepperList}
+                stepperList={getStepperList()}
                 selectedStep={selectedStep}
                 onChange={handleStepChange}
               />
@@ -67,23 +97,5 @@ const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
   )
 }
 
-const stepperList = [
-  {
-    title: 'Cart',
-    disabled: false,
-  },
-  {
-    title: 'Details',
-    disabled: false,
-  },
-  {
-    title: 'Payment',
-    disabled: false,
-  },
-  {
-    title: 'Review',
-    disabled: true,
-  },
-]
 
 export default CheckoutNavLayout
