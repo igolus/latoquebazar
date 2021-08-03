@@ -10,6 +10,8 @@ import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
 import { layoutConstant } from '@utils/constants'
 import React from 'react'
+import {getItemNumberInCart} from "../../util/cartUtil";
+import useAuth from "@hook/useAuth";
 
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
   root: {
@@ -51,15 +53,15 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
 const MobileNavigationBar = () => {
   const width = useWindowSize()
   const classes = useStyles()
-  const { state } = useAppContext()
-  const { cartList } = state.cart
+  const { state } = useAppContext();
+  const { orderInCreation} = useAuth()
 
   return width <= 900 ? (
     <Box className={classes.root}>
       {list.map((item) => (
         <NavLink className={classes.link} href={item.href} key={item.title}>
           {item.title === 'Cart' ? (
-            <Badge badgeContent={cartList.length} color="primary">
+            <Badge badgeContent={getItemNumberInCart(orderInCreation)} color="primary">
               <item.icon className={classes.icon} fontSize="small" />
             </Badge>
           ) : (

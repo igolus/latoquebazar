@@ -2,6 +2,7 @@ import moment from "moment";
 import {report} from "next/dist/telemetry/trace/report";
 import cloneDeep from "clone-deep";
 import {TYPE_DEAL, TYPE_PRODUCT} from "./constants";
+import localStrings from "../localStrings";
 const { uuid } = require('uuidv4');
 
 export function getCartItems(orderInCreation) {
@@ -22,13 +23,24 @@ export function getCartItems(orderInCreation) {
     }
 
     //alert(allItems.length)
-    // let items = orderInCreation().order.items.sort((i1,i2) => i1.creationTimestamp - i2.creationTimestamp);
+    try {
+        allItems.sort((i1, i2) => i1.creationTimestamp - i2.creationTimestamp);
+    }
+    catch (err) {
+        console.log(err);
+    }
+
+    //let items = orderInCreation().order.items.sort((i1,i2) => i1.creationTimestamp - i2.creationTimestamp);
     // let orders = orderInCreation().order.orders;
     return allItems;
 }
 
 export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
     let itemIoChange = orderInCreation().order.deals.find(deal => deal.uuid === uuid);
+
+    if (!itemIoChange) {
+        return;
+    }
     let others = orderInCreation().order.deals.filter(deal => deal.uuid !== uuid);
 
     let items = [];
@@ -206,9 +218,13 @@ export function selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, line
     })
 }
 
-export function addDealToCart(deal, orderInCreation, setOrderInCreation) {
-    let dealToAdd = { ...deal}
-
+export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToast) {
+    // let dealToAdd = {
+    //     deal: {...deal},
+    //     creationTimestamp:moment().unix()
+    // }
+    let dealToAdd = {...deal}
+    dealToAdd.creationTimestamp = moment().unix();
     let items = [];
     if (orderInCreation().order.items) {
         items = [...orderInCreation().order.items]
@@ -250,6 +266,10 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation) {
                 deals: [...others, existing],
             }
         })
+        if (addToast) {
+            //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true});
+        }
+
         return;
     }
 
@@ -273,11 +293,13 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation) {
             }
         })
     }
-
+    if (addToast) {
+        //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true });
+    }
     //alert("addMenuToCart ")
 }
 
-export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation) {
+export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast) {
     // if (!checkOrderInCreation()) {
     //     return;
     // }
@@ -318,6 +340,9 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
                 deals: deals
             }
         })
+        if (addToast) {
+            //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
+        }
         return;
     }
     itemToAdd.uuid = uuid();
@@ -340,7 +365,10 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
             }
         })
     }
-
+    if (addToast) {
+        //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
+    }
+    return itemToAdd.uuid;
 }
 
 export function getQteInCart(productAndSku, orderInCreation) {

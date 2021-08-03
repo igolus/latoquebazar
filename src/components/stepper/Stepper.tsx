@@ -12,12 +12,14 @@ type StepperProps = {
   selectedStep: number
   stepperList: Step[]
   onChange?: (step: number) => void
+  lineWidth: string
 }
 
 const Stepper: React.FC<StepperProps> = ({
   selectedStep,
   stepperList,
   onChange,
+  lineWidth
 }) => {
   const [selected, setSelected] = useState(selectedStep - 1)
 
@@ -55,7 +57,7 @@ const Stepper: React.FC<StepperProps> = ({
           />
           {ind < stepperList.length - 1 && (
             <Box
-              width="50px"
+              width={lineWidth || "50px"}
               height="4px"
               bgcolor={ind < selected ? 'primary.main' : 'primary.light'}
             />

@@ -302,7 +302,7 @@ Carousel.defaultProps = {
   infinite: false,
   autoPlay: false,
   step: 1,
-  interval: 2000,
+  interval: 5000,
   showDots: false,
   showArrow: true,
   dotGroupMarginTop: '2rem',

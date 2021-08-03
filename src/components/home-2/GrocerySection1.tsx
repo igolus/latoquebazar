@@ -13,7 +13,7 @@ const useStyles = makeStyles(({ breakpoints }: MuiThemeProps) => ({
   root: {
     borderRadius: 8,
     overflow: 'hidden',
-
+    marginBottom: '15px',
     '& .card__inner-box': {
       padding: '40px 0px 97px 72px',
     },
@@ -43,17 +43,17 @@ const GrocerySection1 = () => {
 
   return (
     <Box className={classes.root}>
-      <Carousel
-        totalSlides={3}
-        visibleSlides={1}
-        showDots={true}
-        showArrow={false}
-        autoPlay={false}
-        dotClass="carousel-dot"
-        dotColor="white"
-        spacing="0px"
-      >
-        {[...new Array(3)].map((_item, ind) => (
+      {/*<Carousel*/}
+      {/*  totalSlides={3}*/}
+      {/*  visibleSlides={1}*/}
+      {/*  showDots={true}*/}
+      {/*  showArrow={false}*/}
+      {/*  autoPlay={false}*/}
+      {/*  dotClass="carousel-dot"*/}
+      {/*  dotColor="white"*/}
+      {/*  spacing="0px"*/}
+      {/*>*/}
+        {[...new Array(1)].map((_item, ind) => (
           <BazarCard
             sx={{
               bgcolor: 'primary.main',
@@ -78,9 +78,9 @@ const GrocerySection1 = () => {
 
                 <AppStore />
               </Box>
-              <Box flex="1 1 0" minWidth="285px" height="180px" position="relative">
+              <Box flex="1 1 0" minWidth="285px" height="250px" position="relative">
                 <LazyImage
-                  src="/assets/images/products/garlic.png"
+                  src="/assets/images/heart-shape-sliced-pepperoni-pizza-on-white-backg.jpg"
                   layout="fill"
                   objectFit="contain"
                 />
@@ -88,7 +88,7 @@ const GrocerySection1 = () => {
             </FlexBox>
           </BazarCard>
         ))}
-      </Carousel>
+      {/*</Carousel>*/}
     </Box>
   )
 }

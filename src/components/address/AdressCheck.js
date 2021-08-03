@@ -10,8 +10,12 @@ import Box from "@material-ui/core/Box";
 export const DIST_INFO = 'distInfo';
 
 export function setDistanceAndCheck(value, setMaxDistanceReached, setDistanceInfo, currentEstablishment) {
+    if (!value) {
+        return;
+    }
     let maxDist = getMaxDistanceDelivery(currentEstablishment());
     let distKm = value.distance / 1000;
+    //alert("distKm " + distKm)
     setMaxDistanceReached(distKm > maxDist)
     setDistanceInfo(value)
 }

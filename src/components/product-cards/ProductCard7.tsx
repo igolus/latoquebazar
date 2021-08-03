@@ -124,37 +124,41 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
         >
           <FlexBox flexWrap="wrap" alignItems="center">
             <Span color="grey.600" mr={1}>
-              {getPriceWithOptions(item, true) + " " + currency} x {item.quantity}
+              {getPriceWithOptions(item, true).toFixed(2) + " " + currency} x {item.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              {getPriceWithOptions(item, true) *  item.quantity + " " + currency}
+              {(getPriceWithOptions(item, true) *  item.quantity).toFixed(2) + " " + currency}
             </Span>
           </FlexBox>
 
           <FlexBox alignItems="center">
             <Button
-              variant="outlined"
-              color="primary"
-              disabled={item.quantity === 1}
-              sx={{ p: '5px' }}
-              onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
+                variant="outlined"
+                color="primary"
+                disabled={item.quantity === 1}
+                sx={{ p: '5px' }}
+                onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
             >
               <Remove fontSize="small" />
             </Button>
+
             <Span mx={1} fontWeight="600" fontSize="15px">
               {item.quantity}
             </Span>
+
             <Button
-              variant="outlined"
-              color="primary"
-              // padding="5px"
-              // size="none"
-              // borderColor="primary.light"
-              sx={{ p: '5px' }}
-              onClick={() => increaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
+                variant="outlined"
+                color="primary"
+                // padding="5px"
+                // size="none"
+                // borderColor="primary.light"
+                sx={{ p: '5px' }}
+                onClick={() => increaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
             >
               <Add fontSize="small" />
             </Button>
+
+
           </FlexBox>
         </FlexBox>
       </FlexBox>

@@ -21,9 +21,10 @@ import {
   deleteItemInCart,
   getCartItems,
   getPriceWithOptions,
-  increaseCartQte, increaseDealCartQte, getItemNumberInCart
+  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart
 } from "../../util/cartUtil";
 import {
+  computePriceDetail,
   getBrandCurrency,
   getProductFirstImgUrl,
   getTotalPriceOrderInCreation
@@ -79,7 +80,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
       return null;
     }
     if (item.type === TYPE_DEAL) {
-      return getProductFirstImgUrl(item);
+      return getProductFirstImgUrl(item.deal);
     }
 
     let product = contextData.products.find(p=>p.id === item.productId);
@@ -96,7 +97,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
       {/*{JSON.stringify(orderInCreation())}*/}
       <Box
         overflow="auto"
-        height={`calc(100vh - ${!!cartList.length ? '80px - 3.25rem' : '0px'})`}
+        height={`calc(100vh - ${getItemNumberInCart(orderInCreation) > 0 ? '80px - 3.25rem' : '0px'})`}
       >
         <FlexBox
           alignItems="center"
@@ -117,7 +118,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
-            height="calc(100% - 74px)"
+            height="calc(100% - 90px)"
           >
             <LazyImage
               src="/assets/images/logos/shopping-bag.svg"
@@ -194,7 +195,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 <BazarAvatar
                   src={getImgUrl(item)}
                   mx={2}
-                  alt={item.name}
+                  alt={item.type === TYPE_PRODUCT ? item.name : item.deal.name}
                   height={76}
                   width={76}
                 />
@@ -205,7 +206,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               {/*<Link href={`/product/${item.id}`}>*/}
               {/*  <a>*/}
                   <H5 className="title" fontSize="14px">
-                    {item.name}
+                    {item.type === TYPE_PRODUCT ? item.name : item.deal.name}
                   </H5>
               {/*  </a>*/}
               {/*</Link>*/}
@@ -255,18 +256,18 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               {/*<p>{JSON.stringify(item)}</p>*/}
               <Tiny color="grey.600">
                 {item.type === TYPE_DEAL &&
-                  getPriceWithOptions(item, false) + " " + currency + " x" + item.quantity
+                  getPriceWithOptions(item, false).toFixed(2) + " " + currency + " x" + item.quantity
                 }
                 {item.type === TYPE_PRODUCT &&
-                  getPriceWithOptions(item, true) + " " + currency + " x" + item.quantity
+                  getPriceWithOptions(item, true).toFixed(2) + " " + currency + " x" + item.quantity
                 }
               </Tiny>
               <Box fontWeight={600} fontSize="14px" color="primary.main" mt={0.5}>
                 {item.type === TYPE_DEAL &&
-                getPriceWithOptions(item, false) * item.quantity + " " + currency
+                (getPriceWithOptions(item, false) * item.quantity).toFixed(2) + " " + currency
                 }
                 {item.type === TYPE_PRODUCT &&
-                getPriceWithOptions(item, true) * item.quantity  + " " + currency
+                (getPriceWithOptions(item, true) * item.quantity).toFixed(2)  + " " + currency
                 }
               </Box>
             </Box>
@@ -274,7 +275,14 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             <BazarIconButton
               ml={2.5}
               size="small"
-              onClick={() => deleteItemInCart(orderInCreation, setOrderInCreation, item.uuid)}
+              onClick={() => {
+                if (item.type === TYPE_DEAL) {
+                  deleteDealInCart(orderInCreation, setOrderInCreation, item.uuid)
+                }
+                if (item.type === TYPE_PRODUCT) {
+                  deleteItemInCart(orderInCreation, setOrderInCreation, item.uuid)
+                }
+              }}
             >
               <Close fontSize="small" />
             </BazarIconButton>
@@ -282,23 +290,25 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
         ))}
       </Box>
 
-      {!!cartList.length && (
+      {getItemNumberInCart(orderInCreation) > 0 && (
         <Box p={2.5}>
+
           <Link href="/checkout">
             <BazarButton
-              variant="contained"
-              color="primary"
-              sx={{
-                mb: '0.75rem',
-                height: '40px',
-              }}
-              fullWidth
-              onClick={toggleSidenav}
+                variant="contained"
+                color="primary"
+                sx={{
+                  mb: '0.75rem',
+                  height: '40px',
+                }}
+                fullWidth
+                onClick={toggleSidenav}
             >
-              {localStrings.checkOutNow} ({getTotalPrice() + " " + getBrandCurrency(contextData ? contextData.brand : null) })
+              {localStrings.checkOutNow} ({computePriceDetail(orderInCreation()).total + " " + getBrandCurrency(contextData ? contextData.brand : null)})
               {/*{localStrings.checkOutNow}*/}
             </BazarButton>
           </Link>
+
           <Link href="/cart">
             <BazarButton
               color="primary"

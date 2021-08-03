@@ -2,6 +2,7 @@ import BazarImage from '@component/BazarImage'
 import { Paragraph } from '@component/Typography'
 import { Box, Button, Grid, styled } from '@material-ui/core'
 import React from 'react'
+import Link from 'next/link'
 
 export interface CarouselCard1Props {}
 
@@ -53,11 +54,12 @@ const CarouselCard1: React.FC<CarouselCard1Props> = () => {
     <StyledBox>
       <Grid container spacing={3} alignItems="center" justifyContent="center">
         <Grid item className="grid-item" sm={5} xs={12}>
-          <h1 className="title">50% Off For Your First Shopping</h1>
+          <h1 className="title">Les meilleures Pizzas d'Antibes</h1>
           <Paragraph color="secondary.main" mb={2.7}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis lobortis
-            consequat eu, quam etiam at quis ut convalliss.
+            Une experience unique
           </Paragraph>
+          <Link href={"/product/shop/all"}>
+
           <Button
             className="button-link"
             variant="contained"
@@ -71,10 +73,12 @@ const CarouselCard1: React.FC<CarouselCard1Props> = () => {
           >
             Shop Now
           </Button>
+
+          </Link>
         </Grid>
         <Grid item sm={5} xs={12}>
           <BazarImage
-            src="/assets/images/products/nike-black.png"
+            src="/assets/images/heart-shape-sliced-pepperoni-pizza-on-white-backg.jpg"
             alt="apple-watch-1"
             sx={{
               display: 'block',

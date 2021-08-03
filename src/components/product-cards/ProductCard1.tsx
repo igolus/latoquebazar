@@ -25,6 +25,7 @@ import {
 } from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
+import {useToasts} from "react-toast-notifications";
 
 export interface ProductCard1Props {
   className?: string
@@ -96,7 +97,7 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
     paddingLeft: 3,
     paddingRight: 3,
 
-    zIndex: 999,
+    //zIndex: 998,
   },
   details: {
     padding: '1rem',
@@ -120,6 +121,10 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   },
   dialogContent: {
     paddingBottom: '1.25rem',
+  },
+  backDrop: {
+    backdropFilter: "blur(5px)",
+    backgroundColor:'rgba(0,0,30,0.4)'
   },
 }))
 
@@ -151,6 +156,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     setSelectedSkuIndex(0)
   }, [product])
 
+  const {addToast} = useToasts();
   const [productAndSkus, setProductAndSkus] = useState([])
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
@@ -158,6 +164,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const {orderInCreation, setOrderInCreation} = useAuth();
 
   const classes = useStyles({ hoverEffect })
+
+
   const { state, dispatch } = useAppContext()
   const cartItem: CartItem | undefined = state.cart.cartList.find(
       (item) => item.id === id
@@ -208,7 +216,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
           <Box
               display="flex"
               flexWrap="wrap"
-              sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
+              sx={{ position: 'absolute', zIndex:2, mr: '35px', mt:'4px'}}
           >
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
@@ -293,6 +301,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
               }
             </Box>
 
+
             <FlexBox
                 className="add-cart"
                 flexDirection="row"
@@ -300,45 +309,37 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
                 //width="65px"
             >
-              <Button
-                  variant="outlined"
-                  color="primary"
-                  sx={{ padding: '3px', ml:'5px', mr:'5px'}}
-                  onClick={() => {
-                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                      addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation)
-                    }
-                    else {
-                      setOpen(true);
-                    }
-                  }}
-              >
-                {isProductAndSkuGetOption(selectedProductAndSku) ?
-                    localStrings.selectOptions
-                    :
-                    <Add fontSize="small" />
-                }
+              {/*<Button*/}
+              {/*    variant="outlined"*/}
+              {/*    color="primary"*/}
+              {/*    sx={{ padding: '3px', ml:'5px', mr:'5px'}}*/}
+              {/*    onClick={() => {*/}
+              {/*      if (!isProductAndSkuGetOption(selectedProductAndSku)) {*/}
+              {/*        addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation, addToast)*/}
+              {/*      }*/}
+              {/*      else {*/}
+              {/*        setOpen(true);*/}
+              {/*      }*/}
+              {/*    }}*/}
+              {/*>*/}
+              {/*  {isProductAndSkuGetOption(selectedProductAndSku) ?*/}
+              {/*      localStrings.selectOptions*/}
+              {/*      :*/}
+              {/*      <Add fontSize="small" />*/}
+              {/*  }*/}
 
-              </Button>
-              {/*<p>{selectedProductAndSku.extRef}</p>*/}
-              {/*{selectedProductAndSku && selectedProductAndSku.sku &&*/}
-              {/*  <p>{JSON.stringify(selectedProductAndSku.sku)}</p>*/}
-              {/*}*/}
+              {/*</Button>*/}
 
               {selectedProductAndSku && selectedProductAndSku.sku &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
-              getQteInCart(selectedProductAndSku, orderInCreation) > 0 && (
+              getQteInCart(selectedProductAndSku, orderInCreation) > 0 ? (
                   <Fragment>
-                    <Box color="text.primary" fontWeight="600">
-                      {getQteInCart(selectedProductAndSku, orderInCreation)}
-                    </Box>
                     <Button
                         variant="outlined"
                         color="primary"
                         sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
                         disabled={getQteInCart(selectedProductAndSku, orderInCreation) == 1}
                         onClick={() => {
-                          //alert(selectedProductAndSku.sku.uuid)
                           if (selectedProductAndSku.sku.uuid) {
                             decreaseCartQte(orderInCreation, setOrderInCreation, selectedProductAndSku.sku.uuid)
                           }
@@ -346,13 +347,79 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     >
                       <Remove fontSize="small" />
                     </Button>
+                    <Box color="text.primary" fontWeight="600">
+                      {getQteInCart(selectedProductAndSku, orderInCreation)}
+                    </Box>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                        onClick={() => {
+                          if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                            //alert(selectedProductAndSku.sku.uuid)
+                            //alert(JSON.stringify(selectedProductAndSku.sku));
+                            addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation, addToast);
+                            //alert("uuid " + uuid);
+                            // if (!selectedProductAndSku.sku.uuid) {
+                            //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
+                            //   setSelectedProductSku(selectedWithUuid)
+                            // }
+                          }
+                          else {
+                            setOpen(true);
+                          }
+                        }}
+                    >
+                      {isProductAndSkuGetOption(selectedProductAndSku) ?
+                          localStrings.selectOptions
+                          :
+                          <Add fontSize="small" />
+                      }
+
+                    </Button>
+
                   </Fragment>
-              )}
+              )
+              :
+                  <Button
+                      variant="outlined"
+                      color="primary"
+                      sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                      onClick={() => {
+                        if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                          let uuid = addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation, addToast);
+                          //alert("uuid " + uuid);
+                          if (!selectedProductAndSku.sku.uuid) {
+                            let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
+                            setSelectedProductSku(selectedWithUuid)
+                          }
+                        }
+                        else {
+                          setOpen(true);
+                        }
+                      }}
+                  >
+                    {isProductAndSkuGetOption(selectedProductAndSku) ?
+                        localStrings.selectOptions
+                        :
+                        <Add fontSize="small" />
+                    }
+
+                  </Button>
+              }
             </FlexBox>
           </FlexBox>
         </div>
 
-        <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
+        <Dialog
+            BackdropProps={{
+              classes: {
+                root: classes.backDrop,
+              },
+            }}
+            open={open}
+            maxWidth={false}
+            onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
                           skuIndex={selectedSkuIndex}

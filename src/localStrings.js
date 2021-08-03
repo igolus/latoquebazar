@@ -4,6 +4,9 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        warning: "Attention",
+        information: "Information",
+        viewAllCat: "Voir toute les categories",
         backToCart: "Revenir au panier",
 
         phone: "Telephone",
@@ -13,7 +16,7 @@ let localStrings = new LocalizedStrings({
         formatDuration: "HH [heure(s) et] mm [minute(s)]",
         formatDurationNoHour: "mm [minute(s)]",
 
-        distanceTime: ", distance jusqu'a l'etablissement: {0} km / {1}",
+        distanceTime: "distance jusqu'a l'etablissement: {0} km / {1}",
         timeSlot: "Creneau de reservation",
         priceDetail: "Montant a payer",
         totalNoTax: "Total hors taxes",
@@ -111,12 +114,19 @@ let localStrings = new LocalizedStrings({
 
         info: {
             checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
-            connectToOrder: "Afin de garder une trace de vos commandes et de garantir une meilleur suivi merci de vous connecter. Si vous avez un compte google cela prendra quelques secondes !!"
+            connectToOrder: 'Afin de garder une trace de vos commandes et de garantir un meilleur suivi, la commande doit se faire en mode connecté. Si vous avez un compte Google ou Facebook <strong>cela ne prendra que quelques secondes !!</strong>'
         },
 
         warningMessage: {
             maxDistanceDelivery: "L'adresse est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
             maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
+            selectValidDeliveryAddressAndSchedule: "Selectionner une addresse de livraison valide et un creaneau de reservation",
+        },
+
+        notif: {
+            accountCreated: "Compte cree",
+            dealAddedToCart: "Offre ajouté au panier",
+            productAddedToCart: "Produit ajouté au panier",
         }
 
     }

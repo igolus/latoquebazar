@@ -26,7 +26,7 @@ export interface DealCard7Props {
   qty: number
   price: number
   products: any
-  item: any,
+  deal: any,
   currency: string
 }
 
@@ -36,11 +36,12 @@ const DealCard7: React.FC<DealCard7Props> = ({
   qty,
   price,
   products,
-  item,
+  deal,
   currency
 }) => {
 
-  console.log(" item " + JSON.stringify(item, null,2))
+  const item = deal.deal;
+  //console.log(" item " + JSON.stringify(item, null,2))
   const {orderInCreation, setOrderInCreation} = useAuth();
   //const { dispatch } = useAppContext()
   // const handleCartAmountChange = useCallback(
@@ -93,7 +94,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
         </Link>
         {/*{JSON.stringify(item.options)}*/}
         {
-          item.productAndSkusLines && item.productAndSkusLines.map((productAndSkusLine, key) =>
+          deal.productAndSkusLines && deal.productAndSkusLines.map((productAndSkusLine, key) =>
             // <h1>{option.name}</h1>
               <>
               <FlexBox flexWrap="wrap" alignItems="center">
@@ -101,10 +102,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
                  {formatProductAndSkuName(productAndSkusLine)}
                 </Span>
                 <Span color="grey.600" fontSize="14px"  mr={1}>
-                  {productAndSkusLine.price +  " " + currency} x {item.quantity}
+                  {productAndSkusLine.price +  " " + currency} x {deal.quantity}
                 </Span>
                 <Span color="grey.600" fontSize="14px" color="primary.main"  mr={2}>
-                  {(parseFloat(productAndSkusLine.price) * item.quantity).toFixed(2) + " " + currency}
+                  {(parseFloat(productAndSkusLine.price) * deal.quantity).toFixed(2) + " " + currency}
                 </Span>
               </FlexBox>
 
@@ -158,40 +159,43 @@ const DealCard7: React.FC<DealCard7Props> = ({
         >
           <FlexBox flexWrap="wrap" alignItems="center">
             <Span color="grey.600" mr={1}>
-              {getPriceWithOptions(item, true) + " " + currency} x {item.quantity}
+              {getPriceWithOptions(deal).toFixed(2) + " " + currency} x {deal.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              {getPriceWithOptions(item) * item.quantity + " " + currency}
+              {(getPriceWithOptions(deal) * deal.quantity).toFixed(2) + " " + currency}
             </Span>
           </FlexBox>
 
           <FlexBox alignItems="center">
             <Button
-              variant="outlined"
-              color="primary"
-              // padding="5px"
-              // size="none"
-              // borderColor="primary.light"
-              disabled={item.quantity === 1}
-              sx={{ p: '5px' }}
-              onClick={() => decreaseDealCartQte(orderInCreation, setOrderInCreation, item.uuid)}
+                variant="outlined"
+                color="primary"
+                // padding="5px"
+                // size="none"
+                // borderColor="primary.light"
+                disabled={item.quantity === 1}
+                sx={{ p: '5px' }}
+                onClick={() => decreaseDealCartQte(orderInCreation, setOrderInCreation, deal.uuid)}
             >
               <Remove fontSize="small" />
             </Button>
+
             <Span mx={1} fontWeight="600" fontSize="15px">
-              {item.quantity}
+              {deal.quantity}
             </Span>
+
             <Button
-              variant="outlined"
-              color="primary"
-              // padding="5px"
-              // size="none"
-              // borderColor="primary.light"
-              sx={{ p: '5px' }}
-              onClick={() => increaseDealCartQte(orderInCreation, setOrderInCreation, item.uuid)}
+                variant="outlined"
+                color="primary"
+                // padding="5px"
+                // size="none"
+                // borderColor="primary.light"
+                sx={{ p: '5px' }}
+                onClick={() => increaseDealCartQte(orderInCreation, setOrderInCreation, deal.uuid)}
             >
               <Add fontSize="small" />
             </Button>
+
           </FlexBox>
         </FlexBox>
       </FlexBox>

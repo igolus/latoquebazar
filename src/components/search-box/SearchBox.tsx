@@ -97,24 +97,11 @@ const SearchBox = () => {
   //     </BazarMenu>
   // )
 
-  async function searchTrigger() {
+  function searchTrigger() {
 
     //alert("searchTrigger " + searchText);
-    //let origin = window.location.origin;
-    //window.location = origin + "/product/search/" + searchText
     router.push("/product/search/" + searchText);
-    //linkSearch.current.click();
-    // if (searchText !== "") {
-    //
-    //   let origin = window.location.origin;
-    //   window.location = origin + "/product/search/" + searchText
-    //   //window.location = "/product/search/" + searchText
-    //   //Router.push("/product/search/" + searchText);
-    //   //Router.push("/qsdqsdqs" + searchText);
-    // }
 
-    //router.push('/cart')
-    //alert("searchTrigger")
   }
 
   function changeSearchValue(event) {
@@ -132,9 +119,19 @@ const SearchBox = () => {
             {...{ ref: parentRef }}
         >
 
-          {/*<form onSubmit={searchTrigger}>*/}
-          <form>
+          {/*<form*/}
+          {/*    on*/}
+          {/*    action="/product/search/drinks"*/}
+          {/*    method="get">*/}
+          {/*/!*<form>*!/*/}
             <TextField
+                onKeyDown={(e) => {
+                  if(e.keyCode == 13){
+                    searchTrigger()
+                    //console.log('value', e.target.value);
+                    // put the login here
+                  }
+                }}
 
                 variant="outlined"
                 placeholder={localStrings.searchFor}
@@ -153,6 +150,9 @@ const SearchBox = () => {
                       <>
                         {searchText !== "" ?
                             <Link href={`/product/search/${searchText}`}
+                                  onSubmit={() => alert("Link sumbit")}
+                                  onClick={() => alert("Link click")}
+
                             >
                               <a>
                                 <SearchOutlined className={classes.searchIcon}
@@ -171,7 +171,7 @@ const SearchBox = () => {
                   ),
                 }}
             />
-          </form>
+          {/*</form>*/}
 
           {/*{!!resultList.length && (*/}
           {/*  <Card className={classes.searchResultCard} elevation={2}>*/}

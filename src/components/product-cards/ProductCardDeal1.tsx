@@ -232,8 +232,6 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               flexWrap="wrap"
               sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
           >
-
-
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
                   <Chip
@@ -254,12 +252,23 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
           {/*<Link href={buildProductDetailRef()} >*/}
           {/*  <a>*/}
+
+
               <LazyImage
+                  onClick={() => {
+                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                      selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                    }
+                    else {
+                      setOpen(true);
+                    }
+                  }}
                   src={url}
                   width="100%"
                   height="auto"
                   layout="responsive"
                   alt={product.name}
+
 
               />
           {/*  </a>*/}
@@ -324,7 +333,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
         <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
-            <h1>DIALOG DEAL</h1>
+            {/*<h1>DIALOG DEAL</h1>*/}
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
                           skuIndex={selectedSkuIndex}
                           product={product}
@@ -334,7 +343,6 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                           //addCallBack={() => setOpen(false)}
                           addToCartOrderCallBack={addToDeal}
                           addButtonText={localStrings.select}
-
             />
             <IconButton
                 sx={{ position: 'absolute', top: '0', right: '0' }}

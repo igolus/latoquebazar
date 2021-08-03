@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useEffect,
-  useReducer, useState
-} from 'react';
+import React, {createContext, useEffect, useReducer, useState} from 'react';
 import firebase from '../lib/firebase';
-import SplashScreen from "../components/SplashScreen";
-import {useCollection, useCollectionData} from "react-firebase-hooks/firestore";
 import localStrings from "../localStrings";
 import {CURRENCY_EUR} from "../utils/Currencies";
 import {useToasts} from "react-toast-notifications";
@@ -16,12 +10,8 @@ import moment from "moment";
 import {establishmentsQuery} from "../gql/establishmentGql";
 import {getBrandByIdQuery} from "../gql/brandGql";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../util/constants"
-import {Button, Dialog, DialogContent} from "@material-ui/core";
-import ProductIntro from "@component/products/ProductIntro";
-import BazarIconButton from "@component/BazarIconButton";
-import Close from "@material-ui/icons/Close";
+import {Dialog, DialogContent} from "@material-ui/core";
 import {makeStyles} from "@material-ui/styles";
-import {MuiThemeProps} from "@theme/theme";
 import AdressCheck, {DIST_INFO} from "@component/address/AdressCheck";
 
 const CURRENCY = 'CURRENCY';
@@ -36,6 +26,7 @@ const ORDER_IN_CREATION = 'ORDER_IN_CREATION';
 const DEAL_EDIT = 'DEAL_EDIT';
 const MAX_DISTANCE_REACHED = 'MAX_DISTANCE_REACHED';
 const LOGIN_DIALOG_OPEN = 'LOGIN_DIALOG_OPEN';
+const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -78,6 +69,7 @@ const initialAuthState = {
   bookingSlotStartDate: moment(),
   maxDistanceReached: false,
   loginDialogOpen: false,
+  justCreatedOrder: null,
 };
 
 const config = require('../conf/config.json');
@@ -175,6 +167,14 @@ const reducer = (state, action) => {
       };
     }
 
+    case JUST_CREATED_ORDER: {
+      const { justCreatedOrder } = action.payload;
+      return {
+        ...state,
+        justCreatedOrder: justCreatedOrder,
+      };
+    }
+
 
     default: {
       return { ...state };
@@ -219,6 +219,8 @@ const AuthContext = createContext({
   setDealEdit: () => {},
 
   setLoginDialogOpen: () => {},
+
+  setJustCreatedOrder: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
@@ -291,6 +293,23 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await setDbUser(null);
+
+    dispatch({
+      type: ORDER_IN_CREATION,
+      payload: {
+        orderInCreation: {...orderInCreation(), deliveryAddress: null},
+      }
+    });
+
+    // dispatch({
+    //   type: ORDER_IN_CREATION,
+    //   payload: {
+    //     isAuthenticated: false,
+    //     user: null
+    //   }
+    // });
+
+
     currentUser()
     //setLoginDone(false)
     return firebase.auth().signOut();
@@ -456,6 +475,15 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  const setJustCreatedOrder = (value) => {
+    dispatch({
+      type: JUST_CREATED_ORDER,
+      payload: {
+        justCreatedOrder: value,
+      }
+    });
+  }
+
 
 
   useEffect(async () => {
@@ -543,11 +571,11 @@ export const AuthProvider = ({ children }) => {
             setDealEdit,
             setBookingSlotStartDate,
             setMaxDistanceReached,
-            setLoginDialogOpen
+            setLoginDialogOpen,
+            setJustCreatedOrder,
           }}
       >
         {children}
-        <Button onClick={() => setAdressDialogOpen(true)}>display diag</Button>
         {currentEstablishment() &&
         <Dialog open={adressDialogOpen} maxWidth="sm"
         >

@@ -16,6 +16,7 @@ import localStrings from "../../localStrings";
 import ProductSelector from './ProductSelector'
 import useAuth from "@hook/useAuth";
 import {addToCartOrder, buildProductAndSkus} from '../../util/cartUtil'
+import {useToasts} from "react-toast-notifications";
 
 export interface ProductIntroProps {
   imgUrl?: string[]
@@ -83,7 +84,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
   // }
 
   const [productAndSku, setProductAndSku] = useState(null);
-
+  const {addToast} = useToasts()
   const [selectedImage, setSelectedImage] = useState(0)
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [currentImage, setCurrentImage] = useState(0)
@@ -255,7 +256,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                   if (addToCartOrderCallBack) {
                     addToCartOrderCallBack(productAndSku)
                   } else {
-                    addToCartOrder(productAndSku, orderInCreation, setOrderInCreation);
+                    addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast);
                     if (addCallBack) {
                       addCallBack();
                     }

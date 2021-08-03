@@ -5,6 +5,7 @@ import {FilterProps} from "@component/products/ProductFilterCard";
 import {getBrandCurrency} from "../../util/displayUtil";
 import {cloneDeep} from "@apollo/client/utilities";
 import ProductCardDeal1 from "@component/product-cards/ProductCardDeal1";
+import useAuth from "@hook/useAuth";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -50,6 +51,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     const [productDisplay, setProductDisplay] = React.useState([]);
     const [maxPage, setMaxPage] = React.useState(0);
     const [page, setPage] = React.useState(1);
+    const {dealEdit} = useAuth();
 
     useEffect( () => {
         let filteredProduct = [];
@@ -71,15 +73,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             //alert("size search  " + filteredProduct.length)
         }
         else {
-            // if (category === localStrings.deals) {
-            //     //alert("DEAL CAt")
-            //     alert("dealsLoaded length " + dealsLoaded.length)
-            //     filteredProduct = dealsLoaded;
-            // }
-            //
-            // else {
-            //console.log("productsLoaded " + JSON.stringify(productsLoaded, null, 2))
-            //alert("filteredProduct.length " + filteredProduct.length)
             if (category == ALL_CAT) {
                 filteredProduct = productsLoaded
             }
@@ -87,15 +80,9 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                 filteredProduct = productsLoaded.filter(product =>
                     product.category && product.category.category== category);
             }
-
-            //alert("filteredProduct.length " + filteredProduct.length)
-            // }
-            //filteredProduct = productsLoaded
-
         }
 
         if (restrictedskuRefs) {
-            //filteredProduct = filteredProduct.filter(p => p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
             filteredProduct = filteredProduct.filter(p => p.skus && p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
             filteredProduct = cloneDeep(filteredProduct);
             filteredProduct.forEach(product => {
@@ -106,7 +93,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         setAllProducts(
             filteredProduct);
 
-       //console.log("filteredProduct " + JSON.stringify(filteredProduct, null, 2))
         setPage(0);
         setMaxPage(Math.floor(filteredProduct.length / itemPerPage) + 1);
         setProductDisplay(filteredProduct.slice(0,
@@ -126,28 +112,21 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
 
     function getLgSize(modeFullScren) {
-         // let minProduct = Math.floor(12 / productDisplay.length);
-         // return Math.max(modeFullScren? 3 : 4, minProduct);
-
          return modeFullScren? 3 : 4
     }
 
     function getSmSize(modeFullScren) {
-        // let minProduct = Math.floor(12 / productDisplay.length);
-        // return Math.max(modeFullScren? 4 : 6, minProduct);
-
         return modeFullScren? 4 : 6
     }
 
     return (
         <div>
+
             {/*<p>{JSON.stringify(allProducts)}</p>*/}
             {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
             <Grid container spacing={3} justifyContent="center" >
                 {productDisplay.map((item, ind) => {
-
                         let url = "/assets/images/Icon_Sandwich.png";
-
                         if (item.files && item.files.length > 0) {
                             url = item.files[0].url;
                         }
@@ -176,17 +155,18 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
                 )}
             </Grid>
-
-            <FlexBox
-                flexWrap="wrap"
-                flexDirection="row-reverse"
-                justifyContent="space-between"
-                alignItems="center"
-                mt={4}
-            >
-                {/*<Span color="grey.600">Showing 1-9 of 1.3k Products</Span>*/}
-                <Pagination count={maxPage} variant="outlined" color="primary" page={page} onChange={handleChange}/>
-            </FlexBox>
+            {maxPage > 1 &&
+                <FlexBox
+                    flexWrap="wrap"
+                    flexDirection="row-reverse"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mt={4}
+                >
+                    {/*<Span color="grey.600">Showing 1-9 of 1.3k Products</Span>*/}
+                    <Pagination count={maxPage} variant="outlined" color="primary" page={page} onChange={handleChange}/>
+                </FlexBox>
+            }
         </div>
     )
 }

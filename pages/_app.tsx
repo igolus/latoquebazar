@@ -45,7 +45,8 @@ const App = ({ Component, pageProps }: any) => {
     }, [])
 
     return (
-        <CacheProvider value={cache}>
+        // <div>
+            <CacheProvider value={cache}>
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
@@ -63,7 +64,9 @@ const App = ({ Component, pageProps }: any) => {
             {/*</AppProvider>*/}
 
         </CacheProvider>
+        // </div>
     )
+
 }
 
 // Only uncomment this method if you have blocking data requirements for

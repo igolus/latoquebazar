@@ -6,8 +6,26 @@ import localStrings from "../localStrings";
 
 export const getSkusLists = async (brandId) => {
     let res = await executeQueryUtil(getProductsQuery(brandId));
+    //return [];
     let allSkus = [];
+    console.log("res ->" + JSON.stringify(res))
+
     res.data.getProductsByBrandId.forEach(product => {
+        if (product.skus) {
+            product.skus.forEach(sku => {
+                allSkus.push({ ...sku, productName: product.name, productId: product.id, id: sku.extRef })
+            })
+        }
+    })
+    return {data: allSkus};
+}
+
+export const getSkusListsFromProducts = (products) => {
+    //let res = await executeQueryUtil(getProductsQuery(brandId));
+    //return [];
+    let allSkus = [];
+    console.log("products " + JSON.stringify(products))
+    products.forEach(product => {
         if (product.skus) {
             product.skus.forEach(sku => {
                 allSkus.push({ ...sku, productName: product.name, productId: product.id, id: sku.extRef })
@@ -191,6 +209,10 @@ export function formatOrderConsumingMode(item, localStrings) {
 }
 
 export const getDeliveryDistance = async (establishment, lat, lng) => {
+    if (!window.google) {
+        return null
+    }
+
     let distanceService = new window.google.maps.DistanceMatrixService()
     //google.maps.DistanceMatrixService
     if (!establishment.lat || !establishment.lat) {
@@ -258,4 +280,37 @@ export const formatDuration = (distanceInfo, localStrings) => {
             .format(localStrings.formatDuration);
             //.format();
     }
+}
+
+// export const getSkusLists = async (currentBrand) => {
+//     let res = await executeQueryUtil(getProductsQuery(currentBrand.id));
+//     let allSkus = [];
+//     res.data.getProductsByBrandId.forEach(product => {
+//         if (product.skus) {
+//             product.skus.forEach(sku => {
+//
+//                 let categoryProduct = "";
+//                 if (product.category && product.category.category) {
+//                     categoryProduct = product.category.category;
+//                 }
+//                 allSkus.push({ ...sku, productName: product.name, productId: product.id, id: sku.extRef, category: categoryProduct })
+//             })
+//         }
+//     })
+//     return {data: allSkus};
+// }
+
+export function getEstablishmentSettings(establishment, key) {
+    if (!establishment || !establishment.config || !establishment.config.some(item => item.key == key)) {
+        return null
+    }
+    let value = establishment.config.find(item => item.key == key).value;
+    if (value === "true")
+    {
+        return true;
+    }
+    if (value === "false") {
+        return false;
+    }
+    return value;
 }

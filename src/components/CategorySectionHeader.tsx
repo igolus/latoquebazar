@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React, { ReactNode } from 'react'
 import FlexBox from './FlexBox'
 import { H2 } from './Typography'
+import localStrings from "../localStrings";
 
 export interface CategorySectionHeaderProps {
   title?: string
@@ -32,7 +33,7 @@ const CategorySectionHeader: React.FC<CategorySectionHeaderProps> = ({
         <Link href={seeMoreLink}>
           <a>
             <FlexBox alignItems="center" ml={1} color="grey.600">
-              View all
+              {localStrings.viewAllCat}
               {/* <Box mr={1}>View all</Box> */}
               <ArrowRight fontSize="small" color="inherit" />
               {/* <Icon size="12px" defaultcolor="currentColor">

@@ -9,12 +9,14 @@ import cloneDeep from "clone-deep";
 import {useRouter} from "next/router";
 import {addDealToCart} from "../../util/cartUtil";
 import ProductDealCard1List from "@component/products/ProductDealCard1List";
+import {useToasts} from "react-toast-notifications";
+import {setActiveLink} from "react-scroll/modules/mixins/scroller";
 
 function DealSelector({ deal, contextData }) {
 
 
     const router = useRouter()
-
+    const {addToast} = useToasts()
     const [currentLine, setCurrentLine] = useState(0)
     const [skuRefs, setSkuRefs] = useState([])
     const {setDealEdit, dealEdit, orderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
@@ -22,22 +24,37 @@ function DealSelector({ deal, contextData }) {
     useEffect(() => {
         let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
         setSkuRefs(skusInLine);
-
-        // if (deal && deal.lines && deal.lines[currentLine] && deal.lines[currentLine].skus) {
-        //     let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
-        //     setSkuRefs(skusInLine);
-        // }
-
     }, [currentLine])
 
+
+    useEffect( () => {
+        if (dealEdit && dealEdit.productAndSkusLines) {
+            let providedLineNumbers = dealEdit.productAndSkusLines.map(line => line.lineNumber);
+
+            if (providedLineNumbers.length == deal.lines.length) {
+                return;
+            }
+            //alert("providedLineNumbers " + providedLineNumbers)
+            let lines = [];
+            //alert("deal.lines " + deal.lines.length)
+            for (let i=0;i<deal.lines.length;i++) {
+                lines.push(i)
+            }
+            //alert("lines " + lines)
+            let firstLine = lines.find(line => !providedLineNumbers.includes(line)) || 0;
+            setCurrentLine(firstLine);
+        }
+    }, [dealEdit])
+
     useEffect(() => {
-        setDealEdit(cloneDeep(deal))
+        setDealEdit({deal: cloneDeep(deal)})
     }, [])
 
     function getStepperList() {
-        return deal && deal.lines && deal.lines.map(line => {
+        return deal && deal.lines && deal.lines.map((line, index) => {
                 return(
                     {
+                        index: index,
                         title: line.name,
                         disabled: false
                     })
@@ -55,7 +72,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function addMenuToCart() {
-        addDealToCart(dealEdit, orderInCreation, setOrderInCreation);
+        addDealToCart(dealEdit, orderInCreation, setOrderInCreation, addToast);
         router.push("/cart")
     }
 
@@ -69,14 +86,14 @@ function DealSelector({ deal, contextData }) {
             {/*<h1>{currentLine}</h1>*/}
             {/*<p>{JSON.stringify(dealEdit)}</p>*/}
             {/*<p>{JSON.stringify(skuRefs)}</p>*/}
-
+            {/*<p>{dealEdit ? JSON.stringify(dealEdit.productAndSkusLines) : ""}</p>*/}
             <Box mb={3}>
                 <Grid container spacing={3}>
                     <Grid item lg={12} md={12} xs={12}>
                         <Stepper
-                            activeStep={currentLine}
+                            //activeStep={currentLine}
                             stepperList={getStepperList()}
-                            //selectedStep={currentLine}
+                            selectedStep={currentLine + 1}
                             onChange={handleStepChange}
                         />
                     </Grid>
@@ -92,8 +109,6 @@ function DealSelector({ deal, contextData }) {
                     </Grid>
                     <div style={{ width: '100%' }}>
                         <Box display="flex" justifyContent="flex-end" m={1} p={1} >
-
-
                             <Box p={1} >
                                 <Button variant="contained" color="primary" onClick={cancelDeal}>
                                     {localStrings.cancel}
@@ -106,8 +121,6 @@ function DealSelector({ deal, contextData }) {
                                     {localStrings.addMenuToCart}
                                 </Button>
                                 }
-
-
                                 {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length !== deal.lines.length &&
                                 isProductSelectedInLine() &&
                                 <Button variant="contained" color="primary" onClick={() => setCurrentLine(currentLine + 1)}>

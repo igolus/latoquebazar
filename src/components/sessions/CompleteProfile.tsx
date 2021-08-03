@@ -25,7 +25,9 @@ import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {createSiteUserMutation} from "../../gql/siteUserGql";
-import {DIST_INFO} from "@component/address/AdressCheck";
+import {DIST_INFO, setDistanceAndCheck} from "@component/address/AdressCheck";
+import {getDeliveryDistance} from "../../util/displayUtil";
+import {useToasts} from "react-toast-notifications";
 
 const fbStyle = {
   background: '#3B5998',
@@ -73,6 +75,7 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
 }))
 
 const CompleteProfile = ({closeCallBack}) => {
+  const {addToast} = useToasts();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const { user, currentBrand, currentEstablishment, establishmentList, setDbUser } = useAuth();
   const router = useRouter();
@@ -126,9 +129,7 @@ const CompleteProfile = ({closeCallBack}) => {
     if (closeCallBack) {
       closeCallBack();
     }
-    //router.push('/');
-    alert(JSON.stringify(valueCopy))
-    console.log(values)
+    addToast(localStrings.notif.accountCreated, { appearance: 'success', autoDismiss: true });
   }
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } =
@@ -152,7 +153,6 @@ const CompleteProfile = ({closeCallBack}) => {
   return (
       <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
         <form className="content" onSubmit={handleSubmit}>
-          <p>{localStorage.getItem(DIST_INFO)}</p>
           <H3 textAlign="center" mb={1}>
             {localStrings.activateAccount}
           </H3>
@@ -174,7 +174,6 @@ const CompleteProfile = ({closeCallBack}) => {
                                   error={!!touched.address && !!errors.address}
                                   helperText={touched.address && errors.address}
                                   setValueCallback={(label, placeId, city, postcode, citycode, lat, lng) => {
-                                    alert("value callback add")
                                     setFieldValue("address", label);
                                     setFieldValue("placeId", placeId);
                                     setFieldValue("lat", lat);
@@ -361,7 +360,8 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const formSchema = yup.object().shape({
   lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
   address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-  phoneNumber: yup.string().matches(phoneRegExp, localStrings.check.badPhoneFormat),
+  phoneNumber: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
+      .matches(phoneRegExp, localStrings.check.badPhoneFormat),
   agreement: yup
       .bool()
       .test(

@@ -11,9 +11,10 @@ import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
 
 export interface CheckoutSummaryProps {
     currency: string
+    hideDetail: boolean
 }
 
-const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency}) => {
+const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) => {
 
     const {orderInCreation} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
@@ -62,74 +63,72 @@ const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency}) => {
             {/*    </FlexBox>*/}
             {/*</FlexBox>*/}
 
-            <Divider sx={{ mb: '1rem' }} />
 
-            <Typography
-                fontSize="25px"
-                fontWeight="600"
-                lineHeight="1"
-                textAlign="right"
-                mb={3}
-            >
-                {parseFloat(priceDetails.total).toFixed(2)} {currency}
-            </Typography>
+                <Divider sx={{mb: '1rem'}}/>
 
-            {orderInCreation() && orderInCreation().deliveryAddress &&
-            orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                <Typography
+                    fontSize="25px"
+                    fontWeight="600"
+                    lineHeight="1"
+                    textAlign="right"
+                    mb={3}
+                >
+                    {parseFloat(priceDetails.total).toFixed(2)} {currency}
+                </Typography>
+
+            {!hideDetail &&
             <>
-                <Divider sx={{ mb: '1rem' }} />
 
+                {orderInCreation() && orderInCreation().deliveryAddress &&
+                orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                <>
+                    <Divider sx={{mb: '1rem'}}/>
+
+                    <Typography fontWeight="600" mb={1} mt={2}>
+                        {localStrings.deliveryAdress}
+                    </Typography>
+
+                    <Typography color="grey.600" fontSize="16px">
+                        {maxDistanceReached ? localStrings.tooFarAddress : orderInCreation().deliveryAddress.address}
+                    </Typography>
+
+                </>
+                }
+                <Divider sx={{mb: '1rem'}}/>
                 <Typography fontWeight="600" mb={1} mt={2}>
-                    {localStrings.deliveryAdress}
+                    {localStrings.deliveryMode}
+                </Typography>
+                {orderInCreation() && orderInCreation().deliveryMode &&
+                <Typography color="grey.600" fontSize="16px">
+                    {/*{orderInCreation().deliveryMode}*/}
+                    {formatOrderConsumingMode(orderInCreation(), localStrings)}
                 </Typography>
 
-                <Typography color="grey.600" fontSize="16px">
-                    {maxDistanceReached ? localStrings.tooFarAddress : orderInCreation().deliveryAddress.adress}
+                }
+
+                <Divider sx={{mb: '1rem'}}/>
+                <Typography fontWeight="600" mb={1} mt={2}>
+                    {localStrings.timeSlot}
                 </Typography>
+                {orderInCreation() && orderInCreation().bookingSlot ?
+                    <Typography color="grey.600" fontSize="16px">
+                        {moment(orderInCreation().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
+                        {" "}
+                        {moment(orderInCreation().bookingSlot.startDate).format("HH:mm")}
+                        -
+                        {moment(orderInCreation().bookingSlot.endDate).format("HH:mm")}
+                        {/*{JSON.stringify(orderInCreation().bookingSlot)}*/}
+                    </Typography>
+                    :
+                    <Typography color="grey.600" fontSize="16px">
+                        -
+                    </Typography>
+                }
 
             </>
             }
-            <Divider sx={{ mb: '1rem' }} />
-            <Typography fontWeight="600" mb={1} mt={2}>
-                {localStrings.deliveryMode}
-            </Typography>
-            {orderInCreation() && orderInCreation().deliveryMode &&
-            <Typography color="grey.600" fontSize="16px">
-                {/*{orderInCreation().deliveryMode}*/}
-                {formatOrderConsumingMode(orderInCreation(), localStrings)}
-            </Typography>
-
-            }
-
-            <Divider sx={{ mb: '1rem' }} />
-            <Typography fontWeight="600" mb={1} mt={2}>
-                {localStrings.timeSlot}
-            </Typography>
-            {orderInCreation() && orderInCreation().bookingSlot ?
-                <Typography color="grey.600" fontSize="16px">
-                    {moment(orderInCreation().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
-                    {" "}
-                    {moment(orderInCreation().bookingSlot.startDate).format("HH:mm")}
-                    -
-                    {moment(orderInCreation().bookingSlot.endDate).format("HH:mm")}
-                    {/*{JSON.stringify(orderInCreation().bookingSlot)}*/}
-                </Typography>
-                :
-                <Typography color="grey.600" fontSize="16px">
-                    -
-                </Typography>
-            }
-            {/*<TextField placeholder="Voucher" variant="outlined" size="small" fullWidth />*/}
-            {/*<Button*/}
-            {/*    variant="outlined"*/}
-            {/*    color="primary"*/}
-            {/*    fullWidth*/}
-            {/*    sx={{ mt: '1rem', mb: '30px' }}*/}
-            {/*>*/}
-            {/*    Apply Voucher*/}
-            {/*</Button>*/}
         </Card1>
     )
-}
+};
 
 export default CheckoutSummary
