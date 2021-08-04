@@ -69,13 +69,22 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 
           {getCartItems(orderInCreation).length > 0 &&
           <Grid container spacing={6}>
-            <Grid item sm={12} xs={12}>
+            <Grid item sm={6} xs={12}>
+              <Link href="/product/shop/all">
+                <Button variant="contained" color="primary" type="button" fullWidth>
+                  {localStrings.continueShopping}
+                </Button>
+              </Link>
+            </Grid>
+
+            <Grid item sm={6} xs={12}>
               <Link href="/checkout">
                 <Button variant="contained" color="primary" type="button" fullWidth>
                   {localStrings.checkOutNow}
                 </Button>
               </Link>
             </Grid>
+
           </Grid>
           }
 
@@ -94,16 +103,5 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 export const getStaticProps: GetStaticProps = async (context) => {
   return await getStaticPropsUtil();
 }
-
-const stateList = [
-  {
-    value: 'New York',
-    label: 'New York',
-  },
-  {
-    value: 'Chicago',
-    label: 'Chicago',
-  },
-]
 
 export default Cart

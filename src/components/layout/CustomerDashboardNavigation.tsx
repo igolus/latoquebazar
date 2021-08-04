@@ -9,6 +9,7 @@ import ShoppingBagOutlined from '@material-ui/icons/ShoppingBagOutlined'
 import { useRouter } from 'next/router'
 import React, { Fragment } from 'react'
 import { DashboardNavigationWrapper, StyledDashboardNav } from './DashboardStyle'
+import localStrings from "../../localStrings";
 
 const CustomerDashboardNavigation = () => {
   const { pathname } = useRouter()
@@ -47,49 +48,49 @@ const CustomerDashboardNavigation = () => {
 
 const linkList = [
   {
-    title: 'DASHBOARD',
+    title: localStrings.dashBoard,
     list: [
       {
         href: '/orders',
-        title: 'Orders',
+        title: localStrings.orders,
         icon: ShoppingBagOutlined,
         count: 5,
       },
-      {
-        href: '/wish-list',
-        title: 'Wishlist',
-        icon: FavoriteBorder,
-        count: 19,
-      },
-      {
-        href: '/support-tickets',
-        title: 'Support Tickets',
-        icon: CustomerService,
-        count: 1,
-      },
+      // {
+      //   href: '/wish-list',
+      //   title: 'Wishlist',
+      //   icon: FavoriteBorder,
+      //   count: 19,
+      // },
+      // {
+      //   href: '/support-tickets',
+      //   title: 'Support Tickets',
+      //   icon: CustomerService,
+      //   count: 1,
+      // },
     ],
   },
   {
-    title: 'ACCOUNT SETTINGS',
+    title: localStrings.myAccount,
     list: [
       {
         href: '/profile',
-        title: 'Profile Info',
+        title: localStrings.profileInformation,
         icon: Person,
         count: 3,
       },
-      {
-        href: '/address',
-        title: 'Addresses',
-        icon: Place,
-        count: 16,
-      },
-      {
-        href: '/payment-methods',
-        title: 'Payment Methods',
-        icon: CreditCard,
-        count: 4,
-      },
+      // {
+      //   href: '/address',
+      //   title: 'Addresses',
+      //   icon: Place,
+      //   count: 16,
+      // },
+      // {
+      //   href: '/payment-methods',
+      //   title: 'Payment Methods',
+      //   icon: CreditCard,
+      //   count: 4,
+      // },
     ],
   },
 ]

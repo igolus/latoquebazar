@@ -3,9 +3,14 @@ import { Container, Grid } from '@material-ui/core'
 import React from 'react'
 import AppLayout from './AppLayout'
 import CustomerDashboardNavigation from './CustomerDashboardNavigation'
+import {OrdersProps} from "../../../pages/orders";
 
-const CustomerDashboardLayout: React.FC = ({ children }) => (
-  <AppLayout navbar={<Navbar />}>
+export interface OrdersProps {
+  contextData?: any
+}
+
+const CustomerDashboardLayout:React.FC<OrdersProps> = ({ children, contextData }) => (
+  <AppLayout navbar={<Navbar contextData={contextData}/>}>
     <Container sx={{ my: '2rem' }}>
       <Grid container spacing={3}>
         <Grid

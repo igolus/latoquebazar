@@ -1,10 +1,15 @@
 import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getProductsQuery} from "../gql/productGql";
-import {getOrderDeliveryMode, orderDeliveryMode, TYPE_DEAL, TYPE_PRODUCT} from "./constants";
+import {getOrderDeliveryMode, getOrderStatus, orderDeliveryMode, TYPE_DEAL, TYPE_PRODUCT} from "./constants";
 import moment from "moment";
 import localStrings from "../localStrings";
+import axios from "axios";
+const config = require('../conf/config.json')
 
 export const getSkusLists = async (brandId) => {
+    //const google = window.google;
+
+    const google = window.google = window.google ? window.google : {}
     let res = await executeQueryUtil(getProductsQuery(brandId));
     //return [];
     let allSkus = [];
@@ -208,21 +213,49 @@ export function formatOrderConsumingMode(item, localStrings) {
     return ""
 }
 
-export const getDeliveryDistance = async (establishment, lat, lng) => {
-    if (!window.google) {
-        return null
+export function formatOrderStatus(status, localStrings) {
+    if (status) {
+        let data = getOrderStatus(localStrings).find(item => item.value === status);
+        if (data) {
+            return data.name;
+        }
     }
+    return '';
+}
 
-    let distanceService = new window.google.maps.DistanceMatrixService()
+export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, address) => {
+    let origins =  establishment.lat + "," + establishment.lng;
+    let destinations =  lat + "," + lng;
+    let res = await axios.get('http://localhost:5001/latoque-b23f1/us-central1/distanceApi?origins='+
+            origins + '&destinations=' + destinations + '&key=' + config.googleKey);
+
+    if (res && res.data && res.data.rows && res.data.rows.length > 0) {
+        //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
+        let distanceInfo =
+            {
+                distance: res.data.rows[0].elements[0].distance.value,
+                duration: res.data.rows[0].elements[0].duration.value,
+            }
+        return distanceInfo;
+    }
+    return null;
+}
+
+export const getDeliveryDistance = async (establishment, lat, lng) => {
+    // if (!window.google) {
+    //     return null
+    // }
+
+    let distanceService = new google.maps.DistanceMatrixService()
     //google.maps.DistanceMatrixService
     if (!establishment.lat || !establishment.lat) {
         return true;
     }
-    let placeEstablishment = new window.google.maps.LatLng(establishment.lat ,  establishment.lng);
+    let placeEstablishment = new google.maps.LatLng(establishment.lat ,  establishment.lng);
     let place = new window.google.maps.LatLng(lat ,lng);
     //
 
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
         distanceService.getDistanceMatrix(
             {
                 origins: [placeEstablishment],

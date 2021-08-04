@@ -19,11 +19,16 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     <div>
         <Head>
-            <script
-                type="text/javascript"
-                src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=&v=weekly"}
-                async
-            ></script>
+            {/*<script*/}
+            {/*    type="text/javascript"*/}
+            {/*    src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=places"}*/}
+            {/*/>*/}
+
+            {/*</script>*/}
+
+            {/*<script  type="text/javascript"*/}
+
+            {/*         src={"https://maps.googleapis.com/maps/api/js?libraries=places&key=" + key} ></script>*/}
         </Head>
 
         <AppLayout contextData={contextData}>

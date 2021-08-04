@@ -28,7 +28,7 @@ const config = require("../../conf/config.json")
 
 
 
-function loadScript(src, position, id) {
+export function loadScript(src, position, id) {
     if (!position) {
         return;
     }

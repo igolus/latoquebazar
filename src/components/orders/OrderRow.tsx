@@ -6,6 +6,9 @@ import { Box } from '@material-ui/system'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import React from 'react'
+import moment from "moment";
+import {formatOrderStatus} from "../../util/displayUtil";
+import localStrings from "../../localStrings";
 
 export interface OrderRowProps {
   item: {
@@ -14,10 +17,11 @@ export interface OrderRowProps {
     href: string
     purchaseDate: string | Date
     price: number
+    currency: string
   }
 }
 
-const OrderRow: React.FC<OrderRowProps> = ({ item }) => {
+const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
   const getColor = (status: string) => {
     switch (status) {
       case 'Pending':
@@ -34,16 +38,16 @@ const OrderRow: React.FC<OrderRowProps> = ({ item }) => {
   }
 
   return (
-    <Link href={item.href}>
+    <Link href={"/orders/" + item.id}>
       <a>
         <TableRow sx={{ my: '1rem', padding: '6px 18px' }}>
           <H5 m={0.75} textAlign="left">
-            {item.orderNo}
+            {item.orderNumber}
           </H5>
           <Box m={0.75}>
             <Chip
               size="small"
-              label={item.status}
+              label={formatOrderStatus(item.status, localStrings)}
               sx={{
                 p: '0.25rem 0.5rem',
                 fontSize: 12,
@@ -57,10 +61,11 @@ const OrderRow: React.FC<OrderRowProps> = ({ item }) => {
             />
           </Box>
           <Typography className="pre" m={0.75} textAlign="left">
-            {format(new Date(item.purchaseDate), 'MMM dd, yyyy')}
+            {moment.unix(item.creationDate).locale("fr").calendar()}
+            {/*{format(new Date(item.creationDate), 'MMM dd, yyyy')}*/}
           </Typography>
           <Typography m={0.75} textAlign="left">
-            ${item.price.toFixed(2)}
+            {item.totalPrice.toFixed(2)} {currency}
           </Typography>
 
           <Typography

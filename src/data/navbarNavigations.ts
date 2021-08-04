@@ -170,6 +170,7 @@ const navbarNavigations = [
   {
     title: 'Shop',
     url: '/product/shop/all',
+    regExpMatch: '\/product\/shop(.*)'
   },
   {
     title: 'Back to Demos',

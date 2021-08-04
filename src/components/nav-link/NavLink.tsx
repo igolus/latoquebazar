@@ -18,12 +18,15 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
 
 export interface NavLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string
+  regExpMatch: string
   style?: CSSProperties
   className?: string
 }
 
+
 const NavLink: React.FC<NavLinkProps> = ({
   href,
+  regExpMatch,
   children,
   style,
   className,
@@ -33,7 +36,7 @@ const NavLink: React.FC<NavLinkProps> = ({
 
   const checkRouteMatch = () => {
     if (href === '/') return pathname === href
-    return pathname.includes(href)
+    return pathname.includes(href) || (regExpMatch && pathname.match(new RegExp(regExpMatch)))
   }
 
   const classes = useStyles({ isCurrentRoute: checkRouteMatch() })

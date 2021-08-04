@@ -304,7 +304,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 fullWidth
                 onClick={toggleSidenav}
             >
-              {localStrings.checkOutNow} ({computePriceDetail(orderInCreation()).total + " " + getBrandCurrency(contextData ? contextData.brand : null)})
+              {localStrings.checkOutNow} ({computePriceDetail(orderInCreation()).total.toFixed(2) + " " + getBrandCurrency(contextData ? contextData.brand : null)})
               {/*{localStrings.checkOutNow}*/}
             </BazarButton>
           </Link>

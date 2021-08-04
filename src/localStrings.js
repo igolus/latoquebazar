@@ -4,6 +4,13 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        myOrders: "Mes Commandes",
+        purchaseDate: "Date de commande",
+        orderNumber: "Nummero de commande",
+        status: "statut",
+        myAccount: "Mon compte",
+        dashBoard: "Tableau de bord",
+        orders: "Commandes",
         warning: "Attention",
         information: "Information",
         viewAllCat: "Voir toute les categories",
@@ -40,6 +47,7 @@ let localStrings = new LocalizedStrings({
         select: "Selectionner le produit",
         addMenuToCart: "Ajouter le menu au panier",
         checkOutNow: "Commander",
+        continueShopping: "Ajouter d'autres produits",
         viewCart: "Voir le detail du panier",
         emptyBasket: "Votre panier est vide",
         cartItemNumber: "{0} produits dans le panier",
@@ -127,6 +135,10 @@ let localStrings = new LocalizedStrings({
             accountCreated: "Compte cree",
             dealAddedToCart: "Offre ajouté au panier",
             productAddedToCart: "Produit ajouté au panier",
+        },
+
+        notifForBackEnd: {
+            orderCreated: "Nouvelle Commande en ligne: {0}"
         }
 
     }

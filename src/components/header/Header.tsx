@@ -102,7 +102,9 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 >
                     <Link href="/">
                         <a>
-                            <Image mb={0.5} src={logoUrl || "/assets/images/logo.svg"} alt={brandName || "logo"} />
+                            {logoUrl &&
+                                <Image mb={0.5} src={logoUrl} alt={brandName || "logo"}/>
+                            }
                         </a>
                     </Link>
 

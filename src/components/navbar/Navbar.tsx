@@ -70,6 +70,7 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
 interface Nav {
   title: string
   url: string
+  regExpMatch?: string
   child: Nav[]
   extLink?: boolean
 }
@@ -84,6 +85,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
           return (
             <NavLink
               className={classes.navLink}
+              regExpMatch={nav.regExpMatch}
               href={nav.url}
               key={nav.title}
               target="_blank"
@@ -94,7 +96,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
           )
         else if (nav.url)
           return (
-            <NavLink className={classes.navLink} href={nav.url} key={nav.title}>
+            <NavLink className={classes.navLink} href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
               {nav.title}
             </NavLink>
           )
@@ -125,7 +127,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
       } else {
         if (nav.url)
           return (
-            <NavLink href={nav.url} key={nav.title}>
+            <NavLink href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
               <MenuItem>{nav.title}</MenuItem>
             </NavLink>
           )

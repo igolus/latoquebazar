@@ -3,21 +3,38 @@ import localStrings from "../../localStrings";
 import {Alert, Button, Typography} from "@material-ui/core";
 import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import Card1 from "@component/Card1";
-import {formatDuration, getDeliveryDistance, getMaxDistanceDelivery, isDeliveryActive} from "../../util/displayUtil";
+import {
+    formatDuration,
+    getDeliveryDistance,
+    getDeliveryDistanceWithFetch,
+    getMaxDistanceDelivery,
+    isDeliveryActive
+} from "../../util/displayUtil";
 import useAuth from "@hook/useAuth";
 import Box from "@material-ui/core/Box";
 
 export const DIST_INFO = 'distInfo';
 
-export function setDistanceAndCheck(value, setMaxDistanceReached, setDistanceInfo, currentEstablishment) {
-    if (!value) {
+export function setDistanceAndCheckNoCall(distanceInfo, setMaxDistanceReached, maxDist, setDistanceInfo) {
+    let distKm = distanceInfo.distance / 1000;
+    //alert("distKm " + distKm)
+    setMaxDistanceReached(distKm > maxDist)
+    //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
+    setDistanceInfo(distanceInfo)
+}
+
+export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment) {
+    //alert("setDistanceAndCheck " + value)
+    if (!distanceInfo) {
         return;
     }
     let maxDist = getMaxDistanceDelivery(currentEstablishment());
-    let distKm = value.distance / 1000;
-    //alert("distKm " + distKm)
+
+    let distKm = distanceInfo.distance / 1000;
     setMaxDistanceReached(distKm > maxDist)
-    setDistanceInfo(value)
+    //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
+    setDistanceInfo(distanceInfo)
+    //(value, setMaxDistanceReached, maxDist, setDistanceInfo);
 }
 
 function AdressCheck({closeCallBack}) {
@@ -56,14 +73,22 @@ function AdressCheck({closeCallBack}) {
                                             setterValueSource={setAddressValue}
                                             valueSource={addressValue}
                                             setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                                let dist = await getDeliveryDistance(currentEstablishment(), lat, lng);
+                                                //let dist = await getDeliveryDistance(currentEstablishment(), lat, lng);
+
+
+
                                                 setAddressData({
                                                     address: label,
                                                     lat: lat,
                                                     lng: lng,
                                                     placeId: placeId,
                                                 })
-                                                setDistanceAndCheck(dist,setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+
+                                                if (currentEstablishment()) {
+                                                    let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                    setDistanceAndCheck(distInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+                                                }
+                                                //setDistanceAndCheck(dist,setMaxDistanceReached, setDistanceInfo, currentEstablishment);
                                             }}/>
                 </Box>
 

@@ -23,7 +23,6 @@ export async function getStaticPropsUtil() {
         products = resProducts.getProductsByBrandId;
     }
 
-
     const resDeals = await getDealsQueryNoApollo(config.brandId);
     let deals = [];
 

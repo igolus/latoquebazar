@@ -58,6 +58,37 @@ export const getOrderDeliveryMode = (localStrings) => {
     },
   ]
 }
+
+
+export const getOrderStatus = (localStrings) => {
+  return[
+    {
+      name: localStrings.orderStatusNew,
+      value: ORDER_STATUS_NEW,
+    },
+    {
+      name: localStrings.orderStatusComplete,
+      value: ORDER_STATUS_COMPLETE,
+    },
+    {
+      name: localStrings.orderStatusDelivering,
+      value: ORDER_STATUS_DELIVERING,
+    },
+    {
+      name: localStrings.orderStatusPreparation,
+      value: ORDER_STATUS_PREPARATION,
+    },
+    {
+      name: localStrings.orderStatusReady,
+      value: ORDER_STATUS_READY,
+    },
+    {
+      name: localStrings.orderStatusFinished,
+      value: ORDER_STATUS_FINISHED,
+    }
+  ]
+}
+
 // export const orderDeliveryMode = [
 //   {
 //     name: localStrings.delivery,

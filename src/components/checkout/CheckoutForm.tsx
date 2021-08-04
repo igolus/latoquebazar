@@ -17,7 +17,7 @@ import {
 import {Formik} from 'formik'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
@@ -29,12 +29,12 @@ import {
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
 import moment from 'moment';
-import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
-import {setDistanceAndCheck} from "@component/address/AdressCheck";
+import GoogleMapsAutocomplete, {loadScript} from "@component/map/GoogleMapsAutocomplete";
+import {setDistanceAndCheck, setDistanceAndCheckNoCall} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
   formatDuration,
-  getDeliveryDistance,
+  getDeliveryDistance, getDeliveryDistanceWithFetch, getMaxDistanceDelivery, getProfileName,
   getSkusLists, getSkusListsFromProducts,
   isDeliveryActive
 } from "../../util/displayUtil";
@@ -48,6 +48,9 @@ import {createUpdateBookingSlotOccupancyMutation} from '../../gql/BookingSlotOcc
 import {addOrderToCustomer, createOrderMutation} from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
 import {getCartItems} from "../../util/cartUtil";
+import {sendNotif} from "../../util/sendNotif";
+
+const config = require("../../conf/config.json")
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -76,16 +79,17 @@ export interface CheckoutFormProps {
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const classes = useStyles();
+  const autocomp = useRef(null);
   const router = useRouter()
   const [selectedSlotKey, setSelectedSlotKey] = useState(null);
-  const [reloadDist, seReloadDist] = useState(false);
+  //const [reloadDist, seReloadDist] = useState(false);
   const [adressValue, setAdressValue] = useState("");
   const [adressEditLock, setAdressEditLock] = useState(false);
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, orderInCreation, currentEstablishment, dbUser, resetOrderInCreation} = useAuth();
-  const [distanceInfo, setDistanceInfo] = useState(null);
+  const [distanceInfo, setDistanceInfo] = useState({});
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
-
+  const loaded = React.useRef(false);
   // useEffect(() => {
   //   let userAdress = getUserAdress();
   //   setAdressValue(userAdress);
@@ -104,6 +108,27 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   //   }
   // }, [dbUser])
 
+  useEffect(() => {
+    //setGoogleKey(getGoogleKey());
+
+    if (typeof window !== 'undefined' && !loaded.current) {
+      let element = document.querySelector('#google-maps');
+      if (element) {
+        element.setAttribute("src",
+            'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
+      }
+      else {
+        loadScript(
+            'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
+            document.querySelector('head'),
+            'google-maps',
+        );
+      }
+      loaded.current = true;
+    }
+
+  },  [])
+
 
   useEffect(async () => {
     let lat;
@@ -119,29 +144,51 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       lat = dbUser.userProfileInfo.lat;
       lng = dbUser.userProfileInfo.lng;
       label = dbUser.userProfileInfo.address;
-      //alert("add db user " + label + lat + lng);
-      let dist = await getDeliveryDistance(currentEstablishment(), lat, lng);
-      //alert("dist " + dist)
-      setDistanceAndCheck(dist,setMaxDistanceReached, setDistanceInfo, currentEstablishment);
-      updateDeliveryAdress(label, lat, lng);
-      //alert("add db user 2" + label + lat + lng);
-      //updateDeliveryAdress(label, lat, lng);
-      setAdressValue(label)
-      updateCustomer(dbUser);
-      setAdressEditLock(true);
-      //}
-      // else if (localStorage.getItem(DIST_INFO)) {
-      //   let distInfo = JSON.parse(localStorage.getItem(DIST_INFO));
-      //   lat = distInfo.lat;
-      //   lng = distInfo.lng;
-      //   label = distInfo.address;
-      //   alert("DIST_INFO " + label)
+
+      // if (autocomp) {
+      //   autocomp.current.value = label;
       // }
 
+      //alert()
+      setAdressValue(label)
+      //let dist = await getDeliveryDistance(currentEstablishment(), lat, lng);
+
+      let distanceInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng, label);
+
+      if (distanceInfo) {
+
+        setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+        //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
+        // let distanceInfo =
+        // {
+        //   distance: res.data.rows[0].elements[0].distance.value,
+        //   duration: res.data.rows[0].elements[0].duration.value,
+        // }
+        // alert("setDistanceAndCheckNoCall")
+        //
+        // let maxDist = getMaxDistanceDelivery(currentEstablishment());
+        // let distKm = distanceInfo.distance / 1000;
+        // //alert("distKm " + distKm)
+        // setMaxDistanceReached(distKm > maxDist)
+        // alert("setDistanceInfo " + JSON.stringify(distanceInfo))
+        // setDistanceInfo(distanceInfo)
+        //
+        // setDistanceAndCheckNoCall({...distanceInfo},
+        //     setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+
+        //setDistanceInfo({test:"t"})
+      }
+
+
+      updateDeliveryAdress(label, lat, lng);
+      updateCustomer(dbUser)
+      // setAdressValue(label);
+      // updateCustomer(dbUser);
+      setAdressEditLock(true);
     }
 
     //setAdressEditLock(true);
-  },  [dbUser, reloadDist])
+  },  [dbUser, autocomp])
 
   function buildOrderInformation() {
     let ret = "";
@@ -304,6 +351,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       }
 
       console.log("orderInCreation " + JSON.stringify(orderInCreation(), null, 2))
+      let messageNotif = localStrings.formatString(localStrings.notifForBackEnd.orderCreated, getProfileName(dbUser))
+      let link = "/app/management/Orders/detail/" + result.data.addOrder.id;
+      await sendNotif(currentBrand.id, currentEstablishment().id, messageNotif,
+          link, "");
 
       resetOrderInCreation();
     }
@@ -343,11 +394,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     })
   }
 
-  function updateDeliveryAdress(adress, lat, lng) {
+  function updateDeliveryAdress(address, lat, lng) {
+    //alert("updateDeliveryAdress")
     setOrderInCreation({
       ...orderInCreation(),
       deliveryAddress: {
-        address: adress,
+        address: address,
         lat: lat,
         lng: lng,
       },
@@ -396,6 +448,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
             <form onSubmit={handleSubmit}>
               {dbUser &&
               <Card1 sx={{mb: '2rem'}}>
+                {/*<p>maxDistanceReached: {maxDistanceReached}</p>*/}
+                {/*<p>distanceInfo: {JSON.stringify(distanceInfo)}</p>*/}
                 {distanceInfo && isDeliveryActive(currentEstablishment()) &&
                 orderInCreation() && orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                 <Box p={1}>
@@ -406,7 +460,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                       (distanceInfo.distance / 1000),
                                       formatDuration(distanceInfo, localStrings))}
                   />
-                  {/*<p>{JSON.stringify(orderInCreation())}</p>*/}
+                  <p>{JSON.stringify(orderInCreation().deliveryAddress)}</p>
                   {/*<Alert severity={maxDistanceReached ? "warning" : "success"} style={{marginBottom: 2}}>*/}
                   {/*  {maxDistanceReached ?*/}
                   {/*      localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}*/}
@@ -447,20 +501,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   <Grid container spacing={3}>
                     {/*<Box display="flex" p={1}>*/}
                     <Grid item xs={12} lg={adressEditLock ? 8 : 12}>
-                      <GoogleMapsAutocomplete noKeyKnown
-                                              required
-                                              setterValueSource={setAdressValue}
-                                              valueSource={adressValue}
-                                              disabled={adressEditLock}
-                                              setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                                if (currentEstablishment()) {
-                                                  let dist = await getDeliveryDistance(currentEstablishment(), lat, lng);
-                                                  setDistanceAndCheck(dist, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
-                                                }
-                                                //setAdressValue(label)
-                                                updateDeliveryAdress(label, lat, lng);
-                                                setAdressEditLock(true);
-                                              }}/>
+                      <GoogleMapsAutocomplete
+                          ref={autocomp}
+                          noKeyKnown
+                          required
+                          setterValueSource={setAdressValue}
+                          valueSource={adressValue}
+                          disabled={adressEditLock}
+                          setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                            if (currentEstablishment()) {
+                              let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                              setDistanceAndCheck(distInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+                            }
+                            //setAdressValue(label)
+                            updateDeliveryAdress(label, lat, lng);
+                            setAdressEditLock(true);
+                          }}/>
                     </Grid>
                     {adressEditLock &&
                     <Grid item xs={12} lg={4}>
