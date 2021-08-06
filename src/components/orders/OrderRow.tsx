@@ -65,7 +65,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
             {/*{format(new Date(item.creationDate), 'MMM dd, yyyy')}*/}
           </Typography>
           <Typography m={0.75} textAlign="left">
-            {item.totalPrice.toFixed(2)} {currency}
+            {(item.totalPrice || 0).toFixed(2)} {currency}
           </Typography>
 
           <Typography

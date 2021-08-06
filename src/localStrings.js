@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        editProfile: "Editer mon compte",
         myOrders: "Mes Commandes",
         purchaseDate: "Date de commande",
         orderNumber: "Nummero de commande",

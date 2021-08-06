@@ -32,7 +32,7 @@ type StyledCardProps = {
   passwordVisibility?: boolean
 }
 
-const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
+export const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   ({ children, passwordVisibility, ...rest }) => <Card {...rest}>{children}</Card>
 )<CardProps>(({ theme, passwordVisibility }) => ({
   //width: 500,
@@ -70,7 +70,7 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
 const Login = ({closeCallBack}) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
 
-  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId, signInWithFaceBook} = useAuth();
+  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId, signInWithFaceBook, setLoginOnGoing} = useAuth();
 
   const router = useRouter()
 
@@ -92,8 +92,12 @@ const Login = ({closeCallBack}) => {
 
   async function handleGoogleClick() {
     try {
+
+
       var user = await signInWithGoogle();
+
       let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
+      setLoginOnGoing(false)
       if (result.data.getSiteUser) {
         if (closeCallBack) {
           closeCallBack();
@@ -110,6 +114,7 @@ const Login = ({closeCallBack}) => {
       var user = await signInWithFaceBook();
       alert()
       let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
+      setLoginOnGoing(false)
       if (result.data.getSiteUser) {
         if (closeCallBack) {
           closeCallBack();

@@ -5,6 +5,7 @@ import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import React from "react";
 import Head from 'next/head';
+
 //const config = require("../src/conf/config.json")
 export interface IndexPageProps {
     contextData?: any
@@ -13,45 +14,45 @@ export interface IndexPageProps {
 
 
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
-
     const key = "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ";
-  return (
+    return (
 
-    <div>
-        <Head>
-            {/*<script*/}
-            {/*    type="text/javascript"*/}
-            {/*    src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=places"}*/}
-            {/*/>*/}
+        <div>
+            <Head>
 
-            {/*</script>*/}
+                {/*<script*/}
+                {/*    type="text/javascript"*/}
+                {/*    src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=places"}*/}
+                {/*/>*/}
 
-            {/*<script  type="text/javascript"*/}
+                {/*</script>*/}
 
-            {/*         src={"https://maps.googleapis.com/maps/api/js?libraries=places&key=" + key} ></script>*/}
-        </Head>
+                {/*<script  type="text/javascript"*/}
 
-        <AppLayout contextData={contextData}>
-      {/*<h1>TOTO IndexPage</h1>*/}
-        <CarouselCompo contextData={contextData}/>
+                {/*         src={"https://maps.googleapis.com/maps/api/js?libraries=places&key=" + key} ></script>*/}
+            </Head>
+
+            <AppLayout contextData={contextData}>
+                {/*<h1>TOTO IndexPage</h1>*/}
+                <CarouselCompo contextData={contextData}/>
 
 
-        {/*<GrocerySection1/>*/}
-      {/*<Section2 />*/}
-      {/*<Section3 />*/}
-      {/*<Section4 />*/}
-      {/*<Section5 />*/}
-      {/*<Section13 />*/}
-      {/*<Section6 />*/}
-      {/*<Section7 />*/}
-      {/*<Section8 />*/}
-      {/*<Section9 />*/}
-      <SectionCategories categories={contextData.categories}/>
-      {/*<Section11 />*/}
-      {/*<Section12 />*/}
-    </AppLayout>
-    </div>
-  )
+                {/*<GrocerySection1/>*/}
+                {/*<Section2 />*/}
+                {/*<Section3 />*/}
+                {/*<Section4 />*/}
+                {/*<Section5 />*/}
+                {/*<Section13 />*/}
+                {/*<Section6 />*/}
+                {/*<Section7 />*/}
+                {/*<Section8 />*/}
+                {/*<Section9 />*/}
+                <SectionCategories categories={contextData.categories}/>
+                {/*<Section11 />*/}
+                {/*<Section12 />*/}
+            </AppLayout>
+        </div>
+    )
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {

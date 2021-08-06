@@ -1,4 +1,13 @@
-module.exports = {
+const withPWA = require('next-pwa')
+
+module.exports = withPWA({
+  pwa: {
+    dest: "public",
+    register: true,
+    skipWaiting: true,
+
+  },
+  cacheWillUpdate: true,
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -15,4 +24,4 @@ module.exports = {
   //target: 'serverless'
   // Supported targets are "serverless" and "experimental-serverless-trace"
   //target: "experimental-serverless-trace"
-}
+});

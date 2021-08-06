@@ -52,7 +52,7 @@ const SectionCategories: React.FC<SectionCategoriesProps> = ({categories}) => {
         {/*  >*/}
         {categories.map((item, ind) => (
           <Grid item lg={2} md={3} sm={4} xs={12} key={ind}>
-            <Link href="/">
+            <Link href={"/product/shop/" + item.category}>
               <a>
                 <BazarCard className={classes.card} elevation={1}>
                   {getProductFirstImgUrl(item) &&

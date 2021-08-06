@@ -17,6 +17,11 @@ export default class Bazar extends Document {
     return (
       <Html lang="en">
         <Head>
+
+
+          <link rel="manifest" href="/manifest.json" />
+          <link rel="apple-touch-icon" href="/iconResto.png"></link>
+          <meta name="theme-color" content="#fff" />
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <link

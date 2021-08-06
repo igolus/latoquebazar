@@ -26,6 +26,7 @@ const ORDER_IN_CREATION = 'ORDER_IN_CREATION';
 const DEAL_EDIT = 'DEAL_EDIT';
 const MAX_DISTANCE_REACHED = 'MAX_DISTANCE_REACHED';
 const LOGIN_DIALOG_OPEN = 'LOGIN_DIALOG_OPEN';
+const LOGIN_ON_GOING = 'LOGIN_ON_GOING';
 const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
 
 const useStyles = makeStyles(() => ({
@@ -70,6 +71,7 @@ const initialAuthState = {
   maxDistanceReached: false,
   loginDialogOpen: false,
   justCreatedOrder: null,
+  loginOnGoing: false
 };
 
 const config = require('../conf/config.json');
@@ -167,6 +169,14 @@ const reducer = (state, action) => {
       };
     }
 
+    case LOGIN_ON_GOING: {
+      const { loginOnGoing } = action.payload;
+      return {
+        ...state,
+        loginOnGoing: loginOnGoing,
+      };
+    }
+
     case JUST_CREATED_ORDER: {
       const { justCreatedOrder } = action.payload;
       return {
@@ -219,6 +229,7 @@ const AuthContext = createContext({
   setDealEdit: () => {},
 
   setLoginDialogOpen: () => {},
+  setLoginOnGoing: () => {},
 
   setJustCreatedOrder: () => {},
 });
@@ -282,11 +293,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInWithGoogle = () => {
+    setLoginOnGoing(true);
     const provider = new firebase.auth.GoogleAuthProvider();
     return firebase.auth().signInWithPopup(provider);
   };
 
   const signInWithFaceBook = () => {
+    setLoginOnGoing(true);
     const provider = new firebase.auth.FacebookAuthProvider();
     return firebase.auth().signInWithPopup(provider);
   };
@@ -475,6 +488,17 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  const setLoginOnGoing = (value) => {
+    dispatch({
+      type: LOGIN_ON_GOING,
+      payload: {
+        loginOnGoing: value,
+      }
+    });
+  }
+
+
+
   const setJustCreatedOrder = (value) => {
     dispatch({
       type: JUST_CREATED_ORDER,
@@ -572,6 +596,7 @@ export const AuthProvider = ({ children }) => {
             setBookingSlotStartDate,
             setMaxDistanceReached,
             setLoginDialogOpen,
+            setLoginOnGoing,
             setJustCreatedOrder,
           }}
       >

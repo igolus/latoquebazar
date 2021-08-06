@@ -226,7 +226,8 @@ export function formatOrderStatus(status, localStrings) {
 export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, address) => {
     let origins =  establishment.lat + "," + establishment.lng;
     let destinations =  lat + "," + lng;
-    let res = await axios.get('http://localhost:5001/latoque-b23f1/us-central1/distanceApi?origins='+
+
+    let res = await axios.get(config.distanceUrl + '?origins='+
             origins + '&destinations=' + destinations + '&key=' + config.googleKey);
 
     if (res && res.data && res.data.rows && res.data.rows.length > 0) {

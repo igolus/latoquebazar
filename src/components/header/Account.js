@@ -6,7 +6,6 @@ import {
     Avatar,
     Box,
     ButtonBase,
-    Hidden,
     Menu,
     MenuItem,
     Typography,

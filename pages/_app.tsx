@@ -9,7 +9,7 @@ import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import React, { Fragment, useEffect } from 'react'
 import {ToastProvider} from "react-toast-notifications";
-
+import register from '../public/registerServiceWorker';
 export const cache = createCache({ key: 'css', prepend: true })
 
 //Binding events.
@@ -30,6 +30,7 @@ const App = ({ Component, pageProps }: any) => {
         }
 
         if("serviceWorker" in navigator) {
+            //register(window);
             window.addEventListener("load", function () {
                 navigator.serviceWorker.register("/firebase-messaging-sw.js").then(
                     function (registration) {
@@ -39,6 +40,15 @@ const App = ({ Component, pageProps }: any) => {
                         console.log("Service Worker registration failed: ", err);
                     }
                 );
+
+                // navigator.serviceWorker.register("/registerServiceWorker.js").then(
+                //     function (registration) {
+                //         console.log("Service Worker registration successful with scope: ", registration.scope);
+                //     },
+                //     function (err) {
+                //         console.log("Service Worker registration failed: ", err);
+                //     }
+                // );
             });
         }
 
@@ -48,6 +58,7 @@ const App = ({ Component, pageProps }: any) => {
         // <div>
             <CacheProvider value={cache}>
             <Head>
+                <link rel="manifest" href="/manifest.json" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
             </Head>
