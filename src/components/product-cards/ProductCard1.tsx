@@ -213,6 +213,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
         {/*<p>{JSON.stringify(product.tags || [])}</p>*/}
         <div className={classes.imageHolder}>
+          {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
           <Box
               display="flex"
               flexWrap="wrap"
@@ -263,7 +264,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         }}
                         variant="contained"
                         color={selectedProductAndSku.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
-                        sx={{ padding: "3px", mr: "3px" }}>
+                        sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
                       {productAndSkuItem.sku.name}
                     </BazarButton>
                   </Box>

@@ -117,10 +117,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
                               {option.name}
                             </Span>
                             <Span color="grey.700" fontSize="12px"  mr={1}>
-                              {option.price +  " " + currency} x {item.quantity}
+                              {option.price +  " " + currency} x {deal.quantity}
                             </Span>
                             <Span fontWeight={600} color="primary.main" fontSize="12px" mr={2}>
-                              {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}
+                              {(parseFloat(option.price) * deal.quantity).toFixed(2) + " " + currency}
                             </Span>
                           </FlexBox>
 
@@ -147,7 +147,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
               padding: '4px',
               ml: '12px',
             }}
-            onClick={() => deleteDealInCart(orderInCreation, setOrderInCreation, item.uuid)}
+            onClick={() => deleteDealInCart(orderInCreation, setOrderInCreation, deal.uuid)}
           >
             <Close fontSize="small" />
           </IconButton>

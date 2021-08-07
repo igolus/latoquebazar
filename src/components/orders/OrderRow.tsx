@@ -9,6 +9,12 @@ import React from 'react'
 import moment from "moment";
 import {formatOrderStatus} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
+import {
+  ORDER_STATUS_DELIVERING, ORDER_STATUS_FINISHED,
+  ORDER_STATUS_NEW,
+  ORDER_STATUS_PREPARATION,
+  ORDER_STATUS_READY
+} from "../../util/constants";
 
 export interface OrderRowProps {
   item: {
@@ -24,14 +30,18 @@ export interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
   const getColor = (status: string) => {
     switch (status) {
-      case 'Pending':
+      case ORDER_STATUS_NEW:
         return 'secondary'
-      case 'Processing':
+      case ORDER_STATUS_DELIVERING:
         return 'secondary'
-      case 'Delivered':
+      case ORDER_STATUS_PREPARATION:
+        return 'secondary'
+      case ORDER_STATUS_PREPARATION:
+        return 'secondary'
+      case ORDER_STATUS_FINISHED:
         return 'success'
-      case 'Cancelled':
-        return 'error'
+      // case 'Cancelled':
+      //   return 'error'
       default:
         return ''
     }

@@ -4,6 +4,8 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        contentDeal: "Contenu du menu",
+        modify: "Modifier",
         editProfile: "Editer mon compte",
         myOrders: "Mes Commandes",
         purchaseDate: "Date de commande",
@@ -42,8 +44,8 @@ let localStrings = new LocalizedStrings({
         order: "Commande",
         categories: "Categories",
         tags: "Tags",
-        selectDeal: "Choisir le detail",
-        cancel: "Annuller",
+        selectDeal: "Choisir les produits",
+        cancel: "Annuler",
         next: "Selectionner le produit suivant",
         select: "Selectionner le produit",
         addMenuToCart: "Ajouter le menu au panier",
@@ -130,6 +132,7 @@ let localStrings = new LocalizedStrings({
             maxDistanceDelivery: "L'adresse est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
             maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
             selectValidDeliveryAddressAndSchedule: "Selectionner une addresse de livraison valide et un creaneau de reservation",
+            optionMandatory: "Merci de choisir les options requisent",
         },
 
         notif: {

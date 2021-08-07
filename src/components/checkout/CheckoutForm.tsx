@@ -87,7 +87,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const [adressEditLock, setAdressEditLock] = useState(false);
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, orderInCreation, currentEstablishment, dbUser, resetOrderInCreation} = useAuth();
-  const [distanceInfo, setDistanceInfo] = useState({});
+  const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
   const loaded = React.useRef(false);
   // useEffect(() => {

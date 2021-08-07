@@ -5,7 +5,7 @@ import React, {
 import {
     Avatar,
     Box,
-    ButtonBase,
+    ButtonBase, Hidden,
     Menu,
     MenuItem,
     Typography,

@@ -220,7 +220,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
             >
               <Link href={buildProductDetailRef()}>
                 <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                 >

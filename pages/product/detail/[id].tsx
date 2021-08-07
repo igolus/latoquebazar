@@ -65,6 +65,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         <NavbarLayout contextData={contextData}>
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
+                          routeToCart={true}
                           skuIndex={skuIndex}
                           options={contextData.options} currency={getBrandCurrency(contextData.brand)}/>
             }

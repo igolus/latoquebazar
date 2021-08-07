@@ -112,7 +112,6 @@ const Login = ({closeCallBack}) => {
   async function handleFacebookClick() {
     try {
       var user = await signInWithFaceBook();
-      alert()
       let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
       setLoginOnGoing(false)
       if (result.data.getSiteUser) {

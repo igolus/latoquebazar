@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Grid} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid} from "@material-ui/core";
 import {ALL_CAT} from "@component/products/ProductCard1List";
 import Stepper from "@component/stepper/Stepper";
 import {Box} from "@material-ui/system";
@@ -10,14 +10,27 @@ import {useRouter} from "next/router";
 import {addDealToCart} from "../../util/cartUtil";
 import ProductDealCard1List from "@component/products/ProductDealCard1List";
 import {useToasts} from "react-toast-notifications";
-import {setActiveLink} from "react-scroll/modules/mixins/scroller";
+import {makeStyles} from "@material-ui/styles";
+import MiniCartDeal from "@component/mini-cart/MiniCartDeal";
+
+
+const useStyles = makeStyles(() => ({
+    backDrop: {
+        backdropFilter: "blur(5px)",
+        backgroundColor:'rgba(0,0,30,0.4)'
+    },
+    dialogContent: {
+        paddingBottom: '1.25rem',
+    },
+}))
 
 function DealSelector({ deal, contextData }) {
 
-
+    const classes = useStyles();
     const router = useRouter()
     const {addToast} = useToasts()
     const [currentLine, setCurrentLine] = useState(0)
+    const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
     const [skuRefs, setSkuRefs] = useState([])
     const {setDealEdit, dealEdit, orderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
 
@@ -28,21 +41,25 @@ function DealSelector({ deal, contextData }) {
 
 
     useEffect( () => {
-        if (dealEdit && dealEdit.productAndSkusLines) {
-            let providedLineNumbers = dealEdit.productAndSkusLines.map(line => line.lineNumber);
+        // if (dealEdit && dealEdit.productAndSkusLines) {
+        //     let providedLineNumbers = dealEdit.productAndSkusLines.map(line => line.lineNumber);
+        //
+        //     if (providedLineNumbers.length == deal.lines.length) {
+        //         return;
+        //     }
+        //     //alert("providedLineNumbers " + providedLineNumbers)
+        //     let lines = [];
+        //     //alert("deal.lines " + deal.lines.length)
+        //     for (let i=0;i<deal.lines.length;i++) {
+        //         lines.push(i)
+        //     }
+        //     //alert("lines " + lines)
+        //     let firstLine = lines.find(line => !providedLineNumbers.includes(line)) || 0;
+        //     setCurrentLine(firstLine);
+        // }
 
-            if (providedLineNumbers.length == deal.lines.length) {
-                return;
-            }
-            //alert("providedLineNumbers " + providedLineNumbers)
-            let lines = [];
-            //alert("deal.lines " + deal.lines.length)
-            for (let i=0;i<deal.lines.length;i++) {
-                lines.push(i)
-            }
-            //alert("lines " + lines)
-            let firstLine = lines.find(line => !providedLineNumbers.includes(line)) || 0;
-            setCurrentLine(firstLine);
+        if (dealEdit && dealEdit.productAndSkusLines && deal.lines.length === dealEdit.productAndSkusLines.length) {
+            setConfirmDealDialogOpen(true);
         }
     }, [dealEdit])
 
@@ -67,7 +84,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function isProductSelectedInLine() {
-        return dealEdit.productAndSkusLines &&
+        return dealEdit && dealEdit.productAndSkusLines &&
             dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.lineNumber == currentLine)
     }
 
@@ -83,6 +100,64 @@ function DealSelector({ deal, contextData }) {
 
     return (
         <div>
+            {/*<p>{deal && deal.lines? deal.lines.length : 0}</p>*/}
+            {/*<p>{dealEdit && dealEdit.productAndSkusLines ? dealEdit.productAndSkusLines.length: 0}</p>*/}
+
+
+            <Dialog
+                BackdropProps={{
+                    classes: {
+                        root: classes.backDrop,
+                    },
+                }}
+                open={confirmDealDialogOpen}
+                maxWidth={false}
+                onClose={() => setConfirmDealDialogOpen(false)}>
+
+                <DialogTitle>{localStrings.contentDeal}</DialogTitle>
+                <DialogContent className={classes.dialogContent}>
+                    <MiniCartDeal contextData={contextData}
+                                  setterLine={setCurrentLine}
+                                  closeCallBack={() => setConfirmDealDialogOpen(false)}/>
+                    {/*<ProductIntro imgUrl={[imgUrl]} title={title} price={price}*/}
+                    {/*              skuIndex={selectedSkuIndex}*/}
+                    {/*              product={product}*/}
+                    {/*              options={options}*/}
+                    {/*              currency={currency}*/}
+                    {/*              addCallBack={() => setOpen(false)}*/}
+                    {/*/>*/}
+                    {/*<IconButton*/}
+                    {/*    sx={{ position: 'absolute', top: '0', right: '0' }}*/}
+                    {/*    onClick={toggleDialog}*/}
+                    {/*>*/}
+                    {/*    <Close className="close" fontSize="small" color="primary" />*/}
+                    {/*</IconButton>*/}
+                </DialogContent>
+
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                            setConfirmDealDialogOpen(false);
+                            cancelDeal();
+                        }}
+                    >
+                        {localStrings.cancel}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                            setConfirmDealDialogOpen(false);
+                            addMenuToCart();
+                        }}
+                    >
+                        {localStrings.addMenuToCart}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             {/*<h1>{currentLine}</h1>*/}
             {/*<p>{JSON.stringify(dealEdit)}</p>*/}
             {/*<p>{JSON.stringify(skuRefs)}</p>*/}

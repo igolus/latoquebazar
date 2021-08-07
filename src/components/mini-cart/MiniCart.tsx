@@ -24,7 +24,7 @@ import {
   increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart
 } from "../../util/cartUtil";
 import {
-  computePriceDetail,
+  computePriceDetail, formatProductAndSkuName,
   getBrandCurrency,
   getProductFirstImgUrl,
   getTotalPriceOrderInCreation
@@ -195,7 +195,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 <BazarAvatar
                   src={getImgUrl(item)}
                   mx={2}
-                  alt={item.type === TYPE_PRODUCT ? item.name : item.deal.name}
+                  alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
                   height={76}
                   width={76}
                 />
@@ -206,7 +206,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               {/*<Link href={`/product/${item.id}`}>*/}
               {/*  <a>*/}
                   <H5 className="title" fontSize="14px">
-                    {item.type === TYPE_PRODUCT ? item.name : item.deal.name}
+                    {item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
                   </H5>
               {/*  </a>*/}
               {/*</Link>*/}

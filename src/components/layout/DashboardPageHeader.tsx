@@ -7,6 +7,7 @@ import Menu from '@material-ui/icons/Menu'
 import { Box } from '@material-ui/system'
 import React from 'react'
 import { DashboardNavigationWrapper } from './DashboardStyle'
+import CustomerDashboardNavigation from "@component/layout/CustomerDashboardNavigation";
 
 const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -56,7 +57,10 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
         {/* {isTablet && ( */}
         <Box className="sidenav">
           <Sidenav position="left" handle={<Menu fontSize="small" />}>
-            <DashboardNavigationWrapper />
+            <DashboardNavigationWrapper>
+              <CustomerDashboardNavigation/>
+
+            </DashboardNavigationWrapper>
           </Sidenav>
         </Box>
         {/* )} */}
