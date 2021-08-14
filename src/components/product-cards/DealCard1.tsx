@@ -129,7 +129,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
 
     }
   }
-  const {orderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation} = useAuth();
 
   const classes = useStyles({ hoverEffect })
   const { state, dispatch } = useAppContext()

@@ -251,6 +251,27 @@ export const updateOrderMutation = (brandId, establishmentId, data) => {
   `;
 }
 
+
+export const getSiteUserOrderById = (brandId, siteUserId, orderId) => {
+    var debug = `
+    query {
+      getSiteUserOrderById(brandId: "${brandId}", siteUserId: "${siteUserId}", orderId: "${orderId}") {
+          ${common}
+      }
+    }
+  `
+    console.log(debug);
+
+    return gql`
+   query {
+      getSiteUserOrderById(brandId: "${brandId}", siteUserId: "${siteUserId}", orderId: "${orderId}") {
+          ${common}
+      }
+    }
+  `;
+
+}
+
 export const getCustomerOrdersQuery = (brandId, siteUserId) => {
   var debug = `
     query {

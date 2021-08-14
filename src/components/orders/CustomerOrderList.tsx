@@ -11,113 +11,118 @@ import {getCustomerOrdersQuery} from "../../gql/orderGql";
 import {executeQueryUtil} from "../../apolloClient/gqlUtil";
 import localStrings from "../../localStrings";
 import {getBrandCurrency} from "../../util/displayUtil";
+import ClipLoaderComponent from "@component/ClipLoaderComponent";
 
 export interface CustomerOrderListProps {
   contextData?: any
 }
 
+const itemPerPage = 10;
+
 const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
   const {dbUser} = useAuth();
   const brandId = contextData.brand.id;
   const currency = getBrandCurrency(contextData.brand);
-  const [sourceOrders, setSourceOrders] = useState([]);
+  const [sourceOrders, setSourceOrders] = useState(null);
+  const [ordersDisplay, setOrdersDisplay] = React.useState(null);
+  const [maxPage, setMaxPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
+
 
   useEffect(() => {
     async function load() {
       if (dbUser) {
         let result = await executeQueryUtil(getCustomerOrdersQuery(brandId, dbUser.id));
+        let orders;
         if (result && result.data) {
-          setSourceOrders(result.data.getSiteUser.orders)
+          orders = result.data.getSiteUser.orders;
+          setSourceOrders(orders)
         }
+
+        setPage(0);
+        let pSize = orders ? orders.length : 0;
+
+        let maxPage = Math.floor(pSize/ itemPerPage) + 1;
+        if (pSize % itemPerPage == 0) {
+          maxPage = pSize/itemPerPage;
+        }
+        setMaxPage(maxPage);
+
+        if (orders) {
+          setOrdersDisplay(orders.slice(0,
+              Math.min(orders.length + 1, itemPerPage)))
+        }
+
       }
 
     }    // Execute the created function directly
     load();
   }, [dbUser]);
 
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    if (!sourceOrders) {
+      return;
+    }
+    setOrdersDisplay(sourceOrders.slice((value - 1)* itemPerPage,
+        Math.min(sourceOrders.length, value * itemPerPage)))
+
+    setPage(value);
+  };
+
   return (
     <Fragment>
-      <DashboardPageHeader title={localStrings.myOrders} icon={ShoppingBag}/>
 
-      {/*<p>{JSON.stringify(sourceOrders)}</p>*/}
+        {
+            ordersDisplay ?
+            <>
+                <DashboardPageHeader title={localStrings.myOrders} icon={ShoppingBag}/>
 
-      <TableRow
-        sx={{
-          display: { xs: 'none', md: 'flex' },
-          padding: '0px 18px',
-          background: 'none',
-        }}
-        elevation={0}
-      >
-        <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-          {localStrings.orderNumber}
-        </H5>
-        <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-          {localStrings.status}
-        </H5>
-        <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-          {localStrings.purchaseDate}
-        </H5>
-        <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-          {localStrings.totalTTC}
-        </H5>
-        <H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>
-      </TableRow>
+                <TableRow
+                    sx={{
+                        display: { xs: 'none', md: 'flex' },
+                        padding: '0px 18px',
+                        background: 'none',
+                    }}
+                    elevation={0}
+                >
+                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
+                        {localStrings.orderNumber}
+                    </H5>
+                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
+                        {localStrings.status}
+                    </H5>
+                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
+                        {localStrings.purchaseDate}
+                    </H5>
+                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
+                        {localStrings.totalTTC}
+                    </H5>
+                    <H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>
+                </TableRow>
 
-      {sourceOrders.map((item, ind) => (
-        <OrderRow item={item} key={ind} currency={currency} />
-      ))}
+                {ordersDisplay.map((item, ind) => (
+                    <OrderRow item={item} key={ind} currency={currency} />
+                ))}
 
-      <FlexBox justifyContent="center" mt={5}>
-        <Pagination
-          count={5}
-          variant="outlined"
-          color="primary"
-          onChange={(data) => {
-            console.log(data)
-          }}
-        />
-      </FlexBox>
+              {maxPage > 1 &&
+              <FlexBox
+                  flexWrap="wrap"
+                  flexDirection="row-reverse"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  mt={4}
+              >
+                <Pagination count={maxPage} variant="outlined" color="primary" page={page} onChange={handleChange}/>
+              </FlexBox>
+              }
+            </>
+            :
+            <ClipLoaderComponent/>
+        }
+
     </Fragment>
   )
-}
+};
 
-const orderList = [
-  {
-    orderNo: '1050017AS',
-    status: 'Pending',
-    purchaseDate: new Date(),
-    price: 350,
-    href: '/orders/5452423',
-  },
-  {
-    orderNo: '1050017AS',
-    status: 'Processing',
-    purchaseDate: new Date(),
-    price: 500,
-    href: '/orders/5452423',
-  },
-  {
-    orderNo: '1050017AS',
-    status: 'Delivered',
-    purchaseDate: '2020/12/23',
-    price: 700,
-    href: '/orders/5452423',
-  },
-  {
-    orderNo: '1050017AS',
-    status: 'Delivered',
-    purchaseDate: '2020/12/23',
-    price: 700,
-    href: '/orders/5452423',
-  },
-  {
-    orderNo: '1050017AS',
-    status: 'Cancelled',
-    purchaseDate: '2020/12/15',
-    price: 300,
-    href: '/orders/5452423',
-  },
-]
 
 export default CustomerOrderList

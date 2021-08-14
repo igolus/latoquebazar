@@ -12,7 +12,7 @@ import Link from "next/link";
 
 const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
   //const [selectedStep, setSelectedStep] = useState(0)
-  const {orderInCreation} = useAuth()
+  const {getOrderInCreation} = useAuth()
 
   const router = useRouter()
   const { pathname } = router

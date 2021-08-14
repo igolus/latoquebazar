@@ -252,7 +252,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode, selectedKey
 
   const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
   const [reload, setReload] = useState(true);
-  const {currentEstablishment, orderInCreation
+  const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate} = useAuth();
 
   const select = (key, value) => {
@@ -317,13 +317,13 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode, selectedKey
   }
 
   function isSelectedSlot (slot) {
-    let selected = orderInCreation().bookingSlot != null &&
-      orderInCreation().bookingSlot.startDate.isSame(slot.startDate) &&
-      orderInCreation().bookingSlot.endDate.isSame(slot.endDate);
+    let selected = getOrderInCreation().bookingSlot != null &&
+      getOrderInCreation().bookingSlot.startDate.isSame(slot.startDate) &&
+      getOrderInCreation().bookingSlot.endDate.isSame(slot.endDate);
     return selected;
   }
 
-  let timeSlots = buildTimeSlots(currentEstablishment(), getBookingSlotsOccupancy, orderInCreation, bookingSlotStartDate, deliveryMode);
+  let timeSlots = buildTimeSlots(currentEstablishment(), getBookingSlotsOccupancy, getOrderInCreation, bookingSlotStartDate, deliveryMode);
 
   function formatService(service) {
     if (!service) {

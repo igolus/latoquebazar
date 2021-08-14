@@ -16,13 +16,13 @@ export interface CheckoutSummaryProps {
 
 const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) => {
 
-    const {orderInCreation} = useAuth();
+    const {getOrderInCreation} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
 
     useEffect(() => {
-        setPriceDetails(computePriceDetail(orderInCreation()))
-    }, [orderInCreation])
+        setPriceDetails(computePriceDetail(getOrderInCreation()))
+    }, [getOrderInCreation])
 
     return (
         <Card1>
@@ -79,8 +79,8 @@ const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) 
             {!hideDetail &&
             <>
 
-                {orderInCreation() && orderInCreation().deliveryAddress &&
-                orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                {getOrderInCreation() && getOrderInCreation().deliveryAddress &&
+                getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                 <>
                     <Divider sx={{mb: '1rem'}}/>
 
@@ -89,7 +89,7 @@ const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) 
                     </Typography>
 
                     <Typography color="grey.600" fontSize="16px">
-                        {maxDistanceReached ? localStrings.tooFarAddress : orderInCreation().deliveryAddress.address}
+                        {maxDistanceReached ? localStrings.tooFarAddress : getOrderInCreation().deliveryAddress.address}
                     </Typography>
 
                 </>
@@ -98,10 +98,10 @@ const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) 
                 <Typography fontWeight="600" mb={1} mt={2}>
                     {localStrings.deliveryMode}
                 </Typography>
-                {orderInCreation() && orderInCreation().deliveryMode &&
+                {getOrderInCreation() && getOrderInCreation().deliveryMode &&
                 <Typography color="grey.600" fontSize="16px">
                     {/*{orderInCreation().deliveryMode}*/}
-                    {formatOrderConsumingMode(orderInCreation(), localStrings)}
+                    {formatOrderConsumingMode(getOrderInCreation(), localStrings)}
                 </Typography>
 
                 }
@@ -110,13 +110,13 @@ const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) 
                 <Typography fontWeight="600" mb={1} mt={2}>
                     {localStrings.timeSlot}
                 </Typography>
-                {orderInCreation() && orderInCreation().bookingSlot ?
+                {getOrderInCreation() && getOrderInCreation().bookingSlot ?
                     <Typography color="grey.600" fontSize="16px">
-                        {moment(orderInCreation().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
+                        {moment(getOrderInCreation().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
                         {" "}
-                        {moment(orderInCreation().bookingSlot.startDate).format("HH:mm")}
+                        {moment(getOrderInCreation().bookingSlot.startDate).format("HH:mm")}
                         -
-                        {moment(orderInCreation().bookingSlot.endDate).format("HH:mm")}
+                        {moment(getOrderInCreation().bookingSlot.endDate).format("HH:mm")}
                         {/*{JSON.stringify(orderInCreation().bookingSlot)}*/}
                     </Typography>
                     :

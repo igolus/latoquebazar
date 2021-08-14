@@ -291,7 +291,7 @@ export const getMaxDistanceDelivery = (establishment) => {
 }
 
 export const isDeliveryActive = (establishment) => {
-    if (establishment.serviceSetting) {
+    if (establishment && establishment.serviceSetting) {
         return establishment.serviceSetting.enableDelivery;
     }
     return [];
@@ -348,3 +348,46 @@ export function getEstablishmentSettings(establishment, key) {
     }
     return value;
 }
+
+export const getCroppedString = (value) => {
+    return value.substring(0, 22) + "...";
+}
+
+export const getCroppedStringSize = (value, size) => {
+    return value.substring(0, size + "...");
+}
+
+export function getImgUrlFromProducts(item, products) {
+    if (!products) {
+        return null;
+    }
+    if (item.type === TYPE_DEAL) {
+        return getProductFirstImgUrl(item.deal);
+    }
+
+    let product = products.find(p=>p.id === item.productId);
+    //if (product && product.files && product.files.leng)
+    if (product) {
+        return getProductFirstImgUrl(product);
+    }
+    return null;
+}
+
+export function getImgUrlFromProductsWithExtRef(item, products) {
+    if (!products) {
+        //alert("NO PRODUCT")
+        return null;
+    }
+    if (item.type === TYPE_DEAL) {
+        return getProductFirstImgUrl(item.deal);
+    }
+
+    let product = products.find(p=>p.skus.some(sku => sku.extRef === item.extRef));
+    //if (product && product.files && product.files.leng)
+    if (product) {
+        return getProductFirstImgUrl(product);
+    }
+    return null;
+}
+
+

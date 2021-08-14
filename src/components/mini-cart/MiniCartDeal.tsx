@@ -25,11 +25,12 @@ import {
 } from "../../util/cartUtil";
 import {
   computePriceDetail, formatProductAndSkuName,
-  getBrandCurrency,
+  getBrandCurrency, getCroppedStringSize,
   getProductFirstImgUrl,
   getTotalPriceOrderInCreation
 } from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
+import {isMobile} from "react-device-detect";
 
 type MiniCartProps = {
   toggleSidenav?: () => void
@@ -92,7 +93,7 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
   // }
 
   function modifyDealLine(line) {
-    alert("modifyDealLine " + line)
+    //alert("modifyDealLine " + line)
     setterLine(line);
     closeCallBack();
 
@@ -111,7 +112,7 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
       {/*<p>{JSON.stringify(dealEdit || {})}</p>*/}
       {/*<p>{JSON.stringify(contextData ? contextData.products : {})}</p>*/}
 
-    <Box width="380px">
+    <Box width={isMobile ? "270px" : "380px"} ml={0}>
 
       {/*{JSON.stringify(orderInCreation())}*/}
       {/*<Box*/}
@@ -162,11 +163,11 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
             key={index}
             alignItems="center"
             py={2}
-            px={2.5}
+            //px={2.5}
             borderBottom={`1px solid ${palette.divider}`}
             key={item.id}
           >
-            <FlexBox alignItems="center" flexDirection="column">
+            <FlexBox alignItems="center" flexDirection="column" p={0}>
               {/*<Box fontWeight={600} fontSize="15px" my="3px">*/}
 
               {/*</Box>*/}
@@ -181,7 +182,7 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
 
             </FlexBox>
 
-            <Box flex="1 1 0">
+            <Box flex="1 1 0" style={{marginRight:"5px"}}>
               <H5 className="title" fontSize="14px">
                 {formatProductAndSkuName(item)}
               </H5>

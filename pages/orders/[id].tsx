@@ -14,7 +14,18 @@ import Done from '@material-ui/icons/Done'
 import ShoppingBag from '@material-ui/icons/ShoppingBag'
 import { Box, useTheme } from '@material-ui/system'
 import { format } from 'date-fns'
-import React, { Fragment } from 'react'
+import React, {Fragment, useEffect, useState} from 'react'
+import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import {GetStaticPaths, GetStaticProps} from "next";
+import {useRouter} from "next/router";
+import {getOrderByIdQuery, getSiteUserOrderById} from "../../src/gql/orderGql";
+import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
+import useAuth from "@hook/useAuth";
+import {
+  formatProductAndSkuName, getBrandCurrency,
+  getImgUrlFromProducts,
+  getImgUrlFromProductsWithExtRef
+} from "../../src/util/displayUtil";
 
 const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
   flexDirection: 'row',
@@ -45,7 +56,15 @@ const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
 
 type OrderStatus = 'packaging' | 'shipping' | 'delivering' | 'complete'
 
-const OrderDetails = () => {
+export interface OrderDetailsProps {
+  contextData?: any
+}
+
+const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
+  const router = useRouter();
+  //const brandId = contextData.brand.id;
+  const { id } = router.query
+  const {currentEstablishment, dbUser} = useAuth()
   const orderStatus: OrderStatus = 'shipping'
   const orderStatusList = ['packaging', 'shipping', 'delivering', 'complete']
   const stepIconList = [PackageBox, TruckFilled, Delivery]
@@ -55,6 +74,20 @@ const OrderDetails = () => {
   const theme = useTheme()
   const breakpoint = 350
   console.log(theme.breakpoints.up('md'))
+
+  const [order, setOrder] = useState(null)
+
+  useEffect(async() => {
+    if (contextData && contextData.brand && dbUser) {
+      let result = await executeQueryUtil(getSiteUserOrderById(contextData.brand.id, dbUser.id , id));
+
+      if (result && result.data) {
+        //alert( "result.data " + result.data)
+        let order = result.data.getSiteUserOrderById;
+        setOrder(order)
+      }
+    }
+  }, [contextData, currentEstablishment(), dbUser])
 
   return (
     <DashboardLayout>
@@ -67,8 +100,10 @@ const OrderDetails = () => {
           </Button>
         }
       />
-
+      {/*<p>{JSON.stringify(order || {})}</p>*/}
+      {/*<p>{JSON.stringify(contextData ? contextData.products : {})}</p>*/}
       <Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>
+
         <StyledFlexbox>
           {stepIconList.map((Icon, ind) => (
             <Fragment key={ind}>
@@ -155,20 +190,24 @@ const OrderDetails = () => {
         </TableRow>
 
         <Box py={1}>
-          {productDatabase.slice(179, 182).map((item) => (
+
+          {order && order.order && order.order.items && order.order.items.map(item => (
+          //{productDatabase.slice(179, 182).map((item) => (
             <FlexBox px={2} py={1} flexWrap="wrap" alignItems="center" key={item.id}>
+
+              {/*<p>{getImgUrlFromProductsWithExtRef(item, contextData ? contextData.products : null)}</p>*/}
               <FlexBox flex="2 2 260px" m={0.75} alignItems="center">
-                <Avatar src={item.imgUrl} sx={{ height: 64, width: 64 }} />
+                <Avatar src={getImgUrlFromProductsWithExtRef(item, contextData ? contextData.products : null)} sx={{ height: 64, width: 64 }} />
                 <Box ml={2.5}>
                   <H6 my="0px">{item.title}</H6>
                   <Typography fontSize="14px" color="grey.600">
-                    ${item.price} x 1
+                    {parseFloat(item.price).toFixed(2) + " " + getBrandCurrency(contextData.brand) + " x " + item.quantity}
                   </Typography>
                 </Box>
               </FlexBox>
               <FlexBox flex="1 1 260px" m={0.75} alignItems="center">
                 <Typography fontSize="14px" color="grey.600">
-                  Product properties: Black, L
+                  {formatProductAndSkuName(item)}
                 </Typography>
               </FlexBox>
               <FlexBox flex="160px" m={0.75} alignItems="center">
@@ -229,5 +268,14 @@ const OrderDetails = () => {
     </DashboardLayout>
   )
 }
+
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+  return getStaticPathsUtil()
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return await getStaticPropsUtil();
+}
+
 
 export default OrderDetails

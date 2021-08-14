@@ -1,0 +1,6 @@
+- Produit indisponibles
+- gestion produit indisponible par services
+- un seul service pour le moment
+- prix minimum commande
+- explication telephone
+- Terms et condtions

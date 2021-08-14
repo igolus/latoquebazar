@@ -34,7 +34,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   currency
 }) => {
 
-  const {orderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation} = useAuth();
   //const { dispatch } = useAppContext()
   // const handleCartAmountChange = useCallback(
   //   (amount) => () => {
@@ -112,7 +112,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               padding: '4px',
               ml: '12px',
             }}
-            onClick={() => deleteItemInCart(orderInCreation, setOrderInCreation, item.uuid)}
+            onClick={() => deleteItemInCart(getOrderInCreation, setOrderInCreation, item.uuid)}
           >
             <Close fontSize="small" />
           </IconButton>
@@ -137,7 +137,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 color="primary"
                 disabled={item.quantity === 1}
                 sx={{ p: '5px' }}
-                onClick={() => decreaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
+                onClick={() => decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
             >
               <Remove fontSize="small" />
             </Button>
@@ -153,7 +153,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 // size="none"
                 // borderColor="primary.light"
                 sx={{ p: '5px' }}
-                onClick={() => increaseCartQte(orderInCreation, setOrderInCreation, item.uuid)}
+                onClick={() => increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
             >
               <Add fontSize="small" />
             </Button>

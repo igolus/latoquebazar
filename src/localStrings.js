@@ -4,6 +4,11 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        backToLoginPage: "Revenir a la page de connection",
+        resetPassword: "Reininialiser mon mot de passe",
+        createYourAccount: "Creer votre compte",
+        havingAnAccount : "J'ai deja un compte ?",
+        orderAgain: "Commander a nouveau",
         contentDeal: "Contenu du menu",
         modify: "Modifier",
         editProfile: "Editer mon compte",
@@ -36,7 +41,7 @@ let localStrings = new LocalizedStrings({
 
         deliverToOtherAddress: "Livrer a une autre adresse",
         validateAdress: "Valider l'adresse",
-        clickAndCollect: "Click and collect",
+        clickAndCollect: "A recuperer sur place (Click N Collect)",
         delivery: "Livraison",
         deliveryMode: "Mode de livraison",
         cart: "Panier",
@@ -72,6 +77,8 @@ let localStrings = new LocalizedStrings({
         myAdresse: "Mon adresse",
         account: "Compte",
         logout: "Se deconnecter",
+        password: "Mot de passe",
+        reTypePassword: "Repeter le mot de passe",
         logEmailAndPassword: "Se connecter avec email et mot de passe",
         dontHaveAccount: "Vous n'avez pas de compte?",
         signup: "Creer un compte",
@@ -121,9 +128,13 @@ let localStrings = new LocalizedStrings({
             required: "Obligatoire",
             requiredField: "Champ obligatoire",
             badPhoneFormat: "Numero de telephone invalide",
+            termsAndConditionsMandatory: "Vous devez accepter les termes et conditions",
+            passwordsMatch: 'Les mots de passe doivent être les mêmes',
+            reTypePassword: "Fournir le mot de passe une nouvelle fois",
         },
 
         info: {
+            resetPassword: "Un email a été envoyé a {0} pour reinitialiser le mot de passe",
             checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
             connectToOrder: 'Afin de garder une trace de vos commandes et de garantir un meilleur suivi, la commande doit se faire en mode connecté. Si vous avez un compte Google ou Facebook <strong>cela ne prendra que quelques secondes !!</strong>'
         },
@@ -133,16 +144,26 @@ let localStrings = new LocalizedStrings({
             maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
             selectValidDeliveryAddressAndSchedule: "Selectionner une addresse de livraison valide et un creaneau de reservation",
             optionMandatory: "Merci de choisir les options requisent",
+            minimalPriceForDeliveryNoReached: "La livraison n'est disponible que pour un montant minimum de {0} €",
+            deliveryUnavailable: "Livraison non disponible",
+            profileNotActivated: "Votre compte n'est pas encore actif, vérifier votre email et activer votre compte en cliquant sur le lien contenu dans le mail d'activation, puis connectez-vous de nouveau"
         },
 
         notif: {
             accountCreated: "Compte cree",
             dealAddedToCart: "Offre ajouté au panier",
             productAddedToCart: "Produit ajouté au panier",
+            activationEmailSentNotif: "Email d'activation envoye a {0}, verifier votre email, activez le compte puis reconnecter vous",
         },
 
         notifForBackEnd: {
             orderCreated: "Nouvelle Commande en ligne: {0}"
+        },
+
+        errorMessages: {
+            accountAlreadyExists: "Ce compte est deja referencé, essayer de vous connecter directement en utilisant cet email",
+            wrongPassword: "Mot de passe invalide",
+            noUserEmail: "Aucun compte trouvé avec cet email"
         }
 
     }

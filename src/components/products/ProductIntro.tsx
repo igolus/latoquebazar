@@ -61,17 +61,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, orderInCreation} = useAuth();
+    const {setOrderInCreation, getOrderInCreation} = useAuth();
 
     useEffect(() => {
         // if (!orderInCreation()) {
         //   return
         // }
         if (skuIndex) {
-            setProductAndSku({...buildProductAndSkus(product, orderInCreation)[skuIndex]});
+            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation)[skuIndex]});
         }
         else {
-            setProductAndSku({...buildProductAndSkus(product, orderInCreation)[0]});
+            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation)[0]});
         }
         //return {...buildProductAndSkus(product, orderInCreation)[0]};
 
@@ -222,7 +222,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     {product.skus && product.skus.length > 1 &&
                     // <div style={{ width: '100%' }}>
                     <Box display="flex" justifyContent="left">
-                        {buildProductAndSkus(product, orderInCreation).map((pandsku, key) =>
+                        {buildProductAndSkus(product, getOrderInCreation).map((pandsku, key) =>
                             <Box key={key}>
                                 {/*<BazarButton>grande</BazarButton>*/}
                                 <BazarButton
@@ -289,7 +289,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     router.push("/cart");
                                 }
                             } else {
-                                addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast);
+                                addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
                                 if (addCallBack) {
                                     addCallBack();
                                 }

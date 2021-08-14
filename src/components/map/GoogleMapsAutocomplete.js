@@ -13,7 +13,7 @@ import useAuth from '../../hooks/useAuth';
 import {makeStyles, withStyles} from "@material-ui/styles";
 import BazarTextField from "@component/BazarTextField";
 import {MuiThemeProps} from "@theme/theme";
-import {layoutConstant} from "@utils/constants";
+import {layoutConstant} from "../../util/constants";
 
 const config = require("../../conf/config.json")
 

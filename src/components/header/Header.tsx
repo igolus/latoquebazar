@@ -19,7 +19,6 @@ import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown'
 import PersonOutline from '@material-ui/icons/PersonOutline'
 import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
-import { layoutConstant } from '@utils/constants'
 import clsx from 'clsx'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -28,6 +27,7 @@ import Account from './Account'
 import useAuth from "@hook/useAuth";
 import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import {getItemNumberInCart} from "../../util/cartUtil";
+import {layoutConstant} from "../../util/constants";
 
 type HeaderProps = {
     className?: string
@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
 
     //alert("contextData brand " + contextData.brand)
-    const {currentUser, orderInCreation, loginDialogOpen, setLoginDialogOpen, user} = useAuth();
+    const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen, user} = useAuth();
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
     const logoUrl = contextData ? contextData.brand.logoUrl : null;
@@ -71,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     const classes = useStyles()
 
     const cartHandle = (
-        <Badge badgeContent={getItemNumberInCart(orderInCreation)} color="primary">
+        <Badge badgeContent={getItemNumberInCart(getOrderInCreation)} color="primary">
             <Box
                 component={IconButton}
                 ml={2.5}

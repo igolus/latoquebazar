@@ -150,8 +150,6 @@ const SearchBox = () => {
                       <>
                         {searchText !== "" ?
                             <Link href={`/product/search/${searchText}`}
-                                  onSubmit={() => alert("Link sumbit")}
-                                  onClick={() => alert("Link click")}
 
                             >
                               <a>

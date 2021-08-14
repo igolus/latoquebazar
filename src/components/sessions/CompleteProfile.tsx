@@ -82,7 +82,7 @@ const CompleteProfile = ({closeCallBack}) => {
 
   const initialValues = {
     email: user.email || '',
-    firstName: user.name && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
+    firstName: user.name && user.name !== user.email && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
     lastName: user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : '',
     agreement: false,
     address: JSON.parse(localStorage.getItem(DIST_INFO)).address || '',
@@ -355,7 +355,7 @@ const CompleteProfile = ({closeCallBack}) => {
   )
 }
 
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+export const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const formSchema = yup.object().shape({
   lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
@@ -366,10 +366,10 @@ const formSchema = yup.object().shape({
       .bool()
       .test(
           'agreement',
-          'You have to agree with our Terms and Conditions!',
+          localStrings.check.termsAndConditionsMandatory,
           (value) => value === true
       )
-      .required('You have to agree with our Terms and Conditions!'),
+      .required(localStrings.check.termsAndConditionsMandatory),
 })
 
 export default CompleteProfile

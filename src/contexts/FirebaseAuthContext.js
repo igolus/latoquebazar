@@ -1,7 +1,7 @@
 import React, {createContext, useEffect, useReducer, useState} from 'react';
 import firebase from '../lib/firebase';
 import localStrings from "../localStrings";
-import {CURRENCY_EUR} from "../utils/Currencies";
+import {CURRENCY_EUR} from "../util/Currencies";
 import {useToasts} from "react-toast-notifications";
 import {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
 import '@firebase/messaging';
@@ -221,7 +221,7 @@ const AuthContext = createContext({
   setEstablishment: () => {},
 
   setOrderInCreation: () => {},
-  orderInCreation: () => {},
+  getOrderInCreation: () => {},
   resetOrderInCreation: () => {},
 
   setMaxDistanceReached:() => {},
@@ -265,18 +265,21 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInWithEmailAndPassword = (email, password) => {
+    setLoginOnGoing(true)
     return firebase.auth().signInWithEmailAndPassword(email, password);
   };
 
   const sendEmailVerification = async () => {
     var user = firebase.auth().currentUser;
+    //alert("user for sendEmailVerification " + user.email)
     if (user) {
+
       var ret = user.sendEmailVerification();
-      addToast(localStrings.formatString(
-          localStrings.notif.activationEmailSentNotif, user.email), {
-        appearance: "success",
-        autoDismiss: true
-      });
+      // addToast(localStrings.formatString(
+      //     localStrings.notif.activationEmailSentNotif, user.email), {
+      //   appearance: "success",
+      //   autoDismiss: true
+      // });
       return ret;
     }
     return null;
@@ -293,9 +296,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signInWithGoogle = () => {
-    setLoginOnGoing(true);
-    const provider = new firebase.auth.GoogleAuthProvider();
-    return firebase.auth().signInWithPopup(provider);
+    try {
+      setLoginOnGoing(true);
+      const provider = new firebase.auth.GoogleAuthProvider();
+      return firebase.auth().signInWithPopup(provider);
+    }
+    catch (err) {
+      console.log(err)
+    }
   };
 
   const signInWithFaceBook = () => {
@@ -310,7 +318,18 @@ export const AuthProvider = ({ children }) => {
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
-        orderInCreation: {...orderInCreation(), deliveryAddress: null},
+        orderInCreation: {
+          deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
+          order: {
+            items: [],
+            deals: []
+          },
+          customer: null,
+          payments: null,
+          deliveryAddress: null,
+          bookingSlot: null,
+          additionalInfo: null,
+        },
       }
     });
 
@@ -427,7 +446,7 @@ export const AuthProvider = ({ children }) => {
     return user;
   };
 
-  const orderInCreation = () => {
+  const getOrderInCreation = () => {
     return state.orderInCreation;
   }
 
@@ -519,43 +538,51 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
-      if (user) {
-        // Here you should extract the complete user profile to make it available in your entire app.
-        // The auth state only provides basic information.
-        //console.log("User unsubscribe" + JSON.stringify(user, null, 2))
+          try {
 
-        let token = await firebase.auth().currentUser.getIdToken(true)
-        localStorage.setItem("authToken", token)
-        localStorage.setItem("genTimeToken", moment().unix())
-        //alert("user " + JSON.stringify(user))
-        executeQueryUtilSync(getSiteUserByIdQuery(getBrandId(), user.uid)).then(result => {
-          //alert("result.data.getSiteUser " + JSON.stringify(result.data.getSiteUser))
-          setDbUser(result.data.getSiteUser);
-        });
+            if (user) {
+              // Here you should extract the complete user profile to make it available in your entire app.
+              // The auth state only provides basic information.
+              //console.log("User unsubscribe" + JSON.stringify(user, null, 2))
 
-        dispatch({
-          type: AUTH_STATE_CHANGE,
-          payload: {
-            isAuthenticated: true,
-            user: {
-              id: user.uid,
-              avatar: user.photoURL,
-              email: user.email,
-              name: user.displayName || user.email,
-              tier: 'Premium'
+              let token = await firebase.auth().currentUser.getIdToken(true)
+              localStorage.setItem("authToken", token)
+              localStorage.setItem("genTimeToken", moment().unix())
+              //alert("user " + JSON.stringify(user))
+              executeQueryUtilSync(getSiteUserByIdQuery(getBrandId(), user.uid)).then(result => {
+                //alert("result.data.getSiteUser " + JSON.stringify(result.data.getSiteUser))
+                setDbUser(result.data.getSiteUser);
+              });
+
+              dispatch({
+                type: AUTH_STATE_CHANGE,
+                payload: {
+                  isAuthenticated: true,
+                  user: {
+                    id: user.uid,
+                    avatar: user.photoURL,
+                    email: user.email,
+                    name: user.displayName || user.email,
+                    tier: 'Premium'
+                  }
+                }
+              });
+            } else {
+              dispatch({
+                type: AUTH_STATE_CHANGE,
+                payload: {
+                  isAuthenticated: false,
+                  user: null
+                }
+              });
             }
           }
-        });
-      } else {
-        dispatch({
-          type: AUTH_STATE_CHANGE,
-          payload: {
-            isAuthenticated: false,
-            user: null
+          catch (err) {
+            console.log(err)
           }
-        });
-      }
-    });
+        }
+
+    );
 
     return unsubscribe;
   }, [dispatch]);
@@ -590,7 +617,7 @@ export const AuthProvider = ({ children }) => {
             currentUser,
 
             setOrderInCreation,
-            orderInCreation,
+            getOrderInCreation,
             resetOrderInCreation,
             setDealEdit,
             setBookingSlotStartDate,

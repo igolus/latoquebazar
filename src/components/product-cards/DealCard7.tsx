@@ -42,7 +42,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
 
   const item = deal.deal;
   //console.log(" item " + JSON.stringify(item, null,2))
-  const {orderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation} = useAuth();
   //const { dispatch } = useAppContext()
   // const handleCartAmountChange = useCallback(
   //   (amount) => () => {
@@ -147,7 +147,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
               padding: '4px',
               ml: '12px',
             }}
-            onClick={() => deleteDealInCart(orderInCreation, setOrderInCreation, deal.uuid)}
+            onClick={() => deleteDealInCart(getOrderInCreation, setOrderInCreation, deal.uuid)}
           >
             <Close fontSize="small" />
           </IconButton>
@@ -175,7 +175,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // borderColor="primary.light"
                 disabled={item.quantity === 1}
                 sx={{ p: '5px' }}
-                onClick={() => decreaseDealCartQte(orderInCreation, setOrderInCreation, deal.uuid)}
+                onClick={() => decreaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
             >
               <Remove fontSize="small" />
             </Button>
@@ -191,7 +191,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // size="none"
                 // borderColor="primary.light"
                 sx={{ p: '5px' }}
-                onClick={() => increaseDealCartQte(orderInCreation, setOrderInCreation, deal.uuid)}
+                onClick={() => increaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
             >
               <Add fontSize="small" />
             </Button>

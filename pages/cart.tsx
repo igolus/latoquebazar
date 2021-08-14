@@ -23,7 +23,7 @@ export interface CartProps {
 }
 
 const Cart:React.FC<CartProps> = ({contextData}) => {
-  const { orderInCreation } = useAuth();
+  const { getOrderInCreation } = useAuth();
   const currency = getBrandCurrency(contextData ? contextData.brand : null)
 
   return (
@@ -31,7 +31,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
       {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
       <Grid container spacing={3}>
         <Grid item lg={8} md={8} xs={12}>
-          {getCartItems(orderInCreation).map((item) => {
+          {getCartItems(getOrderInCreation).map((item) => {
               //<p>{JSON.stringify(item)}</p>
               if (item.type === TYPE_DEAL) {
                 return(<DealCard7 key={item.id} deal={item} currency={currency} products={contextData ? contextData.products : []}/>)
@@ -42,7 +42,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
           })}
 
 
-          {getCartItems(orderInCreation).length == 0 && (
+          {getCartItems(getOrderInCreation).length == 0 && (
               <FlexBox
                   flexDirection="column"
                   alignItems="center"
@@ -67,7 +67,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
               </FlexBox>
           )}
 
-          {getCartItems(orderInCreation).length > 0 &&
+          {getCartItems(getOrderInCreation).length > 0 &&
           <Grid container spacing={6}>
             <Grid item sm={6} xs={12}>
               <Link href="/product/shop/all">

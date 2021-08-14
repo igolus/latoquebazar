@@ -9,7 +9,7 @@ import { styled } from '@material-ui/core/styles'
 import CallOutlined from '@material-ui/icons/CallOutlined'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import MailOutline from '@material-ui/icons/MailOutline'
-import { layoutConstant } from '@utils/constants'
+import { layoutConstant } from '../../util/constants'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 

@@ -247,7 +247,7 @@ export const addDataToProductCache = async (brandId, datas) => {
     }
   }
   catch (err) {
-    alert(err)
+    console.log(err)
   }
 }
 

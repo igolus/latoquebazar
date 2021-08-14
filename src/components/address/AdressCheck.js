@@ -31,7 +31,8 @@ export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDist
     let maxDist = getMaxDistanceDelivery(currentEstablishment());
 
     let distKm = distanceInfo.distance / 1000;
-    setMaxDistanceReached(distKm > maxDist)
+    let maxDistReached = distKm > maxDist;
+    setMaxDistanceReached(maxDistReached);
     //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
     setDistanceInfo(distanceInfo)
     //(value, setMaxDistanceReached, maxDist, setDistanceInfo);

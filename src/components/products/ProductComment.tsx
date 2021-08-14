@@ -3,7 +3,7 @@ import BazarRating from '@component/BazarRating'
 import FlexBox from '@component/FlexBox'
 import { H5, H6, Paragraph, Span } from '@component/Typography'
 import { Box } from '@material-ui/core'
-import { getDateDifference } from '@utils/utils'
+import { getDateDifference } from '../../util/utils'
 import React from 'react'
 
 export interface ProductCommentProps {

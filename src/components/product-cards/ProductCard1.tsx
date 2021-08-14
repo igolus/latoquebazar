@@ -149,7 +149,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   useEffect(() => {
-    let productAndSkusRes = buildProductAndSkus(product, orderInCreation);
+    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation);
     setProductAndSkus(productAndSkusRes);
     setSelectedProductSku(productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null)
     //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
@@ -161,7 +161,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {orderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -333,23 +333,23 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
               {selectedProductAndSku && selectedProductAndSku.sku &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
-              getQteInCart(selectedProductAndSku, orderInCreation) > 0 ? (
+              getQteInCart(selectedProductAndSku, getOrderInCreation) > 0 ? (
                   <Fragment>
                     <Button
                         variant="outlined"
                         color="primary"
                         sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
-                        disabled={getQteInCart(selectedProductAndSku, orderInCreation) == 1}
+                        disabled={getQteInCart(selectedProductAndSku, getOrderInCreation) == 1}
                         onClick={() => {
                           if (selectedProductAndSku.sku.uuid) {
-                            decreaseCartQte(orderInCreation, setOrderInCreation, selectedProductAndSku.sku.uuid)
+                            decreaseCartQte(getOrderInCreation, setOrderInCreation, selectedProductAndSku.sku.uuid)
                           }
                         }}
                     >
                       <Remove fontSize="small" />
                     </Button>
                     <Box color="text.primary" fontWeight="600">
-                      {getQteInCart(selectedProductAndSku, orderInCreation)}
+                      {getQteInCart(selectedProductAndSku, getOrderInCreation)}
                     </Box>
                     <Button
                         variant="outlined"
@@ -359,7 +359,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                             //alert(selectedProductAndSku.sku.uuid)
                             //alert(JSON.stringify(selectedProductAndSku.sku));
-                            addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation, addToast);
+                            addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                             //alert("uuid " + uuid);
                             // if (!selectedProductAndSku.sku.uuid) {
                             //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
@@ -388,7 +388,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                          let uuid = addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation, addToast);
+                          let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
                           if (!selectedProductAndSku.sku.uuid) {
                             let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}

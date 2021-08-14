@@ -25,7 +25,7 @@ import {
 } from "../../util/cartUtil";
 import {
   computePriceDetail, formatProductAndSkuName,
-  getBrandCurrency,
+  getBrandCurrency, getImgUrlFromProducts,
   getProductFirstImgUrl,
   getTotalPriceOrderInCreation
 } from "../../util/displayUtil";
@@ -40,16 +40,16 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
   const { palette } = useTheme()
   const { state, dispatch } = useAppContext()
   const { cartList } = state.cart
-  const { orderInCreation, setOrderInCreation} = useAuth();
+  const { getOrderInCreation, setOrderInCreation} = useAuth();
   const [itemNumber, setItemNumber] = useState(0);
   const [currency, setcurrency] = useState("");
 
   useEffect(() => {
-    setItemNumber(getItemNumberInCart(orderInCreation))
+    setItemNumber(getItemNumberInCart(getOrderInCreation))
     if (contextData) {
       setcurrency(getBrandCurrency(contextData.brand));
     }
-  }, [orderInCreation, contextData])
+  }, [getOrderInCreation, contextData])
 
   const handleCartAmountChange = useCallback(
     (amount, product) => () => {
@@ -65,7 +65,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
   )
 
   const getTotalPrice = () => {
-    return getTotalPriceOrderInCreation(orderInCreation)
+    return getTotalPriceOrderInCreation(getOrderInCreation)
     //
     // return (
     //   cartList.reduce(
@@ -97,7 +97,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
       {/*{JSON.stringify(orderInCreation())}*/}
       <Box
         overflow="auto"
-        height={`calc(100vh - ${getItemNumberInCart(orderInCreation) > 0 ? '80px - 3.25rem' : '0px'})`}
+        height={`calc(100vh - ${getItemNumberInCart(getOrderInCreation) > 0 ? '80px - 3.25rem' : '0px'})`}
       >
         <FlexBox
           alignItems="center"
@@ -136,7 +136,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             </Box>
           </FlexBox>
         )}
-        {getCartItems(orderInCreation).map(item => (
+        {getCartItems(getOrderInCreation).map(item => (
             // <p>{JSON.stringify(item)}</p>
           <FlexBox
             alignItems="center"
@@ -156,10 +156,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 }}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    increaseDealCartQte(orderInCreation, setOrderInCreation, item.uuid)
+                    increaseDealCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
                   }
                   else {
-                    increaseCartQte(orderInCreation, setOrderInCreation, item.uuid)
+                    increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
                   }
                 }}
               >
@@ -178,10 +178,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 }}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    decreaseDealCartQte(orderInCreation, setOrderInCreation, item.uuid)
+                    decreaseDealCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
                   }
                   else {
-                    decreaseCartQte(orderInCreation, setOrderInCreation, item.uuid)
+                    decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
                   }
                 }}
                 disabled={item.quantity === 1}
@@ -193,7 +193,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             <Link href={`/product/${item.id}`}>
               <a>
                 <BazarAvatar
-                  src={getImgUrl(item)}
+                  src={getImgUrlFromProducts(item, contextData?.products)}
                   mx={2}
                   alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
                   height={76}
@@ -277,10 +277,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               size="small"
               onClick={() => {
                 if (item.type === TYPE_DEAL) {
-                  deleteDealInCart(orderInCreation, setOrderInCreation, item.uuid)
+                  deleteDealInCart(getOrderInCreation, setOrderInCreation, item.uuid)
                 }
                 if (item.type === TYPE_PRODUCT) {
-                  deleteItemInCart(orderInCreation, setOrderInCreation, item.uuid)
+                  deleteItemInCart(getOrderInCreation, setOrderInCreation, item.uuid)
                 }
               }}
             >
@@ -290,7 +290,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
         ))}
       </Box>
 
-      {getItemNumberInCart(orderInCreation) > 0 && (
+      {getItemNumberInCart(getOrderInCreation) > 0 && (
         <Box p={2.5}>
 
           <Link href="/checkout">
@@ -304,7 +304,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 fullWidth
                 onClick={toggleSidenav}
             >
-              {localStrings.checkOutNow} ({computePriceDetail(orderInCreation()).total.toFixed(2) + " " + getBrandCurrency(contextData ? contextData.brand : null)})
+              {localStrings.checkOutNow} ({computePriceDetail(getOrderInCreation()).total.toFixed(2) + " " + getBrandCurrency(contextData ? contextData.brand : null)})
               {/*{localStrings.checkOutNow}*/}
             </BazarButton>
           </Link>
