@@ -33,7 +33,8 @@ export interface ProductIntroProps {
     disableAdd: boolean,
     addToCartOrderCallBack: any,
     addButtonText: string
-    routeToCart: boolean
+    routeToCart: boolean,
+    lineNumber: number
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -49,7 +50,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        disableAdd,
                                                        addToCartOrderCallBack,
                                                        addButtonText,
-                                                       routeToCart
+                                                       routeToCart,
+                                                       lineNumber
                                                    }) => {
 
     if (!product) {
@@ -61,17 +63,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, getOrderInCreation} = useAuth();
+    const {setOrderInCreation, getOrderInCreation, dealEdit} = useAuth();
 
     useEffect(() => {
         // if (!orderInCreation()) {
         //   return
         // }
         if (skuIndex) {
-            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation)[skuIndex]});
+            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit)[skuIndex]});
         }
         else {
-            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation)[0]});
+            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit)[0]});
         }
         //return {...buildProductAndSkus(product, orderInCreation)[0]};
 
@@ -113,23 +115,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         setCurrentImage(0)
         setIsViewerOpen(false)
     }
-
-    const handleCartAmountChange = useCallback(
-        (amount) => () => {
-            dispatch({
-                type: 'CHANGE_CART_AMOUNT',
-                payload: {
-                    qty: amount,
-                    name: title,
-                    price,
-                    imgUrl: imgUrl[0],
-                    id: id || routerId,
-                },
-            })
-        },
-        []
-    )
-
 
 
     return (
@@ -205,7 +190,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     <H1 mb={2}>{product.name}</H1>
                     {!valid &&
-                    <Box>
+                    <Box mb={2}>
                         <AlertHtmlLocal severity={"warning"}
                                         title={localStrings.warningMessage.optionMandatory}
                                         content={""}
@@ -266,15 +251,20 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     {options && options.length > 0 &&
                     <ProductSelector options={options}
                                      productAndSku={productAndSku}
+                                     productAndSku={productAndSku}
                                      setterSkuEdit={setProductAndSku}
                                      skuEdit={productAndSku}
                                      setterValid={setValid}
                                      valid={valid}
-                                     currency={currency}/>
+                                     currency={currency}
+                                     lineNumber={lineNumber}
+                    />
                     }
 
+                    {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                     {!disableAdd &&
                     <BazarButton
+                        disabled={!valid}
                         variant="contained"
                         color="primary"
                         sx={{

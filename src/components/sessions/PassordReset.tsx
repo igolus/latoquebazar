@@ -1,25 +1,17 @@
 import BazarButton from '@component/BazarButton'
-import Image from '@component/BazarImage'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
-import { H3, H6, Small } from '@component/Typography'
-import {Box, Button, Card, CardProps, Divider, IconButton} from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
-import Visibility from '@material-ui/icons/Visibility'
-import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { useFormik } from 'formik'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, {useCallback, useEffect, useState} from 'react'
+import {Small} from '@component/Typography'
+import {Button, Card, CardProps, CircularProgress} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
+import {useFormik} from 'formik'
+import React, {useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import useAuth from '../../hooks/useAuth';
-import {executeQueryUtil, executeQueryUtilSync} from "../../apolloClient/gqlUtil";
-import {getSiteUserByIdQuery} from "../../gql/siteUserGql";
-import Signup from "@component/sessions/Signup";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-
-const config = require("../../conf/config.json")
+import {green} from "@material-ui/core/colors";
+import {makeStyles} from "@material-ui/styles";
 
 const fbStyle = {
   background: '#3B5998',
@@ -65,47 +57,46 @@ export const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
     marginTop: 12,
     marginBottom: 24,
   },
+  buttonProgress: {
+    color: green[500],
+  },
 }))
 
+const useStyles = makeStyles((theme) => ({
+  buttonProgress: {
+    color: green[500],
+  },
+}));
 
-
-const PassWordReset = ({backCallBack}) => {
+const PassWordReset = ({backCallBack, contextData}) => {
   const [messageReset, setMessageReset] = useState(null)
   const [email, setEmail] = useState(null)
   const [errorSubmit, setErrorSubmit] = useState(null)
+  const [emailSent, setEmailSent] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const { resetPassword } = useAuth();
+  const { resetPassword, currentEstablishment } = useAuth();
 
-  //
-  // if (currentUser() && currentUser().emailVerified && !userInDB()) {
-  //   return <Redirect to="/completeUser" />;
-  // }
-
+  const classes = useStyles();
 
 
   const handleFormSubmit = async (values: any) => {
     //alert("reset" + JSON.stringify(values))
     try {
+      setLoading(true)
+      setErrorSubmit(null);
       setEmail(values.email)
-      resetPassword(values.email);
+      await resetPassword(contextData.brand, currentEstablishment(), values.email);
       setMessageReset(true);
+      setEmailSent(true);
       //backCallBack();
     }
     catch (err) {
-      // if (err.code === 'auth/wrong-password') {
-      //   setErrorSubmit(localStrings.errorMessages.wrongPassword);
-      // }
-      // else if (err.code === 'auth/user-not-found') {
-      //   setErrorSubmit(localStrings.errorMessages.noUserEmail);
-      // }
-      //
-      // else {
-        setErrorSubmit(err.message);
-      // }
-      // if ("code":"auth/wrong-password")
-      //alert("login error " + JSON.stringify(err))
+      setErrorSubmit(err.message);
     }
-
+    finally {
+      setLoading(false);
+    }
   }
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
@@ -145,6 +136,7 @@ const PassWordReset = ({backCallBack}) => {
           />
           }
 
+          {!emailSent &&
           <BazarTextField
               mb={1.5}
               name="email"
@@ -160,12 +152,15 @@ const PassWordReset = ({backCallBack}) => {
               error={!!touched.email && !!errors.email}
               helperText={touched.email && errors.email}
           />
+          }
 
+          {!emailSent &&
           <BazarButton
               variant="contained"
               color="primary"
               type="submit"
               fullWidth
+              endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
               sx={{
                 mb: '1.65rem',
                 height: 44,
@@ -173,11 +168,14 @@ const PassWordReset = ({backCallBack}) => {
           >
             {localStrings.resetPassword}
           </BazarButton>
+          }
 
           <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
             {/*<Box>{localStrings.backToLoginPage}</Box>*/}
 
-            <Button variant="outlined" onClick={backCallBack} style={{marginLeft:"10px"}}>
+            <Button variant="outlined"
+                    onClick={backCallBack}
+                    style={{marginLeft:"10px"}}>
               {localStrings.backToLoginPage}
             </Button>
           </FlexBox>

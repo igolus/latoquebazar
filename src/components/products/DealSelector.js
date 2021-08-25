@@ -35,37 +35,27 @@ function DealSelector({ deal, contextData }) {
     const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
 
     useEffect(() => {
-        let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
-        setSkuRefs(skusInLine);
+        if (deal && deal.lines && deal.lines.length > 0 && deal.lines[currentLine] && deal.lines[currentLine].skus) {
+            let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
+            setSkuRefs(skusInLine);
+        }
+
     }, [currentLine])
 
+    useEffect(() => {
+        if (deal) {
+            setDealEdit({deal: cloneDeep(deal)})
+        }
+    }, [])
 
     useEffect( () => {
-        // if (dealEdit && dealEdit.productAndSkusLines) {
-        //     let providedLineNumbers = dealEdit.productAndSkusLines.map(line => line.lineNumber);
-        //
-        //     if (providedLineNumbers.length == deal.lines.length) {
-        //         return;
-        //     }
-        //     //alert("providedLineNumbers " + providedLineNumbers)
-        //     let lines = [];
-        //     //alert("deal.lines " + deal.lines.length)
-        //     for (let i=0;i<deal.lines.length;i++) {
-        //         lines.push(i)
-        //     }
-        //     //alert("lines " + lines)
-        //     let firstLine = lines.find(line => !providedLineNumbers.includes(line)) || 0;
-        //     setCurrentLine(firstLine);
-        // }
-
-        if (dealEdit && dealEdit.productAndSkusLines && deal.lines.length === dealEdit.productAndSkusLines.length) {
+        if (dealEdit && dealEdit.productAndSkusLines && deal.lines.length > 0 &&
+            deal.lines.length === dealEdit.productAndSkusLines.length) {
             setConfirmDealDialogOpen(true);
         }
     }, [dealEdit])
 
-    useEffect(() => {
-        setDealEdit({deal: cloneDeep(deal)})
-    }, [])
+
 
     function getStepperList() {
         return deal && deal.lines && deal.lines.map((line, index) => {
@@ -90,7 +80,8 @@ function DealSelector({ deal, contextData }) {
 
     function addMenuToCart() {
         addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation, addToast);
-        router.push("/cart")
+        setDealEdit(null);
+        //router.push("/cart")
     }
 
     function cancelDeal() {

@@ -65,12 +65,6 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonProgress: {
     color: green[500],
-
-    //position: 'absolute',
-    // top: '50%',
-    // left: '50%',
-    // marginTop: -12,
-    // marginLeft: -12,
   },
 }));
 
@@ -92,7 +86,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
   const loaded = React.useRef(false);
-  const brand = contextData ?? contextData.brand
   // useEffect(() => {
   //   let userAdress = getUserAdress();
   //   setAdressValue(userAdress);
@@ -210,31 +203,34 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
         dataOrder.order.deals
             .forEach(deal => {
-              delete deal.deal.type;
-              delete deal.deal.creationTimestamp;
-              delete deal.uuid;
-              delete deal.creationTimestamp;
+              if (deal !== null) {
+                delete deal.deal.type;
+                delete deal.deal.creationTimestamp;
+                delete deal.uuid;
+                delete deal.creationTimestamp;
 
-              let productAndSkusLines = cloneDeep(deal.productAndSkusLines);
-              deal.productAndSkusLines = [];
-              //deal.productAndSkusLines.productAndSkusLines = [];
-              productAndSkusLines.forEach(productAndSkusLine => {
-                delete productAndSkusLine.creationTimestamp;
-                delete productAndSkusLine.lineNumber;
-                delete productAndSkusLine.creationTimestamp;
+                let productAndSkusLines = cloneDeep(deal.productAndSkusLines);
+                deal.productAndSkusLines = [];
+                //deal.productAndSkusLines.productAndSkusLines = [];
+                productAndSkusLines.forEach(productAndSkusLine => {
+                  delete productAndSkusLine.creationTimestamp;
+                  delete productAndSkusLine.lineNumber;
+                  delete productAndSkusLine.creationTimestamp;
 
-                let existingSku = (allSkus ? allSkus.data : []).find(sku => sku.extRef == productAndSkusLine.extRef);
-                if (existingSku) {
-                  let productItem = {...existingSku, ...productAndSkusLine};
-                  delete productItem.productId;
-                  delete productItem.id;
-                  delete productItem.creationTimestamp;
-                  deal.productAndSkusLines.push(productItem)
-                }
-                else {
-                  deal.productAndSkusLines.push(productAndSkusLine)
-                }
-              })
+                  let existingSku = (allSkus ? allSkus.data : []).find(sku => sku.extRef == productAndSkusLine.extRef);
+                  if (existingSku) {
+                    let productItem = {...existingSku, ...productAndSkusLine};
+                    delete productItem.productId;
+                    delete productItem.id;
+                    delete productItem.creationTimestamp;
+                    deal.productAndSkusLines.push(productItem)
+                  } else {
+                    deal.productAndSkusLines.push(productAndSkusLine)
+                  }
+                })
+
+              }
+
             });
       }
 
@@ -312,6 +308,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       //alert("result " + JSON.stringify(result))
       setJustCreatedOrder(cloneDeep(result.data.addOrder));
+
+      if (!dataOrder.customer && dbUser) {
+        dataOrder.customer = dbUser;
+      }
       if (dataOrder.customer && dataOrder.customer.id) {
         await executeMutationUtil(addOrderToCustomer(currentBrand.id, dataOrder.customer.id, {
           ...dataOrder,
@@ -319,6 +319,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
           orderNumber: result.data.addOrder.orderNumber
         }))
       }
+
 
       if (createBookingSlotOccupancy) {
         await executeMutationUtil(createUpdateBookingSlotOccupancyMutation(currentBrand.id, currentEstablishment().id,

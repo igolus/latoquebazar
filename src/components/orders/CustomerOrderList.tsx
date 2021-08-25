@@ -36,6 +36,8 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
         let orders;
         if (result && result.data) {
           orders = result.data.getSiteUser.orders;
+          orders.sort((order1,order2) =>
+              parseFloat(order2.creationDate) - parseFloat(order1.creationDate));
           setSourceOrders(orders)
         }
 
@@ -74,9 +76,10 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
 
         {
             ordersDisplay ?
+
             <>
                 <DashboardPageHeader title={localStrings.myOrders} icon={ShoppingBag}/>
-
+                {/*<p>{JSON.stringify(ordersDisplay)}</p>*/}
                 <TableRow
                     sx={{
                         display: { xs: 'none', md: 'flex' },

@@ -154,7 +154,7 @@ const CompleteProfile = ({closeCallBack}) => {
       <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
         <form className="content" onSubmit={handleSubmit}>
           <H3 textAlign="center" mb={1}>
-            {localStrings.activateAccount}
+            {localStrings.completeAccount}
           </H3>
           <Small
               fontWeight="600"
@@ -250,28 +250,28 @@ const CompleteProfile = ({closeCallBack}) => {
           />
 
 
-          <FormControlLabel
-              className="agreement"
-              name="agreement"
-              onChange={handleChange}
-              control={
-                <Checkbox
-                    size="small"
-                    color="secondary"
-                    checked={values.agreement || false}
-                />
-              }
-              label={
-                <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
-                  {localStrings.bySigningTermsAndConditions}
-                  <a href="/" target="_blank" rel="noreferrer noopener">
-                    <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                      {localStrings.termsAndConditions}
-                    </H6>
-                  </a>
-                </FlexBox>
-              }
-          />
+          {/*<FormControlLabel*/}
+          {/*    className="agreement"*/}
+          {/*    name="agreement"*/}
+          {/*    onChange={handleChange}*/}
+          {/*    control={*/}
+          {/*      <Checkbox*/}
+          {/*          size="small"*/}
+          {/*          color="secondary"*/}
+          {/*          checked={values.agreement || false}*/}
+          {/*      />*/}
+          {/*    }*/}
+          {/*    label={*/}
+          {/*      <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">*/}
+          {/*        {localStrings.bySigningTermsAndConditions}*/}
+          {/*        <a href="/" target="_blank" rel="noreferrer noopener">*/}
+          {/*          <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
+          {/*            {localStrings.termsAndConditions}*/}
+          {/*          </H6>*/}
+          {/*        </a>*/}
+          {/*      </FlexBox>*/}
+          {/*    }*/}
+          {/*/>*/}
 
           <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
             <BazarButton
@@ -283,7 +283,7 @@ const CompleteProfile = ({closeCallBack}) => {
                   height: 44,
                 }}
             >
-              {localStrings.activateAccount}
+              {localStrings.completeAccount}
             </BazarButton>
           </FlexBox>
 
@@ -362,14 +362,14 @@ const formSchema = yup.object().shape({
   address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
   phoneNumber: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
       .matches(phoneRegExp, localStrings.check.badPhoneFormat),
-  agreement: yup
-      .bool()
-      .test(
-          'agreement',
-          localStrings.check.termsAndConditionsMandatory,
-          (value) => value === true
-      )
-      .required(localStrings.check.termsAndConditionsMandatory),
+  // agreement: yup
+  //     .bool()
+  //     .test(
+  //         'agreement',
+  //         localStrings.check.termsAndConditionsMandatory,
+  //         (value) => value === true
+  //     )
+  //     .required(localStrings.check.termsAndConditionsMandatory),
 })
 
 export default CompleteProfile

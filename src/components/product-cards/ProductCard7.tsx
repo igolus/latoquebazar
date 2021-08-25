@@ -2,7 +2,7 @@ import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
 import { Span } from '@component/Typography'
 import { useAppContext } from '@context/app/AppContext'
-import { Button, IconButton } from '@material-ui/core'
+import {Avatar, Button, IconButton} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
@@ -12,7 +12,8 @@ import React, { useCallback } from 'react'
 import ProductCard7Style from './ProductCard7Style'
 import useAuth from "@hook/useAuth";
 import {decreaseCartQte, deleteItemInCart, getPriceWithOptions, increaseCartQte} from '../../util/cartUtil'
-import {formatProductAndSkuName} from "../../util/displayUtil";
+import {formatProductAndSkuName, getImgUrlFromProductsWithExtRef} from "../../util/displayUtil";
+import localStrings from "../../localStrings";
 
 export interface ProductCard7Props {
   id: string | number
@@ -22,6 +23,7 @@ export interface ProductCard7Props {
   products: any
   item: any,
   currency: string
+  modeOrder: boolean
 }
 
 const ProductCard7: React.FC<ProductCard7Props> = ({
@@ -31,44 +33,45 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   price,
   products,
   item,
-  currency
+  currency,
+  modeOrder
 }) => {
 
   const {getOrderInCreation, setOrderInCreation} = useAuth();
-  //const { dispatch } = useAppContext()
-  // const handleCartAmountChange = useCallback(
-  //   (amount) => () => {
-  //     dispatch({
-  //       type: 'CHANGE_CART_AMOUNT',
-  //       payload: {
-  //         qty: amount,
-  //         name,
-  //         price,
-  //         imgUrl,
-  //         id,
-  //       },
-  //     })
-  //   },
-  //   []
-  // )
   let product = products.find(p => p.id === item.productId);
   let imgUrl = "/assets/images/Icon_Sandwich.png";
+  //alert("product " + product)
+  if (!product) {
+    //try to find with extRef in skus
+    product = products.find(p => p.skus && p.skus.some(sku => sku.extRef === item.extRef));
+  }
+  //alert("product " + product)
   if (product && product.files && product.files.length > 0) {
     imgUrl = product.files[0].url;
   }
-  else if (imgUrl) {
+
+
+  if (!imgUrl) {
     imgUrl = imgUrl;
   }
 
   return (
     <ProductCard7Style>
-      <Image
-        src={imgUrl}
-        height={140}
-        width={140}
-        display="block"
-        alt={name}
-      />
+      {modeOrder ?
+          <Avatar
+              src={imgUrl}
+              sx={{height: 80, width: 80, mt: 1, ml: 2, mb: 1}}
+          />
+          :
+
+          <Image
+              src={imgUrl}
+              height={140}
+              width={140}
+              display="block"
+              alt={name}
+          />
+      }
       <FlexBox
         className="product-details"
         flexDirection="column"
@@ -80,6 +83,10 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
           <a>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
               {formatProductAndSkuName(item)}
+            </Span>
+
+            <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
+              {" " + parseFloat(item.price).toFixed(2)  + " " + currency }
             </Span>
           </a>
         </Link>
@@ -105,6 +112,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
 
           )
         }
+
+        {!modeOrder &&
         <Box position="absolute" right="1rem" top="1rem">
           <IconButton
             size="small"
@@ -117,6 +126,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             <Close fontSize="small" />
           </IconButton>
         </Box>
+        }
 
         <FlexBox
           justifyContent="space-between"
@@ -127,19 +137,19 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               {getPriceWithOptions(item, true).toFixed(2) + " " + currency} x {item.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              {(getPriceWithOptions(item, true) *  item.quantity).toFixed(2) + " " + currency}
+              {" " + localStrings.total + ": " +  (getPriceWithOptions(item, true) *  item.quantity).toFixed(2) + " " + currency}
             </Span>
           </FlexBox>
-
-          <FlexBox alignItems="center">
+          {!modeOrder &&
+            <FlexBox alignItems="center">
             <Button
                 variant="outlined"
                 color="primary"
                 disabled={item.quantity === 1}
-                sx={{ p: '5px' }}
+                sx={{p: '5px'}}
                 onClick={() => decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
             >
-              <Remove fontSize="small" />
+              <Remove fontSize="small"/>
             </Button>
 
             <Span mx={1} fontWeight="600" fontSize="15px">
@@ -152,14 +162,15 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"
-                sx={{ p: '5px' }}
+                sx={{p: '5px'}}
                 onClick={() => increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
             >
-              <Add fontSize="small" />
+              <Add fontSize="small"/>
             </Button>
 
 
           </FlexBox>
+          }
         </FlexBox>
       </FlexBox>
     </ProductCard7Style>

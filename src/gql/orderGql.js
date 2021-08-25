@@ -272,6 +272,30 @@ export const getSiteUserOrderById = (brandId, siteUserId, orderId) => {
 
 }
 
+export const getCustomerOrdersOnlyIdQuery = (brandId, siteUserId) => {
+    var debug = `
+    query {
+      getSiteUser(brandId: "${brandId}", siteUserId: "${siteUserId}") {
+        orders {
+          id
+        }
+      }
+    }
+  `
+    console.log(debug);
+
+    return gql`
+   query {
+      getSiteUser(brandId: "${brandId}", siteUserId: "${siteUserId}") {
+        orders {
+          id
+        }
+      }
+    }
+  `;
+}
+
+
 export const getCustomerOrdersQuery = (brandId, siteUserId) => {
   var debug = `
     query {

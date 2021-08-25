@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
 
     //alert("contextData brand " + contextData.brand)
-    const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen, user} = useAuth();
+    const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen, user, dbUser} = useAuth();
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
     const logoUrl = contextData ? contextData.brand.logoUrl : null;
@@ -133,12 +133,12 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                         bgcolor="grey.200"
 
                         onClick={() => {
-                            if (!currentUser()) {
+                            if (!currentUser() || !dbUser) {
                                 toggleDialog();
                             }
                         }}
                     >
-                        {currentUser() != null ?
+                        {currentUser() != null && dbUser ?
                             <Account />
                             :
                             <PersonOutline />
@@ -156,9 +156,9 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     open={loginDialogOpen}
                     fullWidth={isMobile}
                     scroll="body"
-                    onClose={() => !user ? toggleDialog() : null}
+                    onClose={() => setLoginDialogOpen(false)}
                 >
-                    <LoginOrSignup closeCallBack={() => setLoginDialogOpen(false)}/>
+                    <LoginOrSignup closeCallBack={() => setLoginDialogOpen(false)} contextData={contextData}/>
                 </Dialog>
 
                 <Drawer

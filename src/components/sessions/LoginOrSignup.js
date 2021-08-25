@@ -9,7 +9,7 @@ import {CircularProgress} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import PassordReset from "@component/sessions/PassordReset";
 
-const LoginOrSignup = ({closeCallBack}) => {
+const LoginOrSignup = ({closeCallBack, contextData}) => {
     const [lostPassword, setLostPassword] = useState(false)
 
     const {getDbUser, user, dbUser, setDbUser, loginOnGoing, currentUser} = useAuth();
@@ -21,12 +21,12 @@ const LoginOrSignup = ({closeCallBack}) => {
 
     //return (<PassordReset></PassordReset>)
     if (lostPassword) {
-        return (<PassordReset backCallBack={() => setLostPassword(false)}/>)
+        return (<PassordReset backCallBack={() => setLostPassword(false)} contextData={contextData}/>)
         //return (<h1>RESET</h1>)
     }
 
     if (!user || !currentUser().emailVerified) {
-        return (<Login closeCallBack={closeCallBack} callBackBackToLostPassword={() => setLostPassword(true)}/>);
+        return (<Login contextData={contextData} closeCallBack={closeCallBack} callBackBackToLostPassword={() => setLostPassword(true)}/>);
     }
     if (!dbUser && !loginOnGoing) {
         return (<CompleteProfile closeCallBack={closeCallBack}/>);

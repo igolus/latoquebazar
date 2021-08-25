@@ -4,6 +4,21 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        refresh: "Actualiser",
+        deliveryEstimateDate: "Date de livraison estimée: {0}",
+        orderDate: "Date de commande",
+        deliveryHour: "Heure de livraison prévu",
+        orderDetail: "Detail de la commande",
+        total: "Total",
+        mandatorySelection: "(Selection obligatoire)",
+
+        optionListWithLimitMinMax: "Option {0} selectionnez minimum {1} option(s) et maximum {2} {3}",
+        optionListWithLimitMin: "Option {0} selectionnez minimum {1} option(s) {2}",
+        optionListWithLimitMax: "Option {0} selectionnez maximum {1} option(s) {2}",
+        optionListWithLimit: "Option {0} {1}",
+
+        mandatoryOption: "(obligatoire)",
+        sendLinkAgain: "Ré-envoyer le lien d'activation",
         backToLoginPage: "Revenir a la page de connection",
         resetPassword: "Reininialiser mon mot de passe",
         createYourAccount: "Creer votre compte",
@@ -15,11 +30,13 @@ let localStrings = new LocalizedStrings({
         myOrders: "Mes Commandes",
         purchaseDate: "Date de commande",
         orderNumber: "Nummero de commande",
+        orderId: "Identifiant de commande",
         status: "statut",
         myAccount: "Mon compte",
         dashBoard: "Tableau de bord",
         orders: "Commandes",
         warning: "Attention",
+        infoMessage: "Information",
         information: "Information",
         viewAllCat: "Voir toute les categories",
         backToCart: "Revenir au panier",
@@ -33,7 +50,9 @@ let localStrings = new LocalizedStrings({
 
         distanceTime: "distance jusqu'a l'etablissement: {0} km / {1}",
         timeSlot: "Creneau de reservation",
-        priceDetail: "Montant a payer",
+        priceToPay: "Montant a payer",
+        pricePaid: "Montant payé",
+
         totalNoTax: "Total hors taxes",
         totalTax: "Total taxes",
         totalTTC: "Total TTC",
@@ -91,6 +110,7 @@ let localStrings = new LocalizedStrings({
         lastName: "Nom",
         termsAndConditions: "Termes et conditions",
         activateAccount: "Activer mon compte",
+        completeAccount: "Completer mon compte",
         fillInfoToContinue: "Reseignez les champs pour continuer",
         login: "Se connecter",
         bySigningTermsAndConditions: "En cochant cette cas vous acceptez les termes et conditions",
@@ -153,7 +173,7 @@ let localStrings = new LocalizedStrings({
             accountCreated: "Compte cree",
             dealAddedToCart: "Offre ajouté au panier",
             productAddedToCart: "Produit ajouté au panier",
-            activationEmailSentNotif: "Email d'activation envoye a {0}, verifier votre email, activez le compte puis reconnecter vous",
+            activationEmailSentNotif: "Email d'activation envoye a {0}, verifier votre email, activez le compte puis connectez-vous de nouveau",
         },
 
         notifForBackEnd: {
@@ -164,7 +184,14 @@ let localStrings = new LocalizedStrings({
             accountAlreadyExists: "Ce compte est deja referencé, essayer de vous connecter directement en utilisant cet email",
             wrongPassword: "Mot de passe invalide",
             noUserEmail: "Aucun compte trouvé avec cet email"
-        }
+        },
+
+        emailTemplate: {
+            passwordReset: "Cliquer <a href='{0}'>ici</a> pour réinitialiser votre mot de passe {1}",
+            activateEmail: "Cliquer <a href='{0}'>ici</a> pour activer votre compte {1}",
+            passwordResetSubject: "Réinitialiser votre mot de passe {0}",
+            activateEmailSubject: "activer votre compte {0}",
+        },
 
     }
 });

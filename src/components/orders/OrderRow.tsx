@@ -71,7 +71,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
             />
           </Box>
           <Typography className="pre" m={0.75} textAlign="left">
-            {moment.unix(item.creationDate).locale("fr").calendar()}
+            {/*{item.creationDate}*/}
+            {moment(parseFloat(item.creationDate)).locale("fr").calendar()}
             {/*{format(new Date(item.creationDate), 'MMM dd, yyyy')}*/}
           </Typography>
           <Typography m={0.75} textAlign="left">

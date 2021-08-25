@@ -9,25 +9,29 @@ import localStrings from "../../localStrings";
 import moment from "moment";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
 
-export interface CheckoutSummaryProps {
+export interface OrderAmountSummaryProps {
     currency: string
     hideDetail: boolean
+    modeOrdered: boolean
+    orderSource: any
 }
 
-const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) => {
+const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
+                                                                  modeOrdered,orderSource}) => {
 
     const {getOrderInCreation} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
 
     useEffect(() => {
-        setPriceDetails(computePriceDetail(getOrderInCreation()))
-    }, [getOrderInCreation])
+        setPriceDetails(computePriceDetail(orderSource || getOrderInCreation()))
+    }, [getOrderInCreation, orderSource])
 
     return (
         <Card1>
+            {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
             <Typography fontWeight="600" mb={1} mt={2}>
-                {localStrings.priceDetail}
+                {modeOrdered ? localStrings.pricePaid : localStrings.priceToPay}
             </Typography>
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
             <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
@@ -131,4 +135,4 @@ const CheckoutSummary:React.FC<CheckoutSummaryProps> = ({currency, hideDetail}) 
     )
 };
 
-export default CheckoutSummary
+export default OrderAmountSummary

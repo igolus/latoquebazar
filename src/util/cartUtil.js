@@ -437,7 +437,7 @@ export function buildProductAndSkusNoCheckOrderInCreation(product) {
     return allSkusWithProduct;
 }
 
-export function buildProductAndSkus(product, orderInCreation) {
+export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit) {
 
     let allSkusWithProduct = [];
     if (product && product.skus) {
@@ -454,11 +454,17 @@ export function buildProductAndSkus(product, orderInCreation) {
                     }
                 }
             }
+
+            let options = [];
+            if (dealLinNumber != null && dealEdit && dealEdit.productAndSkusLines) {
+                let item = dealEdit.productAndSkusLines.find(line => line.lineNumber === dealLinNumber);
+                options = item ? item.options || [] : [];
+            }
             //if (!sku.unavailableInEstablishmentIds || !sku.unavailableInEstablishmentIds.includes(currentEstablishment().id)) {
             allSkusWithProduct.push({
                 product: product,
                 sku: copySku,
-                options: []
+                options: options
             })
             //}
         })

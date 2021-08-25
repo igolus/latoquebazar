@@ -5,7 +5,7 @@ import TruckFilled from '@component/icons/TruckFilled'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import TableRow from '@component/TableRow'
-import { H5, H6, Paragraph } from '@component/Typography'
+import {H5, H6, Paragraph, Span} from '@component/Typography'
 import productDatabase from '@data/product-database'
 import useWindowSize from '@hook/useWindowSize'
 import { Avatar, Button, Card, Divider, Grid, Typography } from '@material-ui/core'
@@ -22,10 +22,18 @@ import {getOrderByIdQuery, getSiteUserOrderById} from "../../src/gql/orderGql";
 import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
 import useAuth from "@hook/useAuth";
 import {
+  formatOrderConsumingMode, formatOrderDeliveryDateSlot,
   formatProductAndSkuName, getBrandCurrency,
   getImgUrlFromProducts,
-  getImgUrlFromProductsWithExtRef
+  getImgUrlFromProductsWithExtRef, getOrderBookingSlotEndDate, getOrderBookingSlotStartDate
 } from "../../src/util/displayUtil";
+import {getCartItems} from "../../src/util/cartUtil";
+import {ORDER_DELIVERY_MODE_DELIVERY, TYPE_DEAL, TYPE_PRODUCT} from "../../src/util/constants";
+import DealCard7 from "@component/product-cards/DealCard7";
+import ProductCard7 from "@component/product-cards/ProductCard7";
+import localStrings from "../../src/localStrings";
+import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
+import moment from "moment";
 
 const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
   flexDirection: 'row',
@@ -78,6 +86,10 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
   const [order, setOrder] = useState(null)
 
   useEffect(async() => {
+    await refresh();
+  }, [contextData, currentEstablishment(), dbUser])
+
+  async function refresh() {
     if (contextData && contextData.brand && dbUser) {
       let result = await executeQueryUtil(getSiteUserOrderById(contextData.brand.id, dbUser.id , id));
 
@@ -87,185 +99,286 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
         setOrder(order)
       }
     }
-  }, [contextData, currentEstablishment(), dbUser])
+  }
 
   return (
-    <DashboardLayout>
-      <DashboardPageHeader
-        title="Order Details"
-        icon={ShoppingBag}
-        button={
-          <Button color="primary" sx={{ bgcolor: 'primary.light', px: '2rem' }}>
-            Order Again
-          </Button>
-        }
-      />
-      {/*<p>{JSON.stringify(order || {})}</p>*/}
-      {/*<p>{JSON.stringify(contextData ? contextData.products : {})}</p>*/}
-      <Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>
+      <DashboardLayout>
+        <DashboardPageHeader
+            title={localStrings.orderDetail}
+            icon={ShoppingBag}
+            button={
+              <Button color="primary" sx={{ bgcolor: 'primary.light', px: '2rem' }} onClick={refresh}>
+                {localStrings.refresh}
+              </Button>
+            }
+        />
 
-        <StyledFlexbox>
-          {stepIconList.map((Icon, ind) => (
-            <Fragment key={ind}>
-              <Box position="relative">
-                <Avatar
-                  sx={{
-                    height: 64,
-                    width: 64,
-                    bgcolor: ind <= statusIndex ? 'primary.main' : 'grey.300',
-                    color: ind <= statusIndex ? 'grey.white' : 'primary.main',
-                  }}
-                >
-                  <Icon color="inherit" sx={{ fontSize: '32px' }} />
-                </Avatar>
-                {ind < statusIndex && (
-                  <Box position="absolute" right="0" top="0">
+        <p>{order && order.status}</p>
+        <p>{JSON.stringify(order || {})}</p>
+        {/*<p>{JSON.stringify(contextData ? contextData.products : {})}</p>*/}
+        <Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>
+
+          <StyledFlexbox>
+            {stepIconList.map((Icon, ind) => (
+                <Fragment key={ind}>
+                  <Box position="relative">
                     <Avatar
-                      sx={{
-                        height: 22,
-                        width: 22,
-                        bgcolor: 'grey.200',
-                        color: 'success.main',
-                      }}
+                        sx={{
+                          height: 64,
+                          width: 64,
+                          bgcolor: ind <= statusIndex ? 'primary.main' : 'grey.300',
+                          color: ind <= statusIndex ? 'grey.white' : 'primary.main',
+                        }}
                     >
-                      <Done color="inherit" sx={{ fontSize: '1rem' }} />
+                      <Icon color="inherit" sx={{ fontSize: '32px' }} />
                     </Avatar>
+                    {ind < statusIndex && (
+                        <Box position="absolute" right="0" top="0">
+                          <Avatar
+                              sx={{
+                                height: 22,
+                                width: 22,
+                                bgcolor: 'grey.200',
+                                color: 'success.main',
+                              }}
+                          >
+                            <Done color="inherit" sx={{ fontSize: '1rem' }} />
+                          </Avatar>
+                        </Box>
+                    )}
                   </Box>
-                )}
-              </Box>
-              {ind < stepIconList.length - 1 && (
-                <Box
-                  className="line"
-                  bgcolor={ind < statusIndex ? 'primary.main' : 'grey.300'}
-                />
-              )}
-            </Fragment>
-          ))}
-        </StyledFlexbox>
+                  {ind < stepIconList.length - 1 && (
+                      <Box
+                          className="line"
+                          bgcolor={ind < statusIndex ? 'primary.main' : 'grey.300'}
+                      />
+                  )}
+                </Fragment>
+            ))}
+          </StyledFlexbox>
 
-        <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>
-          <Typography
-            p="0.5rem 1rem"
-            borderRadius="300px"
-            bgcolor="primary.light"
-            color="primary.main"
-            textAlign="center"
+          <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>
+            <Typography
+                p="0.5rem 1rem"
+                borderRadius="300px"
+                bgcolor="primary.light"
+                color="primary.main"
+                textAlign="center"
+            >
+              {localStrings.formatString(localStrings.deliveryEstimateDate, formatOrderDeliveryDateSlot(order))}
+            </Typography>
+          </FlexBox>
+        </Card>
+
+        <Card sx={{ p: '0px', mb: '30px' }}>
+          <TableRow
+              sx={{
+                bgcolor: 'grey.200',
+                p: '12px',
+                boxShadow: 'none',
+                borderRadius: 0,
+              }}
           >
-            Estimated Delivery Date <b>4th October</b>
-          </Typography>
-        </FlexBox>
-      </Card>
-
-      <Card sx={{ p: '0px', mb: '30px' }}>
-        <TableRow
-          sx={{
-            bgcolor: 'grey.200',
-            p: '12px',
-            boxShadow: 'none',
-            borderRadius: 0,
-          }}
-        >
-          <FlexBox className="pre" m={0.75} alignItems="center">
-            <Typography fontSize="14px" color="grey.600" mr={0.5}>
-              Order ID:
-            </Typography>
-            <Typography fontSize="14px">9001997718074513</Typography>
-          </FlexBox>
-          <FlexBox className="pre" m={0.75} alignItems="center">
-            <Typography fontSize="14px" color="grey.600" mr={0.5}>
-              Placed on:
-            </Typography>
-            <Typography fontSize="14px">
-              {format(new Date(), 'dd MMM, yyyy')}
-            </Typography>
-          </FlexBox>
-          <FlexBox className="pre" m={0.75} alignItems="center">
-            <Typography fontSize="14px" color="grey.600" mr={0.5}>
-              Delivered on:
-            </Typography>
-            <Typography fontSize="14px">
-              {format(new Date(), 'dd MMM, yyyy')}
-            </Typography>
-          </FlexBox>
-        </TableRow>
-
-        <Box py={1}>
-
-          {order && order.order && order.order.items && order.order.items.map(item => (
-          //{productDatabase.slice(179, 182).map((item) => (
-            <FlexBox px={2} py={1} flexWrap="wrap" alignItems="center" key={item.id}>
-
-              {/*<p>{getImgUrlFromProductsWithExtRef(item, contextData ? contextData.products : null)}</p>*/}
-              <FlexBox flex="2 2 260px" m={0.75} alignItems="center">
-                <Avatar src={getImgUrlFromProductsWithExtRef(item, contextData ? contextData.products : null)} sx={{ height: 64, width: 64 }} />
-                <Box ml={2.5}>
-                  <H6 my="0px">{item.title}</H6>
-                  <Typography fontSize="14px" color="grey.600">
-                    {parseFloat(item.price).toFixed(2) + " " + getBrandCurrency(contextData.brand) + " x " + item.quantity}
-                  </Typography>
-                </Box>
+            {order &&
+            <>
+              <FlexBox className="pre" m={0.75} alignItems="center">
+                <Typography fontSize="14px" color="grey.600" mr={0.5}>
+                  {localStrings.orderNumber}
+                </Typography>
+                <Typography fontSize="14px">{order.orderNumber}</Typography>
               </FlexBox>
-              <FlexBox flex="1 1 260px" m={0.75} alignItems="center">
-                <Typography fontSize="14px" color="grey.600">
-                  {formatProductAndSkuName(item)}
+
+              <FlexBox className="pre" m={0.75} alignItems="center">
+                <Typography fontSize="14px" color="grey.600" mr={0.5}>
+                  {localStrings.orderId}
+                </Typography>
+                <Typography fontSize="14px">{order.id}</Typography>
+              </FlexBox>
+              <FlexBox className="pre" m={0.75} alignItems="center">
+                <Typography fontSize="14px" color="grey.600" mr={0.5}>
+                  {localStrings.orderDate}
+                </Typography>
+                <Typography fontSize="14px">
+                  {moment(parseFloat(order.creationDate)).locale("fr").calendar()}
                 </Typography>
               </FlexBox>
-              <FlexBox flex="160px" m={0.75} alignItems="center">
-                <Button variant="text" color="primary">
-                  <Typography fontSize="14px">Write a Review</Typography>
-                </Button>
-              </FlexBox>
-            </FlexBox>
-          ))}
-        </Box>
-      </Card>
+              {/*<FlexBox className="pre" m={0.75} alignItems="center">*/}
+              {/*  <Typography fontSize="14px" color="grey.600" mr={0.5}>*/}
+              {/*    Delivered on:*/}
+              {/*  </Typography>*/}
+              {/*  <Typography fontSize="14px">*/}
+              {/*    {format(new Date(), 'dd MMM, yyyy')}*/}
+              {/*  </Typography>*/}
+              {/*</FlexBox>*/}
+            </>
+            }
 
-      <Grid container spacing={3}>
-        <Grid item lg={6} md={6} xs={12}>
-          <Card sx={{ p: '20px 30px' }}>
-            <H5 mt={0} mb={2}>
-              Shipping Address
-            </H5>
-            <Paragraph fontSize="14px" my="0px">
-              Kelly Williams 777 Brockton Avenue, Abington MA 2351
-            </Paragraph>
-          </Card>
+          </TableRow>
+
+          {/*<p>{JSON.stringify(order || {})}</p>*/}
+          {/*<p>{JSON.stringify(contextData ? contextData.products || {} : {})}</p>*/}
+
+          <Box py={1}>
+            {getCartItems(() => order).map((item) => {
+
+              let currency = getBrandCurrency(contextData.brand)
+              //<p>{JSON.stringify(item)}</p>
+              if (item.type === TYPE_DEAL) {
+                return(<DealCard7 key={item.id}
+                                  deal={item}
+                                  modeOrder
+                                  currency={currency}
+                                  products={contextData ? contextData.products : []}/>)
+              }
+              else if (item.type === TYPE_PRODUCT) {
+                return(<ProductCard7 key={item.id}
+                                     item={item}
+                                     modeOrder
+                                     currency={currency}
+                                     products={contextData ? contextData.products : []}/>)
+              }
+            })}
+
+
+            {/*{order && order.order && order.order.items && order.order.items.map(item => (*/}
+            {/*    //{productDatabase.slice(179, 182).map((item) => (*/}
+            {/*    <>*/}
+            {/*      <FlexBox px={2} py={1} flexWrap="wrap" alignItems="center" key={item.id}>*/}
+            {/*        /!*<p>{JSON.stringify(item)}</p>*!/*/}
+            {/*        /!*<p>{getImgUrlFromProductsWithExtRef(item, contextData ? contextData.products : null)}</p>*!/*/}
+            {/*        <FlexBox flex="2 2 260px" m={0.75} alignItems="center">*/}
+            {/*          <Avatar src={getImgUrlFromProductsWithExtRef(item, contextData ? contextData.products : null)} sx={{ height: 64, width: 64 }} />*/}
+            {/*          <Box ml={2.5}>*/}
+            {/*            <H6 my="0px">{item.title}</H6>*/}
+
+
+
+            {/*            <Typography fontSize="14px" color="grey.600">*/}
+            {/*              {parseFloat(item.price).toFixed(2) + " " + getBrandCurrency(contextData.brand) + " x " + item.quantity}*/}
+            {/*            </Typography>*/}
+
+            {/*            {*/}
+            {/*              item.options && item.options.map((option, key) =>*/}
+            {/*                  // <FlexBox flexWrap="wrap" alignItems="left">*/}
+            {/*                  <FlexBox alignItems="left">*/}
+            {/*                    <Typography color="grey.600" fontSize="14px"  mr={1}>*/}
+            {/*                      {option.name}*/}
+            {/*                    </Typography>*/}
+            {/*                    <Typography color="grey.600" fontSize="14px"  mr={1}>*/}
+            {/*                      {option.price +  " " + getBrandCurrency(contextData.brand)} x {item.quantity}*/}
+            {/*                    </Typography>*/}
+            {/*                    <Typography fontWeight={600} color="primary.main" fontSize="14px" mr={2}>*/}
+            {/*                      {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + getBrandCurrency(contextData.brand)}*/}
+            {/*                    </Typography>*/}
+            {/*                  </FlexBox>)*/}
+            {/*            }*/}
+            {/*          </Box>*/}
+            {/*        </FlexBox>*/}
+            {/*        <FlexBox flex="1 1 260px" m={0.75} alignItems="center">*/}
+            {/*          <Typography fontSize="14px" color="grey.600">*/}
+            {/*            {formatProductAndSkuName(item)}*/}
+            {/*          </Typography>*/}
+
+
+            {/*        </FlexBox>*/}
+
+
+            {/*        /!*<FlexBox flex="160px" m={0.75} alignItems="center">*!/*/}
+            {/*        /!*  <Button variant="text" color="primary">*!/*/}
+            {/*        /!*    <Typography fontSize="14px">Write a Review</Typography>*!/*/}
+            {/*        /!*  </Button>*!/*/}
+            {/*        /!*</FlexBox>*!/*/}
+            {/*      </FlexBox>*/}
+
+            {/*      /!*{*!/*/}
+            {/*      /!*  item.options && item.options.map((option, key) =>*!/*/}
+            {/*      /!*      // <h1>{option.name}</h1>*!/*/}
+            {/*      /!*      <FlexBox flexWrap="wrap" alignItems="center">*!/*/}
+            {/*      /!*        <Span color="grey.600" fontSize="14px"  mr={1}>*!/*/}
+            {/*      /!*          {option.name}*!/*/}
+            {/*      /!*        </Span>*!/*/}
+            {/*      /!*        <Span color="grey.600" fontSize="14px"  mr={1}>*!/*/}
+            {/*      /!*          {option.price +  " " + getBrandCurrency(contextData.brand)} x {item.quantity}*!/*/}
+            {/*      /!*        </Span>*!/*/}
+            {/*      /!*        <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>*!/*/}
+            {/*      /!*          {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + getBrandCurrency(contextData.brand)}*!/*/}
+            {/*      /!*        </Span>*!/*/}
+            {/*      /!*      </FlexBox>*!/*/}
+            {/*      /!*  )*!/*/}
+            {/*      /!*}*!/*/}
+            {/*    </>*/}
+
+
+            {/*))}*/}
+          </Box>
+        </Card>
+
+        <Grid container spacing={3}>
+          <Grid item lg={6} md={6} xs={12}>
+            <Card sx={{ p: '20px 30px' }}>
+              <H5 mt={0} mb={2}>
+                {localStrings.deliveryMode}
+              </H5>
+              <Paragraph fontSize="14px" my="0px">
+                {/*{JSON.stringify(order || {})}*/}
+                {formatOrderConsumingMode(order, localStrings)}
+              </Paragraph>
+
+              {order && order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+              <>
+                <H5 mt={0} mb={2} mt={2}>
+                  {localStrings.deliveryHour}
+                </H5>
+                <Paragraph fontSize="14px" my="0px">
+                  {formatOrderDeliveryDateSlot(order)}
+                </Paragraph>
+              </>
+              }
+
+            </Card>
+          </Grid>
+          <Grid item lg={6} md={6} xs={12}>
+
+
+            <OrderAmountSummary
+                orderSource={order}
+                modeOrdered
+                currency={getBrandCurrency(contextData ? contextData.brand : null)}
+                hideDetail/>
+            {/*<Card sx={{ p: '20px 30px' }}>*/}
+            {/*  <H5 mt={0} mb={2}>*/}
+            {/*    Total Summary*/}
+            {/*  </H5>*/}
+            {/*  <FlexBox justifyContent="space-between" alignItems="center" mb={1}>*/}
+            {/*    <Typography fontSize="14px" color="grey.600">*/}
+            {/*      Subtotal:*/}
+            {/*    </Typography>*/}
+            {/*    <H6 my="0px">$335</H6>*/}
+            {/*  </FlexBox>*/}
+            {/*  <FlexBox justifyContent="space-between" alignItems="center" mb={1}>*/}
+            {/*    <Typography fontSize="14px" color="grey.600">*/}
+            {/*      Shipping fee:*/}
+            {/*    </Typography>*/}
+            {/*    <H6 my="0px">$10</H6>*/}
+            {/*  </FlexBox>*/}
+            {/*  <FlexBox justifyContent="space-between" alignItems="center" mb={1}>*/}
+            {/*    <Typography fontSize="14px" color="grey.600">*/}
+            {/*      Discount:*/}
+            {/*    </Typography>*/}
+            {/*    <H6 my="0px">-$30</H6>*/}
+            {/*  </FlexBox>*/}
+
+            {/*  <Divider sx={{ mb: '0.5rem' }} />*/}
+
+            {/*  <FlexBox justifyContent="space-between" alignItems="center" mb={2}>*/}
+            {/*    <H6 my="0px">Total</H6>*/}
+            {/*    <H6 my="0px">$315</H6>*/}
+            {/*  </FlexBox>*/}
+            {/*  <Typography fontSize="14px">Paid by Credit/Debit Card</Typography>*/}
+            {/*</Card>*/}
+          </Grid>
         </Grid>
-        <Grid item lg={6} md={6} xs={12}>
-          <Card sx={{ p: '20px 30px' }}>
-            <H5 mt={0} mb={2}>
-              Total Summary
-            </H5>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
-              <Typography fontSize="14px" color="grey.600">
-                Subtotal:
-              </Typography>
-              <H6 my="0px">$335</H6>
-            </FlexBox>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
-              <Typography fontSize="14px" color="grey.600">
-                Shipping fee:
-              </Typography>
-              <H6 my="0px">$10</H6>
-            </FlexBox>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
-              <Typography fontSize="14px" color="grey.600">
-                Discount:
-              </Typography>
-              <H6 my="0px">-$30</H6>
-            </FlexBox>
-
-            <Divider sx={{ mb: '0.5rem' }} />
-
-            <FlexBox justifyContent="space-between" alignItems="center" mb={2}>
-              <H6 my="0px">Total</H6>
-              <H6 my="0px">$315</H6>
-            </FlexBox>
-            <Typography fontSize="14px">Paid by Credit/Debit Card</Typography>
-          </Card>
-        </Grid>
-      </Grid>
-    </DashboardLayout>
+      </DashboardLayout>
   )
 }
 

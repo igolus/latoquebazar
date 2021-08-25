@@ -1,35 +1,12 @@
 import BazarAvatar from '@component/BazarAvatar'
-import BazarButton from '@component/BazarButton'
-import BazarIconButton from '@component/BazarIconButton'
 import FlexBox from '@component/FlexBox'
-import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
-import LazyImage from '@component/LazyImage'
-import {H5, Span, Tiny} from '@component/Typography'
-import { useAppContext } from '@context/app/AppContext'
-import {Box, Button, Divider} from '@material-ui/core'
-import { useTheme } from '@material-ui/core/styles'
-import Add from '@material-ui/icons/Add'
-import Close from '@material-ui/icons/Close'
-import Remove from '@material-ui/icons/Remove'
-import { CartItem } from '@reducer/cartReducer'
-import Link from 'next/link'
-import React, {useCallback, useEffect, useState} from 'react'
+import {H5, Span} from '@component/Typography'
+import {Box, Button} from '@material-ui/core'
+import {useTheme} from '@material-ui/core/styles'
+import React, {useState} from 'react'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
-import {
-  decreaseCartQte, decreaseDealCartQte,
-  deleteItemInCart,
-  getCartItems,
-  getPriceWithOptions,
-  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart
-} from "../../util/cartUtil";
-import {
-  computePriceDetail, formatProductAndSkuName,
-  getBrandCurrency, getCroppedStringSize,
-  getProductFirstImgUrl,
-  getTotalPriceOrderInCreation
-} from "../../util/displayUtil";
-import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
+import {formatProductAndSkuName, getProductFirstImgUrl, getTotalPriceOrderInCreation} from "../../util/displayUtil";
 import {isMobile} from "react-device-detect";
 
 type MiniCartProps = {
@@ -43,7 +20,6 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
   const { palette } = useTheme()
   const { dealEdit } = useAuth();
   //const [itemNumber, setItemNumber] = useState(0);
-  const [currency, setcurrency] = useState("");
 
   // useEffect(() => {
   //   setItemNumber(getItemNumberInCart(orderInCreation))
@@ -65,16 +41,16 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
   //   []
   // )
 
-  const getTotalPrice = () => {
-    return getTotalPriceOrderInCreation(orderInCreation)
-    //
-    // return (
-    //   cartList.reduce(
-    //     (accumulator, item) => accumulator + item.price * item.qty,
-    //     0
-    //   ) || 0
-    // )
-  }
+  // const getTotalPrice = () => {
+  //   return getTotalPriceOrderInCreation(orderInCreation)
+  //   //
+  //   // return (
+  //   //   cartList.reduce(
+  //   //     (accumulator, item) => accumulator + item.price * item.qty,
+  //   //     0
+  //   //   ) || 0
+  //   // )
+  // }
 
   // function getImgUrl(item) {
   //   if (!contextData || !contextData.products) {
@@ -158,7 +134,7 @@ const MiniCartDeal: React.FC<MiniCartProps> = ({ toggleSidenav , contextData, se
         {/*)}*/}
 
 
-        {dealEdit && dealEdit.productAndSkusLines.map((item, index) => (
+        {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.map((item, index) => (
           <FlexBox
             key={index}
             alignItems="center"

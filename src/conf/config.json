@@ -1,7 +1,9 @@
-
 {
   "graphQlUrl": "http://localhost:5001/latoque-b23f1/us-central1/graphQlApi",
   "brandId": "0S93n0HvHamy7TP5vEYF",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
-  "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi"
+  "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
+  "sendEmailUrl": "http://localhost:5001/latoque-b23f1/us-central1/sendMail",
+  "getResetAccountLinkUrl": "http://localhost:5001/latoque-b23f1/us-central1/getPasswordLink",
+  "getActivationEmailLinkUrl": "http://localhost:5001/latoque-b23f1/us-central1/activateMailLink"
 }

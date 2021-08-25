@@ -8,15 +8,27 @@ import Person from '@material-ui/icons/Person'
 import { Box } from '@material-ui/system'
 import { format } from 'date-fns'
 import Link from 'next/link'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {isMobile} from 'react-device-detect';
 import useAuth from "@hook/useAuth";
 import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import localStrings from "../../src/localStrings";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import {loadOrderCount, OrdersProps} from "../orders";
 
-const Profile = () => {
+export interface ProfileProps {
+    contextData?: any
+}
+
+const Profile:React.FC<ProfileProps> = ({contextData}) => {
 
     const {dbUser, logout} = useAuth()
+    const [orderCount, setOrderCount] = useState(0)
+
+    useEffect(async () => {
+        loadOrderCount(dbUser, contextData,setOrderCount)
+    }, [dbUser, contextData]);
 
     const handleLogout = async () => {
         try {
@@ -28,7 +40,7 @@ const Profile = () => {
 
 
     return (
-        <CustomerDashboardLayout>
+        <CustomerDashboardLayout contextData={contextData} orderCount={orderCount}>
             {isMobile && !dbUser?
                 <>
                     <Box mb={4}>
@@ -192,5 +204,9 @@ const infoList = [
         subtitle: 'Awaiting Delivery',
 },
 ]
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
 
 export default Profile

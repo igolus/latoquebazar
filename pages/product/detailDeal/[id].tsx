@@ -37,12 +37,6 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const selectedDeal = (contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null;
 
-    //const [selectedOption, setSelectedOption] = useState(0)
-
-    // const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: number) => {
-    //     setSelectedOption(newValue)
-    // }
-
     return (
         <NavbarLayout contextData={contextData}>
             {selectedDeal &&

@@ -3,7 +3,7 @@ import Image from '@component/BazarImage'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
 import { H3, H6, Small } from '@component/Typography'
-import {Box, Button, Card, CardProps, Divider, IconButton} from '@material-ui/core'
+import {Box, Button, Card, CardProps, CircularProgress, Divider, IconButton} from '@material-ui/core'
 import { styled } from '@material-ui/core/styles'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -18,6 +18,8 @@ import {executeQueryUtil, executeQueryUtilSync} from "../../apolloClient/gqlUtil
 import {getSiteUserByIdQuery} from "../../gql/siteUserGql";
 import Signup from "@component/sessions/Signup";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import {makeStyles} from "@material-ui/styles";
+import {green} from "@material-ui/core/colors";
 
 const config = require("../../conf/config.json")
 
@@ -67,15 +69,25 @@ export const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 }))
 
+const useStyles = makeStyles((theme) => ({
+  buttonProgress: {
+    color: green[500],
+  },
+}));
+
+const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
 
 
-const Login = ({closeCallBack, callBackBackToLostPassword}) => {
+  const classes = useStyles();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const [createAccountEnabled, setCreateAccountEnabled] = useState(false)
   const [errorSubmit, setErrorSubmit] = useState(null)
+  const [sendingActivationLink, setSendingActivationLink] = useState(false)
+  const [verifEmailSentAgain, setVerifEmailSentAgain] = useState(false)
 
 
-  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId, signInWithFaceBook, setLoginOnGoing, user, currentUser} = useAuth();
+  const { signInWithEmailAndPassword, signInWithGoogle, getBrandId,
+    signInWithFaceBook, setLoginOnGoing, user, currentUser, sendEmailVerification, currentEstablishment} = useAuth();
 
   const router = useRouter()
 
@@ -182,10 +194,18 @@ const Login = ({closeCallBack, callBackBackToLostPassword}) => {
     setCreateAccountEnabled(true)
   }
 
+  async function sendActivationLink() {
+    setVerifEmailSentAgain(false);
+    setSendingActivationLink(true);
+    await sendEmailVerification(contextData.brand, currentEstablishment());
+    setSendingActivationLink(false);
+    setVerifEmailSentAgain(true);
+  }
+
   return (
     <>
       {createAccountEnabled ?
-          <Signup callBackBackToLogin={() => setCreateAccountEnabled(false)} callBackBackToLostPassword={callBackBackToLostPassword}/>
+          <Signup contextData={contextData} callBackBackToLogin={() => setCreateAccountEnabled(false)} callBackBackToLostPassword={callBackBackToLostPassword}/>
           :
           <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
             <form className="content" onSubmit={handleSubmit}>
@@ -203,12 +223,33 @@ const Login = ({closeCallBack, callBackBackToLostPassword}) => {
                 {localStrings.logEmailAndPassword}
               </Small>
 
+
+              {user && verifEmailSentAgain &&
+              <AlertHtmlLocal severity="info"
+                              title={localStrings.infoMessage}
+                              content={localStrings.formatString(localStrings.notif.activationEmailSentNotif, user.email)}
+              />
+              }
+
               {errorSubmit &&
               <AlertHtmlLocal severity="error"
                               title={localStrings.warning}
-                              content={errorSubmit}
-              />
+                              content={errorSubmit}>
+
+                              {user && !user.emailVerified &&
+                  <Box display="flex" flexDirection="row-reverse">
+                    <Box mt={2} mb={2}>
+                        <Button variant="contained" color="primary" type="button" fullWidth
+                                endIcon={sendingActivationLink ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
+                                onClick={sendActivationLink}>
+                          {localStrings.sendLinkAgain}
+                        </Button>
+                    </Box>
+                  </Box>
+                  }
+                </AlertHtmlLocal>
               }
+
 
               <BazarTextField
                   mb={1.5}

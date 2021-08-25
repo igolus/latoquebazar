@@ -189,7 +189,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     url = imgUrl;
   }
   function isProductSelected() {
-    return dealEdit.productAndSkusLines &&
+    return dealEdit && dealEdit.productAndSkusLines &&
       dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.extRef == selectedProductAndSku.sku.extRef)
   }
 
@@ -343,6 +343,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                           //addCallBack={() => setOpen(false)}
                           addToCartOrderCallBack={addToDeal}
                           addButtonText={localStrings.select}
+                          lineNumber={lineNumber}
             />
             <IconButton
                 sx={{ position: 'absolute', top: '0', right: '0' }}

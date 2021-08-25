@@ -13,6 +13,7 @@ import {ORDER_DELIVERY_MODE_DELIVERY} from "../util/constants"
 import {Dialog, DialogContent} from "@material-ui/core";
 import {makeStyles} from "@material-ui/styles";
 import AdressCheck, {DIST_INFO} from "@component/address/AdressCheck";
+import {getResetMailLink, sendMailMessage, getActivationMailLink} from "../util/mailUtil";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -269,30 +270,29 @@ export const AuthProvider = ({ children }) => {
     return firebase.auth().signInWithEmailAndPassword(email, password);
   };
 
-  const sendEmailVerification = async () => {
+  const sendEmailVerification = async (brand, establishment) => {
     var user = firebase.auth().currentUser;
-    //alert("user for sendEmailVerification " + user.email)
+    alert("user for sendEmailVerification " + user.email)
     if (user) {
+      let link = await getActivationMailLink(user.email)
+      alert("link " + link)
+      //await sendMailMessage(brand, establishment, link, emailAddress);
 
-      var ret = user.sendEmailVerification();
-      // addToast(localStrings.formatString(
-      //     localStrings.notif.activationEmailSentNotif, user.email), {
-      //   appearance: "success",
-      //   autoDismiss: true
-      // });
-      return ret;
+      //let link = await getResetMailLink(emailAddress);
+      let message = localStrings.formatString(localStrings.emailTemplate.activateEmail, link, brand.brandName)
+      await sendMailMessage(brand, establishment, message,
+          localStrings.formatString(localStrings.emailTemplate.activateEmailSubject, brand.brandName),
+          user.email);
     }
-    return null;
   };
 
-  const resetPassword = async (emailAddress) => {
-    firebase.auth().sendPasswordResetEmail(emailAddress);
-
-    addToast(localStrings.formatString(
-        localStrings.notif.passwordResetEmailSentNotif, emailAddress), {
-      appearance: "success",
-      autoDismiss: true
-    });
+  const resetPassword = async (brand, establishment, emailAddress) => {
+    let link = await getResetMailLink(emailAddress);
+    let message = localStrings.formatString(localStrings.emailTemplate.passwordReset,
+        link, brand.brandName)
+    await sendMailMessage(brand, establishment, message,
+        localStrings.formatString(localStrings.emailTemplate.passwordResetSubject, brand.brandName),
+        emailAddress);
   };
 
   const signInWithGoogle = () => {
@@ -314,7 +314,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await setDbUser(null);
-
+    localStorage.removeItem("authToken");
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
@@ -366,6 +366,8 @@ export const AuthProvider = ({ children }) => {
         dbUser: dbUser,
       }
     });
+
+
   }
 
   function getCurrency() {
@@ -474,6 +476,7 @@ export const AuthProvider = ({ children }) => {
           deliveryAddress: null,
           bookingSlot: null,
           additionalInfo: null,
+          //productAndSkusLines: []
         }
       }
     });

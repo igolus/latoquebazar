@@ -72,12 +72,12 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 }))
 
-const Signup = ({callBackBackToLogin, callBackBackToLostPassword}) => {
+const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const [errorSubmit, setErrorSubmit] = useState(null)
 
   const router = useRouter()
-  const {createUserWithEmailAndPassword, sendEmailVerification} = useAuth();
+  const {createUserWithEmailAndPassword, sendEmailVerification, currentEstablishment} = useAuth();
   const togglePasswordVisibility = useCallback(() => {
     setPasswordVisibility((visible) => !visible)
   }, [])
@@ -90,7 +90,7 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword}) => {
       // await updateProfile({
       //   displayName: values.firstName + " " + values.lastName,
       // })
-      await sendEmailVerification();
+      await sendEmailVerification(contextData.brand, currentEstablishment());
       //router.push('/profile')
       //alert("Email sent " + values.email + values.password);
       callBackBackToLogin();

@@ -203,7 +203,7 @@ export const computePriceDetail = (orderInCreation) => {
 }
 
 export function formatOrderConsumingMode(item, localStrings) {
-    if (item.deliveryMode) {
+    if (item && item.deliveryMode) {
         let localValue = getOrderDeliveryMode(localStrings).find(source => source.value === item.deliveryMode);
         if (localValue) {
             return localValue.name;
@@ -388,6 +388,31 @@ export function getImgUrlFromProductsWithExtRef(item, products) {
         return getProductFirstImgUrl(product);
     }
     return null;
+}
+
+export const getOrderBookingSlotStartDate = (order) => {
+    if (!order.bookingSlot) {
+        return moment();
+    }
+    return moment.unix(order.bookingSlot.startDate);
+}
+
+export const getOrderBookingSlotEndDate = (order) => {
+    if (!order.bookingSlot) {
+        return moment();
+    }
+    return moment.unix(order.bookingSlot.endDate);
+}
+
+export const formatOrderDeliveryDateSlot = (order) => {
+    if (!order) {
+        return "";
+    }
+    return getOrderBookingSlotStartDate(order)
+            .locale("fr")
+            .calendar() + " - " +
+        getOrderBookingSlotEndDate(order)
+            .format("HH:mm");
 }
 
 

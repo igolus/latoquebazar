@@ -2,7 +2,7 @@ import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
 import { Span } from '@component/Typography'
 import { useAppContext } from '@context/app/AppContext'
-import { Button, IconButton } from '@material-ui/core'
+import {Avatar, Button, IconButton} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
@@ -18,7 +18,8 @@ import {
   getPriceWithOptions,
   increaseCartQte, increaseDealCartQte
 } from '../../util/cartUtil'
-import {formatProductAndSkuName} from "../../util/displayUtil";
+import {formatProductAndSkuName, getPriceDeal} from "../../util/displayUtil";
+import localStrings from "../../localStrings";
 
 export interface DealCard7Props {
   id: string | number
@@ -28,6 +29,7 @@ export interface DealCard7Props {
   products: any
   deal: any,
   currency: string
+  modeOrder: boolean
 }
 
 const DealCard7: React.FC<DealCard7Props> = ({
@@ -37,29 +39,12 @@ const DealCard7: React.FC<DealCard7Props> = ({
   price,
   products,
   deal,
-  currency
+  currency,
+  modeOrder
 }) => {
 
   const item = deal.deal;
-  //console.log(" item " + JSON.stringify(item, null,2))
   const {getOrderInCreation, setOrderInCreation} = useAuth();
-  //const { dispatch } = useAppContext()
-  // const handleCartAmountChange = useCallback(
-  //   (amount) => () => {
-  //     dispatch({
-  //       type: 'CHANGE_CART_AMOUNT',
-  //       payload: {
-  //         qty: amount,
-  //         name,
-  //         price,
-  //         imgUrl,
-  //         id,
-  //       },
-  //     })
-  //   },
-  //   []
-  // )
-  //let product = products.find(p => p.id === item.productId);
   let imgUrl = "/assets/images/Icon_Sandwich.png";
   if (item && item.files && item.files.length > 0) {
     imgUrl = item.files[0].url;
@@ -70,14 +55,22 @@ const DealCard7: React.FC<DealCard7Props> = ({
 
   return (
     <ProductCard7Style>
-      {/*<p>{JSON.stringify(item)}</p>*/}
-      <Image
-        src={imgUrl}
-        height={140}
-        width={140}
-        display="block"
-        alt={name}
-      />
+      {/*<p>{JSON.stringify(deal)}</p>*/}
+      {modeOrder ?
+          <Avatar
+              src={imgUrl}
+              sx={{height: 80, width: 80, mt: 1, ml: 2, mb: 1}}
+          />
+          :
+
+          <Image
+              src={imgUrl}
+              height={140}
+              width={140}
+              display="block"
+              alt={name}
+          />
+      }
       <FlexBox
         className="product-details"
         flexDirection="column"
@@ -89,6 +82,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
           <a>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
               {item.name}
+            </Span>
+
+            <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
+              {" " + getPriceDeal(item).toFixed(2)  + " " + currency }
             </Span>
           </a>
         </Link>
@@ -102,10 +99,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
                  {formatProductAndSkuName(productAndSkusLine)}
                 </Span>
                 <Span color="grey.600" fontSize="14px"  mr={1}>
-                  {productAndSkusLine.price +  " " + currency} x {deal.quantity}
+                  {parseFloat(deal.deal.lines[key].pricingValue).toFixed(2) +  " " + currency} x {deal.quantity}
                 </Span>
                 <Span color="grey.600" fontSize="14px" color="primary.main"  mr={2}>
-                  {(parseFloat(productAndSkusLine.price) * deal.quantity).toFixed(2) + " " + currency}
+                  {(parseFloat(deal.deal.lines[key].pricingValue) * deal.quantity).toFixed(2) + " " + currency}
                 </Span>
               </FlexBox>
 
@@ -133,25 +130,20 @@ const DealCard7: React.FC<DealCard7Props> = ({
 
               </>
           )}
-                {/*<Span color="grey.600" fontSize="14px"  mr={1}>*/}
-                {/*  {option.price +  " " + currency} x {item.quantity}*/}
-                {/*</Span>*/}
-                {/*<Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>*/}
-                {/*  {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}*/}
-                {/*</Span>*/}
-
+        {!modeOrder &&
         <Box position="absolute" right="1rem" top="1rem">
           <IconButton
-            size="small"
-            sx={{
-              padding: '4px',
-              ml: '12px',
-            }}
-            onClick={() => deleteDealInCart(getOrderInCreation, setOrderInCreation, deal.uuid)}
+              size="small"
+              sx={{
+                padding: '4px',
+                ml: '12px',
+              }}
+              onClick={() => deleteDealInCart(getOrderInCreation, setOrderInCreation, deal.uuid)}
           >
-            <Close fontSize="small" />
+            <Close fontSize="small"/>
           </IconButton>
         </Box>
+        }
 
         <FlexBox
           justifyContent="space-between"
@@ -162,10 +154,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
               {getPriceWithOptions(deal).toFixed(2) + " " + currency} x {deal.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              {(getPriceWithOptions(deal) * deal.quantity).toFixed(2) + " " + currency}
+              {" " + localStrings.total + ": " +  (getPriceWithOptions(deal) * deal.quantity).toFixed(2) + " " + currency}
             </Span>
           </FlexBox>
-
+          {!modeOrder &&
           <FlexBox alignItems="center">
             <Button
                 variant="outlined"
@@ -174,10 +166,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // size="none"
                 // borderColor="primary.light"
                 disabled={item.quantity === 1}
-                sx={{ p: '5px' }}
+                sx={{p: '5px'}}
                 onClick={() => decreaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
             >
-              <Remove fontSize="small" />
+              <Remove fontSize="small"/>
             </Button>
 
             <Span mx={1} fontWeight="600" fontSize="15px">
@@ -190,13 +182,14 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"
-                sx={{ p: '5px' }}
+                sx={{p: '5px'}}
                 onClick={() => increaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
             >
-              <Add fontSize="small" />
+              <Add fontSize="small"/>
             </Button>
 
           </FlexBox>
+          }
         </FlexBox>
       </FlexBox>
     </ProductCard7Style>

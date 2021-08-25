@@ -16,7 +16,7 @@ import DealCard7 from "@component/product-cards/DealCard7";
 import LazyImage from "@component/LazyImage";
 import localStrings from "../src/localStrings";
 import {isMobile} from "react-device-detect";
-import CheckoutSummary from "@component/checkout/CheckoutSummary";
+import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
 
 export interface CartProps {
   contextData?: any
@@ -93,7 +93,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 
 
         <Grid item lg={4} md={4} xs={12}>
-          <CheckoutSummary currency={getBrandCurrency(contextData.brand)} hideDetail/>
+          <OrderAmountSummary currency={getBrandCurrency(contextData.brand)} hideDetail/>
         </Grid>
       </Grid>
     </CheckoutNavLayout>

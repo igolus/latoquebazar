@@ -18,6 +18,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import {makeStyles} from "@material-ui/styles";
 import FlexBox from "@component/FlexBox";
+import useAuth from "@hook/useAuth";
 
 export const OPTION_LIST_SINGLE = "single";
 export const OPTION_LIST_MULTIPLE = "multiple";
@@ -55,36 +56,9 @@ function ProductSelector({ productAndSku, options,
                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
                            setterSkuEdit, currency, skuEdit,
                            setterValid,
-                           valid}) {
-
-// function ProductSelector({ productAndSku, selectProductCallBack, cancelProductCallBack,
-//                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
-//                            setterSkuEdit}) {
-
-  //const [productAndSku, setProductAndSku] = useState(...productAndSkuInit);
+                           valid, lineNumber}) {
   const classes = useStyles();
-  //const { orderInCreation, setOrderInCreation, currentBrand, getCurrency} = useAuth();
-  //const [options, setOptionsListList] = useState(null);
-  //const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   // Create an scoped async function in the hook
-  //   async function load() {
-  //     let result = await executeQueryUtil(getOptionsListQuery(currentBrand().id));
-  //     setOptionsListList(result.data.getProductOptionListsByBrandId);
-  //     setLoading(false)
-  //   }    // Execute the created function directly
-  //   load();
-  // }, []);
-
-  // function addToCart() {
-  //   setOrderInCreation({
-  //     ...orderInCreation(),
-  //     order: {
-  //       items: [...orderInCreation().order.items, itemSkuBooking]
-  //     }
-  //   })
-  // }
+  const {dealEdit} = useAuth();
 
   useEffect(() => {
     checkValidity();
@@ -167,20 +141,36 @@ function checkValidity() {
   setterValid(valid)
 }
 
-// function selectProductSku() {
-//   if (selectProductCallBack) {
-//     selectProductCallBack(getterSkuEdit())
-//     setterSkuEdit(null)
-//     //getterSkuEdit().options
-//   }
-// }
-
 function formatTitleOptionList(optionList) {
-  return localStrings.formatString(localStrings.optionListWithLimit,
+  if ((!optionList.minValue || optionList.minValue ===0)
+      && (!optionList.maxValue || optionList.maxValue ===-1) ) {
+    return localStrings.formatString(localStrings.optionListWithLimit,
+        optionList.name,
+        optionList.mandatory ? localStrings.mandatorySelection : "",
+    ).trim()
+  }
+
+  if (!optionList.minValue || optionList.minValue ===0) {
+    return localStrings.formatString(localStrings.optionListWithLimitMax,
+        optionList.name,
+        optionList.maxValue,
+        optionList.mandatory ? localStrings.check.mandatorySelection : "",
+    ).trim()
+  }
+
+  if (!optionList.maxValue || optionList.maxValue ===-1) {
+    return localStrings.formatString(localStrings.optionListWithLimitMin,
+        optionList.name,
+        optionList.minValue,
+        optionList.mandatory ? localStrings.mandatorySelection : "",
+    ).trim()
+  }
+
+  return localStrings.formatString(localStrings.optionListWithLimitMinMax,
       optionList.name,
       optionList.minValue,
       optionList.maxValue,
-      optionList.mandatory ? localStrings.check.required : "",
+      optionList.mandatory ? localStrings.mandatorySelection : "",
   ).trim()
 }
 
@@ -191,14 +181,12 @@ function getSelector(optionList) {
   }
 
   let optionListComplete = optionList.options.map(option => buildOption(optionList, option))
-  // alert("optionList.type " + optionList.type)
-  // alert("optionList.mandatory " + optionList.mandatory)
   if (optionList.type === OPTION_LIST_SINGLE) {
     return (
         <>
-          {/*<p>{JSON.stringify(productAndSku)}</p>*/}
+          {/*<p>{JSON.stringify(optionList)}</p>*/}
           <FormControl component="fieldset">
-            <FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>
+            {/*<FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>*/}
 
             <RadioGroup aria-label="gender"
                         value={getValueRadio(optionList)}
@@ -226,7 +214,7 @@ function getSelector(optionList) {
           <FormControl component="fieldset" >
             {/*<p>{JSON.stringify(options)}</p>*/}
             {/*<p>{JSON.stringify(optionList)}</p>*/}
-            <FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>
+            {/*<FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>*/}
             <FormGroup>
               <Box
                   display="flex"
@@ -254,7 +242,10 @@ function getSelector(optionList) {
 
 return (
     <>
+      {/*productAndSku*/}
       {/*<p>{JSON.stringify(options)}</p>*/}
+      {/*<p>{JSON.stringify(productAndSku)}</p>*/}
+      {/*<p>{JSON.stringify(dealEdit || {})}</p>*/}
       <Box
           // mt={1}
           // mb={1}
@@ -269,27 +260,16 @@ return (
                 <Box key={key}
                      mb={1}
                 >
+                  {/*{JSON.stringify(optionListMatching || {})}*/}
                   <Box display="flex" flexDirection="row-reverse" p={1} m={1}>
                     <Typography fontSize="14px" fontWeight="600" lineHeight="1">
-                      {optionListMatching.name}
+                      {formatTitleOptionList(optionListMatching)}
+                      {/*{optionListMatching.name}*/}
                     </Typography>
                   </Box>
-                  {/*<FlexBox justifyContent="space-between" alignItems="flex-end" mb={2} alignContent="flex-end">*/}
-                  {/*  <Typography color="grey.600"></Typography>*/}
-                  {/*  <FlexBox alignItems="flex-end">*/}
-                  {/*    <Typography fontSize="14px" fontWeight="600" lineHeight="1">*/}
-                  {/*      {optionListMatching.name}*/}
-                  {/*    </Typography>*/}
-                  {/*  </FlexBox>*/}
-                  {/*</FlexBox>*/}
 
                   <Divider sx={{ mb: '2px', borderColor: 'grey.300', padding: '0' }} />
-
-                  {/*<p></p>*/}
-                  {/*<p>{JSON.stringify(optionListMatching)}</p>*/}
                   {getSelector(optionListMatching)}
-                  {/*<p>SELECTOR</p>*/}
-                  {/*{JSON.stringify(optionListMatching)}*/}
                 </Box>
             )
           }

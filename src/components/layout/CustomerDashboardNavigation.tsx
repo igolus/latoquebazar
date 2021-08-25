@@ -11,33 +11,37 @@ import React, { Fragment } from 'react'
 import { DashboardNavigationWrapper, StyledDashboardNav } from './DashboardStyle'
 import localStrings from "../../localStrings";
 
-const CustomerDashboardNavigation = () => {
+const CustomerDashboardNavigation = ({orderCount}) => {
   const { pathname } = useRouter()
 
   return (
-    <DashboardNavigationWrapper sx={{ px: '0px', pb: '1.5rem', color: 'grey.900' }}>
-      {linkList.map((item) => (
-        <Fragment key={item.title}>
+    <DashboardNavigationWrapper sx={{ px: '0px', pb: '1.5rem', color: 'grey.900'}}>
+      {linkList.map((item, key) => (
+        <Fragment key={key}>
+          {item.title &&
           <Typography p="26px 30px 1rem" color="grey.600" fontSize="12px">
             {item.title}
           </Typography>
-          {item.list.map((item) => (
+          }
+          {item.list.map((item, key) => (
             <StyledDashboardNav
               isCurrentPath={pathname.includes(item.href)}
               href={item.href}
               key={item.title}
             >
-              <FlexBox alignItems="center">
+              <FlexBox alignItems="center" >
                 <item.icon
                   className="nav-icon"
                   fontSize="small"
                   color="inherit"
-                  sx={{ mr: '10px' }}
+                  sx={{ mr: '10px'}}
                 />
 
                 <span>{item.title}</span>
               </FlexBox>
-              <span>{item.count}</span>
+              {key === 0 &&
+              <span>{orderCount}</span>
+              }
             </StyledDashboardNav>
           ))}
         </Fragment>
@@ -48,13 +52,18 @@ const CustomerDashboardNavigation = () => {
 
 const linkList = [
   {
-    title: localStrings.dashBoard,
+    title: " ",
     list: [
       {
         href: '/orders',
         title: localStrings.orders,
         icon: ShoppingBagOutlined,
-        count: 5,
+        //count: 5,
+      },
+      {
+        href: '/profile',
+        title: localStrings.profileInformation,
+        icon: Person,
       },
       // {
       //   href: '/wish-list',
@@ -70,29 +79,17 @@ const linkList = [
       // },
     ],
   },
-  {
-    title: localStrings.myAccount,
-    list: [
-      {
-        href: '/profile',
-        title: localStrings.profileInformation,
-        icon: Person,
-        count: 3,
-      },
-      // {
-      //   href: '/address',
-      //   title: 'Addresses',
-      //   icon: Place,
-      //   count: 16,
-      // },
-      // {
-      //   href: '/payment-methods',
-      //   title: 'Payment Methods',
-      //   icon: CreditCard,
-      //   count: 4,
-      // },
-    ],
-  },
+  // {
+  //   title: localStrings.myAccount,
+  //   list: [
+  //     {
+  //       href: '/profile',
+  //       title: localStrings.profileInformation,
+  //       icon: Person,
+  //       count: 3,
+  //     },
+  //   ],
+  // },
 ]
 
 export default CustomerDashboardNavigation
