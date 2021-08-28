@@ -4,6 +4,15 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer le notifications pour ce site, clicker sur le boutton ci-dessous est autoriser les notifications",
+        activateNotification: "Activer les notifications",
+        home: "Acceuil",
+        orderCount: "Commandes",
+        awaitingOrders: "Commandes en attente",
+        myProfile: "Mon profil",
+        seeMyOrderDetail: "Voir le status de ma commande",
+        orderCompletedThanks : "Merci d'avoir commandé avec {0}",
+        orderCompleted: "Commande confirmée",
         refresh: "Actualiser",
         deliveryEstimateDate: "Date de livraison estimée: {0}",
         orderDate: "Date de commande",
@@ -50,6 +59,8 @@ let localStrings = new LocalizedStrings({
 
         distanceTime: "distance jusqu'a l'etablissement: {0} km / {1}",
         timeSlot: "Creneau de reservation",
+        selectDeliveryTimeSlot: "Selectionner un creneau de livraison",
+        selectPickupTimeSlot: "Selectionner un creneau de recupération",
         priceToPay: "Montant a payer",
         pricePaid: "Montant payé",
 

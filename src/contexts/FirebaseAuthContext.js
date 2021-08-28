@@ -14,10 +14,12 @@ import {Dialog, DialogContent} from "@material-ui/core";
 import {makeStyles} from "@material-ui/styles";
 import AdressCheck, {DIST_INFO} from "@component/address/AdressCheck";
 import {getResetMailLink, sendMailMessage, getActivationMailLink} from "../util/mailUtil";
+import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
 const BRAND = 'BRAND';
+const BRAND_ID = 'BRAND_ID';
 const DB_USER = 'DB_USER';
 const USER = 'USER';
 const ESTABLISHMENT = 'ESTABLISHMENT';
@@ -29,6 +31,7 @@ const MAX_DISTANCE_REACHED = 'MAX_DISTANCE_REACHED';
 const LOGIN_DIALOG_OPEN = 'LOGIN_DIALOG_OPEN';
 const LOGIN_ON_GOING = 'LOGIN_ON_GOING';
 const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
+const ORDER_COUNT = 'ORDER_COUNT';
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -72,7 +75,9 @@ const initialAuthState = {
   maxDistanceReached: false,
   loginDialogOpen: false,
   justCreatedOrder: null,
-  loginOnGoing: false
+  loginOnGoing: false,
+  orderCount: 0,
+  brandId: 0
 };
 
 const config = require('../conf/config.json');
@@ -186,6 +191,14 @@ const reducer = (state, action) => {
       };
     }
 
+    case ORDER_COUNT: {
+      const { orderCount } = action.payload;
+      return {
+        ...state,
+        orderCount: orderCount,
+      };
+    }
+
 
     default: {
       return { ...state };
@@ -233,6 +246,8 @@ const AuthContext = createContext({
   setLoginOnGoing: () => {},
 
   setJustCreatedOrder: () => {},
+
+  increaseOrderCount: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
@@ -249,11 +264,46 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(async () => {
+
+    const brandId = state.brand ? state.brand.id : 0;
+    //alert("brandId " + brandId)
+
+    if (brandId && state.dbUser) {
+      let result = await executeQueryUtil(getCustomerOrdersOnlyIdQuery(brandId, state.dbUser.id));
+      if (result && result.data) {
+        let count = result.data.getSiteUser.orders.length;
+        dispatch({
+          type: ORDER_COUNT,
+          payload: {
+            orderCount: count,
+          }
+        });
+      }
+    }
+    else {
+      dispatch({
+        type: ORDER_COUNT,
+        payload: {
+          orderCount: 0,
+        }
+      });
+    }
+
+    // if (!localStorage.getItem(DIST_INFO)) {
+    //   setAdressDialogOpen(true);
+    // }
+  }, [state.brand, state.dbUser]);
+
+  useEffect(async () => {
     try {
       const messaging = firebase.messaging();
       await messaging.requestPermission();
       const token = await messaging.getToken();
       console.log("token ", token);
+      alert("token " + token);
+
+      navigator.serviceWorker.addEventListener("message", (message) => console.log("----- MESSAGE " + message));
+
     }
     catch (err) {
       console.log(err);
@@ -367,7 +417,30 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-
+    if (dbUser == null) {
+      dispatch({
+        type: ORDER_COUNT,
+        payload: {
+          orderCount: 0,
+        }
+      });
+      return;
+    }
+    // const brandId = currentBrand() ? currentBrand().id : 0;
+    // alert("brandId " + brandId)
+    // if (dbUser && brandId) {
+    //   alert("ORDER_COUNT DIS ")
+    //   let result = await executeQueryUtil(getCustomerOrdersOnlyIdQuery(brandId, dbUser.id));
+    //   if (result && result.data) {
+    //     let count = result.data.getSiteUser.orders.length;
+    //     dispatch({
+    //       type: ORDER_COUNT,
+    //       payload: {
+    //         orderCount: count,
+    //       }
+    //     });
+    //   }
+    // }
   }
 
   function getCurrency() {
@@ -412,7 +485,7 @@ export const AuthProvider = ({ children }) => {
       });
       setEstablishment(estas[0]);
     }
-
+    //alert("dispatch brand " + JSON.stringify(brand))
     dispatch({
       type: BRAND,
       payload: {
@@ -530,10 +603,19 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
-
+  const increaseOrderCount = (value) => {
+    dispatch({
+      type: ORDER_COUNT,
+      payload: {
+        orderCount: state.orderCount + 1,
+      }
+    });
+  }
 
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
+    // alert("useEffect getBrand" + config.brandId)
+    // alert("useEffect getBrand" + JSON.stringify(res.data))
     if (res && res.data) {
       setBrand(res.data.getBrand)
     }
@@ -628,6 +710,7 @@ export const AuthProvider = ({ children }) => {
             setLoginDialogOpen,
             setLoginOnGoing,
             setJustCreatedOrder,
+            increaseOrderCount
           }}
       >
         {children}

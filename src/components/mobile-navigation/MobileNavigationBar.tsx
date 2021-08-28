@@ -12,6 +12,7 @@ import { layoutConstant } from '../../util/constants'
 import React from 'react'
 import {getItemNumberInCart} from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
+import localStrings from "../../localStrings";
 
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
   root: {
@@ -77,22 +78,22 @@ const MobileNavigationBar = () => {
 
 const list = [
   {
-    title: 'Home',
+    title: localStrings.home,
     icon: Home,
     href: '/',
   },
   {
-    title: 'Category',
+    title: localStrings.categories,
     icon: CategoryOutlined,
     href: '/mobile-category-nav',
   },
   {
-    title: 'Cart',
+    title: localStrings.cart,
     icon: ShoppingBagOutlined,
     href: '/cart',
   },
   {
-    title: 'Account',
+    title: localStrings.account,
     icon: User2,
     href: '/profile',
   },

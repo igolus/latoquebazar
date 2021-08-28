@@ -268,6 +268,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         variant="contained"
                         color="primary"
                         sx={{
+                            mt: '15px',
                             mb: '36px',
                             px: '1.75rem',
                             height: '40px',

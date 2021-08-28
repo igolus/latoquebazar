@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const Account = (props) => {
+const Account = (props, noLinkMode) => {
     const classes = useStyles();
     const ref = useRef(null);
     const { currentUser, logout, userInDb } = useAuth();
@@ -65,6 +65,7 @@ const Account = (props) => {
                     </Typography>
                 </Hidden>
             </Box>
+            {!noLinkMode &&
             <Menu
                 onClose={() => setOpen(false)}
                 anchorOrigin={{
@@ -110,6 +111,7 @@ const Account = (props) => {
                     {localStrings.logout}
                 </MenuItem>
             </Menu>
+                }
         </>
     );
 }

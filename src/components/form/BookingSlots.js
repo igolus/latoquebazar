@@ -246,7 +246,8 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
   return null;
 }
 
-function BookingSlots({selectCallBack, startDateParam, deliveryMode, selectedKeyParam, setterSelectedKey, brandId}) {
+function BookingSlots({selectCallBack, startDateParam, deliveryMode,
+                        selectedKeyParam, setterSelectedKey, brandId, disableNextDay}) {
 
   //const [bookingSlotStartDate, setBookingSlotStartDate] = useState(startDateParam);
 
@@ -340,7 +341,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode, selectedKey
           <Box
             display="flex"
             m={1}>
-
+            {!disableNextDay &&
             <Box>
               <IconButton fontSize="small"
                           onClick={() => changeDatePrevious(timeSlots.previousService)}
@@ -349,6 +350,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode, selectedKey
                 <ArrowBackIos />
               </IconButton>
             </Box>
+            }
             <Box flexGrow={1}
                  alignItems="center"
                  justify="center"
@@ -369,14 +371,16 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode, selectedKey
 
               </Grid>
             </Box>
+            {!disableNextDay &&
             <Box>
               <IconButton fontSize="small"
                           onClick={() => changeDateNext(timeSlots.nextService, timeSlots.service)}
                           disabled={!timeSlots || timeSlots.nextService == null}
               >
-                <ArrowForwardIos />
+                <ArrowForwardIos/>
               </IconButton>
             </Box>
+            }
           </Box>
         {/*</div>*/}
 

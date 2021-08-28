@@ -2,11 +2,11 @@ import FlexBox from '@component/FlexBox'
 import CustomerDashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import TableRow from '@component/TableRow'
-import { H3, H5, Small } from '@component/Typography'
-import { Avatar, Button, Card, Grid, Typography } from '@material-ui/core'
+import {H3, H5, Small} from '@component/Typography'
+import {Button, Card, Grid} from '@material-ui/core'
 import Person from '@material-ui/icons/Person'
-import { Box } from '@material-ui/system'
-import { format } from 'date-fns'
+import {Box} from '@material-ui/system'
+import {format} from 'date-fns'
 import Link from 'next/link'
 import React, {useEffect, useState} from 'react'
 import {isMobile} from 'react-device-detect';
@@ -15,7 +15,11 @@ import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import localStrings from "../../src/localStrings";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import {loadOrderCount, OrdersProps} from "../orders";
+import Account from "@component/header/Account";
+import {getProfileName} from "../../src/util/displayUtil";
+import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
+import {getCustomerOrdersQuery} from "../../src/gql/orderGql";
+import {ORDER_STATUS_FINISHED} from "../../src/util/constants";
 
 export interface ProfileProps {
     contextData?: any
@@ -23,12 +27,23 @@ export interface ProfileProps {
 
 const Profile:React.FC<ProfileProps> = ({contextData}) => {
 
-    const {dbUser, logout} = useAuth()
-    const [orderCount, setOrderCount] = useState(0)
+    const [awaitingOrdersCount, setAwaitingOrdersCount] = useState(0);
+
+    const {dbUser, logout, currentUser, orderCount, brand} = useAuth()
 
     useEffect(async () => {
-        loadOrderCount(dbUser, contextData,setOrderCount)
-    }, [dbUser, contextData]);
+
+            if (dbUser && brand) {
+                let result = await executeQueryUtil(getCustomerOrdersQuery(brand.id, dbUser.id));
+                if (result && result.data) {
+                    let orders = result.data.getSiteUser.orders;
+                    let awaitingOrders = orders.filter(order => order.status !== ORDER_STATUS_FINISHED);
+                    setAwaitingOrdersCount(awaitingOrders.length)
+                }
+            }
+
+    }, [dbUser, brand]);
+
 
     const handleLogout = async () => {
         try {
@@ -39,8 +54,21 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
     };
 
 
+    function getInfoList() {
+        return [
+            {
+                title: orderCount,
+                subtitle: localStrings.orderCount,
+            },
+            {
+                title: awaitingOrdersCount,
+                subtitle: localStrings.awaitingOrders,
+            }
+        ]
+    }
+
     return (
-        <CustomerDashboardLayout contextData={contextData} orderCount={orderCount}>
+        <CustomerDashboardLayout contextData={contextData}>
             {isMobile && !dbUser?
                 <>
                     <Box mb={4}>
@@ -54,7 +82,7 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
                 <>
                     <DashboardPageHeader
                         icon={Person}
-                        title="My Profile"
+                        title={localStrings.myProfile}
                         button={
                             <Box display="flex" flexDirection="row-reverse" p={1} m={1}>
 
@@ -80,106 +108,112 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
                         }
                     />
                     {/*<p>{JSON.stringify(dbUser)}</p>*/}
-                    <Box mb={4}>
-                        <Grid container spacing={3}>
-                            <Grid item lg={6} md={6} sm={12} xs={12}>
-                                <Card
-                                    sx={{
-                                        display: 'flex',
-                                        p: '14px 32px',
-                                        height: '100%',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <Avatar
-                                        src="/assets/images/faces/ralph.png"
-                                        sx={{height: 64, width: 64}}
-                                    />
-                                    <Box ml={1.5} flex="1 1 0">
-                                        <FlexBox
-                                            flexWrap="wrap"
-                                            justifyContent="space-between"
-                                            alignItems="center"
-                                        >
-                                            <div>
-                                                <H5 my="0px">Ralph Edwards</H5>
-                                                <FlexBox alignItems="center">
-                                                    <Typography color="grey.600">Balance:</Typography>
-                                                    <Typography ml={0.5} color="primary.main">
-                                                        $500
-                                                    </Typography>
-                                                </FlexBox>
-                                            </div>
 
-                                            <Typography color="grey.600" letterSpacing="0.2em">
-                                                SILVER USER
-                                            </Typography>
-                                        </FlexBox>
-                                    </Box>
-                                </Card>
-                            </Grid>
+                    {currentUser != null && dbUser &&
+                    <>
+                        <Box mb={4}>
+                            <Grid container spacing={3}>
+                                <Grid item lg={6} md={6} sm={12} xs={12}>
+                                    <Card
+                                        sx={{
+                                            display: 'flex',
+                                            p: '14px 32px',
+                                            height: '100%',
+                                            alignItems: 'center',
+                                        }}
+                                    >
 
-                            <Grid item lg={6} md={6} sm={12} xs={12}>
-                                <Grid container spacing={4}>
-                                    {infoList.map((item) => (
-                                        <Grid item lg={3} sm={6} xs={6} key={item.subtitle}>
-                                            <Card
-                                                sx={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    height: '100%',
-                                                    p: '1rem 1.25rem',
-                                                }}
+                                        <Account noLinkMode/>
+                                        {/*<Avatar*/}
+                                        {/*    src="/assets/images/faces/ralph.png"*/}
+                                        {/*    sx={{height: 64, width: 64}}*/}
+                                        {/*/>*/}
+                                        <Box ml={1.5} flex="1 1 0">
+                                            <FlexBox
+                                                flexWrap="wrap"
+                                                justifyContent="space-between"
+                                                alignItems="center"
                                             >
-                                                <H3 color="primary.main" my="0px" fontWeight="600">
-                                                    {item.title}
-                                                </H3>
-                                                <Small color="grey.600" textAlign="center">
-                                                    {item.subtitle}
-                                                </Small>
-                                            </Card>
-                                        </Grid>
-                                    ))}
+                                                <div>
+                                                    <H5 my="0px">{getProfileName(dbUser)}</H5>
+                                                    {/*<FlexBox alignItems="center">*/}
+                                                    {/*    <Typography color="grey.600">Balance:</Typography>*/}
+                                                    {/*    <Typography ml={0.5} color="primary.main">*/}
+                                                    {/*        $500*/}
+                                                    {/*    </Typography>*/}
+                                                    {/*</FlexBox>*/}
+                                                </div>
+
+                                                {/*<Typography color="grey.600" letterSpacing="0.2em">*/}
+                                                {/*    SILVER USER*/}
+                                                {/*</Typography>*/}
+                                            </FlexBox>
+                                        </Box>
+                                    </Card>
+                                </Grid>
+
+                                <Grid item lg={6} md={6} sm={12} xs={12}>
+                                    <Grid container spacing={4}>
+                                        {getInfoList().map((item) => (
+                                            <Grid item lg={6} sm={6} xs={6} key={item.subtitle}>
+                                                <Card
+                                                    sx={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        height: '100%',
+                                                        p: '1rem 1.25rem',
+                                                    }}
+                                                >
+                                                    <H3 color="primary.main" my="0px" fontWeight="600">
+                                                        {item.title}
+                                                    </H3>
+                                                    <Small color="grey.600" textAlign="center">
+                                                        {item.subtitle}
+                                                    </Small>
+                                                </Card>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                    </Box>
-
-                    <TableRow sx={{p: '0.75rem 1.5rem'}}>
-                        <FlexBox flexDirection="column" p={1}>
-                            <Small color="grey.600" mb={0.5} textAlign="left">
-                                First Name
-                            </Small>
-                            <span>Ralph</span>
-                        </FlexBox>
-                        <FlexBox flexDirection="column" p={1}>
-                            <Small color="grey.600" mb={0.5} textAlign="left">
-                                Last Name
-                            </Small>
-                            <span>Edwards</span>
-                        </FlexBox>
-                        <FlexBox flexDirection="column" p={1}>
-                            <Small color="grey.600" mb={0.5} textAlign="left">
-                                Email
-                            </Small>
-                            <span>ralfedwards@email.com</span>
-                        </FlexBox>
-                        <FlexBox flexDirection="column" p={1}>
-                            <Small color="grey.600" mb={0.5} textAlign="left">
-                                Phone
-                            </Small>
-                            <span>+1983649392983</span>
-                        </FlexBox>
-                        <FlexBox flexDirection="column" p={1}>
-                            <Small color="grey.600" mb={0.5}>
-                                Birth date
-                            </Small>
-                            <span className="pre">
+                        </Box>
+                        <TableRow sx={{p: '0.75rem 1.5rem'}}>
+                            <FlexBox flexDirection="column" p={1}>
+                                <Small color="grey.600" mb={0.5} textAlign="left">
+                                    First Name
+                                </Small>
+                                <span>Ralph</span>
+                            </FlexBox>
+                            <FlexBox flexDirection="column" p={1}>
+                                <Small color="grey.600" mb={0.5} textAlign="left">
+                                    Last Name
+                                </Small>
+                                <span>Edwards</span>
+                            </FlexBox>
+                            <FlexBox flexDirection="column" p={1}>
+                                <Small color="grey.600" mb={0.5} textAlign="left">
+                                    Email
+                                </Small>
+                                <span>ralfedwards@email.com</span>
+                            </FlexBox>
+                            <FlexBox flexDirection="column" p={1}>
+                                <Small color="grey.600" mb={0.5} textAlign="left">
+                                    Phone
+                                </Small>
+                                <span>+1983649392983</span>
+                            </FlexBox>
+                            <FlexBox flexDirection="column" p={1}>
+                                <Small color="grey.600" mb={0.5}>
+                                    Birth date
+                                </Small>
+                                <span className="pre">
             {format(new Date(1996 / 11 / 16), 'dd MMM, yyyy')}
           </span>
-                        </FlexBox>
-                    </TableRow>
+                            </FlexBox>
+                        </TableRow>
+                    </>
+                    }
                 </>
             }
         </CustomerDashboardLayout>
@@ -187,22 +221,22 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
 }
 
 const infoList = [
-{
-    title: '16',
+    {
+        title: '16',
         subtitle: 'All Orders',
-},
-{
-    title: '02',
+    },
+    {
+        title: '02',
         subtitle: 'Awaiting Payments',
-},
-{
-    title: '00',
+    },
+    {
+        title: '00',
         subtitle: 'Awaiting Shipment',
-},
-{
-    title: '01',
+    },
+    {
+        title: '01',
         subtitle: 'Awaiting Delivery',
-},
+    },
 ]
 
 export const getStaticProps: GetStaticProps = async (context) => {

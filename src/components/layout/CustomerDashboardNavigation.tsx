@@ -10,10 +10,11 @@ import { useRouter } from 'next/router'
 import React, { Fragment } from 'react'
 import { DashboardNavigationWrapper, StyledDashboardNav } from './DashboardStyle'
 import localStrings from "../../localStrings";
+import useAuth from "@hook/useAuth";
 
-const CustomerDashboardNavigation = ({orderCount}) => {
+const CustomerDashboardNavigation = () => {
   const { pathname } = useRouter()
-
+  const {orderCount} = useAuth()
   return (
     <DashboardNavigationWrapper sx={{ px: '0px', pb: '1.5rem', color: 'grey.900'}}>
       {linkList.map((item, key) => (

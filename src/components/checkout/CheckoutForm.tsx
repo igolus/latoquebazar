@@ -82,31 +82,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const [adressEditLock, setAdressEditLock] = useState(false);
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment,
-    dbUser, resetOrderInCreation, orderInCreation} = useAuth();
+    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
   const loaded = React.useRef(false);
-  // useEffect(() => {
-  //   let userAdress = getUserAdress();
-  //   setAdressValue(userAdress);
-  //   let geocodes = getUserAdressLngLat();
-  //   if (geocodes && userAdress) {
-  //     updateDeliveryAdress(userAdress, geocodes.lat, geocodes.lng);
-  //     setAdressValue(userAdress)
-  //   }
-  //   // else if (localStorage.getItem(DIST_INFO) ) {
-  //   //   let distInfo = JSON.parse(localStorage.getItem(DIST_INFO));
-  //   //   updateDeliveryAdress(distInfo.address, distInfo.lat, distInfo.lng)
-  //   //   setAdressValue(distInfo.address);
-  //   // }
-  //   else {
-  //     setAdressEditLock(false);
-  //   }
-  // }, [dbUser])
 
   useEffect(() => {
-    //setGoogleKey(getGoogleKey());
-
     if (typeof window !== 'undefined' && !loaded.current) {
       let element = document.querySelector('#google-maps');
       if (element) {
@@ -152,8 +133,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       updateDeliveryAdress(label, lat, lng);
       setAdressEditLock(true);
     }
-
-    //setAdressEditLock(true);
   },  [dbUser])
 
   useEffect(() => {
@@ -336,7 +315,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       let link = "/app/management/Orders/detail/" + result.data.addOrder.id;
       await sendNotif(currentBrand.id, currentEstablishment().id, messageNotif,
           link, "");
-
+      increaseOrderCount();
       resetOrderInCreation();
     }
     catch (err) {
@@ -676,10 +655,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                     {dbUser &&
                     <Card1 sx={{mb: '2rem'}}>
                       <Typography fontWeight="600" mb={2}>
-                        {localStrings.timeSlot}
+                        {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ?
+                            localStrings.selectDeliveryTimeSlot : localStrings.selectPickupTimeSlot}
                       </Typography>
 
                       <BookingSlots
+                          disableNextDay
                           startDateParam={moment()}
                           selectCallBack={(bookingSlot) => setSelectedBookingSlot(bookingSlot)}
                           deliveryMode={getOrderInCreation().deliveryMode}

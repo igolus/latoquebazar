@@ -125,3 +125,24 @@ export const deleteSiteUserQuery = (data) => {
   `;
 }
 
+export const addSiteUserMessagingToken = (brandId, siteUserId, token) => {
+    //var dataString = filterDataGql(data);
+
+    var debug = `
+    mutation {
+      addSiteUserMessagingToken(brandId: "${brandId}", siteUserId: "${siteUserId}", token: "${token}") {
+        id
+      }
+    }
+  `
+    console.log(debug);
+
+    return gql`
+    mutation {
+      addSiteUserMessagingToken(brandId: "${brandId}", siteUserId: "${siteUserId}", token: "${token}") {
+        id
+      }
+    }
+  `;
+}
+

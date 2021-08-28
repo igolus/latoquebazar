@@ -73,11 +73,9 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
 
   return (
     <Fragment>
-
         {
             ordersDisplay ?
-
-            <>
+                <>
                 <DashboardPageHeader title={localStrings.myOrders} icon={ShoppingBag}/>
                 {/*<p>{JSON.stringify(ordersDisplay)}</p>*/}
                 <TableRow

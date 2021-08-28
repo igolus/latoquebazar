@@ -20,6 +20,8 @@ Router.events.on('routeChangeError', () => nProgress.done())
 nProgress.configure({ showSpinner: false })
 
 const App = ({ Component, pageProps }: any) => {
+
+
     const Layout = Component.layout || Fragment
 
     useEffect(() => {
@@ -32,14 +34,14 @@ const App = ({ Component, pageProps }: any) => {
         if("serviceWorker" in navigator) {
             //register(window);
             window.addEventListener("load", function () {
-                navigator.serviceWorker.register("/firebase-messaging-sw.js").then(
-                    function (registration) {
-                        console.log("Service Worker registration successful with scope: ", registration.scope);
-                    },
-                    function (err) {
-                        console.log("Service Worker registration failed: ", err);
-                    }
-                );
+                // navigator.serviceWorker.register("/firebase-messaging-sw.js").then(
+                //     function (registration) {
+                //         console.log("Service Worker registration successful with scope: ", registration.scope);
+                //     },
+                //     function (err) {
+                //         console.log("Service Worker registration failed: ", err);
+                //     }
+                // );
 
                 // navigator.serviceWorker.register("/registerServiceWorker.js").then(
                 //     function (registration) {

@@ -138,7 +138,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                             }
                         }}
                     >
-                        {currentUser() != null && dbUser ?
+                        {currentUser != null && dbUser ?
                             <Account />
                             :
                             <PersonOutline />

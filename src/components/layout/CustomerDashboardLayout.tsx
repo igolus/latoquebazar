@@ -10,10 +10,9 @@ import useAuth from "@hook/useAuth";
 
 export interface OrdersProps {
   contextData?: any
-  orderCount: number
 }
 
-const CustomerDashboardLayout:React.FC<OrdersProps> = ({ children, contextData, orderCount }) => {
+const CustomerDashboardLayout:React.FC<OrdersProps> = ({ children, contextData }) => {
 
   return (
       <AppLayout navbar={<Navbar contextData={contextData}/>}>
@@ -27,7 +26,7 @@ const CustomerDashboardLayout:React.FC<OrdersProps> = ({ children, contextData, 
                 xs={12}
                 sx={{display: {xs: 'none', sm: 'none', md: 'block'}}}
             >
-              <CustomerDashboardNavigation orderCount={orderCount}/>
+              <CustomerDashboardNavigation/>
             </Grid>
             <Grid item lg={9} xs={12}>
               {children}
