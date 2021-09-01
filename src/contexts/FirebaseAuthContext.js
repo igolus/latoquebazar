@@ -294,22 +294,7 @@ export const AuthProvider = ({ children }) => {
     // }
   }, [state.brand, state.dbUser]);
 
-  useEffect(async () => {
-    try {
-      const messaging = firebase.messaging();
-      await messaging.requestPermission();
-      const token = await messaging.getToken();
-      console.log("token ", token);
-      alert("token " + token);
 
-      navigator.serviceWorker.addEventListener("message", (message) => console.log("----- MESSAGE " + message));
-
-    }
-    catch (err) {
-      console.log(err);
-    }
-
-  }, []);
 
   const createUserWithEmailAndPassword = async (email, password) => {
     return firebase.auth().createUserWithEmailAndPassword(email, password);

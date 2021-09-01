@@ -4,7 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
-        notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer le notifications pour ce site, clicker sur le boutton ci-dessous est autoriser les notifications",
+        notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer le notifications pour ce site, dans la barre de tache de votre navigateur",
         activateNotification: "Activer les notifications",
         home: "Acceuil",
         orderCount: "Commandes",

@@ -280,6 +280,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       if (dataOrder.customer) {
         delete dataOrder.customer.creationDate;
       }
+
+      dataOrder.customer = dbUser;
+
       let message = null;
       let result;
 

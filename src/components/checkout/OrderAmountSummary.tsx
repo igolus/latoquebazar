@@ -23,8 +23,12 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
 
+    const getOrder = () => {
+        return orderSource || getOrderInCreation();
+    }
+
     useEffect(() => {
-        setPriceDetails(computePriceDetail(orderSource || getOrderInCreation()))
+        setPriceDetails(computePriceDetail(getOrder()))
     }, [getOrderInCreation, orderSource])
 
     return (
@@ -83,8 +87,8 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {!hideDetail &&
             <>
 
-                {getOrderInCreation() && getOrderInCreation().deliveryAddress &&
-                getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                {getOrder() && getOrder().deliveryAddress &&
+                getOrder().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                 <>
                     <Divider sx={{mb: '1rem'}}/>
 
@@ -93,7 +97,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     </Typography>
 
                     <Typography color="grey.600" fontSize="16px">
-                        {maxDistanceReached ? localStrings.tooFarAddress : getOrderInCreation().deliveryAddress.address}
+                        {maxDistanceReached ? localStrings.tooFarAddress : getOrder().deliveryAddress.address}
                     </Typography>
 
                 </>
@@ -102,10 +106,10 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 <Typography fontWeight="600" mb={1} mt={2}>
                     {localStrings.deliveryMode}
                 </Typography>
-                {getOrderInCreation() && getOrderInCreation().deliveryMode &&
+                {getOrder() && getOrder().deliveryMode &&
                 <Typography color="grey.600" fontSize="16px">
                     {/*{orderInCreation().deliveryMode}*/}
-                    {formatOrderConsumingMode(getOrderInCreation(), localStrings)}
+                    {formatOrderConsumingMode(getOrder(), localStrings)}
                 </Typography>
 
                 }
@@ -114,13 +118,13 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 <Typography fontWeight="600" mb={1} mt={2}>
                     {localStrings.timeSlot}
                 </Typography>
-                {getOrderInCreation() && getOrderInCreation().bookingSlot ?
+                {getOrder() && getOrder().bookingSlot ?
                     <Typography color="grey.600" fontSize="16px">
-                        {moment(getOrderInCreation().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
+                        {moment.unix(getOrder().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
                         {" "}
-                        {moment(getOrderInCreation().bookingSlot.startDate).format("HH:mm")}
+                        {moment.unix(getOrder().bookingSlot.startDate).format("HH:mm")}
                         -
-                        {moment(getOrderInCreation().bookingSlot.endDate).format("HH:mm")}
+                        {moment.unix(getOrder().bookingSlot.endDate).format("HH:mm")}
                         {/*{JSON.stringify(orderInCreation().bookingSlot)}*/}
                     </Typography>
                     :

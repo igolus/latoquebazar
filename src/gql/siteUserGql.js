@@ -6,6 +6,7 @@ const common = `
     defaultEstablishmentId
     establishmentIds
     brandId
+    messagingTokens
     userProfileInfo {
         createdAt
         address

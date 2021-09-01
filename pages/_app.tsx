@@ -9,7 +9,7 @@ import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import React, { Fragment, useEffect } from 'react'
 import {ToastProvider} from "react-toast-notifications";
-import register from '../public/registerServiceWorker';
+import firebase from "../src/lib/firebase";
 export const cache = createCache({ key: 'css', prepend: true })
 
 //Binding events.
@@ -24,36 +24,67 @@ const App = ({ Component, pageProps }: any) => {
 
     const Layout = Component.layout || Fragment
 
-    useEffect(() => {
+    useEffect(async () => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side')
         if (jssStyles) {
             jssStyles.parentElement!.removeChild(jssStyles)
         }
 
-        if("serviceWorker" in navigator) {
-            //register(window);
-            window.addEventListener("load", function () {
-                // navigator.serviceWorker.register("/firebase-messaging-sw.js").then(
-                //     function (registration) {
-                //         console.log("Service Worker registration successful with scope: ", registration.scope);
-                //     },
-                //     function (err) {
-                //         console.log("Service Worker registration failed: ", err);
-                //     }
-                // );
-
-                // navigator.serviceWorker.register("/registerServiceWorker.js").then(
-                //     function (registration) {
-                //         console.log("Service Worker registration successful with scope: ", registration.scope);
-                //     },
-                //     function (err) {
-                //         console.log("Service Worker registration failed: ", err);
-                //     }
-                // );
-            });
-        }
-
+    //     if("serviceWorker" in navigator) {
+    //         //register(window);
+    //         window.addEventListener("load", function () {
+    //             // navigator.serviceWorker.register("/firebase-messaging-sw.js").then(
+    //             //     function (registration) {
+    //             //         console.log("Service Worker registration successful with scope: ", registration.scope);
+    //             //     },
+    //             //     function (err) {
+    //             //         console.log("Service Worker registration failed: ", err);
+    //             //     }
+    //             // );
+    //
+    //             // navigator.serviceWorker.register("/registerServiceWorker.js").then(
+    //             //     function (registration) {
+    //             //         console.log("Service Worker registration successful with scope: ", registration.scope);
+    //             //     },
+    //             //     function (err) {
+    //             //         console.log("Service Worker registration failed: ", err);
+    //             //     }
+    //             // );
+    //         });
+    //
+    //         // useEffect(async () => {
+    //              try {
+    //                 const messaging = firebase.messaging();
+    //                 await messaging.requestPermission();
+    //                 const token = await messaging.getToken();
+    //                 console.log("token ", token);
+    //                 alert("token " + token);
+    //
+    //                 // messaging.onBackgroundMessage((payload) => {
+    //                 //   console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    //                 //   // Customize notification here
+    //                 //   const notificationTitle = 'Background Message Title';
+    //                 //   const notificationOptions = {
+    //                 //     body: 'Background Message body.',
+    //                 //     //icon: '/firebase-logo.png'
+    //                 //   };
+    //                 //
+    //                 //   // self.registration.showNotification(notificationTitle,
+    //                 //   //     notificationOptions);
+    //                 // });
+    //
+    //
+    //                 //navigator.serviceWorker.addEventListener("message", (message) => console.log("----- MESSAGE " + message));
+    //
+    //             }
+    //             catch (err) {
+    //                 console.log(err);
+    //             }
+    //
+    //         //}, []);
+    //     }
+    //
     }, [])
 
     return (

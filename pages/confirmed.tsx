@@ -2,7 +2,7 @@ import CheckoutForm from '@component/checkout/CheckoutForm'
 import OrderAmountSummary from '@component/checkout/OrderAmountSummary'
 import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
 import {Box, Button, CircularProgress, Grid} from '@material-ui/core'
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import {getBrandCurrency} from "../src/util/displayUtil";
@@ -24,6 +24,7 @@ export interface ConfirmedProps {
 const Confirmed:React.FC<ConfirmedProps> = ({contextData}) => {
     const router = useRouter()
     const {justCreatedOrder, currentBrand, brand, dbUser} = useAuth();
+    //const [token, setToken] = useState(null);
 
     const registerMessaging = async () => {
         try {
@@ -32,20 +33,22 @@ const Confirmed:React.FC<ConfirmedProps> = ({contextData}) => {
                 await messaging.requestPermission();
                 const token = await messaging.getToken();
                 console.log("token ", token);
-                alert("token" + token);
+                //alert("token" + token);
+                //setToken(token);
                 await executeMutationUtil(addSiteUserMessagingToken(brand.id, dbUser.id, token));
             }
-            else {
-                alert("no brand")
-            }
+            // else {
+            //     alert("no brand")
+            // }
         }
         catch (err) {
             console.log(err);
         }
     }
-    // useEffect(async () => {
-    //     registerMessaging();
-    // }, [])
+
+    useEffect(async () => {
+        registerMessaging();
+    }, [])
 
     useEffect(() => {
         // Remove the server-side injected CSS.
@@ -54,28 +57,19 @@ const Confirmed:React.FC<ConfirmedProps> = ({contextData}) => {
             jssStyles.parentElement!.removeChild(jssStyles)
         }
 
-        if("serviceWorker" in navigator) {
-            //register(window);
-            window.addEventListener("load", function () {
-                navigator.serviceWorker.register("/firebase-messaging-sw.old").then(
-                    function (registration) {
-                        console.log("Service Worker registration successful with scope: ", registration.scope);
-                    },
-                    function (err) {
-                        console.log("Service Worker registration failed: ", err);
-                    }
-                );
-
-                // navigator.serviceWorker.register("/registerServiceWorker.js").then(
-                //     function (registration) {
-                //         console.log("Service Worker registration successful with scope: ", registration.scope);
-                //     },
-                //     function (err) {
-                //         console.log("Service Worker registration failed: ", err);
-                //     }
-                // );
-            });
-        }
+        // if("serviceWorker" in navigator) {
+        //     //register(window);
+        //     window.addEventListener("load", function () {
+        //         navigator.serviceWorker.register("/firebase-messaging-sw.old").then(
+        //             function (registration) {
+        //                 console.log("Service Worker registration successful with scope: ", registration.scope);
+        //             },
+        //             function (err) {
+        //                 console.log("Service Worker registration failed: ", err);
+        //             }
+        //         );
+        //     });
+        // }
 
     }, [])
 
@@ -85,6 +79,7 @@ const Confirmed:React.FC<ConfirmedProps> = ({contextData}) => {
 
     return (
         <CheckoutNavLayout contextData={contextData}>
+            <p>{JSON.stringify(justCreatedOrder)}</p>
             <DashboardPageHeader
                 title={localStrings.orderCompleted}
                 icon={ShoppingBag}
@@ -108,14 +103,14 @@ const Confirmed:React.FC<ConfirmedProps> = ({contextData}) => {
                                 title={localStrings.activateNotification}
                                 content={localStrings.notificationInfo}
                 >
-                    <Box display="flex" flexDirection="row-reverse">
-                        <Box mt={2} mb={2}>
-                            <Button variant="contained" color="primary" type="button" fullWidth
-                                    onClick={registerMessaging}>
-                                {localStrings.activateNotification}
-                            </Button>
-                        </Box>
-                    </Box>
+                    {/*<Box display="flex" flexDirection="row-reverse">*/}
+                    {/*    <Box mt={2} mb={2}>*/}
+                    {/*        <Button variant="contained" color="primary" type="button" fullWidth*/}
+                    {/*                onClick={registerMessaging}>*/}
+                    {/*            {localStrings.activateNotification}*/}
+                    {/*        </Button>*/}
+                    {/*    </Box>*/}
+                    {/*</Box>*/}
                 </AlertHtmlLocal>
             </div>
 
