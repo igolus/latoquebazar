@@ -415,4 +415,16 @@ export const formatOrderDeliveryDateSlot = (order) => {
             .format("HH:mm");
 }
 
+export function getRemainingToPay(order) {
+    let totalRemaining = parseFloat(order.totalPrice);
+
+    if (order.payments) {
+        order.payments.forEach(payment => {
+            totalRemaining -= parseFloat(payment.amount);
+        });
+    }
+    return totalRemaining;
+}
+
+
 

@@ -376,8 +376,8 @@ const initialValues = {
 }
 
 const formSchema = yup.object().shape({
-  email: yup.string().email('invalid email').required('${path} is required'),
-  password: yup.string().required('${path} is required'),
+  email: yup.string().email(localStrings.check.invalidEmail).required(localStrings.formatString(localStrings.requiredField, '${path}')),
+  password: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
 })
 
 export default Login

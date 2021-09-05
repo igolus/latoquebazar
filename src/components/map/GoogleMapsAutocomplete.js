@@ -61,7 +61,7 @@ const useStyles = makeStyles(() => ({
 
 export default function GoogleMapsAutocomplete({title, setValueCallback, initialValue, lockmode,
                                                    valueSource, setterValueSource, noKeyKnown,
-                                                   required, error, helperText, disabled}) {
+                                                   required, error, helperText, disabled, useTextField}) {
     const classes = useStyles();
     const [googleKey, setGoogleKey] = useState('');
     const {getGoogleKey, brand} = useAuth();
@@ -222,16 +222,43 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                     renderInput={(params) => (
                         // <form noValidate>
                         <form autocomplete="off">
-                            <BazarTextField {...params}
-                                            //style={{height: "44px"}}
-                                            //className={classes.autocomplete}
-                                            error={error}
-                                            helperText={helperText}
-                                            required={required}
-                                            autoComplete='off'
-                                            label={title}
-                                            variant="outlined"
-                                            fullWidth />
+
+                            {/*<TextField*/}
+                            {/*    name="phone"*/}
+                            {/*    label={localStrings.phone}*/}
+                            {/*    fullWidth*/}
+                            {/*    onBlur={handleBlur}*/}
+                            {/*    onChange={handleChange}*/}
+                            {/*    value={values.phone || ''}*/}
+                            {/*    error={!!touched.phone && !!errors.phone}*/}
+                            {/*    helperText={touched.phone && errors.phone}*/}
+                            {/*/>*/}
+                            {useTextField ?
+                                <TextField {...params}
+                                    //style={{height: "44px"}}
+                                    //className={classes.autocomplete}
+                                           error={error}
+                                           helperText={helperText}
+                                           required={required}
+                                           autoComplete='off'
+                                           label={title}
+                                    //variant="outlined"
+                                           fullWidth/>
+                                :
+                                <BazarTextField {...params}
+                                    //style={{height: "44px"}}
+                                    //className={classes.autocomplete}
+                                           error={error}
+                                           helperText={helperText}
+                                           required={required}
+                                           autoComplete='off'
+                                           label={title}
+                                           variant="outlined"
+                                           fullWidth/>
+
+                            }
+
+
                         </form>
                     )}
                     //     renderOption={(option) => {

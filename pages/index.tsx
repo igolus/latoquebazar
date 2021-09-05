@@ -14,7 +14,6 @@ export interface IndexPageProps {
 
 
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
-    const key = "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ";
     return (
 
         <div>

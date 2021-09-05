@@ -84,12 +84,12 @@ export const createSiteUserMutation = (brandId, data) => {
 }
 
 
-export const updateSiteUserQuery = (data) => {
+export const updateSiteUserQuery = (brandId, data) => {
     var dataString = filterDataGql(data);
 
     var debug = `
     mutation {
-      updateSiteUser(data: ${dataString}) {
+      updateSiteUser(brandId: "${brandId}", data: ${dataString}) {
         ${common}
       }
     }
@@ -98,7 +98,7 @@ export const updateSiteUserQuery = (data) => {
 
     return gql`
     mutation {
-      updateSiteUser(data: ${dataString}) {
+      updateSiteUser(brandId: "${brandId}", data: ${dataString}) {
         ${common}
       }
     }

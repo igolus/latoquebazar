@@ -2,7 +2,7 @@ import NavbarLayout from '@component/layout/NavbarLayout'
 import {Tabs} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useRouter} from "next/router";
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import DealSelector from '../../../src/components/products/DealSelector'
@@ -27,15 +27,18 @@ export interface ProductDetailsProps {
 const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const router = useRouter();
+    const [selectedDeal, setSelectedDeal] = useState(null);
 
     const { id } = router.query
 
-
+    useEffect(() => {
+        setSelectedDeal((contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null)
+    }, [id])
     //const { selectedSku } = router.query
     //alert(" ---------------------- selectedSku -------------- " +  contextData.req.url);
     //console.log(" ---------- contextData.req.url " +  JSON.stringify(contextData.url, null, 2));
 
-    const selectedDeal = (contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null;
+    //const selectedDeal = (contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null;
 
     return (
         <NavbarLayout contextData={contextData}>

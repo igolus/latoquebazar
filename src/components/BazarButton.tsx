@@ -4,6 +4,7 @@ import { styled } from '@material-ui/core/styles'
 const BazarButton = styled(Button)({
   minWidth: 0,
   minHeight: 0,
+  textTransform: "none"
 })
 
 export default BazarButton

@@ -12,6 +12,7 @@ import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
 import React from 'react'
 import localStrings from "../../localStrings";
+import useAuth from "@hook/useAuth";
 
 export interface NavbarProps {
   navListOpen?: boolean
@@ -77,7 +78,7 @@ interface Nav {
 
 const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
   const classes = useStyles()
-
+  const {dbUser} = useAuth()
   const renderNestedNav = (list: any[], isRoot = false) => {
     return list?.map((nav: Nav) => {
       if (isRoot) {
@@ -195,7 +196,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
           </BazarButton>
         </CategoryMenu>
 
-        <FlexBox>{renderNestedNav(navbarNavigations, true)}</FlexBox>
+        <FlexBox>{renderNestedNav(navbarNavigations(dbUser), true)}</FlexBox>
       </Container>
     </BazarCard>
   )

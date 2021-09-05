@@ -31,6 +31,8 @@
     "@material-ui/lab": "^5.0.0-alpha.38",
     "@material-ui/styles": "^5.0.0-alpha.35",
     "@material-ui/system": "^5.0.0-alpha.38",
+    "@stripe/react-stripe-js": "^1.4.1",
+    "@stripe/stripe-js": "^1.17.1",
     "apollo-link-http": "^1.5.17",
     "apollo-link-timeout": "^4.0.0",
     "autosuggest-highlight": "^3.1.1",

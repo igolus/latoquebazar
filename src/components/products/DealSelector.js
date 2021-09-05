@@ -81,7 +81,7 @@ function DealSelector({ deal, contextData }) {
     function addMenuToCart() {
         addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation, addToast);
         setDealEdit(null);
-        //router.push("/cart")
+        router.push("/cart")
     }
 
     function cancelDeal() {

@@ -7,6 +7,7 @@ import ArrowRight from '@material-ui/icons/ArrowRight'
 import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
 import React from 'react'
+import useAuth from "@hook/useAuth";
 
 export interface Navbar2Props {
   navListOpen?: boolean
@@ -67,7 +68,7 @@ interface Nav {
 
 const Navbar2: React.FC<Navbar2Props> = () => {
   const classes = useStyles()
-
+  const {dbUser} = useAuth()
   const renderNestedNav = (list: any[], isRoot = false) => {
     return list?.map((nav: Nav) => {
       if (isRoot) {
@@ -165,7 +166,7 @@ const Navbar2: React.FC<Navbar2Props> = () => {
         }}
       >
         <div></div>
-        <FlexBox>{renderNestedNav(navbarNavigations, true)}</FlexBox>
+        <FlexBox>{renderNestedNav(navbarNavigations(dbUser), true)}</FlexBox>
       </Container>
     </BazarCard>
   )

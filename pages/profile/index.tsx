@@ -20,16 +20,25 @@ import {getProfileName} from "../../src/util/displayUtil";
 import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
 import {getCustomerOrdersQuery} from "../../src/gql/orderGql";
 import {ORDER_STATUS_FINISHED} from "../../src/util/constants";
+import {useRouter} from "next/router";
 
 export interface ProfileProps {
     contextData?: any
 }
 
 const Profile:React.FC<ProfileProps> = ({contextData}) => {
-
+    const router = useRouter();
     const [awaitingOrdersCount, setAwaitingOrdersCount] = useState(0);
-
     const {dbUser, logout, currentUser, orderCount, brand} = useAuth()
+
+    useEffect(() => {
+            if (!dbUser) {
+                //alert("push user")
+                router.push("/")
+            }
+        },
+        [dbUser]
+    )
 
     useEffect(async () => {
 
@@ -68,8 +77,10 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
     }
 
     return (
+        <>
+        {dbUser &&
         <CustomerDashboardLayout contextData={contextData}>
-            {isMobile && !dbUser?
+            {isMobile && !dbUser ?
                 <>
                     <Box mb={4}>
                         <Grid container spacing={3}>
@@ -99,7 +110,7 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
 
                                 <Box p={1}>
                                     <Link href="/profile/edit">
-                                        <Button color="primary" sx={{px: '2rem', bgcolor: 'primary.light'}}>
+                                        <Button color="primary" variant="contained" sx={{px: '2rem'}}>
                                             {localStrings.editProfile}
                                         </Button>
                                     </Link>
@@ -181,42 +192,44 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
                         <TableRow sx={{p: '0.75rem 1.5rem'}}>
                             <FlexBox flexDirection="column" p={1}>
                                 <Small color="grey.600" mb={0.5} textAlign="left">
-                                    First Name
+                                    {localStrings.firstName}
                                 </Small>
-                                <span>Ralph</span>
+                                <span>{dbUser?.userProfileInfo?.firstName || "-"}</span>
                             </FlexBox>
                             <FlexBox flexDirection="column" p={1}>
                                 <Small color="grey.600" mb={0.5} textAlign="left">
-                                    Last Name
+                                    {localStrings.lastName}
                                 </Small>
-                                <span>Edwards</span>
+                                <span>{dbUser?.userProfileInfo?.lastName || "-"}</span>
                             </FlexBox>
                             <FlexBox flexDirection="column" p={1}>
                                 <Small color="grey.600" mb={0.5} textAlign="left">
-                                    Email
+                                    {localStrings.email}
                                 </Small>
-                                <span>ralfedwards@email.com</span>
+                                <span>{dbUser?.userProfileInfo?.email || "-"}</span>
                             </FlexBox>
                             <FlexBox flexDirection="column" p={1}>
                                 <Small color="grey.600" mb={0.5} textAlign="left">
-                                    Phone
+                                    {localStrings.phone}
                                 </Small>
-                                <span>+1983649392983</span>
+                                <span>{dbUser?.userProfileInfo?.phoneNumber || "-"}</span>
                             </FlexBox>
+
                             <FlexBox flexDirection="column" p={1}>
-                                <Small color="grey.600" mb={0.5}>
-                                    Birth date
+                                <Small color="grey.600" mb={0.5} textAlign="left">
+                                    {localStrings.address}
                                 </Small>
-                                <span className="pre">
-            {format(new Date(1996 / 11 / 16), 'dd MMM, yyyy')}
-          </span>
+                                <span>{dbUser?.userProfileInfo?.address || "-"}</span>
                             </FlexBox>
+
                         </TableRow>
                     </>
                     }
                 </>
             }
         </CustomerDashboardLayout>
+        }
+        </>
     )
 }
 

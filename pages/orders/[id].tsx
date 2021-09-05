@@ -94,6 +94,15 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
         await refresh();
     }, [contextData, currentEstablishment(), dbUser])
 
+    useEffect(() => {
+            if (!dbUser) {
+                //alert("push user")
+                router.push("/")
+            }
+        },
+        [dbUser]
+    )
+
     async function refresh() {
         try {
             setRefreshing(true)
@@ -135,12 +144,12 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <DashboardLayout>
+        <DashboardLayout contextData={contextData}>
             <DashboardPageHeader
                 title={localStrings.orderDetail}
                 icon={ShoppingBag}
                 button={
-                    <Button color="primary" sx={{ bgcolor: 'primary.light', px: '2rem' }} onClick={refresh}>
+                    <Button color="primary" variant="contained" onClick={refresh}>
                         {localStrings.refresh}
                     </Button>
                 }

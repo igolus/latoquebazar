@@ -3,7 +3,12 @@ import FlexBox from '@component/FlexBox'
 import { Button, Divider, TextField, Typography } from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
-import {computePriceDetail, formatOrderConsumingMode} from "../../util/displayUtil";
+import {
+    computePriceDetail,
+    formatOrderConsumingMode,
+    getBrandCurrency,
+    getRemainingToPay
+} from "../../util/displayUtil";
 import {CSSProperties} from "@material-ui/styles";
 import localStrings from "../../localStrings";
 import moment from "moment";
@@ -19,7 +24,7 @@ export interface OrderAmountSummaryProps {
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
                                                                   modeOrdered,orderSource}) => {
 
-    const {getOrderInCreation} = useAuth();
+    const {getOrderInCreation, currentBrand} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
 
@@ -35,7 +40,16 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
         <Card1>
             {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
             <Typography fontWeight="600" mb={1} mt={2}>
-                {modeOrdered ? localStrings.pricePaid : localStrings.priceToPay}
+                {modeOrdered ?
+
+                    (getRemainingToPay(getOrder()) === 0 ?
+                        localStrings.pricePaid
+                        :
+                        localStrings.formatString(localStrings.remainingToPay,
+                            getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()))
+                    )
+                    :
+                    localStrings.priceToPay}
             </Typography>
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
             <FlexBox justifyContent="space-between" alignItems="center" mb={1}>

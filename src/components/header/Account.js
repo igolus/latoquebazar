@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const Account = (props, noLinkMode) => {
+const Account = ({noLinkMode}) => {
     const classes = useStyles();
     const ref = useRef(null);
     const { currentUser, logout, userInDb } = useAuth();
@@ -102,11 +102,11 @@ const Account = (props, noLinkMode) => {
                         {localStrings.myOrders}
                     </Link>
                 </MenuItem>
-                <MenuItem>
-                    <Link href={"/adresses"}>
-                        {localStrings.myAdresse}
-                    </Link>
-                </MenuItem>
+                {/*<MenuItem>*/}
+                {/*    <Link href={"/adresses"}>*/}
+                {/*        {localStrings.myAdresse}*/}
+                {/*    </Link>*/}
+                {/*</MenuItem>*/}
                 <MenuItem onClick={handleLogout}>
                     {localStrings.logout}
                 </MenuItem>

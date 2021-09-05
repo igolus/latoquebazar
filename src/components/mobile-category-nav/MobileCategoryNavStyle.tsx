@@ -29,7 +29,7 @@ const MobileCategoryNavStyle = styled('div')(({ theme }) => ({
       alignItems: 'center',
       justifyContent: 'center',
       padding: '0.5rem',
-      height: '80px',
+      height: '90px',
       width: '100%',
       borderBottom: '1px solid',
       borderBottomColor: theme.palette.grey[300],

@@ -276,7 +276,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
         //alert("res " + JSON.stringify(res))
         setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
       }
-    }, 1000000);
+    }, 300000);
     return () => clearInterval(interval);
 
 

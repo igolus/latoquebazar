@@ -1,7 +1,5 @@
 import Card1 from '@component/Card1'
-import Parser from 'html-react-parser';
 import {
-  Alert, AlertTitle,
   Box,
   Button,
   CircularProgress,
@@ -11,47 +9,57 @@ import {
   Radio,
   RadioGroup,
   TextField,
-  Tooltip,
   Typography,
 } from '@material-ui/core'
 import {Formik} from 'formik'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
-  ORDER_SOURCE_OFFLINE, ORDER_SOURCE_ONLINE,
+  ORDER_SOURCE_ONLINE,
   ORDER_STATUS_NEW
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
 import moment from 'moment';
 import GoogleMapsAutocomplete, {loadScript} from "@component/map/GoogleMapsAutocomplete";
-import {setDistanceAndCheck, setDistanceAndCheckNoCall} from "@component/address/AdressCheck";
+import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
   formatDuration,
-  getDeliveryDistance, getDeliveryDistanceWithFetch, getMaxDistanceDelivery, getProfileName,
-  getSkusLists, getSkusListsFromProducts,
+  getDeliveryDistanceWithFetch,
+  getProfileName,
+  getSkusListsFromProducts,
   isDeliveryActive
 } from "../../util/displayUtil";
 import {makeStyles} from "@material-ui/styles";
 import {isMobile} from "react-device-detect";
 import {cloneDeep} from "@apollo/client/utilities";
 import {uuid} from "uuidv4";
-import {executeMutationUtil} from "../../apolloClient/gqlUtil";
+import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
 import {createUpdateBookingSlotOccupancyMutation} from '../../gql/BookingSlotOccupancyGql'
-import {addOrderToCustomer, createOrderMutation} from '../../gql/orderGql'
+import {
+  addOrderToCustomer,
+  bulkDeleteOrderMutation,
+  createOrderMutation,
+  getOrderByIdQuery,
+  updateOrderMutation
+} from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
 import {getCartItems} from "../../util/cartUtil";
 import {sendNotif} from "../../util/sendNotif";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
+import {CardElement, CardNumberElement, Elements, useElements, useStripe} from "@stripe/react-stripe-js";
+import {loadStripe} from "@stripe/stripe-js";
+import axios from "axios";
 
-const config = require("../../conf/config.json")
+const config = require('../../conf/config.json')
+//import useResponsiveFontSize from "../../hooks/useResponsiveFontSize";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -73,6 +81,11 @@ export interface CheckoutFormProps {
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
+
+  const stripe = useStripe();
+  const elements = useElements();
+  const [checkoutError, setCheckoutError] = useState();
+  const [paymentCardValid, setPaymentCardValid] = useState(false);
   const classes = useStyles();
   const autocomp = useRef(null);
   const router = useRouter()
@@ -81,11 +94,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const [adressValue, setAdressValue] = useState("");
   const [adressEditLock, setAdressEditLock] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { setOrderInCreation, getOrderInCreation, currentEstablishment,
+  const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
   const loaded = React.useRef(false);
+  const [paymentMethod, setPaymentMethod] = useState('delivery')
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !loaded.current) {
@@ -154,16 +168,84 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     return ret;
   }
 
+  const processPayment = async(orderId) => {
+    const cardElement = elements.getElement("card");
+
+    const billingDetails = {
+      name: getProfileName(dbUser),
+      email: dbUser.userProfileInfo.email,
+      address: {
+        line1: dbUser.userProfileInfo.address,
+      }
+    };
+
+    try {
+      const { data: clientSecret } = await axios.post(config.paymentUrl, {
+        //amount: 200
+        orderId: orderId,
+        establishmentId: currentEstablishment().id,
+        brandId: currentBrand().id
+      });
+
+      const paymentMethodReq = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardElement,
+        billing_details: billingDetails
+
+      });
+
+      if (paymentMethodReq.error) {
+        setCheckoutError(paymentMethodReq.error.message);
+        //alert("payment error " + paymentMethodReq.error.message)
+        //setProcessingTo(false);
+        return null;
+      }
+
+      const resPay = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: paymentMethodReq.paymentMethod.id
+      });
+
+
+      if (resPay.error) {
+        setCheckoutError(resPay.error.message);
+        //alert("payment error " + resPay.error.message)
+        return null;
+      }
+
+      //update order
+      let resOrder = await executeQueryUtil(getOrderByIdQuery(currentBrand().id, currentEstablishment().id, orderId));
+      let order = resOrder?.data?.getOrdersByOrderIdEstablishmentIdAndOrderId;
+      if (order) {
+        let dataUpdate = cloneDeep(order);
+        if (dataUpdate && dataUpdate.payments.length === 1) {
+          dataUpdate.payments[0] = {...order.payments[0], extId: resPay.paymentIntent.id}
+          await executeMutationUtil(updateOrderMutation(currentBrand().id, currentEstablishment().id, dataUpdate))
+        }
+      }
+
+      //alert("payment done " + JSON.stringify(resPay))
+      return resPay;
+
+    } catch (err) {
+      setCheckoutError(err.message);
+      alert(err.message);
+      return null;
+    }
+
+  }
+
   const handleFormSubmit = async (values: any) => {
     setLoading(true);
-    //console.log(values);
-
-    //cleanUp
-
+    let orderId = 0;
+    // let payResult = await processPayment();
+    // if (!payResult) {
+    //   setLoading(false);
+    //   return
+    // }
+    //console.log("payResult " + JSON.stringify(payResult, null, 2))
 
     const currentBrand = contextData.brand;
     try {
-      //setLoading(true);
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null,2))
 
       let dataOrder = cloneDeep(getOrderInCreation());
@@ -207,9 +289,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                     deal.productAndSkusLines.push(productAndSkusLine)
                   }
                 })
-
               }
-
             });
       }
 
@@ -283,13 +363,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       dataOrder.customer = dbUser;
 
-      let message = null;
       let result;
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
+      orderId = result.data.addOrder.id;
+      if (paymentMethod === "cc") {
+        let payResult = await processPayment(result.data.addOrder.id);
 
-      //alert("result " + JSON.stringify(result))
-      setJustCreatedOrder(cloneDeep(result.data.addOrder));
+        console.log("payResult " + JSON.stringify(payResult, null, 2))
+        if (!payResult) {
+          //delete the order
+
+          await executeMutationUtil(bulkDeleteOrderMutation(currentBrand.id, currentEstablishment().id, [orderId]));
+          setLoading(false);
+          return;
+        }
+      }
 
       if (!dataOrder.customer && dbUser) {
         dataOrder.customer = dbUser;
@@ -330,17 +419,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       //setLoading(false);
     }
 
-    router.push('/confirmed')
+    router.push('/confirmed/' + orderId)
   }
-
-  // const handleCheckboxChange =
-  //     (values: typeof initialValues, setFieldValue: any) => (e: any, _: boolean) => {
-  //       const checked = e.currentTarget.checked
-  //
-  //       setSameAsShipping(checked)
-  //       setFieldValue('same_as_shipping', checked)
-  //       setFieldValue('billing_name', checked ? values.shipping_name : '')
-  //     }
 
 
   function setSelectedBookingSlot(bookingSlot) {
@@ -390,10 +470,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         computePriceDetail(getOrderInCreation()).total < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
   }
 
+  const handlePaymentMethodChange = ({ target: { name } }: any) => {
+    setPaymentMethod(name)
+  }
+
   return (
+
+
       <>
         {!currentEstablishment() || !orderInCreation ?
-              <ClipLoaderComponent/>
+            // {false ?
+            <ClipLoaderComponent/>
             :
             <Formik
                 initialValues={getInitialValues(dbUser)}
@@ -424,27 +511,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                             (distanceInfo.distance / 1000),
                                             formatDuration(distanceInfo, localStrings))}
                         />
-                        {/*<p>{currentEstablishment() ? JSON.stringify(currentEstablishment().serviceSetting) : "0"}</p>*/}
-                        {/*<p>{currentEstablishment() ? currentEstablishment().serviceSetting.minimalDeliveryOrderPrice : "0"}</p>*/}
-                        {/*<p>{contextData && contextData.brand && contextData.brand.serviceSetting ? JSON.stringify(contextData.brand.serviceSetting) : "0"}</p>*/}
-                        {/*<p>{computePriceDetail(getOrderInCreation()).total}</p>*/}
-                        {/*<p>{isDeliveryPriceDisabled()}</p>*/}
-
-
-                        <p>{JSON.stringify(getOrderInCreation().deliveryAddress)}</p>
-                        {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
-                        {/*<Alert severity={maxDistanceReached ? "warning" : "success"} style={{marginBottom: 2}}>*/}
-                        {/*  {maxDistanceReached ?*/}
-                        {/*      localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}*/}
-                        {/*  {*/}
-                        {/*    localStrings.formatString(localStrings.distanceTime,*/}
-                        {/*        (distanceInfo.distance / 1000),*/}
-                        {/*        formatDuration(distanceInfo, localStrings))*/}
-                        {/*  }*/}
-
-                        {/*</Alert>*/}
+                        {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress)}</p>*/}
                       </Box>
                       }
+
+                      {/*<p>Payment card valid {paymentCardValid ? "yes" : "no"}</p>*/}
 
                       {isDeliveryPriceDisabled() &&
 
@@ -456,7 +527,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                         <Box display="flex" flexDirection="row-reverse">
                           <Box mt={2}>
                             <Link href="/product/shop/all">
-                              <Button variant="contained" color="primary" type="button" fullWidth>
+                              <Button variant="contained" color="primary" type="button" fullWidth
+                                      style={{textTransform: "none"}}
+                              >
                                 {localStrings.continueShopping}
                               </Button>
                             </Link>
@@ -478,10 +551,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             <Grid item sm={12} xs={12}>
                               {/*{!isDeliveryPriceDisabled() && !maxDistanceReached &&*/}
                               {!isDeliveryPriceDisabled() &&
-                                < FormControlLabel value={ORDER_DELIVERY_MODE_DELIVERY} control={<Radio/>}
-                                label={localStrings.delivery} />
+                              <>< FormControlLabel value={ORDER_DELIVERY_MODE_DELIVERY} control={<Radio/>}
+                                                   label={localStrings.delivery} /><br/></>
                               }
-                                <FormControlLabel value={ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} control={<Radio/>}
+                              <FormControlLabel value={ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} control={<Radio/>}
                                                 label={localStrings.clickAndCollect}/>
                             </Grid>
                           </RadioGroup>
@@ -524,6 +597,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                           {adressEditLock &&
                           <Grid item xs={12} lg={4}>
                             <Button variant="contained"
+                                    style={{textTransform: "none"}}
                                     onClick={() => setAdressEditLock(false)}
                                     color="primary" type="button" fullWidth>
                               {localStrings.deliverToOtherAddress}
@@ -555,17 +629,20 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       {!dbUser &&
                       <>
 
+
                         <Grid container spacing={3} mb={2}>
                           <Grid item xs={12} lg={12}>
                             {isMobile ?
                                 <Link href="/profile">
                                   <Button variant={"contained"}
+                                          style={{textTransform: "none"}}
                                           color="primary" type="button" fullWidth>
                                     {localStrings.login}
                                   </Button>
                                 </Link>
                                 :
                                 <Button variant={"contained"}
+                                        style={{textTransform: "none"}}
                                         onClick={() => {
                                           setLoginDialogOpen(true);
                                         }}
@@ -579,7 +656,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       }
                       {dbUser &&
                       <Grid container spacing={6}>
+
+
                         <Grid item sm={12} xs={12}>
+
+                          <Box display="flex" flexDirection="row-reverse">
+                            <Box mt={2} mb={2}>
+                              <Link href="/profile/edit">
+                                <Button variant="contained" color="primary" type="button" fullWidth
+                                        style={{textTransform: "none"}}
+                                >
+                                  {localStrings.modifyMyAccount}
+                                </Button>
+                              </Link>
+                            </Box>
+                          </Box>
+
                           <TextField
                               className={classes.textField}
                               disabled={dbUser}
@@ -675,47 +767,190 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                     }
 
                     {dbUser &&
+                    <Card1 sx={{mb: '2rem'}}>
+
+                      {checkoutError &&
+                      <AlertHtmlLocal severity={"error"}
+                                      title={localStrings.warningMessage.paymentIssue}
+                                      content={checkoutError.toString()}
+                      />
+                      }
+
+                      <Typography fontWeight="600" mb={2}>
+                        {localStrings.payementMethod}
+                      </Typography>
+
+                      <FormControlLabel
+                          name="delivery"
+                          label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
+                          control={
+                            <Radio
+                                checked={paymentMethod === 'delivery'}
+                                color="secondary"
+                                size="small"
+                            />
+                          }
+                          sx={{ mb: '.5rem' }}
+                          onChange={handlePaymentMethodChange}
+                      />
+
+                      {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
+                      <>
+                        <br/>
+                        <FormControlLabel
+                            name="cc"
+                            label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                            control={
+                              <Radio
+                                  checked={paymentMethod === 'cc'}
+                                  color="secondary"
+                                  size="small"
+                              />
+                            }
+                            sx={{ mb: '0.5rem' }}
+                            onChange={handlePaymentMethodChange}
+                        />
+                      </>
+                      }
+
+                      {paymentMethod === 'cc' &&
+                      <>
+
+                        {/*<CardNumberElement/>*/}
+
+                        {/*<Typography variant="subtitle2" mb={2}>*/}
+                        {/*  {localStrings.creditCardDetail}*/}
+                        {/*</Typography>*/}
+                        <div
+                            style={
+                              {
+                                border: '1px solid #C4CCD5',
+                                borderRadius: "5px",
+                                padding: '9px'
+                              }
+                            }
+                        >
+                          <CardElement
+                              id="card-element"
+
+                              //onComplete={}
+                              onReady={() => {
+
+                                //setPaymentCardValid(true);
+                                console.log("Card ready")
+                              }}
+
+                              onChange={(event) => {
+
+                                if (event.complete) {
+                                  setPaymentCardValid(true);
+                                } else if (event.error) {
+                                  setPaymentCardValid(false);
+                                }
+
+                                //const cardElement = elements.getElement("card");
+                                // const cardElementContainer = document.querySelector('#card-element');
+                                //
+                                // let cardElementComplete = cardElementContainer.classList.contains('StripeElement--complete');
+                                // let cardElementInvalid = cardElementContainer.classList.contains('StripeElement--invalid');
+                                // console.log("cardElement classList " + cardElementContainer.classList);
+                                // if (cardElementComplete) {
+                                //   setPaymentCardValid(true);
+                                // }
+                                //
+                                // if (cardElementInvalid) {
+                                //   setPaymentCardValid(false);
+                                // }
+
+                              }}
+
+                              options={{
+                                style: {
+                                  base: {
+                                    fontSize: '14px',
+                                    color: '#424770',
+                                    '::placeholder': {
+                                      color: '#aab7c4',
+                                    },
+                                  },
+                                  invalid: {
+                                    color: '#9e2146',
+                                  },
+                                },
+                              }}/>
+                        </div>
+
+                        {/*<CardNumberElement options={{*/}
+                        {/*  style: {*/}
+                        {/*    base: {*/}
+                        {/*      fontSize: '16px',*/}
+                        {/*      color: '#424770',*/}
+                        {/*      '::placeholder': {*/}
+                        {/*        color: '#aab7c4',*/}
+                        {/*      },*/}
+                        {/*    },*/}
+                        {/*    invalid: {*/}
+                        {/*      color: '#9e2146',*/}
+                        {/*    },*/}
+                        {/*  },*/}
+                        {/*}}/>*/}
+
+                        {/*<Typography variant="subtitle2" mb={2}>*/}
+                        {/*  {"exp"}*/}
+                        {/*</Typography>*/}
+
+                        {/*<CardExpiryElement/>*/}
+
+                        {/*<Typography variant="subtitle2" mb={2}>*/}
+                        {/*  {"cvv"}*/}
+                        {/*</Typography>*/}
+
+                        {/*<CardCvcElement/>*/}
+                      </>
+                      }
+                    </Card1>
+                    }
+
+                    {dbUser &&
                     <Grid container spacing={6}>
                       <Grid item sm={6} xs={12}>
                         <Link href="/cart">
-                          <Button variant="outlined" color="primary" type="button" fullWidth>
+                          <Button
+                              style={{textTransform: "none"}}
+                              variant="outlined" color="primary" type="button" fullWidth style={{textTransform: "none"}}>
                             {localStrings.backToCart}
                           </Button>
                         </Link>
                       </Grid>
 
                       <Grid item sm={6} xs={12}>
-                        {
-                          maxDistanceReached && currentEstablishment() &&
-                          getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ||
-                          !getOrderInCreation().bookingSlot
-                              ?
-                              // <Tooltip title={localStrings.warningMessage.selectValidDeliveryAddress}>
-                              //   <>
-                              <Button
-                                  disabled={true}
-                                  variant="contained" color="primary" type="submit" fullWidth>
-                                {localStrings.checkOutNow}
-                              </Button>
-                              //   </>
-                              // </Tooltip>
+
+
+
+                        <Button
+                            style={{textTransform: "none"}}
+                            variant="contained" color="primary" type="submit" fullWidth
+                            //endIcon={<SaveIcon />}
+                            disabled={
+                              !getOrderInCreation().bookingSlot ||
+                              loading || getCartItems(getOrderInCreation).length == 0 ||
+                              (!orderInCreation.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
+                              (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) ||
+                              (paymentMethod === "cc" && !paymentCardValid)
+                            }
+                            endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
+                        >
+                          {paymentMethod === "cc" ?
+                              localStrings.formatString(localStrings.checkOutNowAndPayCard,
+                                  computePriceDetail(orderInCreation).total.toFixed(2))
                               :
+                              localStrings.formatString(localStrings.checkOutNowAndPayLater,
+                                  computePriceDetail(orderInCreation).total.toFixed(2))
+                          }
+                          {/*<CircularProgress size={24}/>*/}
+                          {/*{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
 
-                              // <div className={classes.wrapper}>
-                              <Button
-                                  variant="contained" color="primary" type="submit" fullWidth
-                                  //endIcon={<SaveIcon />}
-                                  disabled={loading || getCartItems(getOrderInCreation).length == 0}
-                                  endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
-                              >
-                                {localStrings.checkOutNow}
-                                {/*<CircularProgress size={24}/>*/}
-                                {/*{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
-
-                              </Button>
-                          // </div>
-                          // </Tooltip>
-                        }
+                        </Button>
                       </Grid>
                     </Grid>
                     }
@@ -725,6 +960,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
         }
       </>
+
   )
 }
 
@@ -735,34 +971,11 @@ const getInitialValues = (dbUser) => {
     email:  dbUser ? dbUser.userProfileInfo.email : '',
     address:  dbUser ? dbUser.userProfileInfo.address : '',
     phoneNumber:  dbUser ? dbUser.userProfileInfo.phoneNumber : '',
-    // billing_country: countryList[229],
-    // billing_address1: '',
-    // billing_address2: '',
   }
 }
 
-
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
-
 // uncommect these fields below for from validation
 const checkoutSchema = yup.object().shape({
-
-  // firstName: yup.string().required(localStrings.check.requiredField),
-  // lastName: yup.string().required(localStrings.check.requiredField),
-  // email: yup.string().email("invalid email").required(localStrings.check.requiredField),
-  // address: yup.string().required(localStrings.check.requiredField),
-  // phoneNumber: yup.string().matches(phoneRegExp, localStrings.check.badPhoneFormat)
-  // shipping_contact: yup.string().required("required"),
-  // shipping_zip: yup.string().required("required"),
-  // shipping_country: yup.object().required("required"),
-  // shipping_address1: yup.string().required("required"),
-  // billing_name: yup.string().required("required"),
-  // billing_email: yup.string().required("required"),
-  // billing_contact: yup.string().required("required"),
-  // billing_zip: yup.string().required("required"),
-  // billing_country: yup.object().required("required"),
-  // billing_address1: yup.string().required("required"),
 })
 
 export default CheckoutForm

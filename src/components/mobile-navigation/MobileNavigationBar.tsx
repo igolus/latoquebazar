@@ -61,7 +61,7 @@ const MobileNavigationBar = () => {
     <Box className={classes.root}>
       {list.map((item) => (
         <NavLink className={classes.link} href={item.href} key={item.title}>
-          {item.title === 'Cart' ? (
+          {item.title === localStrings.cart ? (
             <Badge badgeContent={getItemNumberInCart(getOrderInCreation)} color="primary">
               <item.icon className={classes.icon} fontSize="small" />
             </Badge>

@@ -25,12 +25,12 @@ const MobileCategoryImageBox: React.FC<MobileCategoryImageBoxProps> = ({
           objectFit="cover"
         />
       ) : (
-        Icon && <Icon size="48px">{Icon}</Icon>
+        Icon && <Icon size="88px">{Icon}</Icon>
       )}
       <Typography
         className="ellipsis"
         textAlign="center"
-        fontSize="11px"
+        fontSize="25px"
         lineHeight="1"
         mt={1}
       >

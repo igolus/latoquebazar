@@ -70,7 +70,7 @@ function buildOption(optionList, option) {
     "option_list_name": optionList.extName,
     "option_list_extRef": optionList.extRef,
     "option_list_internal_name": optionList.name,
-    "name": option.extName,
+    "name": option.name || option.extName,
     "ref": option.extRef,
     "price": option.price
   }

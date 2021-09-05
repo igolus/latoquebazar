@@ -5,13 +5,12 @@ import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import localStrings from "../../localStrings";
 import {formatDuration} from "../../util/displayUtil";
 
-function ConfirmInfo({ contextData }) {
-    const {justCreatedOrder} = useAuth();
+function ConfirmInfo({ orderSource, contextData  }) {
     return(
         <>
             {/*<p>{JSON.stringify(justCreatedOrder || {})}</p>*/}
             <OrderContent
-                order={justCreatedOrder}
+                order={orderSource}
                 contextData={contextData}
                 modeConfirmed/>
         </>

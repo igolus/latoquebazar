@@ -46,11 +46,11 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
               className="main-category-box"
               borderLeft="3px solid"
           >
-            <BazarImage width={35} height={35} src={"/assets/images/icons/icons8-four-squares-48.png"}/>
+            <BazarImage width={55} height={55} src={"/assets/images/icons/icons8-four-squares-48.png"}/>
             <Typography
                 className="ellipsis"
                 textAlign="center"
-                fontSize="11px"
+                fontSize="15px"
                 lineHeight="1"
             >
               {localStrings.allCategories}
@@ -74,11 +74,11 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
             borderLeft={`${category?.href === item.href ? '3' : '0'}px solid`}
             key={item.category}
           >
-            <BazarImage width={35} height={35} src={icon}/>
+            <BazarImage width={55} height={55} src={icon} />
             <Typography
               className="ellipsis"
               textAlign="center"
-              fontSize="11px"
+              fontSize="15px"
               lineHeight="1"
             >
               {item.category}

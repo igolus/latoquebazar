@@ -4,7 +4,22 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
-        notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer le notifications pour ce site, dans la barre de tache de votre navigateur",
+        modifyMyAccount: "Modifier mon compte",
+        homePageTitle: "Accueil",
+        infoContactPageTitle: "Info et contact",
+        shopPageTitle: "Voir la carte",
+        profilePageTitle: "Mon compte",
+        contactInfoPageTitle: "Info et contact",
+        cartPageTitle: "Voir mon panier",
+
+        creditCardDetail: "Detail de carte de credit",
+        paymentCreditCard: "Payer par carte bancaire maintenant",
+        paymentDelivery: "Payer a la réception",
+
+        payementMethod: "Methode de payment",
+        saveChange: "Sauvegarder les changements",
+        backToProfile: "Retour a mon profil",
+        notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer les notifications pour ce site, dans la barre de tache de votre navigateur",
         activateNotification: "Activer les notifications",
         home: "Acceuil",
         orderCount: "Commandes",
@@ -63,6 +78,7 @@ let localStrings = new LocalizedStrings({
         selectPickupTimeSlot: "Selectionner un creneau de recupération",
         priceToPay: "Montant a payer",
         pricePaid: "Montant payé",
+        remainingToPay: "Reste a payé: {0}",
 
         totalNoTax: "Total hors taxes",
         totalTax: "Total taxes",
@@ -85,6 +101,8 @@ let localStrings = new LocalizedStrings({
         select: "Selectionner le produit",
         addMenuToCart: "Ajouter le menu au panier",
         checkOutNow: "Commander",
+        checkOutNowAndPayLater: "Commander et payer {0}€ à la reception",
+        checkOutNowAndPayCard: "Commander et payer {0}€ maintenant",
         continueShopping: "Ajouter d'autres produits",
         viewCart: "Voir le detail du panier",
         emptyBasket: "Votre panier est vide",
@@ -162,6 +180,7 @@ let localStrings = new LocalizedStrings({
             termsAndConditionsMandatory: "Vous devez accepter les termes et conditions",
             passwordsMatch: 'Les mots de passe doivent être les mêmes',
             reTypePassword: "Fournir le mot de passe une nouvelle fois",
+            invalidEmail: "eMail invalide",
         },
 
         info: {
@@ -174,9 +193,10 @@ let localStrings = new LocalizedStrings({
             maxDistanceDelivery: "L'adresse est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
             maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
             selectValidDeliveryAddressAndSchedule: "Selectionner une addresse de livraison valide et un creaneau de reservation",
-            optionMandatory: "Merci de choisir les options requisent",
+            optionMandatory: "Merci de choisir les options requises",
             minimalPriceForDeliveryNoReached: "La livraison n'est disponible que pour un montant minimum de {0} €",
             deliveryUnavailable: "Livraison non disponible",
+            paymentIssue: "Un probleme est servenu avec votre payment",
             profileNotActivated: "Votre compte n'est pas encore actif, vérifier votre email et activer votre compte en cliquant sur le lien contenu dans le mail d'activation, puis connectez-vous de nouveau"
         },
 
@@ -203,6 +223,7 @@ let localStrings = new LocalizedStrings({
             passwordResetSubject: "Réinitialiser votre mot de passe {0}",
             activateEmailSubject: "activer votre compte {0}",
         },
+
 
     }
 });

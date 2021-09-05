@@ -21,7 +21,6 @@ nProgress.configure({ showSpinner: false })
 
 const App = ({ Component, pageProps }: any) => {
 
-
     const Layout = Component.layout || Fragment
 
     useEffect(async () => {
@@ -96,6 +95,8 @@ const App = ({ Component, pageProps }: any) => {
                 <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
             </Head>
             {/*<AppProvider>*/}
+
+
                 <ToastProvider placement="bottom-left">
                     <AuthProvider>
                         <MuiTheme>

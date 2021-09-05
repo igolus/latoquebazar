@@ -1,5 +1,5 @@
-import filterDataGql from "../apolloClient/gqlUtil";
 import {gql} from "@apollo/client";
+import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
   id
@@ -25,21 +25,64 @@ const common = `
       sendMailOfflineOrdering
       sendMailOnlineOrdering
     }
+    notifPushConfig {
+      sendPushNotification
+      pushNotificationImgUrl
+    }
+    paymentWebConfig {
+      activateOnlinePayment
+      stripePublicKey
+    }
   }
 `
+
+export const getBrandStripPrivateKey = (brandId) => {
+    var debug = `
+    query {
+      getBrandStripPrivateKey(brandId: "${brandId}") {
+        stripePrivateKey
+      }
+    }
+  `
+    console.log(debug);
+
+    return gql`
+    query {
+      getBrandStripPrivateKey(brandId: "${brandId}") {
+        stripePrivateKey
+      }
+    }
+  `;
+}
+
+export const updateGetBrandStripPrivateKeyCache = async (brandId, privateKey) => {
+    const query = getBrandStripPrivateKey(brandId);
+    //const result = await executeQueryUtil(query);
+    //alert("update cache " + privateKey);
+    //if (result) {
+    await apolloClient.writeQuery({
+        query: query,
+        data: {
+            getBrandStripPrivateKey: {stripePrivateKey: privateKey}
+            //__typename: 'StripPrivateKey',
+
+        },
+    });
+    //}
+}
 
 
 export const getAllBrandsQuery = () => {
 
-  var debug = `
+    var debug = `
     query {
       getBrands {
         ${common}
     }
   `
-  console.log(debug);
+    console.log(debug);
 
-  return gql`
+    return gql`
     query {
       getBrands {
         ${common}
@@ -49,16 +92,16 @@ export const getAllBrandsQuery = () => {
 }
 
 export const getBrandByIdQuery = (brandId) => {
-  var debug = `
+    var debug = `
     query {
       getBrand(brandId: "${brandId}") {
         ${common}
       }
     }
   `
-  console.log(debug);
+    console.log(debug);
 
-  return gql`
+    return gql`
     query {
       getBrand(brandId: "${brandId}") {
         ${common}
@@ -68,21 +111,21 @@ export const getBrandByIdQuery = (brandId) => {
 }
 
 export const updateBrandQuery = (data, merge) => {
-  delete data['creationDate'];
-  delete data['updateDate'];
-  var dataString = filterDataGql(data);
-  var mergeValue = merge || false;
+    delete data['creationDate'];
+    delete data['updateDate'];
+    var dataString = filterDataGql(data);
+    var mergeValue = merge || false;
 
-  var debug = `
+    var debug = `
     mutation {
       updateBrand(data: ${dataString}, merge: ${mergeValue}) {
         ${common}
       }
     }
   `
-  console.log(debug);
+    console.log(debug);
 
-  return gql`
+    return gql`
     mutation {
       updateBrand(data: ${dataString}, merge: ${mergeValue}) {
         ${common}

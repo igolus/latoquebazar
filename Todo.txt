@@ -4,3 +4,5 @@
 - prix minimum commande
 - explication telephone
 - Terms et condtions
+- gerer le compte en double
+- Cart dans localStorage
