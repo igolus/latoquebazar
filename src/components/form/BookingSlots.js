@@ -176,7 +176,7 @@ function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
 function isFull(startDate, endDate, daySetting, getBookingSlotsOccupancy, orderInCreation) {
   //console.log("isFull brandId " + brandId)
 
-  if (!getBookingSlotsOccupancy()) {
+  if (!getBookingSlotsOccupancy) {
     return true;
   }
   let slot = getBookingSlotsOccupancy().find(item => {
@@ -184,6 +184,11 @@ function isFull(startDate, endDate, daySetting, getBookingSlotsOccupancy, orderI
       item.endDate == endDate.unix()
   })
 
+  if (!slot) {
+    return
+  }
+
+  //alert("slot" + JSON.stringify(slot))
   // if (slot) {
   //   console.log(slot)
   // }
@@ -193,6 +198,8 @@ function isFull(startDate, endDate, daySetting, getBookingSlotsOccupancy, orderI
   }
 
   let maxDeliveryPerSlotPerMan = daySetting.maxDeliveryPerSlotPerMan;
+
+
   let numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
   // if (slot && slot.maxDelivery) {
   //   numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
@@ -201,11 +208,20 @@ function isFull(startDate, endDate, daySetting, getBookingSlotsOccupancy, orderI
   //   numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
   // }
   let maxDelivery = maxDeliveryPerSlotPerMan * numberOfDeliveryMan;
+
+  //alert("maxDelivery " + maxDelivery);
+  //alert("slot " + slot);
+
+  //alert("slot.deliveryNumber " + slot.deliveryNumber);
+
   let maxPreparationTimePerSlot = daySetting.maxPreparationTimePerSlot;
 
   let excludedDeliveryNumber = slot ? slot.excludedDeliveryNumber || 0 : 0;
-  if (slot && slot.deliveryNumber >= maxDelivery - excludedDeliveryNumber &&
-    orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+  //alert("excludedDeliveryNumber " + excludedDeliveryNumber);
+  //alert("orderInCreation().deliveryMode " + orderInCreation()?.deliveryMode);
+
+  if (slot && slot.deliveryNumber >= maxDelivery - excludedDeliveryNumber && orderInCreation() &&
+    orderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
     return true;
   }
 
@@ -254,7 +270,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
   const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
   const [reload, setReload] = useState(true);
   const {currentEstablishment, getOrderInCreation
-    , bookingSlotStartDate, setBookingSlotStartDate} = useAuth();
+    , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation} = useAuth();
 
   const select = (key, value) => {
     if (selectCallBack) {
@@ -264,11 +280,11 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
 
   useEffect(async () => {
 
-    if (currentEstablishment()) {
-      let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
-      //alert("res " + JSON.stringify(res))
-      setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
-    }
+    // if (currentEstablishment()) {
+    //   let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
+    //   alert("res " + JSON.stringify(res))
+    //   setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
+    // }
 
     const interval = setInterval(async () => {
       if (currentEstablishment()) {
@@ -276,11 +292,11 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
         //alert("res " + JSON.stringify(res))
         setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
       }
-    }, 300000);
+    }, 10000);
     return () => clearInterval(interval);
 
 
-  }, [currentEstablishment]);
+  }, [currentEstablishment, orderInCreation]);
 
   function getBookingSlotsOccupancy() {
     return bookingSlotsOccupancy;
