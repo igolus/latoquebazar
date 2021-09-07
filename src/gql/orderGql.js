@@ -251,7 +251,6 @@ export const updateOrderMutation = (brandId, establishmentId, data) => {
   `;
 }
 
-
 export const getSiteUserOrderById = (brandId, siteUserId, orderId) => {
     var debug = `
     query {

@@ -444,7 +444,7 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
         product.skus.forEach(sku => {
             let copySku = {...sku}
 
-            if (!sku.optionListExtIds || sku.optionListExtIds.length == 0) {
+            if (!sku.optionListExtIds || sku.optionListExtIds.length == 0 ) {
                 if (orderInCreation && orderInCreation().order && orderInCreation().order.items) {
                     let existing = orderInCreation().order.items.find(item => {
                         return sameItem(item, sku, []);
@@ -461,11 +461,15 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
                 options = item ? item.options || [] : [];
             }
             //if (!sku.unavailableInEstablishmentIds || !sku.unavailableInEstablishmentIds.includes(currentEstablishment().id)) {
-            allSkusWithProduct.push({
-                product: product,
-                sku: copySku,
-                options: options
-            })
+            if (sku.visible) {
+                allSkusWithProduct.push({
+                    product: product,
+                    sku: copySku,
+                    options: options
+                });
+            }
+
+
             //}
         })
     }

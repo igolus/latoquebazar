@@ -42,7 +42,7 @@ const SaleLayout2: React.FC<Props> = ({
       </Sticky>
       <div className="section-after-sticky">{children}</div>
       <MobileNavigationBar />
-      <Footer />
+      <Footer/>
     </Fragment>
   )
 }

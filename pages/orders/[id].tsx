@@ -79,7 +79,9 @@ export interface OrderDetailsProps {
 const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
     const router = useRouter();
     const { id } = router.query
-    const [refreshing, setRefreshing] = useState(false)
+    const [refreshing, setRefreshing] = useState(false);
+    const [noStatus, setNoStatus] = useState(false);
+
     const {currentEstablishment, dbUser} = useAuth()
     const stepIconList = [PackageBox, TruckFilled, Delivery]
 
@@ -109,11 +111,20 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
             //alert("refresh")
             if (contextData && contextData.brand && dbUser) {
                 let result = await executeQueryUtil(getOrderByIdQuery(contextData.brand.id, currentEstablishment().id, id));
-                if (result && result.data) {
+                if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
                     //alert( "result.data " + result.data)
                     let order = result.data.getOrdersByOrderIdEstablishmentIdAndOrderId;
                     setOrder(order);
                     setRefreshing(false)
+                }
+                else {
+                    let result = await executeQueryUtil(getSiteUserOrderById(contextData.brand.id, dbUser.id, id));
+                    if (result && result.data && result.data.getSiteUserOrderById) {
+                        let order = result.data.getSiteUserOrderById;
+                        setOrder(order);
+                        setRefreshing(false);
+                        setNoStatus(true);
+                    }
                 }
             }
         }
@@ -159,28 +170,28 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
             {/*<p>{JSON.stringify(order || {})}</p>*/}
             {/*<p>{JSON.stringify(contextData ? contextData.products : {})}</p>*/}
 
-
+            {!noStatus &&
             <Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>
-                {false ?
-                <ClipLoaderComponent/>
+                {refreshing ?
+                    <ClipLoaderComponent/>
                     :
-                <StyledFlexbox>
-                    {stepIconList.map((Icon, ind) => (
-                        <Fragment key={ind}>
-                            <Box position="relative">
-                                <Avatar
-                                    sx={{
-                                        height: 64,
-                                        width: 64,
-                                        // bgcolor: false ? 'primary.main' : 'grey.300',
-                                        // color: false ? 'grey.white' : 'primary.main',
-                                        bgcolor: ind <= getStepOrder() ? 'primary.main' : 'grey.300',
-                                        color: ind <=  getStepOrder() ? 'grey.white' : 'primary.main',
-                                    }}
-                                >
-                                    <Icon color="inherit" sx={{ fontSize: '32px' }} />
-                                </Avatar>
-                                {ind <= getStepOrder() && (
+                    <StyledFlexbox>
+                        {stepIconList.map((Icon, ind) => (
+                            <Fragment key={ind}>
+                                <Box position="relative">
+                                    <Avatar
+                                        sx={{
+                                            height: 64,
+                                            width: 64,
+                                            // bgcolor: false ? 'primary.main' : 'grey.300',
+                                            // color: false ? 'grey.white' : 'primary.main',
+                                            bgcolor: ind <= getStepOrder() ? 'primary.main' : 'grey.300',
+                                            color: ind <=  getStepOrder() ? 'grey.white' : 'primary.main',
+                                        }}
+                                    >
+                                        <Icon color="inherit" sx={{ fontSize: '32px' }} />
+                                    </Avatar>
+                                    {ind <= getStepOrder() && (
                                         <Box position="absolute" right="0" top="0">
                                             <Avatar
                                                 sx={{
@@ -194,17 +205,17 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                                             </Avatar>
                                         </Box>
                                     )
-                                }
-                            </Box>
-                            {ind < stepIconList.length - 1 && (
-                                <Box
-                                    className="line"
-                                    bgcolor={ind < getStepOrder() ? 'primary.main' : 'grey.300'}
-                                />
-                            )}
-                        </Fragment>
-                    ))}
-                </StyledFlexbox>
+                                    }
+                                </Box>
+                                {ind < stepIconList.length - 1 && (
+                                    <Box
+                                        className="line"
+                                        bgcolor={ind < getStepOrder() ? 'primary.main' : 'grey.300'}
+                                    />
+                                )}
+                            </Fragment>
+                        ))}
+                    </StyledFlexbox>
                 }
 
                 <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>
@@ -219,6 +230,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                     </Typography>
                 </FlexBox>
             </Card>
+            }
             <OrderContent order={order} contextData={contextData}/>
             {/*<Card sx={{ p: '0px', mb: '20px'}}>*/}
             {/*    <TableRow*/}
@@ -364,7 +376,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                         </Paragraph>
 
                         {order && order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                            order.status !== ORDER_STATUS_FINISHED &&
+                        order.status !== ORDER_STATUS_FINISHED &&
                         <>
                             <H5 mt={0} mb={2} mt={2}>
                                 {localStrings.deliveryHour}

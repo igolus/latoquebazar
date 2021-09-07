@@ -54,7 +54,7 @@ const Account = ({noLinkMode}) => {
                 <Avatar
                     alt="User"
                     className={classes.avatar}
-                    src={currentUser().photoURL}
+                    //src={currentUser().photoURL}
                 />
                 <Hidden smDown>
                     <Typography

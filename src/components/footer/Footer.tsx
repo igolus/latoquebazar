@@ -13,6 +13,8 @@ import { MuiThemeProps } from '@theme/theme'
 import Link from 'next/link'
 import React from 'react'
 import FlexBox from '../FlexBox'
+import localStrings from "../../localStrings";
+import useAuth from "@hook/useAuth";
 
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
   link: {
@@ -29,8 +31,11 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
   },
 }))
 
-const Footer = () => {
+const Footer = ({contextData}) => {
   const classes = useStyles()
+  const { currentEstablishment } = useAuth();
+  const logoUrl = contextData ? contextData.brand.logoUrl : null;
+  const brandName = contextData ? contextData.brand.brandName : null;
 
   return (
     <footer>
@@ -41,37 +46,17 @@ const Footer = () => {
               <Grid item lg={4} md={6} sm={6} xs={12}>
                 <Link href="/">
                   <a>
-                    <Image mb={2.5} src="/assets/images/logo.svg" alt="logo" />
+                    <Image mb={2.5} src={logoUrl} alt="logo" />
                   </a>
                 </Link>
 
-                <Paragraph mb={2.5} color="grey.500">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor
-                  libero id et, in gravida. Sit diam duis mauris nulla cursus. Erat
-                  et lectus vel ut sollicitudin elit at amet.
-                </Paragraph>
+                {/*<Paragraph mb={2.5} color="grey.500">*/}
+                {/*  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor*/}
+                {/*  libero id et, in gravida. Sit diam duis mauris nulla cursus. Erat*/}
+                {/*  et lectus vel ut sollicitudin elit at amet.*/}
+                {/*</Paragraph>*/}
 
-                <AppStore />
-              </Grid>
-
-              <Grid item lg={2} md={6} sm={6} xs={12}>
-                <Box
-                  fontSize="25px"
-                  fontWeight="600"
-                  mb={2.5}
-                  lineHeight="1"
-                  color="white"
-                >
-                  About Us
-                </Box>
-
-                <div>
-                  {aboutLinks.map((item, ind) => (
-                    <Link href="/" key={ind}>
-                      <a className={classes.link}>{item}</a>
-                    </Link>
-                  ))}
-                </div>
+                {/*<AppStore />*/}
               </Grid>
 
               <Grid item lg={3} md={6} sm={6} xs={12}>
@@ -82,55 +67,44 @@ const Footer = () => {
                   lineHeight="1"
                   color="white"
                 >
-                  Customer Care
+                  {localStrings.contactUs}
                 </Box>
 
-                <div>
-                  {customerCareLinks.map((item, ind) => (
-                    <Link href="/" key={ind}>
-                      <a className={classes.link}>{item}</a>
-                    </Link>
-                  ))}
-                </div>
-              </Grid>
+                <Box py={0.6} color="grey.500">
+                  {brandName}
+                </Box>
 
-              <Grid item lg={3} md={6} sm={6} xs={12}>
-                <Box
-                  fontSize="25px"
-                  fontWeight="600"
-                  mb={2.5}
-                  lineHeight="1"
-                  color="white"
-                >
-                  Contact Us
+                <Box py={0.6} color="grey.500">
+                  {currentEstablishment() ? currentEstablishment().address : "-"}
                 </Box>
                 <Box py={0.6} color="grey.500">
-                  70 Washington Square South, New York, NY 10012, United States
-                </Box>
-                <Box py={0.6} color="grey.500">
-                  Email: uilib.help@gmail.com
+                  {currentEstablishment() ? currentEstablishment().contactMail : "-"}
                 </Box>
                 <Box py={0.6} mb={2} color="grey.500">
-                  Phone: +1 1123 456 780
+                  {currentEstablishment() ? currentEstablishment().phoneNumber : "-"}
                 </Box>
 
-                <FlexBox className="flex" mx={-0.625}>
-                  {iconList.map((item, ind) => (
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer noopenner"
-                      key={ind}
-                    >
-                      <BazarIconButton
-                        m={0.5}
-                        bgcolor="rgba(0,0,0,0.2)"
-                        fontSize="12px"
-                        padding="10px"
+
+              </Grid>
+
+              <Grid item lg={5} md={6} sm={6} xs={12} alignItems="end">
+                <FlexBox className="flex" alignItems="flex-end" justifyContent="flex-end" mx={-0.625}>
+                  {socialIconList(contextData ? contextData.brand : null).map((item, ind) => (
+                      <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer noopenner"
+                          key={ind}
                       >
-                        <item.icon fontSize="inherit" />
-                      </BazarIconButton>
-                    </a>
+                        <BazarIconButton
+                            m={0.5}
+                            bgcolor="rgba(0,0,0,0.2)"
+                            fontSize="20px"
+                            padding="10px"
+                        >
+                          <item.icon fontSize="inherit" />
+                        </BazarIconButton>
+                      </a>
                   ))}
                 </FlexBox>
               </Grid>
@@ -168,5 +142,25 @@ const iconList = [
   { icon: Google, url: '/' },
   { icon: Instagram, url: 'https://www.instagram.com/uilibofficial/' },
 ]
+
+const socialIconList = (brand) => {
+
+  if (brand?.config?.socialWebConfig) {
+    let ret = [];
+    let socialWebConfig = brand?.config?.socialWebConfig;
+    if (socialWebConfig.facebookUrl) {
+      ret.push({ icon: Facebook, url: socialWebConfig.facebookUrl })
+    }
+    if (socialWebConfig.twitterUrl) {
+      ret.push({ icon: Twitter, url: socialWebConfig.twitterUrl })
+    }
+    if (socialWebConfig.instagramUrl) {
+      ret.push({ icon: Instagram, url: socialWebConfig.instagramUrl })
+    }
+    return ret;
+  }
+  return [];
+
+}
 
 export default Footer

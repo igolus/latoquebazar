@@ -4,9 +4,17 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        closingPeriod: "Du {0} au {1}",
+        weekDay: "Jour de la semaine",
+        closingDays: "Jours de fermeture",
+        schedules: "Horaires",
+        place: "Notre emplacement",
+        openingHours: "Horaires d'ouverture",
+        contactUs: "Nous contacter",
+        unavailable: "Indisponible",
         modifyMyAccount: "Modifier mon compte",
         homePageTitle: "Accueil",
-        infoContactPageTitle: "Info et contact",
+        infoContactPageTitle: "Informations utiles",
         shopPageTitle: "Voir la carte",
         profilePageTitle: "Mon compte",
         contactInfoPageTitle: "Info et contact",
@@ -172,6 +180,14 @@ let localStrings = new LocalizedStrings({
         paymentMethodTicket: "Ticket",
         paymentMethodStripe: "Stripe",
 
+        day_1 : "Lundi",
+        day_2 : "Mardi",
+        day_3 : "Mercredi",
+        day_4 : "Jeudi",
+        day_5 : "Vendredi",
+        day_6 : "Samedi",
+        day_7 : "Dimanche",
+
         check: {
             fieldRequired: "Le champ {0} est obligatoire",
             required: "Obligatoire",
@@ -186,7 +202,7 @@ let localStrings = new LocalizedStrings({
         info: {
             resetPassword: "Un email a été envoyé a {0} pour reinitialiser le mot de passe",
             checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
-            connectToOrder: 'Afin de garder une trace de vos commandes et de garantir un meilleur suivi, la commande doit se faire en mode connecté. Si vous avez un compte Google ou Facebook <strong>cela ne prendra que quelques secondes !!</strong>'
+            connectToOrder: 'Afin de garder une trace de vos commandes et de garantir un meilleur suivi, la commande doit se faire en mode connecté. Si vous avez un compte Google <strong>cela ne prendra que quelques secondes !!</strong>'
         },
 
         warningMessage: {

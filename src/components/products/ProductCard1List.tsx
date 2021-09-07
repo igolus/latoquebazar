@@ -98,6 +98,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             })
         }
 
+        filteredProduct = filteredProduct.filter(p => !p.skus || p.skus.some(s => s.visible))
+
         if (sortOption && sortOption === PRICE_ASC) {
             filteredProduct.sort((p1, p2) => getMininimalSkuPrice(p1) - getMininimalSkuPrice(p2))
         }
@@ -157,6 +159,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     return (
         <div>
+            {/*<p>{JSON.stringify(productDisplay)}</p>*/}
             {/*<p>{JSON.stringify(allProducts)}</p>*/}
             {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
             <Grid container spacing={3} justifyContent="center" >

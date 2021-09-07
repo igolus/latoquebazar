@@ -15,6 +15,7 @@ const common = `
     smsNotif
     currency
     googleKey
+    starWebProducts
     notifEmailConfig {
       contentOne
       footer
@@ -32,6 +33,20 @@ const common = `
     paymentWebConfig {
       activateOnlinePayment
       stripePublicKey
+    }
+    socialWebConfig {
+      facebookUrl
+      twitterUrl
+      instagramUrl
+    }
+    carouselWebConfig {
+      id
+      name
+      imageUrl
+      title
+      subTitle
+      action
+      openInNewTab
     }
   }
 `

@@ -22,6 +22,7 @@ const common = `
         country
         state
         zipCode
+        contactMail
         config {
           key
           value  

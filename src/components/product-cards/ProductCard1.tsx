@@ -161,7 +161,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -184,28 +184,17 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     url = imgUrl;
   }
 
-  const handleCartAmountChange = useCallback(
-      (amount) => () => {
-        dispatch({
-          type: 'CHANGE_CART_AMOUNT',
-          payload: {
-            name: title,
-            qty: amount,
-            price,
-            imgUrl,
-            id,
-          },
-        })
-      },
-      []
-  )
-
   function buildProductDetailRef() {
     if (!product.skus || product.skus.length == 1) {
       return `/product/detail/${id}`;
     }
     return `/product/detail/${id}` + SEP + selectedSkuIndex;
 
+  }
+
+  function isAvailableSku() {
+    return !(currentEstablishment() &&
+        selectedProductAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
   }
 
   return (
@@ -354,6 +343,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     <Button
                         variant="outlined"
                         color="primary"
+                        disabled={!isAvailableSku()}
                         sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                         onClick={() => {
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
@@ -372,9 +362,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         }}
                     >
                       {isProductAndSkuGetOption(selectedProductAndSku) ?
-                          localStrings.selectOptions
+                          isAvailableSku() ? localStrings.selectOptions : localStrings.unavailable
                           :
-                          <Add fontSize="small" />
+                          isAvailableSku() ? <Add fontSize="small" /> : localStrings.unavailable
                       }
 
                     </Button>
@@ -385,6 +375,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   <Button
                       variant="outlined"
                       color="primary"
+                      disabled={!isAvailableSku()}
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
@@ -401,9 +392,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       }}
                   >
                     {isProductAndSkuGetOption(selectedProductAndSku) ?
-                        localStrings.selectOptions
+                        isAvailableSku() ? localStrings.selectOptions : localStrings.unavailable
                         :
-                        <Add fontSize="small" />
+                        isAvailableSku() ? <Add fontSize="small" /> : localStrings.unavailable
                     }
 
                   </Button>

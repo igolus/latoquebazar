@@ -12,6 +12,7 @@ const common = `
   logoUrl
   iconPath
   iconUrl
+  starWebProducts
   config {
     smsNotif
     currency
@@ -25,6 +26,20 @@ const common = `
       title
       sendMailOfflineOrdering
       sendMailOnlineOrdering
+    }
+    socialWebConfig {
+      facebookUrl
+      twitterUrl
+      instagramUrl
+    }
+    carouselWebConfig {
+      id
+      name
+      imageUrl
+      title
+      subTitle
+      action
+      openInNewTab
     }
   }
 `

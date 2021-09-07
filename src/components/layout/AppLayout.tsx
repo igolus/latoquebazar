@@ -43,7 +43,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       {!navbar ? <div className="section-after-sticky">{children}</div> : children}
 
       <MobileNavigationBar />
-      <Footer />
+      <Footer contextData={contextData}/>
     </Fragment>
   )
 }

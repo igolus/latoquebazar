@@ -63,7 +63,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, getOrderInCreation, dealEdit} = useAuth();
+    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment} = useAuth();
 
     useEffect(() => {
         // if (!orderInCreation()) {
@@ -77,7 +77,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         }
         //return {...buildProductAndSkus(product, orderInCreation)[0]};
 
-    }, [])
+    }, [currentEstablishment()])
 
     // function getInitialSku() {
     //   // if (!orderInCreation()) {
@@ -117,11 +117,24 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
 
+    function isAvailableSku() {
+        // if (currentEstablishment()) {
+        //     alert(productAndSku?.sku?.unavailableInEstablishmentIds)
+        //     alert((productAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id))
+        // }
+
+        return !(currentEstablishment() &&
+            productAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
+    }
+
     return (
         <Box width="100%">
 
             {/*<p>{valid}</p>*/}
-            {/*  <p>{JSON.stringify(options)}</p>*/}
+            {/*  <p>{JSON.stringify(product)}</p>*/}
+            {/*  <p>{JSON.stringify(productAndSku?.sku?.unavailableInEstablishmentIds || {})}</p>*/}
+            {/*  <p>{JSON.stringify(productAndSku || {})}</p>*/}
+            {/*  <p>{currentEstablishment() ? currentEstablishment().id : 0}</p>*/}
 
             {productAndSku &&
             <Grid container spacing={3} justifyContent="space-around">
@@ -248,7 +261,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
 
-                    {options && options.length > 0 &&
+                    {options && options.length > 0 && isAvailableSku() &&
                     <ProductSelector options={options}
                                      productAndSku={productAndSku}
                                      productAndSku={productAndSku}
@@ -264,7 +277,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                     {!disableAdd &&
                     <BazarButton
-                        disabled={!valid}
+                        disabled={!valid || !isAvailableSku()}
                         variant="contained"
                         color="primary"
                         sx={{
@@ -290,7 +303,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             }
                         }}
                     >
-                        {addButtonText || localStrings.addToCart}
+                        {addButtonText || (isAvailableSku() ? localStrings.addToCart : localStrings.unavailable)}
                     </BazarButton>
                     }
 

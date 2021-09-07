@@ -31,7 +31,7 @@ const SaleLayout1: React.FC<Props> = ({
 
     <MobileNavigationBar />
 
-    <Footer />
+    {/*<Footer contextData={context}/>*/}
   </Fragment>
 )
 
