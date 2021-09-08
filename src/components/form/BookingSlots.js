@@ -315,7 +315,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     }
   }, [])
 
-  if (currentEstablishment() && !currentEstablishment().serviceSetting.daySetting) {
+  if (currentEstablishment() && !currentEstablishment()?.serviceSetting?.daySetting) {
     return (
       <div>
         <h3>{localStrings.check.noDaySetting}</h3>

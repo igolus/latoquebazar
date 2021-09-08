@@ -26,7 +26,7 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
                     visibleSlides={1}
                     infinite={true}
                     autoPlay={true}
-                    showDots={true}
+                    showDots={carouselItems.length > 0}
                     showArrow={false}
                     spacing="0px"
                 >

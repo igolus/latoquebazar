@@ -26,7 +26,7 @@ function uploadFtp(cb) {
     var conn = ftp.create( {
         host:     'goyave.o2switch.net',
         user:     'rogu6473',
-        password: 'T5VADWq7fkz2',
+        password: 'w7!IY?Ry=Wjm',
         parallel: 10,
         // log:      gutil.log
     } );
@@ -69,7 +69,7 @@ function generateConf(cb) {
 
                const content = `
 {
-  "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
+  "graphQlUrl": "https://us-central1-latoquepresale.cloudfunctions.net/graphQlApi",
   "brandId": "${brandId}",
   "googleKey": "${googleKey}"
 }

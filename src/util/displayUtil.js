@@ -291,10 +291,7 @@ export const getMaxDistanceDelivery = (establishment) => {
 }
 
 export const isDeliveryActive = (establishment) => {
-    if (establishment && establishment.serviceSetting) {
-        return establishment.serviceSetting.enableDelivery;
-    }
-    return [];
+    return establishment?.serviceSetting?.enableDelivery;
 }
 
 export const formatDuration = (distanceInfo, localStrings) => {

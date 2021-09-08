@@ -200,6 +200,7 @@ let localStrings = new LocalizedStrings({
             passwordsMatch: 'Les mots de passe doivent être les mêmes',
             reTypePassword: "Fournir le mot de passe une nouvelle fois",
             invalidEmail: "eMail invalide",
+            noDaySetting: "Pas de creneaux configurés",
         },
 
         info: {
