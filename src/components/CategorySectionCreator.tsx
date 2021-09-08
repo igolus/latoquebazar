@@ -6,11 +6,13 @@ export interface CategorySectionCreatorProps {
   icon?: ReactNode
   title?: string
   seeMoreLink?: string
+  seeMoreTitle?: string
 }
 
 const CategorySectionCreator: React.FC<CategorySectionCreatorProps> = ({
   icon,
   seeMoreLink,
+  seeMoreTitle,
   title,
   children,
 }) => {
@@ -22,6 +24,7 @@ const CategorySectionCreator: React.FC<CategorySectionCreatorProps> = ({
             title={title}
             seeMoreLink={seeMoreLink}
             icon={icon}
+            seeMoreTitle={seeMoreTitle}
           />
         )}
 

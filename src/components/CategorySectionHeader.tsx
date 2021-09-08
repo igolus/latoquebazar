@@ -8,12 +8,14 @@ import localStrings from "../localStrings";
 export interface CategorySectionHeaderProps {
   title?: string
   seeMoreLink?: string
+  seeMoreTitle?: string
   icon?: ReactNode
 }
 
 const CategorySectionHeader: React.FC<CategorySectionHeaderProps> = ({
   title,
   seeMoreLink,
+  seeMoreTitle,
   icon,
 }) => {
   return (
@@ -33,7 +35,7 @@ const CategorySectionHeader: React.FC<CategorySectionHeaderProps> = ({
         <Link href={seeMoreLink}>
           <a>
             <FlexBox alignItems="center" ml={1} color="grey.600">
-              {localStrings.viewAllCat}
+              {seeMoreTitle || ""}
               {/* <Box mr={1}>View all</Box> */}
               <ArrowRight fontSize="small" color="inherit" />
               {/* <Icon size="12px" defaultcolor="currentColor">

@@ -12,11 +12,11 @@ const common = `
   logoUrl
   iconPath
   iconUrl
-  starWebProducts
   config {
     smsNotif
     currency
     googleKey
+    starWebProducts
     notifEmailConfig {
       contentOne
       footer
@@ -39,6 +39,7 @@ const common = `
       title
       subTitle
       action
+      actionText
       openInNewTab
     }
   }

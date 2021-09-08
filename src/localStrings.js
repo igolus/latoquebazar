@@ -4,6 +4,9 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        starProducts: "Top produits",
+        mailSent: "Email envoyé",
+        mailSentDetail: "Un email avec le detail de votre commande a été envoyé a {0}",
         closingPeriod: "Du {0} au {1}",
         weekDay: "Jour de la semaine",
         closingDays: "Jours de fermeture",

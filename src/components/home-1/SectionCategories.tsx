@@ -39,6 +39,7 @@ const SectionCategories: React.FC<SectionCategoriesProps> = ({categories}) => {
         title={localStrings.categories}
         icon={<Category color="primary" />}
         seeMoreLink="/product/shop/all"
+        seeMoreTitle={localStrings.viewAllCat}
       />
 
       <Grid container  spacing={3} justifyContent='center'>

@@ -30,6 +30,7 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
     '&:last-child': {
       marginRight: '0',
     },
+    fontWeight: "600"
   },
   root: {
     '&:hover': {

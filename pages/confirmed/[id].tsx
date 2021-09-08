@@ -119,12 +119,20 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
                                         content={localStrings.formatString(localStrings.orderCompletedThanks,
                                             currentBrand() ? currentBrand().brandName : "")}
                         />
-
+                        {currentBrand()?.config?.notifEmailConfig?.sendMailOnlineOrdering && dbUser?.userProfileInfo?.email &&
+                        <AlertHtmlLocal severity="info"
+                                        title={localStrings.mailSent}
+                                        content={localStrings.formatString(localStrings.mailSentDetail, dbUser?.userProfileInfo?.email)}
+                        >
+                        </AlertHtmlLocal>
+                        }
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.activateNotification}
                                         content={localStrings.notificationInfo}
                         >
                         </AlertHtmlLocal>
+
+
                     </div>
 
                     <Grid container flexWrap="wrap-reverse" spacing={3}>

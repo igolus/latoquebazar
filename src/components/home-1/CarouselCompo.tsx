@@ -12,31 +12,38 @@ export interface CarouselCompoProps {
 
 
 const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
-  return (
+  const carouselItems = contextData?.brand?.config?.carouselWebConfig || [];
+    return (
     <Fragment>
       <Navbar contextData={contextData}/>
         {/*<p>{JSON.stringify(contextData.categories)}</p>*/}
-      <Box bgcolor="white" mb={7.5}>
-        <Container sx={{ py: '2rem' }}>
-          <Carousel
-            interval={8000}
-            totalSlides={2}
-            visibleSlides={1}
-            infinite={true}
-            autoPlay={true}
-            showDots={false}
-            showArrow={false}
-            spacing="0px"
-          >
-            <CarouselCard1 />
-            <CarouselCard2 />
-            {/*<CarouselCard1 />*/}
-            {/* <CarouselCard1 /> */}
-            {/* <CarouselCard1 /> */}
-            {/* <CarouselCard1 /> */}
-          </Carousel>
-        </Container>
-      </Box>
+        {carouselItems && carouselItems.length > 0 &&
+        <Box bgcolor="white" mb={7.5}>
+            <Container sx={{py: '2rem'}}>
+                <Carousel
+                    interval={8000}
+                    totalSlides={carouselItems.length}
+                    visibleSlides={1}
+                    infinite={true}
+                    autoPlay={true}
+                    showDots={true}
+                    showArrow={false}
+                    spacing="0px"
+                >
+
+                    {carouselItems.map((carouselItem, key) =>
+                        <CarouselCard1 {...carouselItem} />
+                    )}
+
+                    {/*<CarouselCard2/>*/}
+                    {/*<CarouselCard1 />*/}
+                    {/* <CarouselCard1 /> */}
+                    {/* <CarouselCard1 /> */}
+                    {/* <CarouselCard1 /> */}
+                </Carousel>
+            </Container>
+        </Box>
+        }
     </Fragment>
   )
 }

@@ -46,6 +46,7 @@ const common = `
       title
       subTitle
       action
+      actionText
       openInNewTab
     }
   }

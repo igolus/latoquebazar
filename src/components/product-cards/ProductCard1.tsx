@@ -8,7 +8,6 @@ import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
 import RemoveRedEye from '@material-ui/icons/RemoveRedEye'
 import {CSSProperties, makeStyles} from '@material-ui/styles'
-import {CartItem} from '@reducer/cartReducer'
 import {MuiThemeProps} from '@theme/theme'
 import Link from 'next/link'
 import React, {Fragment, useCallback, useEffect, useState} from 'react'
@@ -166,10 +165,10 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const classes = useStyles({ hoverEffect })
 
 
-  const { state, dispatch } = useAppContext()
-  const cartItem: CartItem | undefined = state.cart.cartList.find(
-      (item) => item.id === id
-  )
+  // const { state, dispatch } = useAppContext()
+  // const cartItem: CartItem | undefined = state.cart.cartList.find(
+  //     (item) => item.id === id
+  // )
 
   const toggleDialog = useCallback(() => {
     setOpen((open) => !open)
@@ -193,13 +192,15 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   function isAvailableSku() {
-    return !(currentEstablishment() &&
-        selectedProductAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
+    if (!currentEstablishment()) {
+      return false
+    }
+    return !(selectedProductAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
   }
 
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
-
+        {/*<p>{JSON.stringify(currentEstablishment())}</p>*/}
         {/*<p>{JSON.stringify(product.tags || [])}</p>*/}
         <div className={classes.imageHolder}>
           {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
@@ -296,7 +297,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 className="add-cart"
                 flexDirection="row"
                 alignItems="center"
-                justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
+                //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
                 //width="65px"
             >
               {/*<Button*/}

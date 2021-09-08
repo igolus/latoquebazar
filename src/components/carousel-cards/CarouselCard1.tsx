@@ -4,9 +4,16 @@ import { Box, Button, Grid, styled } from '@material-ui/core'
 import React from 'react'
 import Link from 'next/link'
 
-export interface CarouselCard1Props {}
+export interface CarouselCard1Props {
+  imageUrl?: string
+  title?: string
+  subTitle?: string
+  action?: string
+  actionText?: string
+  openInNewTab?: boolean
+}
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled(Box)(({ theme}) => ({
   textAlign: 'left',
   display: 'flex',
   justifyContent: 'space-between',
@@ -49,45 +56,50 @@ const StyledBox = styled(Box)(({ theme }) => ({
   },
 }))
 
-const CarouselCard1: React.FC<CarouselCard1Props> = () => {
+const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,  subTitle, action, actionText, openInNewTab}) => {
   return (
     <StyledBox>
       <Grid container spacing={3} alignItems="center" justifyContent="center">
-        <Grid item className="grid-item" sm={5} xs={12}>
-          <h1 className="title">Les meilleures Pizzas d'Antibes</h1>
+        <Grid item className="grid-item" sm={imageUrl ? 5 : 12} xs={12}>
+          <h1 className="title">{title}</h1>
           <Paragraph color="secondary.main" mb={2.7}>
-            Une experience unique
+            {subTitle}
           </Paragraph>
-          <Link href={"/product/shop/all"}>
+          {
+            action &&
+                <Link href={action}>
 
-          <Button
-            className="button-link"
-            variant="contained"
-            color="primary"
-            disableElevation
-            sx={{
-              px: '1.75rem',
-              height: '44px',
-              borderRadius: '8px',
-            }}
-          >
-            Shop Now
-          </Button>
+                  <Button
+                      className="button-link"
+                      variant="contained"
+                      color="primary"
+                      disableElevation
+                      sx={{
+                        px: '1.75rem',
+                        height: '44px',
+                        borderRadius: '8px',
+                      }}
+                  >
+                    {actionText}
+                  </Button>
+                </Link>
+          }
 
-          </Link>
         </Grid>
+        {imageUrl &&
         <Grid item sm={5} xs={12}>
           <BazarImage
-            src="/assets/images/heart-shape-sliced-pepperoni-pizza-on-white-backg.jpg"
-            alt="apple-watch-1"
-            sx={{
-              display: 'block',
-              mx: 'auto',
-              maxHeight: 400,
-              maxWidth: '100%',
-            }}
+              src={imageUrl}
+              alt="apple-watch-1"
+              sx={{
+                display: 'block',
+                mx: 'auto',
+                maxHeight: 400,
+                maxWidth: '100%',
+              }}
           />
         </Grid>
+        }
       </Grid>
     </StyledBox>
   )
