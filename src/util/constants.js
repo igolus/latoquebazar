@@ -1,5 +1,8 @@
 import localStrings from "../localStrings";
 
+export const MODE_EDIT = 1;
+export const MODE_CREATE = 2;
+
 export const SEP = "-";
 export const ORDER_STATUS_NEW = "new";
 export const ORDER_STATUS_COMPLETE = "complete";

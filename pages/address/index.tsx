@@ -2,36 +2,65 @@ import FlexBox from '@component/FlexBox'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import TableRow from '@component/TableRow'
-import { Button, IconButton, Pagination, Typography } from '@material-ui/core'
+import {Button, Divider, IconButton, Pagination, Typography} from '@material-ui/core'
 import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
 import Place from '@material-ui/icons/Place'
 import Link from 'next/link'
 import React from 'react'
+import useAuth from "@hook/useAuth";
+import localStrings from "../../src/localStrings";
 
 const AddressList = () => {
+  const {dbUser} = useAuth()
+
   return (
     <DashboardLayout>
       <DashboardPageHeader
-        title="My Addresses"
+        title={localStrings.myAddresses}
         icon={Place}
         button={
           <Button color="primary" sx={{ bgcolor: 'primary.light', px: '2rem' }}>
-            Add New Address
+            {localStrings.addNewAddress}
           </Button>
         }
       />
 
-      {orderList.map((_, ind) => (
+      <TableRow sx={{ my: '1rem', padding: '6px 18px', mb: '2rem'}}>
+        <Typography whiteSpace="pre" m={0.75} textAlign="left">
+          {localStrings.mainAddress}
+        </Typography>
+        <Typography flex="1 1 260px !important" m={0.75} textAlign="left">
+          {dbUser?.userProfileInfo?.address}
+        </Typography>
+        <Typography whiteSpace="pre" m={0.75} textAlign="left">
+          {dbUser?.userProfileInfo?.additionalInformation}
+        </Typography>
+
+        <Typography whiteSpace="pre" textAlign="center" color="grey.600">
+          <Link href="/address/main">
+            <IconButton>
+              <Edit fontSize="small" color="inherit" />
+            </IconButton>
+          </Link>
+          {/*<IconButton onClick={(e) => e.stopPropagation()}>*/}
+          {/*  <Delete fontSize="small" color="inherit" />*/}
+          {/*</IconButton>*/}
+        </Typography>
+      </TableRow>
+
+      <Divider sx={{ mb: '2rem', borderColor: 'grey.300' }} />
+
+      {(dbUser?.userProfileInfo?.otherAddresses || []).map((item, ind) => (
         <TableRow sx={{ my: '1rem', padding: '6px 18px' }} key={ind}>
           <Typography whiteSpace="pre" m={0.75} textAlign="left">
-            Ralf Edward
+            {item.name}
           </Typography>
           <Typography flex="1 1 260px !important" m={0.75} textAlign="left">
-            777 Brockton Avenue, Abington MA 2351
+            {item.address}
           </Typography>
           <Typography whiteSpace="pre" m={0.75} textAlign="left">
-            +1927987987498
+            {item.additionalInformation}
           </Typography>
 
           <Typography whiteSpace="pre" textAlign="center" color="grey.600">
@@ -47,14 +76,14 @@ const AddressList = () => {
         </TableRow>
       ))}
 
-      <FlexBox justifyContent="center" mt={5}>
-        <Pagination
-          count={5}
-          onChange={(data) => {
-            console.log(data)
-          }}
-        />
-      </FlexBox>
+      {/*<FlexBox justifyContent="center" mt={5}>*/}
+      {/*  <Pagination*/}
+      {/*    count={5}*/}
+      {/*    onChange={(data) => {*/}
+      {/*      console.log(data)*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*</FlexBox>*/}
     </DashboardLayout>
   )
 }

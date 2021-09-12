@@ -8,6 +8,7 @@ import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import DealCard1 from "@component/product-cards/DealCard1";
 import {cloneDeep} from "@apollo/client/utilities";
 import {PRICE_ASC, PRICE_DESC} from "@component/products/ProductList";
+import {createUpdateBookingSlotOccupancyMutation} from "../../gql/BookingSlotOccupancyGql";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -38,9 +39,13 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     var productMapper = (product) => {
         return {
             "id": product.id,
-            "category": product.category ? product.category.category : "",
+            "category": product.category ? getCategoryFromDef(product.category)?.category : "",
             "name": product.name
         }
+    }
+
+    var getCategoryFromDef = (category) => {
+        return (contextData?.categories || []).find(cat => cat.id === category.id)
     }
 
     const getProductsAndDeals = () => {
@@ -53,6 +58,13 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     const [productDisplay, setProductDisplay] = React.useState([]);
     const [maxPage, setMaxPage] = React.useState(0);
     const [page, setPage] = React.useState(1);
+
+    function findIdOfCategory(categoryName) {
+        //alert("categoryName " + categoryName)
+        let cat = (contextData?.categories || []).find(cat => cat.category === categoryName );
+        //console.log("findIdOfCategory " + id);
+        return cat?.id
+    }
 
     useEffect( () => {
         let filteredProduct = [];
@@ -79,7 +91,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             }
             else {
                 filteredProduct = productsLoaded.filter(product =>
-                    product.category && product.category.category== category);
+                    product.category && product.category.id === findIdOfCategory(category));
             }
         }
 
@@ -159,6 +171,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     return (
         <div>
+            {/*<p>{JSON.stringify(contextData?.categories || {})}</p>>*/}
             {/*<p>{JSON.stringify(productDisplay)}</p>*/}
             {/*<p>{JSON.stringify(allProducts)}</p>*/}
             {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}

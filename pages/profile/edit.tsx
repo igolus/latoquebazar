@@ -83,25 +83,6 @@ const ProfileEditor = () => {
                                             (distanceInfo.distance / 1000),
                                             formatDuration(distanceInfo, localStrings))}
                         />
-                        {/*<p>{currentEstablishment() ? JSON.stringify(currentEstablishment().serviceSetting) : "0"}</p>*/}
-                        {/*<p>{currentEstablishment() ? currentEstablishment().serviceSetting.minimalDeliveryOrderPrice : "0"}</p>*/}
-                        {/*<p>{contextData && contextData.brand && contextData.brand.serviceSetting ? JSON.stringify(contextData.brand.serviceSetting) : "0"}</p>*/}
-                        {/*<p>{computePriceDetail(getOrderInCreation()).total}</p>*/}
-                        {/*<p>{isDeliveryPriceDisabled()}</p>*/}
-
-
-                        {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress)}</p>*/}
-                        {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
-                        {/*<Alert severity={maxDistanceReached ? "warning" : "success"} style={{marginBottom: 2}}>*/}
-                        {/*  {maxDistanceReached ?*/}
-                        {/*      localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}*/}
-                        {/*  {*/}
-                        {/*    localStrings.formatString(localStrings.distanceTime,*/}
-                        {/*        (distanceInfo.distance / 1000),*/}
-                        {/*        formatDuration(distanceInfo, localStrings))*/}
-                        {/*  }*/}
-
-                        {/*</Alert>*/}
                     </Box>
                     }
 

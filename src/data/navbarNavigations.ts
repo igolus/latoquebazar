@@ -209,6 +209,10 @@ const navbarNavigations = (dbUser) => {
         {
           title: localStrings.myAccount,
           url: '/profile'
+        },
+        {
+          title: localStrings.myAddresses,
+          url: '/address'
         }
       ]
     })

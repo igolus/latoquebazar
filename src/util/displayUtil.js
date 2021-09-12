@@ -129,15 +129,28 @@ export const getMininimalSkuPrice = (item) => {
 }
 
 export const getPriceDeal = (deal) => {
+    if (!deal || !deal.lines) {
+        return 0;
+    }
     return deal.lines.map(line => parseFloat(line.pricingValue)).reduce((a, v) => a+v);
 }
 
 export const computePriceDetail = (orderInCreation) => {
+
+    if (!orderInCreation) {
+        return {
+            totalNoTax: 0,
+            total: 0,
+            totalPreparationTime: 0,
+            taxDetail: 0,
+        };
+    }
+
     let totalNoTax = 0;
     let total = 0;
     let totalPreparationTime= 0;
     let taxDetail = {};
-    orderInCreation.order.items.forEach(item => {
+    orderInCreation?.order?.items.forEach(item => {
         let price = computeTotalPriceValue(item)
         total += price;
         let priceNoTax = 0;
@@ -162,7 +175,7 @@ export const computePriceDetail = (orderInCreation) => {
         }
     })
 
-    orderInCreation.order.deals.forEach(deal => {
+    orderInCreation?.order?.deals.forEach(deal => {
         deal.productAndSkusLines.forEach(line => {
             let price = computeTotalPriceValue(line, deal.quantity);
             total += price;
@@ -413,6 +426,9 @@ export const formatOrderDeliveryDateSlot = (order) => {
 }
 
 export function getRemainingToPay(order) {
+    if (!order) {
+        return 0;
+    }
     let totalRemaining = parseFloat(order.totalPrice);
 
     if (order.payments) {

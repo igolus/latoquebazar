@@ -133,14 +133,27 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     {localStrings.timeSlot}
                 </Typography>
                 {getOrder() && getOrder().bookingSlot ?
+                    <>
+                    {modeOrdered ?
                     <Typography color="grey.600" fontSize="16px">
                         {moment.unix(getOrder().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
                         {" "}
                         {moment.unix(getOrder().bookingSlot.startDate).format("HH:mm")}
                         -
                         {moment.unix(getOrder().bookingSlot.endDate).format("HH:mm")}
-                        {/*{JSON.stringify(orderInCreation().bookingSlot)}*/}
                     </Typography>
+                    :
+                        <Typography color="grey.600" fontSize="16px">
+                            {getOrder().bookingSlot.startDate.locale("fr").calendar().split(' ')[0]}
+                            {" "}
+                            {getOrder().bookingSlot.startDate.format("HH:mm")}
+                            -
+                            {getOrder().bookingSlot.endDate.format("HH:mm")}
+                            {/*{JSON.stringify(getOrder().bookingSlot)}*/}
+                        </Typography>
+                    // <p>{JSON.stringify(getOrder().bookingSlot)}</p>
+                    }
+                    </>
                     :
                     <Typography color="grey.600" fontSize="16px">
                         -

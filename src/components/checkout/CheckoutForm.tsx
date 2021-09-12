@@ -57,6 +57,11 @@ import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, CardNumberElement, Elements, useElements, useStripe} from "@stripe/react-stripe-js";
 import {loadStripe} from "@stripe/stripe-js";
 import axios from "axios";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
+import { faMotorcycle } from '@fortawesome/free-solid-svg-icons'
+import DeliveryMode from "../DeliveryMode"
 
 const config = require('../../conf/config.json')
 //import useResponsiveFontSize from "../../hooks/useResponsiveFontSize";
@@ -85,6 +90,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [checkoutError, setCheckoutError] = useState();
+  const [bookWithoutAccount, setBookWithoutAccount] = useState(false);
   const [paymentCardValid, setPaymentCardValid] = useState(false);
   const classes = useStyles();
   const autocomp = useRef(null);
@@ -235,6 +241,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   }
 
   const handleFormSubmit = async (values: any) => {
+
+    // alert("handleFormSubmit " );
+    // return;
     setLoading(true);
     let orderId = 0;
     // let payResult = await processPayment();
@@ -327,9 +336,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         )
       }
 
-
       dataOrder.information = buildOrderInformation();
-      dataOrder.additionalInfo = getOrderInCreation().additionalInfo;
+      dataOrder.additionalInfo = values.additionalInformation || getOrderInCreation().additionalInfo;
 
       let detailPrice = computePriceDetail(getOrderInCreation());
 
@@ -357,14 +365,34 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       }
 
       delete dataOrder.creationDate;
+
+
       if (dataOrder.customer) {
         delete dataOrder.customer.creationDate;
       }
+      if (bookWithoutAccount) {
+        dataOrder.customer = {
+          brandId: currentBrand.id,
+          defaultEstablishmentId: currentEstablishment().id,
+          establishmentIds: [currentEstablishment().id],
+          userProfileInfo: {
+            additionalInformation: values.additionalInformation,
+            email:  values.email,
+            address: getOrderInCreation()?.deliveryAddress?.address,
+            lat: getOrderInCreation()?.deliveryAddress?.lat,
+            lng: getOrderInCreation()?.deliveryAddress?.lng,
+            firstName: values.firstName,
+            lastName: values.lastName,
+          }
+        }
+      }
+      else {
+        dataOrder.customer = dbUser;
+      }
 
-      dataOrder.customer = dbUser;
 
       let result;
-
+      delete dataOrder["updateDate"];
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
       if (paymentMethod === "cc") {
@@ -380,10 +408,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         }
       }
 
-      if (!dataOrder.customer && dbUser) {
-        dataOrder.customer = dbUser;
-      }
-      if (dataOrder.customer && dataOrder.customer.id) {
+      // if (!dataOrder.customer && dbUser) {
+      //   dataOrder.customer = dbUser;
+      // }
+      if (dataOrder.customer && dataOrder.customer.id && !bookWithoutAccount) {
         await executeMutationUtil(addOrderToCustomer(currentBrand.id, dataOrder.customer.id, {
           ...dataOrder,
           id:result.data.addOrder.id,
@@ -484,7 +512,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
             :
             <Formik
                 initialValues={getInitialValues(dbUser)}
-                validationSchema={checkoutSchema}
+                validationSchema={checkoutSchema(bookWithoutAccount)}
                 onSubmit={handleFormSubmit}
             >
               {({
@@ -497,10 +525,111 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   setFieldValue,
                 }) => (
                   <form onSubmit={handleSubmit}>
-                    {dbUser &&
+
+                    {(!dbUser) &&
                     <Card1 sx={{mb: '2rem'}}>
-                      {/*<p>maxDistanceReached: {maxDistanceReached}</p>*/}
-                      {/*<p>distanceInfo: {JSON.stringify(distanceInfo)}</p>*/}
+                      <Box mb={2}>
+                        <AlertHtmlLocal severity="info"
+                                        title={localStrings.warning}
+                                        content={localStrings.info.connectToOrder}
+                        />
+
+                      </Box>
+
+                      <Grid container spacing={3} mb={2}>
+                        <Grid item xs={12} lg={12}>
+                          {isMobile ?
+
+                              <Link href="/profile">
+                                <Button variant={"contained"}
+                                        style={{textTransform: "none"}}
+                                        color="primary" type="button" fullWidth>
+                                  {localStrings.login}
+                                </Button>
+                              </Link>
+                              :
+                              <Box>
+                                <Button variant={"contained"}
+                                        style={{textTransform: "none"}}
+                                        onClick={() => {
+                                          setLoginDialogOpen(true);
+                                        }}
+                                        color="primary" type="button" fullWidth>
+                                  {localStrings.login}
+                                </Button>
+
+                                <Button variant={"contained"}
+                                        style={{textTransform: "none", marginTop: "1rem"}}
+                                        onClick={() => {
+                                          setBookWithoutAccount(true)
+                                        }}
+                                        color="primary" type="button" fullWidth>
+                                  {localStrings.continueWithoutAccount}
+                                </Button>
+                              </Box>
+                          }
+                        </Grid>
+                      </Grid>
+                    </Card1>
+                    }
+
+                    {(dbUser || bookWithoutAccount) &&
+                    <Card1 sx={{mb: '2rem'}}>
+                      <>
+                        {isDeliveryPriceDisabled() &&
+
+                        <AlertHtmlLocal severity={"warning"}
+                                        title={localStrings.warningMessage.deliveryUnavailable}
+                                        content={localStrings.formatString(localStrings.warningMessage.minimalPriceForDeliveryNoReached,
+                                            currentEstablishment().serviceSetting.minimalDeliveryOrderPrice)}
+                        >
+                          <Box display="flex" flexDirection="row-reverse">
+                            <Box mt={2}>
+                              <Link href="/product/shop/all">
+                                <Button variant="contained" color="primary" type="button" fullWidth
+                                        style={{textTransform: "none"}}
+                                >
+                                  {localStrings.continueShopping}
+                                </Button>
+                              </Link>
+                            </Box>
+                          </Box>
+                        </AlertHtmlLocal>
+                        }
+                        <Typography fontWeight="800" mb={2} variant="h5">
+                          {localStrings.selectDeliveryMode}
+                        </Typography>
+                        {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
+                        <DeliveryMode
+                            icon={faMotorcycle}
+                            title={localStrings.delivery}
+                            subtitle={localStrings.deliverySubTitle}
+                            selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
+                            onCLickCallBack={() => setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)}
+                        />
+                        }
+
+                        <DeliveryMode
+                            icon={faShoppingBag}
+                            title={localStrings.clickAndCollect}
+                            subtitle={localStrings.clickAndCollectSubTitle}
+                            selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
+                            onCLickCallBack={() => setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)}
+                        />
+                      </>
+                      <>
+
+
+
+
+                      </>
+                    </Card1>
+                    }
+
+                    {(dbUser || bookWithoutAccount) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                    <Card1 sx={{mb: '2rem'}}>
+                    <>
+
                       {distanceInfo && isDeliveryActive(currentEstablishment()) &&
                       getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                       <Box p={1}>
@@ -511,245 +640,137 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                             (distanceInfo.distance / 1000),
                                             formatDuration(distanceInfo, localStrings))}
                         />
-                        {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress)}</p>*/}
                       </Box>
                       }
 
-                      {/*<p>Payment card valid {paymentCardValid ? "yes" : "no"}</p>*/}
+                      <Typography fontWeight="600" mb={2} mt={2} variant="h5">
+                        {localStrings.deliveryAdress}
+                      </Typography>
 
-                      {isDeliveryPriceDisabled() &&
-
-                      <AlertHtmlLocal severity={"warning"}
-                                      title={localStrings.warningMessage.deliveryUnavailable}
-                                      content={localStrings.formatString(localStrings.warningMessage.minimalPriceForDeliveryNoReached,
-                                          currentEstablishment().serviceSetting.minimalDeliveryOrderPrice)}
-                      >
-                        <Box display="flex" flexDirection="row-reverse">
-                          <Box mt={2}>
-                            <Link href="/product/shop/all">
-                              <Button variant="contained" color="primary" type="button" fullWidth
-                                      style={{textTransform: "none"}}
-                              >
-                                {localStrings.continueShopping}
-                              </Button>
-                            </Link>
-                          </Box>
-                        </Box>
-                      </AlertHtmlLocal>
-                      }
-
-
-                      {dbUser &&
-                      <>
-                        <Typography fontWeight="600" mb={2}>
-                          {localStrings.deliveryMode}
-                        </Typography>
-                        <FormControl component="fieldset">
-                          <RadioGroup aria-label="gender" name="gender1"
-                                      value={getOrderInCreation() && getOrderInCreation().deliveryMode}
-                                      onChange={(event) => setDeliveryMode(event.target.value)}>
-                            <Grid item sm={12} xs={12}>
-                              {/*{!isDeliveryPriceDisabled() && !maxDistanceReached &&*/}
-                              {!isDeliveryPriceDisabled() &&
-                              <>< FormControlLabel value={ORDER_DELIVERY_MODE_DELIVERY} control={<Radio/>}
-                                                   label={localStrings.delivery} /><br/></>
-                              }
-                              <FormControlLabel value={ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} control={<Radio/>}
-                                                label={localStrings.clickAndCollect}/>
-                            </Grid>
-                          </RadioGroup>
-                        </FormControl>
-                      </>
-                      }
-                      {dbUser && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                      <>
-                        <Typography fontWeight="600" mb={2} mt={2}>
-                          {localStrings.deliveryAdress}
-                        </Typography>
-
-                        <Grid container spacing={3}>
-                          {/*<Box display="flex" p={1}>*/}
-                          <Grid item xs={12} lg={adressEditLock ? 8 : 12}>
-                            <GoogleMapsAutocomplete
-                                ref={autocomp}
-                                noKeyKnown
-                                required
-                                setterValueSource={setAdressValue}
-                                valueSource={adressValue}
-                                disabled={adressEditLock}
-                                setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                  if (currentEstablishment()) {
-                                    let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                    setDistanceAndCheck(distInfo,
-                                        (maxDistanceReached) => {
-                                          if (maxDistanceReached) {
-                                            setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
-                                          }
-                                          setMaxDistanceReached(maxDistanceReached);
-                                        },
-                                        setDistanceInfo, currentEstablishment);
-                                  }
-                                  //setAdressValue(label)
-                                  updateDeliveryAdress(label, lat, lng);
-                                  setAdressEditLock(true);
-                                }}/>
-                          </Grid>
-                          {adressEditLock &&
-                          <Grid item xs={12} lg={4}>
-                            <Button variant="contained"
-                                    style={{textTransform: "none"}}
-                                    onClick={() => setAdressEditLock(false)}
-                                    color="primary" type="button" fullWidth>
-                              {localStrings.deliverToOtherAddress}
-                            </Button>
-                          </Grid>
-                          }
+                      <Grid container spacing={3}>
+                        {/*<Box display="flex" p={1}>*/}
+                        <Grid item xs={12} lg={adressEditLock ? 8 : 12}>
+                          <GoogleMapsAutocomplete
+                              //ref={autocomp}
+                              noKeyKnown
+                              required
+                              setterValueSource={setAdressValue}
+                              valueSource={adressValue}
+                              disabled={adressEditLock}
+                              setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                if (currentEstablishment()) {
+                                  let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                  setDistanceAndCheck(distInfo,
+                                      (maxDistanceReached) => {
+                                        if (maxDistanceReached) {
+                                          setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                                        }
+                                        setMaxDistanceReached(maxDistanceReached);
+                                      },
+                                      setDistanceInfo, currentEstablishment);
+                                }
+                                //setAdressValue(label)
+                                updateDeliveryAdress(label, lat, lng);
+                                setAdressEditLock(true);
+                              }}/>
                         </Grid>
-                      </>
-                      }
-
+                        {adressEditLock &&
+                        <Grid item xs={12} lg={4}>
+                          <Button variant="contained"
+                                  style={{textTransform: "none"}}
+                                  onClick={() => setAdressEditLock(false)}
+                                  color="primary" type="button" fullWidth>
+                            {localStrings.deliverToOtherAddress}
+                          </Button>
+                        </Grid>
+                        }
+                      </Grid>
+                    </>
                     </Card1>
                     }
 
-                    <Card1 sx={{ mb: '2rem' }}>
-                      <Typography fontWeight="600" mb={2}>
-                        {localStrings.profileInformation}
+                    {(bookWithoutAccount && !dbUser) &&
+                    <Card1 sx={{mb: '2rem'}}>
+
+                      <Typography fontWeight="600" mb={2} variant="h5">
+                        {localStrings.personalInformation}
                       </Typography>
-
-                      {!dbUser &&
-                      <Box mb={2}>
-                        <AlertHtmlLocal severity="info"
-                                        title={localStrings.warning}
-                                        content={localStrings.info.connectToOrder}
-                        />
-
-                      </Box>
-                      }
-
-                      {!dbUser &&
-                      <>
-
-
-                        <Grid container spacing={3} mb={2}>
-                          <Grid item xs={12} lg={12}>
-                            {isMobile ?
-                                <Link href="/profile">
-                                  <Button variant={"contained"}
-                                          style={{textTransform: "none"}}
-                                          color="primary" type="button" fullWidth>
-                                    {localStrings.login}
-                                  </Button>
-                                </Link>
-                                :
-                                <Button variant={"contained"}
-                                        style={{textTransform: "none"}}
-                                        onClick={() => {
-                                          setLoginDialogOpen(true);
-                                        }}
-                                        color="primary" type="button" fullWidth>
-                                  {localStrings.login}
-                                </Button>
-                            }
-                          </Grid>
-                        </Grid>
-                      </>
-                      }
-                      {dbUser &&
                       <Grid container spacing={6}>
 
 
-                        <Grid item sm={12} xs={12}>
+                      <Grid item sm={12} xs={12}>
 
-                          <Box display="flex" flexDirection="row-reverse">
-                            <Box mt={2} mb={2}>
-                              <Link href="/profile/edit">
-                                <Button variant="contained" color="primary" type="button" fullWidth
-                                        style={{textTransform: "none"}}
-                                >
-                                  {localStrings.modifyMyAccount}
-                                </Button>
-                              </Link>
-                            </Box>
-                          </Box>
+                        {/*<Box display="flex" flexDirection="row-reverse">*/}
+                        {/*  <Box mt={2} mb={2}>*/}
+                        {/*    <Link href="/profile/edit">*/}
+                        {/*      <Button variant="contained" color="primary" type="button" fullWidth*/}
+                        {/*              style={{textTransform: "none"}}*/}
+                        {/*      >*/}
+                        {/*        {localStrings.modifyMyAccount}*/}
+                        {/*      </Button>*/}
+                        {/*    </Link>*/}
+                        {/*  </Box>*/}
+                        {/*</Box>*/}
 
-                          <TextField
-                              className={classes.textField}
-                              disabled={dbUser}
-                              name="firstName"
-                              label={localStrings.firstName}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={dbUser ? dbUser.userProfileInfo.firstName : (values.firstName || '')}
-                              error={!!touched.firstName && !!errors.firstName}
-                              helperText={touched.firstName && errors.firstName}
-                          />
+                        <TextField
+                            className={classes.textField}
+                            name="firstName"
+                            label={localStrings.firstName}
+                            fullWidth
+                            sx={{mb: '1rem'}}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.firstName}
+                            error={!!touched.firstName && !!errors.firstName}
+                            helperText={touched.firstName && errors.firstName}
+                        />
 
-                          <TextField
-                              className={classes.textField}
-                              disabled={dbUser}
-                              name="lastname"
-                              label={localStrings.lastName}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={dbUser ? dbUser.userProfileInfo.lastName : (values.lastname || '')}
-                              error={!!touched.lastname && !!errors.lastname}
-                              helperText={touched.lastname && errors.lastname}
-                          />
+                        <TextField
+                            className={classes.textField}
+                            name="lastName"
+                            label={localStrings.lastName}
+                            fullWidth
+                            sx={{mb: '1rem'}}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.lastName}
+                            error={!!touched.lastName && !!errors.lastName}
+                            helperText={touched.lastName && errors.lastName}
+                        />
 
-                          <TextField
-                              className={classes.textField}
-                              disabled={dbUser}
-                              name="email"
-                              label={localStrings.email}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={dbUser ? dbUser.userProfileInfo.email : (values.email || '')}
-                              error={!!touched.email && !!errors.email}
-                              helperText={touched.email && errors.email}
-                          />
+                        <TextField
+                            className={classes.textField}
+                            name="email"
+                            label={localStrings.email}
+                            fullWidth
+                            sx={{mb: '1rem'}}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.email}
+                            error={!!touched.email && !!errors.email}
+                            helperText={touched.email && errors.email}
+                        />
 
-                          <TextField
-                              className={classes.textField}
-                              disabled={dbUser}
-                              name="address"
-                              label={localStrings.address}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={dbUser ? dbUser.userProfileInfo.address : (values.address || '')}
-                              error={!!touched.address && !!errors.address}
-                              helperText={touched.address && errors.address}
-                          />
-
-                          <TextField
-                              className={classes.textField}
-                              disabled={dbUser}
-                              name="phone"
-                              label={localStrings.phone}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={dbUser ? dbUser.userProfileInfo.phoneNumber : (values.phoneNumber || '')}
-                              error={!!touched.phone && !!errors.phone}
-                              helperText={touched.phone && errors.phone}
-                          />
-                        </Grid>
+                        <TextField
+                            className={classes.textField}
+                            name="phone"
+                            label={localStrings.phone}
+                            fullWidth
+                            sx={{mb: '1rem'}}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={values.phone}
+                            error={!!touched.phone && !!errors.phone}
+                            helperText={touched.phone && errors.phone}
+                        />
                       </Grid>
-                      }
-
+                    </Grid>
                     </Card1>
+                    }
 
-                    {dbUser &&
+                    {(dbUser || bookWithoutAccount) &&
                     <Card1 sx={{mb: '2rem'}}>
-                      <Typography fontWeight="600" mb={2}>
+                      <Typography fontWeight="600" mb={2} variant="h5">
                         {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ?
                             localStrings.selectDeliveryTimeSlot : localStrings.selectPickupTimeSlot}
                       </Typography>
@@ -766,7 +787,36 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                     </Card1>
                     }
 
-                    {dbUser &&
+                    {(dbUser || bookWithoutAccount) && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                    <Card1 sx={{mb: '2rem'}}>
+
+                      <Typography fontWeight="600" mb={2}>
+                        {localStrings.bookingadditionalInformation}
+                      </Typography>
+
+                      <Typography variant="body2" fontWeight="400" mb={2}>
+                        {localStrings.bookingadditionalInformationExample}
+                      </Typography>
+
+                      <TextField
+                          multiline
+                          rows={4}
+                          className={classes.textField}
+                          name="additionalInformation"
+                          label={localStrings.additionalInformation}
+                          fullWidth
+                          sx={{mb: '1rem'}}
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={dbUser ? dbUser.userProfileInfo.additionalInformation : values.additionalInformation}
+                          //error={!!touched.additionalInformation && !!errors.additionalInformation}
+                          helperText={touched.additionalInformation && errors.additionalInformation}
+                      />
+
+                    </Card1>
+                    }
+
+                    {(dbUser || bookWithoutAccount) &&
                     <Card1 sx={{mb: '2rem'}}>
 
                       {checkoutError &&
@@ -847,21 +897,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                 } else if (event.error) {
                                   setPaymentCardValid(false);
                                 }
-
-                                //const cardElement = elements.getElement("card");
-                                // const cardElementContainer = document.querySelector('#card-element');
-                                //
-                                // let cardElementComplete = cardElementContainer.classList.contains('StripeElement--complete');
-                                // let cardElementInvalid = cardElementContainer.classList.contains('StripeElement--invalid');
-                                // console.log("cardElement classList " + cardElementContainer.classList);
-                                // if (cardElementComplete) {
-                                //   setPaymentCardValid(true);
-                                // }
-                                //
-                                // if (cardElementInvalid) {
-                                //   setPaymentCardValid(false);
-                                // }
-
                               }}
 
                               options={{
@@ -880,38 +915,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                               }}/>
                         </div>
 
-                        {/*<CardNumberElement options={{*/}
-                        {/*  style: {*/}
-                        {/*    base: {*/}
-                        {/*      fontSize: '16px',*/}
-                        {/*      color: '#424770',*/}
-                        {/*      '::placeholder': {*/}
-                        {/*        color: '#aab7c4',*/}
-                        {/*      },*/}
-                        {/*    },*/}
-                        {/*    invalid: {*/}
-                        {/*      color: '#9e2146',*/}
-                        {/*    },*/}
-                        {/*  },*/}
-                        {/*}}/>*/}
-
-                        {/*<Typography variant="subtitle2" mb={2}>*/}
-                        {/*  {"exp"}*/}
-                        {/*</Typography>*/}
-
-                        {/*<CardExpiryElement/>*/}
-
-                        {/*<Typography variant="subtitle2" mb={2}>*/}
-                        {/*  {"cvv"}*/}
-                        {/*</Typography>*/}
-
-                        {/*<CardCvcElement/>*/}
                       </>
                       }
                     </Card1>
                     }
 
-                    {dbUser &&
+                    {(dbUser || bookWithoutAccount) &&
                     <Grid container spacing={6}>
                       <Grid item sm={6} xs={12}>
                         <Link href="/cart">
@@ -924,17 +933,20 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       </Grid>
 
                       <Grid item sm={6} xs={12}>
-
-
+                        {/*<p>{JSON.stringify(getOrderInCreation()?.bookingSlot || {})}</p>*/}
+                        {/*<p>{getCartItems(getOrderInCreation).length}</p>*/}
+                        {/*<p>{JSON.stringify(getOrderInCreation()?.deliveryAddress)}</p>*/}
+                        {/*<p>{getOrderInCreation()?.deliveryMode}</p>*/}
 
                         <Button
                             style={{textTransform: "none"}}
                             variant="contained" color="primary" type="submit" fullWidth
+                            type="submit"
                             //endIcon={<SaveIcon />}
                             disabled={
                               !getOrderInCreation().bookingSlot ||
                               loading || getCartItems(getOrderInCreation).length == 0 ||
-                              (!orderInCreation.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
+                              (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
                               (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) ||
                               (paymentMethod === "cc" && !paymentCardValid)
                             }
@@ -966,16 +978,39 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
 const getInitialValues = (dbUser) => {
   return {
-    firstName: dbUser ? dbUser.userProfileInfo.firstName : '',
-    lastname:  dbUser ? dbUser.userProfileInfo.lastName : '',
-    email:  dbUser ? dbUser.userProfileInfo.email : '',
-    address:  dbUser ? dbUser.userProfileInfo.address : '',
-    phoneNumber:  dbUser ? dbUser.userProfileInfo.phoneNumber : '',
+    firstName: '',
+    lastName:  '',
+    email:  '',
+    phone: '',
+    // address:  '',
+    additionalInformation: '',
   }
 }
 
+export const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+const checkoutSchema = (bookWithoutAccount) => {
+
+  if (bookWithoutAccount) {
+    return yup.object().shape({
+      lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+      email: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+      phone: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
+          .matches(phoneRegExp, localStrings.check.badPhoneFormat)
+    }
+    )
+  }
+  else {
+    return yup.object().shape({});
+  }
+
+}
+
+
 // uncommect these fields below for from validation
-const checkoutSchema = yup.object().shape({
-})
+// const checkoutSchema = yup.object().shape({
+//
+// })
 
 export default CheckoutForm
+

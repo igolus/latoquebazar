@@ -52,7 +52,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, tags, 
             {(categories || []).map((item) => {
                     //alert(asPath)
                     return ( <StyledDashboardNav
-                            isCurrentPath={asPath.includes(item.category)}
+                            isCurrentPath={asPath.includes(encodeURI(item.category))}
                             href={"/product/shop/" + item.category}
                             key={item.category}
                         >

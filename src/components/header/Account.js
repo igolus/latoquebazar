@@ -102,11 +102,11 @@ const Account = ({noLinkMode}) => {
                         {localStrings.myOrders}
                     </Link>
                 </MenuItem>
-                {/*<MenuItem>*/}
-                {/*    <Link href={"/adresses"}>*/}
-                {/*        {localStrings.myAdresse}*/}
-                {/*    </Link>*/}
-                {/*</MenuItem>*/}
+                <MenuItem>
+                    <Link href={"/address"}>
+                        {localStrings.myAddresses}
+                    </Link>
+                </MenuItem>
                 <MenuItem onClick={handleLogout}>
                     {localStrings.logout}
                 </MenuItem>

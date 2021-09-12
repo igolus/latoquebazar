@@ -29,7 +29,7 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
                 <Container sx={{ mb: '70px' }}>
                     {/*<h1>CONTACT INFO TODO</h1>*/}
                     <Card1 sx={{mb: '2rem', mt:'2rem' }}>
-                        <Typography fontWeight="600" mb={2}>
+                        <Typography  variant="h6" fontWeight="600" mb={4}>
                             {localStrings.place}
                         </Typography>
                         <MyMap
@@ -45,16 +45,13 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
                     </Card1>
 
                     <Card1 sx={{mb: '2rem'}}>
-                        <Typography fontWeight="600" mb={2}>
+                        <Typography variant="h6" fontWeight="600" mb={4}>
                             {localStrings.openingHours}
                         </Typography>
                         <OpeningHours/>
                     </Card1>
 
                     <Card1 sx={{mb: '2rem'}}>
-                        {/*<Typography fontWeight="600" mb={2}>*/}
-                        {/*    {localStrings.closingDays}*/}
-                        {/*</Typography>*/}
                         <ClosingDays/>
                     </Card1>
 

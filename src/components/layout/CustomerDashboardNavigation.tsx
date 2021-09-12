@@ -66,6 +66,11 @@ const linkList = [
         title: localStrings.profileInformation,
         icon: Person,
       },
+      {
+        href: '/address',
+        title: localStrings.myAddresses,
+        icon: Place,
+      },
       // {
       //   href: '/wish-list',
       //   title: 'Wishlist',

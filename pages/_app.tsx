@@ -10,6 +10,8 @@ import 'nprogress/nprogress.css'
 import React, { Fragment, useEffect } from 'react'
 import {ToastProvider} from "react-toast-notifications";
 import firebase from "../src/lib/firebase";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 export const cache = createCache({ key: 'css', prepend: true })
 
 //Binding events.
@@ -19,7 +21,7 @@ Router.events.on('routeChangeError', () => nProgress.done())
 
 nProgress.configure({ showSpinner: false })
 
-const App = ({ Component, pageProps }: any) => {
+const App = ({ Component, pageProps, contextData }: any) => {
 
     const Layout = Component.layout || Fragment
 
@@ -90,6 +92,23 @@ const App = ({ Component, pageProps }: any) => {
         // <div>
             <CacheProvider value={cache}>
             <Head>
+                <Head>
+                    {/*{contextData?.brand.iconUrl &&*/}
+                    {/*<link rel="shortcut icon" id="favicon"*/}
+                    {/*      href={contextData.brand.iconUrl || "/favicon"}/>*/}
+                    {/*}*/}
+                    {/*<script*/}
+                    {/*    type="text/javascript"*/}
+                    {/*    src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=places"}*/}
+                    {/*/>*/}
+
+                    {/*</script>*/}
+
+                    {/*<script  type="text/javascript"*/}
+
+                    {/*         src={"https://maps.googleapis.com/maps/api/js?libraries=places&key=" + key} ></script>*/}
+                </Head>
+
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
                       integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -115,6 +134,10 @@ const App = ({ Component, pageProps }: any) => {
         // </div>
     )
 
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
 }
 
 // Only uncomment this method if you have blocking data requirements for

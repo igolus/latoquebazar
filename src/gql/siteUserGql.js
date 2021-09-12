@@ -18,8 +18,22 @@ const common = `
         photoURL
         city
         placeId
+        additionalInformation
         lng
         lat
+        otherAddresses {
+          id
+          name  
+          address
+          city
+          postcode
+          citycode
+          searchAddress   
+          additionalInformation
+          placeId
+          lat
+          lng
+        }
     }
     
 `

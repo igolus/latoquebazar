@@ -31,6 +31,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <title>{title}</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          {contextData?.brand.iconUrl &&
+          <link rel="shortcut icon" id="favicon"
+                href={contextData.brand.iconUrl}/>
+          }
+
       </Head>
 
       {/*<Topbar />*/}

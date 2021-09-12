@@ -15,7 +15,7 @@ export interface OrdersProps {
 const CustomerDashboardLayout:React.FC<OrdersProps> = ({ children, contextData }) => {
 
   return (
-      <AppLayout navbar={<Navbar contextData={contextData}/>}>
+      <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
         {/*{orderCount}*/}
         {/*{JSON.stringify(contextData || {})}*/}
         <Container sx={{my: '2rem'}}>

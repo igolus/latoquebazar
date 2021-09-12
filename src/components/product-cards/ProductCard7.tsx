@@ -63,14 +63,15 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               sx={{height: 80, width: 80, mt: 1, ml: 2, mb: 1}}
           />
           :
-
-          <Image
-              src={imgUrl}
-              height={140}
-              width={140}
-              display="block"
-              alt={name}
-          />
+          <Link href={"/product/detail/" + product.id}>
+            <Image
+                src={imgUrl}
+                height={140}
+                width={140}
+                display="block"
+                alt={name}
+            />
+          </Link>
       }
       <FlexBox
         className="product-details"

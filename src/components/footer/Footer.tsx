@@ -78,10 +78,10 @@ const Footer = ({contextData}) => {
                   {currentEstablishment() ? currentEstablishment().address : "-"}
                 </Box>
                 <Box py={0.6} color="grey.500">
-                  {currentEstablishment() ? currentEstablishment().contactMail : "-"}
+                  {currentEstablishment() ? <a href={"mailto:\"" + currentEstablishment().contactMail + "\""}>{currentEstablishment().contactMail}</a>  : "-"}
                 </Box>
                 <Box py={0.6} mb={2} color="grey.500">
-                  {currentEstablishment() ? currentEstablishment().phoneNumber : "-"}
+                  {currentEstablishment() ? <a href={"tel:\"" + currentEstablishment().phoneNumber + "\""}>{currentEstablishment().phoneNumber}</a> : "-"}
                 </Box>
 
 

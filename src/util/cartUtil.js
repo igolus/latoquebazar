@@ -5,7 +5,8 @@ import {TYPE_DEAL, TYPE_PRODUCT} from "./constants";
 import localStrings from "../localStrings";
 const { uuid } = require('uuidv4');
 
-export function getCartItems(orderInCreation) {
+export function getCartItems(orderInCreation, localStorage) {
+
     if (!orderInCreation() || !orderInCreation().order) {
         return [];
     }
@@ -300,6 +301,9 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToas
 }
 
 export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast) {
+    if (!orderInCreation || !orderInCreation()) {
+        return;
+    }
     // if (!checkOrderInCreation()) {
     //     return;
     // }
@@ -319,19 +323,19 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
     // alert("orderInCreation" + orderInCreation())
     // alert("orderInCreation" + orderInCreation())
 
-    if (orderInCreation() && orderInCreation().order && orderInCreation().order.items) {
+    if (orderInCreation() && orderInCreation()?.order && orderInCreation().order.items) {
         existing = orderInCreation().order.items.find(item => {
             return sameItem(item, itemToAdd, optionsInit);
         })
     }
 
     let deals = [];
-    if (orderInCreation().order.deals) {
+    if (orderInCreation()?.order.deals) {
         deals = [...orderInCreation().order.deals]
     }
 
     if (existing) {
-        let others = orderInCreation().order.items.filter(item => item.uuid !== existing.uuid);
+        let others = orderInCreation()?.order.items.filter(item => item.uuid !== existing.uuid);
         existing.quantity ++;
         setOrderInCreation({
             ...orderInCreation(),
@@ -347,7 +351,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
     }
     itemToAdd.uuid = uuid();
 
-    if (orderInCreation().order.items) {
+    if (orderInCreation()?.order.items) {
         setOrderInCreation({
             ...orderInCreation(),
             order: {
@@ -445,7 +449,7 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
             let copySku = {...sku}
 
             if (!sku.optionListExtIds || sku.optionListExtIds.length == 0 ) {
-                if (orderInCreation && orderInCreation().order && orderInCreation().order.items) {
+                if (orderInCreation && orderInCreation()?.order && orderInCreation().order.items) {
                     let existing = orderInCreation().order.items.find(item => {
                         return sameItem(item, sku, []);
                     })

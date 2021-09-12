@@ -10,6 +10,7 @@ import {computePriceDetail} from "../../util/displayUtil";
 import Grid from "@material-ui/core/Grid";
 import BazarButton from "@component/BazarButton";
 import {getBookingSlotsOccupancyQueryNoApollo} from "../../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 const setHourFromString = (momentDate, hourSt) => {
   let hourSplit = hourSt.split(':');
@@ -30,6 +31,7 @@ const buildServiceFromDaySetting = (daySetting) => {
   return {
     dateStart: setHourFromString(daySetting.dateCurrent, daySetting.startHourBooking),
     dateEnd: setHourFromString(daySetting.dateCurrent, daySetting.endHourBooking),
+    endHourService: setHourFromString(daySetting.dateCurrent, daySetting.endHourService),
     numberOfDeliveryMan: daySetting.numberOfDeliveryMan,
     maxDeliveryPerSlotPerMan: daySetting.maxDeliveryPerSlotPerMan,
   }
@@ -334,9 +336,20 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
   }
 
   function isSelectedSlot (slot) {
+    //return false;
+    if (!getOrderInCreation()?.bookingSlot)
+    {
+      return false;
+    }
+    if (getOrderInCreation()?.bookingSlot?.startDate == null) {
+      return false;
+    }
+    if (getOrderInCreation()?.bookingSlot?.endDate == null) {
+      return false;
+    }
     let selected = getOrderInCreation().bookingSlot != null &&
-      getOrderInCreation().bookingSlot.startDate.isSame(slot.startDate) &&
-      getOrderInCreation().bookingSlot.endDate.isSame(slot.endDate);
+      getOrderInCreation()?.bookingSlot?.startDate?.isSame(slot.startDate) &&
+      getOrderInCreation()?.bookingSlot?.endDate?.isSame(slot.endDate);
     return selected;
   }
 
@@ -344,13 +357,23 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
 
   function formatService(service) {
     if (!service) {
-      return "";
+      return "-";
     }
-    return service.dateStart.locale('fr').calendar() + " - " + service.dateEnd.format("HH:mm");
+    return service.dateStart.locale('fr').calendar() + " - " + service.endHourService.format("HH:mm");
+  }
+
+  function allClosed() {
+    let allClosed = true;
+    for (let i = 0; i < timeSlots.allSlots.length; i++) {
+      const timeSlot = timeSlots.allSlots[i];
+      allClosed &= (timeSlot.closed || !timeSlot.available)
+    }
+    return allClosed;
   }
 
   return (
     <div>
+      {/*{JSON.stringify(getOrderInCreation())}*/}
       {bookingSlotStartDate && reload &&
       // <>
         <div style={{ width: '100%' }}>
@@ -408,8 +431,13 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
           p={1}
           m={1}
         >
+
+          {allClosed() === true &&
+            <AlertHtmlLocal severity="warning" content={localStrings.closed}></AlertHtmlLocal>
+          }
+
           {
-            timeSlots && timeSlots.allSlots.map((value, key) => {
+            !allClosed() && timeSlots && timeSlots.allSlots.map((value, key) => {
                 let format =
                   value.startDate.format('HH:mm')
                   + "-"

@@ -31,14 +31,14 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
     const [awaitingOrdersCount, setAwaitingOrdersCount] = useState(0);
     const {dbUser, logout, currentUser, orderCount, brand} = useAuth()
 
-    useEffect(() => {
-            if (!dbUser) {
-                //alert("push user")
-                router.push("/")
-            }
-        },
-        [dbUser]
-    )
+    // useEffect(() => {
+    //         if (!dbUser && !isMobile) {
+    //             //alert("push user")
+    //             router.push("/")
+    //         }
+    //     },
+    //     [dbUser]
+    // )
 
     useEffect(async () => {
 
@@ -78,8 +78,18 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
 
     return (
         <>
+            {isMobile && !dbUser &&
+            <Box mb={4}>
+                <Grid container spacing={3}>
+                    <LoginOrSignup/>
+                </Grid>
+            </Box>
+
+            }
+
         {dbUser &&
         <CustomerDashboardLayout contextData={contextData}>
+
             {isMobile && !dbUser ?
                 <>
                     <Box mb={4}>

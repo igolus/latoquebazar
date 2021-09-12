@@ -50,11 +50,12 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
           seeMoreLink="/product/shop/all"
           seeMoreTitle={localStrings.viewAllCat}
       >
+        {/*<p>{productDisplay?.length}</p>*/}
         <Box mt={-0.5} mb={-0.5}>
           <Carousel
-              totalSlides={productList.length}
-              visibleSlides={Math.min(productDisplay.length, 4)}
-
+              totalSlides={productDisplay.length}
+              visibleSlides={visibleSlides}
+              showArrow={productDisplay.length > visibleSlides}
               infinite={true}
           >
             {productDisplay.map((item, ind) => {
@@ -110,37 +111,5 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
   )
 }
 
-const productList = [
-  {
-    imgUrl: '/assets/images/products/flash-1.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-2.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-3.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-4.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-1.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-2.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-3.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-4.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-1.png',
-  },
-  {
-    imgUrl: '/assets/images/products/flash-2.png',
-  },
-]
 
 export default Section2

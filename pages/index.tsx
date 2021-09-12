@@ -3,36 +3,33 @@ import SectionCategories from '@component/home-1/SectionCategories'
 import AppLayout from '@component/layout/AppLayout'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import React from "react";
+import React, {useState} from "react";
 import Head from 'next/head';
-import Section6 from "@component/home-1/Section6";
-import Section7 from "@component/home-1/Section7";
-import Section8 from "@component/home-1/Section8";
-import Section5 from "@component/home-1/Section5";
 import Section2 from "@component/home-1/Section2";
-import Section3 from "@component/home-1/Section3";
-import Section4 from "@component/home-1/Section4";
-import Section9 from "@component/home-1/Section9";
-import Section11 from "@component/home-1/Section11";
-import Section12 from "@component/home-1/Section12";
-import Section1 from "@component/landing/Section1";
+
+import {Box} from "@material-ui/core";
+import LogoSection from "@component/home-1/LogoSection";
+import {isMobile} from "react-device-detect";
+import Image from "@component/BazarImage";
 
 //const config = require("../src/conf/config.json")
 export interface IndexPageProps {
     contextData?: any
 }
 
-
-
+// let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
+    // const [width, setWidth] = useState<number>(window.innerWidth);
+    // let isMobile: boolean = (width <= 768);
     return (
 
         <div>
+
             <Head>
-                {contextData.brand.iconUrl &&
-                <link rel="shortcut icon" id="favicon"
-                      href={contextData.brand.iconUrl}/>
-                }
+                {/*{contextData.brand.iconUrl &&*/}
+                {/*<link rel="shortcut icon" id="favicon"*/}
+                {/*      href={contextData.brand.iconUrl}/>*/}
+                {/*}*/}
                 {/*<script*/}
                 {/*    type="text/javascript"*/}
                 {/*    src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=places"}*/}
@@ -45,14 +42,34 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {/*         src={"https://maps.googleapis.com/maps/api/js?libraries=places&key=" + key} ></script>*/}
             </Head>
 
+            {/*{isMobile &&*/}
+            {/*<Box justifyContent="center" mb={1} mt={1}>*/}
+            {/*    <Image mb={2.5} src={contextData?.brand?.logoUrl} alt="logo" />*/}
+            {/*</Box>*/}
+            {/*}*/}
+
             <AppLayout contextData={contextData}>
+
+
                 {/*<h1>TOTO IndexPage</h1>*/}
+                {/*<LogoSection/>*/}
 
+                {/*<Box mt={-0.5} mb={-0.5} display="flex" justifyContent="center">*/}
+                {/*    <Box p={1}>*/}
+                {/*        <Image mt={1} src={contextData?.brand?.logoUrl} alt="logo"/>*/}
+                {/*    </Box>*/}
 
+                {/*    /!*<Box p={1}>*!/*/}
+                {/*    /!*  <Typography variant="h3" fontWeight="600" mb={2} mt={2}>*!/*/}
+                {/*    /!*    {contextData?.brand?.brandName}*!/*/}
+                {/*    /!*  </Typography>*!/*/}
+                {/*    /!*</Box>*!/*/}
+                {/*</Box>*/}
+                {/*}*/}
 
                 <CarouselCompo contextData={contextData}/>
                 {contextData?.brand?.config?.starWebProducts &&
-                    <Section2 contextData={contextData}/>
+                <Section2 contextData={contextData}/>
                 }
                 {/*<GrocerySection1/>*/}
                 {/*<Section2 />*/}

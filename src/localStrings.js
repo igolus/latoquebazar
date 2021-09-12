@@ -4,6 +4,12 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        personalInformation: "Saisir vos informations de profil",
+        seeInfo: "Voir les infos utiles",
+        bookingadditionalInformation: "Information pour la livraison ou demande specifique pour la commande",
+        bookingadditionalInformationExample: "Code immeuble, étage, interphone,…",
+        closed: "Etablissement exceptionellement fermé",
+        new: "Nouveau",
         starProducts: "Top produits",
         mailSent: "Email envoyé",
         mailSentDetail: "Un email avec le detail de votre commande a été envoyé a {0}",
@@ -20,7 +26,7 @@ let localStrings = new LocalizedStrings({
         infoContactPageTitle: "Informations utiles",
         shopPageTitle: "Voir la carte",
         profilePageTitle: "Mon compte",
-        contactInfoPageTitle: "Info et contact",
+        contactInfoPageTitle: "Infos utiles",
         cartPageTitle: "Voir mon panier",
 
         creditCardDetail: "Detail de carte de credit",
@@ -83,7 +89,9 @@ let localStrings = new LocalizedStrings({
         formatDuration: "HH [heure(s) et] mm [minute(s)]",
         formatDurationNoHour: "mm [minute(s)]",
 
-        distanceTime: "distance jusqu'a l'etablissement: {0} km / {1}",
+        myAdresses: "Mes adresses",
+
+        distanceTime: " distance jusqu'a l'etablissement: {0} km / {1}",
         timeSlot: "Creneau de reservation",
         selectDeliveryTimeSlot: "Selectionner un creneau de livraison",
         selectPickupTimeSlot: "Selectionner un creneau de recupération",
@@ -99,8 +107,11 @@ let localStrings = new LocalizedStrings({
         deliverToOtherAddress: "Livrer a une autre adresse",
         validateAdress: "Valider l'adresse",
         clickAndCollect: "A recuperer sur place (Click N Collect)",
+        clickAndCollectSubTitle: "Récupérez votre commande sans attendre sur votre point de vente",
         delivery: "Livraison",
+        deliverySubTitle: "Faites-vous livrer chez vous, au bureau ou encore chez des amis.",
         deliveryMode: "Mode de livraison",
+        selectDeliveryMode: "Choississez votre mode de livraison",
         cart: "Panier",
         confirm: "Confirmation",
         order: "Commande",
@@ -133,7 +144,19 @@ let localStrings = new LocalizedStrings({
         profile: "Profile",
         myAccount: "Mon compte",
         myOrders: "Mes commandes",
-        myAdresse: "Mon adresse",
+
+        myAddresses: "Mes adresses",
+        addNewAddress: "Ajouter une nouvelle adresse",
+        modifyAddress: "Modifier une adresse",
+        modifyMainAddress: "Modifier mon adresse principale",
+        mainAddress: "Adresse principale",
+        backToAdress: "Retour a mes addresse",
+        nameAddress: "Nom de l'adresse",
+        updateMainAddress: "Mettre a jour mon adresse principale",
+        updateAddress: "Mettre a jour l'adresse",
+        createAddress: "Creer l'adresse",
+
+
         account: "Compte",
         logout: "Se deconnecter",
         password: "Mot de passe",
@@ -153,6 +176,7 @@ let localStrings = new LocalizedStrings({
         completeAccount: "Completer mon compte",
         fillInfoToContinue: "Reseignez les champs pour continuer",
         login: "Se connecter",
+        continueWithoutAccount: "Non Merci, Prendre ma commande sans creer de compte",
         bySigningTermsAndConditions: "En cochant cette cas vous acceptez les termes et conditions",
         requiredField: "Le champ {0} est obligatoire",
         addToCart: "Ajouter au panier",
@@ -206,7 +230,7 @@ let localStrings = new LocalizedStrings({
         info: {
             resetPassword: "Un email a été envoyé a {0} pour reinitialiser le mot de passe",
             checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
-            connectToOrder: 'Afin de garder une trace de vos commandes et de garantir un meilleur suivi, la commande doit se faire en mode connecté. Si vous avez un compte Google <strong>cela ne prendra que quelques secondes !!</strong>'
+            connectToOrder: "Afin de garder une trace de vos commandes et de garantir un meilleur suivi, nous vous conseillons d'effectuer la commande doit se faire en mode connecté. Si vous avez un compte Google <strong>cela ne prendra que quelques secondes !!</strong>",
         },
 
         warningMessage: {

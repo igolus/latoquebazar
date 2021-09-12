@@ -25,6 +25,7 @@ import {
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
+import moment from "moment";
 
 export interface ProductCard1Props {
   className?: string
@@ -198,10 +199,15 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     return !(selectedProductAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
   }
 
+  function newProductExpired(newProductExpireDate: string) {
+    return moment(newProductExpireDate, 'YYYY-MM-DD').isBefore()
+  }
+
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
         {/*<p>{JSON.stringify(currentEstablishment())}</p>*/}
-        {/*<p>{JSON.stringify(product.tags || [])}</p>*/}
+        {/*<p>{JSON.stringify(product || [])}</p>*/}
+        {/*{product.newProductExpireDate}*/}
         <div className={classes.imageHolder}>
           {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
           <Box
@@ -209,6 +215,17 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
               flexWrap="wrap"
               sx={{ position: 'absolute', zIndex:2, mr: '35px', mt:'4px'}}
           >
+
+            {product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&
+                <Box ml='3px' mt='6px' mr='3px'>
+                  <Chip
+                      className={classes.offerChip}
+                      color="secondary"
+                      size="small"
+                      label={localStrings.new}
+                  />
+                </Box>
+            }
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
                   <Chip

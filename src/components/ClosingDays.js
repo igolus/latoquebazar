@@ -9,6 +9,7 @@ import {Chip, IconButton, Typography} from "@material-ui/core";
 import {formatOrderStatus} from "../util/displayUtil";
 import moment from "moment";
 import East from "@material-ui/icons/East";
+import Card1 from "@component/Card1";
 
 const ClosingDayItem = ({slot}) => {
     if (!slot) {
@@ -30,33 +31,43 @@ const ClosingDays = ({}) => {
     //const { height, width } = useWindowDimensions();
     const closingSlots = currentEstablishment()?.serviceSetting?.closingSlots || [];
 
-    return (<>
-        <TableRow
-            sx={{
-                display: { xs: 'none', md: 'flex' },
-                padding: '0px 18px',
-                background: 'none',
-            }}
-            elevation={0}
-        >
-            <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
+    return (
+        <>
+        {closingSlots.length > 0 &&
+        <Card1 sx={{mb: '2rem'}}>
+
+            <Typography  variant="h6" fontWeight="600" mb={4}>
                 {localStrings.closingDays}
-            </H5>
-            {/*<H5 color="grey.600" my="0px" mx={0.75} textAlign="left">*/}
-            {/*    {localStrings.schedules}*/}
-            {/*</H5>*/}
+            </Typography>
 
-            {/*<H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>*/}
-        </TableRow>
+            {/*<TableRow*/}
+            {/*    sx={{*/}
+            {/*        display: { xs: 'none', md: 'flex' },*/}
+            {/*        padding: '0px 18px',*/}
+            {/*        background: 'none',*/}
+            {/*    }}*/}
+            {/*    elevation={0}*/}
+            {/*>*/}
+            {/*    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">*/}
+            {/*        {localStrings.closingDays}*/}
+            {/*    </H5>*/}
+            {/*    /!*<H5 color="grey.600" my="0px" mx={0.75} textAlign="left">*!/*/}
+            {/*    /!*    {localStrings.schedules}*!/*/}
+            {/*    /!*</H5>*!/*/}
 
-        {
-            closingSlots.map((item, key) =>
-                <ClosingDayItem slot={item}/>
-            )
+            {/*    /!*<H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>*!/*/}
+            {/*</TableRow>*/}
+
+            {
+                closingSlots.map((item, key) =>
+                    <ClosingDayItem slot={item}/>
+                )
+            }
+
+
+        </Card1>
         }
-
-
-    </>);
+        </>)
 }
 
 export default ClosingDays

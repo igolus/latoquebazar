@@ -117,6 +117,7 @@ const CompleteProfile = ({closeCallBack}) => {
     delete valueCopy.submit
     delete valueCopy.establishments
     data.userProfileInfo = { ...valueCopy };
+    data.webUser = true;
     // alert("user.uid " + user.uid)
     // alert("user " + JSON.stringify(user));
     // alert("data " + JSON.stringify(data))

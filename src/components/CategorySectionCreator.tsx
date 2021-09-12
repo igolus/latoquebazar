@@ -7,6 +7,7 @@ export interface CategorySectionCreatorProps {
   title?: string
   seeMoreLink?: string
   seeMoreTitle?: string
+  marginBottom?: number
 }
 
 const CategorySectionCreator: React.FC<CategorySectionCreatorProps> = ({
@@ -15,9 +16,10 @@ const CategorySectionCreator: React.FC<CategorySectionCreatorProps> = ({
   seeMoreTitle,
   title,
   children,
+  marginBottom
 }) => {
   return (
-    <Box mb={7.5}>
+    <Box mb={marginBottom || 7.5}>
       <Container sx={{ pb: '1rem' }}>
         {title && (
           <CategorySectionHeader

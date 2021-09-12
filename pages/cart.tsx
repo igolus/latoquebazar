@@ -31,7 +31,9 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
       {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
       <Grid container spacing={3}>
         <Grid item lg={8} md={8} xs={12}>
+
           {getCartItems(getOrderInCreation).map((item) => {
+
               //<p>{JSON.stringify(item)}</p>
               if (item.type === TYPE_DEAL) {
                 return(<DealCard7 key={item.id} deal={item} currency={currency} products={contextData ? contextData.products : []}/>)

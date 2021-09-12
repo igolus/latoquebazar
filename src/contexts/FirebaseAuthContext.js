@@ -33,6 +33,9 @@ const LOGIN_ON_GOING = 'LOGIN_ON_GOING';
 const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
 const ORDER_COUNT = 'ORDER_COUNT';
 
+const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
+var encryptor = require('simple-encryptor')(encKey);
+
 const useStyles = makeStyles(() => ({
   dialogContent: {
     paddingBottom: '1.25rem',
@@ -70,6 +73,7 @@ const initialAuthState = {
     deliveryAddress: null,
     bookingSlot: null,
     additionalInfo: null,
+    initial: true,
   },
   bookingSlotStartDate: moment(),
   maxDistanceReached: false,
@@ -250,6 +254,8 @@ const AuthContext = createContext({
   increaseOrderCount: () => {},
 });
 
+const expireTimeSeconds = 1800;
+
 export const AuthProvider = ({ children }) => {
   const [adressDialogOpen, setAdressDialogOpen] = useState(false)
   const classes = useStyles();
@@ -258,8 +264,37 @@ export const AuthProvider = ({ children }) => {
   const { addToast } = useToasts();
 
   useEffect(() => {
-    if (!localStorage.getItem(DIST_INFO)) {
-      setAdressDialogOpen(true);
+    if (localStorage.getItem(CART_KEY)) {
+      let orderInCreationSource = encryptor.decrypt(localStorage.getItem(CART_KEY));
+      if (!orderInCreationSource) {
+        resetOrderInCreation()
+        localStorage.removeItem(CART_KEY);
+        resetOrderInCreation()
+      }
+      else {
+        try {
+          let orderInCreationParsed = JSON.parse(orderInCreationSource);
+          // alert("orderInCreationParsed.updateDate:" + orderInCreationParsed.updateDate)
+          // alert("moment.unix()" + moment().unix())
+          // alert("moment.unix()" + parseFloat(orderInCreationParsed.updateDate))
+          // alert("diff:" + moment().unix() - parseFloat(orderInCreationParsed.updateDate))
+          if (orderInCreationParsed.updateDate && (moment().unix() - parseFloat(orderInCreationParsed.updateDate)) < expireTimeSeconds) {
+            //alert("setOrderInCreation")
+            setOrderInCreation(orderInCreationParsed);
+          }
+          // else {
+          //   resetOrderInCreation()
+          // }
+
+        } catch (err) {
+          //alert("badParse")
+          localStorage.removeItem(CART_KEY);
+          resetOrderInCreation()
+        }
+      }
+    }
+    else {
+      resetOrderInCreation()
     }
   }, []);
 
@@ -307,10 +342,11 @@ export const AuthProvider = ({ children }) => {
 
   const sendEmailVerification = async (brand, establishment) => {
     var user = firebase.auth().currentUser;
-    alert("user for sendEmailVerification " + user.email)
+    //alert("user for sendEmailVerification " + user.email)
     if (user) {
       let link = await getActivationMailLink(user.email)
-      alert("link " + link)
+      //alert("link " + link);
+      //console.log("link " + link);
       //await sendMailMessage(brand, establishment, link, emailAddress);
 
       //let link = await getResetMailLink(emailAddress);
@@ -506,7 +542,18 @@ export const AuthProvider = ({ children }) => {
     return user;
   };
 
+  const CART_KEY = "orderInCreation";
+
   const getOrderInCreation = () => {
+    // if (state.orderInCreation.initial && localStorage)
+    // {
+    //   let storareOrder = localStorage.getItem(CART_KEY);
+    //   if (storareOrder) {
+    //     let orderFromStorage = JSON.parse(storareOrder);
+    //     setOrderInCreation(orderFromStorage);
+    //     return orderFromStorage;
+    //   }
+    // }
     return state.orderInCreation;
   }
 
@@ -517,6 +564,13 @@ export const AuthProvider = ({ children }) => {
         orderInCreation: orderInCreation,
       }
     });
+    if (localStorage) {
+
+      let orderInCreationCopy = {...orderInCreation}
+      delete orderInCreationCopy["bookingSlot"]
+      orderInCreationCopy.updateDate = moment().unix();
+      localStorage.setItem(CART_KEY, encryptor.encrypt(JSON.stringify(orderInCreationCopy)));
+    }
   }
 
   const resetOrderInCreation = () => {
@@ -534,6 +588,7 @@ export const AuthProvider = ({ children }) => {
           deliveryAddress: null,
           bookingSlot: null,
           additionalInfo: null,
+
           //productAndSkusLines: []
         }
       }
@@ -699,14 +754,14 @@ export const AuthProvider = ({ children }) => {
           }}
       >
         {children}
-        {currentEstablishment() &&
-        <Dialog open={adressDialogOpen} maxWidth="sm"
-        >
-          <DialogContent className={classes.dialogContent}>
-            <AdressCheck closeCallBack={() => setAdressDialogOpen(false)}/>
-          </DialogContent>
-        </Dialog>
-        }
+        {/*{currentEstablishment() &&*/}
+        {/*<Dialog open={adressDialogOpen} maxWidth="sm"*/}
+        {/*>*/}
+        {/*  <DialogContent className={classes.dialogContent}>*/}
+        {/*    <AdressCheck closeCallBack={() => setAdressDialogOpen(false)}/>*/}
+        {/*  </DialogContent>*/}
+        {/*</Dialog>*/}
+        {/*}*/}
 
       </AuthContext.Provider>
   );
