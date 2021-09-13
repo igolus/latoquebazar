@@ -18,6 +18,7 @@ import {executeMutationUtil, executeQueryUtil} from "../../src/apolloClient/gqlU
 import {addSiteUserMessagingToken} from "../../src/gql/siteUserGql";
 import {getOrderByIdQuery} from "../../src/gql/orderGql";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
+import Link from "next/link";
 
 export interface ConfirmedProps {
     contextData?: any
@@ -99,13 +100,14 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
         <CheckoutNavLayout contextData={contextData}>
             {order && !loading ?
                 <>
-                    {/*<p>{JSON.stringify(justCreatedOrder)}</p>*/}
+                    {/*<p>{JSON.stringify(order || {})}</p>*/}
                     <DashboardPageHeader
                         title={localStrings.orderCompleted}
                         icon={ShoppingBag}
                         button={
                             order ?
-                                <Button color="primary" variant="primary"
+                                <Button color="primary" variant={"contained"}
+                                        style={{textTransform: "none"}}
                                         onClick={seeMyOrderDetail}>
                                     {localStrings.seeMyOrderDetail}
                                 </Button> :
@@ -119,10 +121,11 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
                                         content={localStrings.formatString(localStrings.orderCompletedThanks,
                                             currentBrand() ? currentBrand().brandName : "")}
                         />
-                        {currentBrand()?.config?.notifEmailConfig?.sendMailOnlineOrdering && dbUser?.userProfileInfo?.email &&
+                        {currentBrand()?.config?.notifEmailConfig?.sendMailOnlineOrdering &&
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.mailSent}
-                                        content={localStrings.formatString(localStrings.mailSentDetail, dbUser?.userProfileInfo?.email)}
+                                        content={localStrings.formatString(localStrings.mailSentDetail,
+                                            order?.customer?.userProfileInfo?.email)}
                         >
                         </AlertHtmlLocal>
                         }
@@ -130,6 +133,8 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
                                         title={localStrings.activateNotification}
                                         content={localStrings.notificationInfo}
                         >
+
+
                         </AlertHtmlLocal>
 
 

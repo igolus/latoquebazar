@@ -10,11 +10,10 @@ import moment from "moment";
 import {establishmentsQuery} from "../gql/establishmentGql";
 import {getBrandByIdQuery} from "../gql/brandGql";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../util/constants"
-import {Dialog, DialogContent} from "@material-ui/core";
 import {makeStyles} from "@material-ui/styles";
-import AdressCheck, {DIST_INFO} from "@component/address/AdressCheck";
-import {getResetMailLink, sendMailMessage, getActivationMailLink} from "../util/mailUtil";
+import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
+import cloneDeep from "clone-deep";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -62,19 +61,18 @@ const initialAuthState = {
   totalCartPrice: -1,
   globalProductVariants: null,
   dealEdit: null,
-  orderInCreation: {
-    deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
-    order: {
-      items: [],
-      deals: []
-    },
-    customer: null,
-    payments: null,
-    deliveryAddress: null,
-    bookingSlot: null,
-    additionalInfo: null,
-    initial: true,
-  },
+  // orderInCreation: {
+  //   deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
+  //   order: {
+  //     items: [],
+  //     deals: []
+  //   },
+  //   customer: null,
+  //   payments: null,
+  //   deliveryAddress: null,
+  //   bookingSlot: null,
+  //   additionalInfo: null,
+  // },
   bookingSlotStartDate: moment(),
   maxDistanceReached: false,
   loginDialogOpen: false,
@@ -266,8 +264,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (localStorage.getItem(CART_KEY)) {
       let orderInCreationSource = encryptor.decrypt(localStorage.getItem(CART_KEY));
+      //let orderInCreationSource = localStorage.getItem(CART_KEY);
       if (!orderInCreationSource) {
-        resetOrderInCreation()
+        //resetOrderInCreation()
         localStorage.removeItem(CART_KEY);
         resetOrderInCreation()
       }
@@ -280,14 +279,15 @@ export const AuthProvider = ({ children }) => {
           // alert("diff:" + moment().unix() - parseFloat(orderInCreationParsed.updateDate))
           if (orderInCreationParsed.updateDate && (moment().unix() - parseFloat(orderInCreationParsed.updateDate)) < expireTimeSeconds) {
             //alert("setOrderInCreation")
-            setOrderInCreation(orderInCreationParsed);
+            //resetOrderInCreation();
+            setOrderInCreation(orderInCreationParsed, true);
           }
           // else {
           //   resetOrderInCreation()
           // }
 
         } catch (err) {
-          //alert("badParse")
+          alert("badParse")
           localStorage.removeItem(CART_KEY);
           resetOrderInCreation()
         }
@@ -346,7 +346,7 @@ export const AuthProvider = ({ children }) => {
     if (user) {
       let link = await getActivationMailLink(user.email)
       //alert("link " + link);
-      //console.log("link " + link);
+      console.log("link " + link);
       //await sendMailMessage(brand, establishment, link, emailAddress);
 
       //let link = await getResetMailLink(emailAddress);
@@ -557,19 +557,20 @@ export const AuthProvider = ({ children }) => {
     return state.orderInCreation;
   }
 
-  const setOrderInCreation = (orderInCreation) => {
+  const setOrderInCreation = (orderInCreation, doNotupdateLocalStorage) => {
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
         orderInCreation: orderInCreation,
       }
     });
-    if (localStorage) {
+    if (localStorage && !doNotupdateLocalStorage) {
 
-      let orderInCreationCopy = {...orderInCreation}
+      let orderInCreationCopy = cloneDeep(orderInCreation)
       delete orderInCreationCopy["bookingSlot"]
       orderInCreationCopy.updateDate = moment().unix();
       localStorage.setItem(CART_KEY, encryptor.encrypt(JSON.stringify(orderInCreationCopy)));
+      //localStorage.setItem(CART_KEY, JSON.stringify(orderInCreationCopy));
     }
   }
 

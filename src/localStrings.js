@@ -4,6 +4,15 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        manageMyAdresses: "Gerer mes adresses",
+        updateAddtionalInformation: "Mettre a jour les informations additionnelles",
+        defineMainAdress: "Definir mon adresse principale",
+        useMyAdresses: "Utiliser mes adresses",
+        useCustomAdresses: "Utiliser une autre adresse",
+
+        backToHome: "Revenir a la page d'acceuil",
+        backNav: "Revenir en arriere",
+
         personalInformation: "Saisir vos informations de profil",
         seeInfo: "Voir les infos utiles",
         bookingadditionalInformation: "Information pour la livraison ou demande specifique pour la commande",
@@ -89,7 +98,7 @@ let localStrings = new LocalizedStrings({
         formatDuration: "HH [heure(s) et] mm [minute(s)]",
         formatDurationNoHour: "mm [minute(s)]",
 
-        myAdresses: "Mes adresses",
+        //myAdresses: "Mes adresses",
 
         distanceTime: " distance jusqu'a l'etablissement: {0} km / {1}",
         timeSlot: "Creneau de reservation",
@@ -114,6 +123,7 @@ let localStrings = new LocalizedStrings({
         selectDeliveryMode: "Choississez votre mode de livraison",
         cart: "Panier",
         confirm: "Confirmation",
+        confirmAction: "Confirmer",
         order: "Commande",
         categories: "Categories",
         tags: "Tags",
@@ -150,7 +160,7 @@ let localStrings = new LocalizedStrings({
         modifyAddress: "Modifier une adresse",
         modifyMainAddress: "Modifier mon adresse principale",
         mainAddress: "Adresse principale",
-        backToAdress: "Retour a mes addresse",
+        backToAdress: "Retour a mes addresses",
         nameAddress: "Nom de l'adresse",
         updateMainAddress: "Mettre a jour mon adresse principale",
         updateAddress: "Mettre a jour l'adresse",
@@ -168,6 +178,7 @@ let localStrings = new LocalizedStrings({
         forgotPassword: "Mot de passe oublié",
         address: "Adresse",
         deliveryAdress: "Adresse de livraison",
+        selectDeliveryAdress: "Choisir l'adresse de livraison",
         email: "Email",
         firstName: "Prenom",
         lastName: "Nom",
@@ -230,10 +241,11 @@ let localStrings = new LocalizedStrings({
         info: {
             resetPassword: "Un email a été envoyé a {0} pour reinitialiser le mot de passe",
             checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
-            connectToOrder: "Afin de garder une trace de vos commandes et de garantir un meilleur suivi, nous vous conseillons d'effectuer la commande doit se faire en mode connecté. Si vous avez un compte Google <strong>cela ne prendra que quelques secondes !!</strong>",
+            connectToOrder: "Afin de garder une trace de vos commandes et de garantir un meilleur suivi de vos commandes, nous vous conseillons d'effectuer la commande en mode connecté. Si vous avez un compte Google <strong>cela ne prendra que quelques secondes !!</strong>",
         },
 
         warningMessage: {
+            noMainAddDefined: "Votre adresse principale n'est pas definie",
             maxDistanceDelivery: "L'adresse est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
             maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
             selectValidDeliveryAddressAndSchedule: "Selectionner une addresse de livraison valide et un creaneau de reservation",
@@ -259,6 +271,10 @@ let localStrings = new LocalizedStrings({
             accountAlreadyExists: "Ce compte est deja referencé, essayer de vous connecter directement en utilisant cet email",
             wrongPassword: "Mot de passe invalide",
             noUserEmail: "Aucun compte trouvé avec cet email"
+        },
+
+        confirmMessage: {
+            deleteAddress: 'Etes vous sur de vouloir supprimer cette addresse ?',
         },
 
         emailTemplate: {

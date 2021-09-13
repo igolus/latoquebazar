@@ -7,7 +7,7 @@ import {Typography} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 
-function DeliveryMode({icon, title, subtitle, selected, onCLickCallBack}) {
+function PresenterSelect({icon, title, subtitle, selected, onCLickCallBack}) {
   return (
     <Box
         style={{cursor: "pointer"}}
@@ -38,4 +38,4 @@ function DeliveryMode({icon, title, subtitle, selected, onCLickCallBack}) {
   );
 }
 
-export default DeliveryMode;
+export default PresenterSelect;

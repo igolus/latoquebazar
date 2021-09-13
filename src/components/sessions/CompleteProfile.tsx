@@ -1,32 +1,18 @@
 import BazarButton from '@component/BazarButton'
-import Image from '@component/BazarImage'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
-import { H3, H6, Small } from '@component/Typography'
-import {
-  Box,
-  Card,
-  CardProps,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  IconButton,
-} from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
-import Visibility from '@material-ui/icons/Visibility'
-import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { useFormik } from 'formik'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useCallback, useState } from 'react'
+import {H3, Small} from '@component/Typography'
+import {Card, CardProps,} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
+import {useFormik} from 'formik'
+import {useRouter} from 'next/router'
+import React, {useCallback, useState} from 'react'
 import * as yup from 'yup'
-import GoogleMapsAutocomplete from '../map/GoogleMapsAutocomplete'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {createSiteUserMutation} from "../../gql/siteUserGql";
-import {DIST_INFO, setDistanceAndCheck} from "@component/address/AdressCheck";
-import {getDeliveryDistance} from "../../util/displayUtil";
+import {DIST_INFO} from "@component/address/AdressCheck";
 import {useToasts} from "react-toast-notifications";
 
 const fbStyle = {
@@ -85,7 +71,7 @@ const CompleteProfile = ({closeCallBack}) => {
     firstName: user.name && user.name !== user.email && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
     lastName: user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : '',
     agreement: false,
-    address: JSON.parse(localStorage.getItem(DIST_INFO)).address || '',
+    //address: JSON.parse(localStorage.getItem(DIST_INFO)).address || '',
     placeId: '',
     city: '',
     postcode: '',
@@ -108,15 +94,17 @@ const CompleteProfile = ({closeCallBack}) => {
     data.id = user.id;
     let valueCopy = { ...values };
 
-    if (values.placeId == "") {
-      let localStorageValue=JSON.parse(localStorage.getItem(DIST_INFO));
-      valueCopy = {...valueCopy, ...localStorageValue}
-    }
+    // if (values.placeId == "") {
+    //   let localStorageValue=JSON.parse(localStorage.getItem(DIST_INFO));
+    //   valueCopy = {...valueCopy, ...localStorageValue}
+    // }
 
     delete valueCopy.agreement;
     delete valueCopy.submit
     delete valueCopy.establishments
     data.userProfileInfo = { ...valueCopy };
+    delete data.userProfileInfo.lat;
+    delete data.userProfileInfo.lng;
     data.webUser = true;
     // alert("user.uid " + user.uid)
     // alert("user " + JSON.stringify(user));
@@ -168,23 +156,20 @@ const CompleteProfile = ({closeCallBack}) => {
             {localStrings.fillInfoToContinue}
           </Small>
           {/*{setFieldValueFromLocalStorage(setFieldValue)}*/}
-          <GoogleMapsAutocomplete noKeyKnown
-                                  required
-                                  initialValue={JSON.parse(localStorage.getItem(DIST_INFO)).address}
-                                  title={localStrings.address}
-                                  error={!!touched.address && !!errors.address}
-                                  helperText={touched.address && errors.address}
-                                  setValueCallback={(label, placeId, city, postcode, citycode, lat, lng) => {
-                                    setFieldValue("address", label);
-                                    setFieldValue("placeId", placeId);
-                                    setFieldValue("lat", lat);
-                                    setFieldValue("lng", lng);
-                                  }}/>
+          {/*<GoogleMapsAutocomplete noKeyKnown*/}
+          {/*                        required*/}
+          {/*                        initialValue={JSON.parse(localStorage.getItem(DIST_INFO)).address}*/}
+          {/*                        title={localStrings.address}*/}
+          {/*                        error={!!touched.address && !!errors.address}*/}
+          {/*                        helperText={touched.address && errors.address}*/}
+          {/*                        setValueCallback={(label, placeId, city, postcode, citycode, lat, lng) => {*/}
+          {/*                          setFieldValue("address", label);*/}
+          {/*                          setFieldValue("placeId", placeId);*/}
+          {/*                          setFieldValue("lat", lat);*/}
+          {/*                          setFieldValue("lng", lng);*/}
+          {/*                        }}/>*/}
 
-          {/*adress: "Adresse",*/}
-          {/*email: "Email",*/}
-          {/*firstName: "Prenom",*/}
-          {/*lastName: "Nom"*/}
+
 
           <BazarTextField
               mb={1.5}
@@ -360,7 +345,7 @@ export const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|(
 
 const formSchema = yup.object().shape({
   lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-  address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+  //address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
   phoneNumber: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
       .matches(phoneRegExp, localStrings.check.badPhoneFormat),
   // agreement: yup

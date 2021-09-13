@@ -42,7 +42,7 @@ function AdressCheck({closeCallBack}) {
     const [addressValue, setAddressValue] = useState("");
     const [addressData, setAddressData] = useState({});
     const [distanceInfo, setDistanceInfo] = useState(null);
-    const [maxDistanceReached, setMaxDistanceReached] = useState(!localStorage.getItem(DIST_INFO));
+    const [maxDistanceReached, setMaxDistanceReached] = useState(false);
 
     const {currentEstablishment} = useAuth();
 
@@ -96,7 +96,7 @@ function AdressCheck({closeCallBack}) {
                 <Box p={1}>
                     <Button variant="contained"
                             onClick={() => {
-                                localStorage.setItem(DIST_INFO, JSON.stringify(addressData));
+                                //localStorage.setItem(DIST_INFO, JSON.stringify(addressData));
                                 if (closeCallBack) {
                                     closeCallBack();
                                 }

@@ -14,40 +14,45 @@ import useAuth from "@hook/useAuth";
 
 const CustomerDashboardNavigation = () => {
   const { pathname } = useRouter()
-  const {orderCount} = useAuth()
+  const {orderCount, dbUser} = useAuth()
   return (
-    <DashboardNavigationWrapper sx={{ px: '0px', pb: '1.5rem', color: 'grey.900'}}>
-      {linkList.map((item, key) => (
-        <Fragment key={key}>
-          {item.title &&
-          <Typography p="26px 30px 1rem" color="grey.600" fontSize="12px">
-            {item.title}
-          </Typography>
-          }
-          {item.list.map((item, key) => (
-            <StyledDashboardNav
-              isCurrentPath={pathname.includes(item.href)}
-              href={item.href}
-              key={item.title}
-            >
-              <FlexBox alignItems="center" >
-                <item.icon
-                  className="nav-icon"
-                  fontSize="small"
-                  color="inherit"
-                  sx={{ mr: '10px'}}
-                />
 
-                <span>{item.title}</span>
-              </FlexBox>
-              {key === 0 &&
-              <span>{orderCount}</span>
+    <>
+      {dbUser &&
+      <DashboardNavigationWrapper sx={{px: '0px', pb: '1.5rem', color: 'grey.900'}}>
+        {linkList.map((item, key) => (
+            <Fragment key={key}>
+              {item.title &&
+              <Typography p="26px 30px 1rem" color="grey.600" fontSize="12px">
+                {item.title}
+              </Typography>
               }
-            </StyledDashboardNav>
-          ))}
-        </Fragment>
-      ))}
-    </DashboardNavigationWrapper>
+              {item.list.map((item, key) => (
+                  <StyledDashboardNav
+                      isCurrentPath={pathname.includes(item.href)}
+                      href={item.href}
+                      key={item.title}
+                  >
+                    <FlexBox alignItems="center">
+                      <item.icon
+                          className="nav-icon"
+                          fontSize="small"
+                          color="inherit"
+                          sx={{mr: '10px'}}
+                      />
+
+                      <span>{item.title}</span>
+                    </FlexBox>
+                    {key === 0 &&
+                    <span>{orderCount}</span>
+                    }
+                  </StyledDashboardNav>
+              ))}
+            </Fragment>
+        ))}
+      </DashboardNavigationWrapper>
+      }
+    </>
   )
 }
 

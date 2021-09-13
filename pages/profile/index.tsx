@@ -31,14 +31,14 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
     const [awaitingOrdersCount, setAwaitingOrdersCount] = useState(0);
     const {dbUser, logout, currentUser, orderCount, brand} = useAuth()
 
-    // useEffect(() => {
-    //         if (!dbUser && !isMobile) {
-    //             //alert("push user")
-    //             router.push("/")
-    //         }
-    //     },
-    //     [dbUser]
-    // )
+    useEffect(() => {
+            if (!dbUser && !isMobile) {
+                //alert("push user")
+                router.push("/")
+            }
+        },
+        [dbUser]
+    )
 
     useEffect(async () => {
 
@@ -225,12 +225,12 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
                                 <span>{dbUser?.userProfileInfo?.phoneNumber || "-"}</span>
                             </FlexBox>
 
-                            <FlexBox flexDirection="column" p={1}>
-                                <Small color="grey.600" mb={0.5} textAlign="left">
-                                    {localStrings.address}
-                                </Small>
-                                <span>{dbUser?.userProfileInfo?.address || "-"}</span>
-                            </FlexBox>
+                            {/*<FlexBox flexDirection="column" p={1}>*/}
+                            {/*    <Small color="grey.600" mb={0.5} textAlign="left">*/}
+                            {/*        {localStrings.address}*/}
+                            {/*    </Small>*/}
+                            {/*    <span>{dbUser?.userProfileInfo?.address || "-"}</span>*/}
+                            {/*</FlexBox>*/}
 
                         </TableRow>
                     </>

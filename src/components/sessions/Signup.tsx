@@ -1,29 +1,16 @@
 import BazarButton from '@component/BazarButton'
-import Image from '@component/BazarImage'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
-import { H3, H6, Small } from '@component/Typography'
-import {
-  Box, Button,
-  Card,
-  CardProps,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  IconButton,
-} from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {H3} from '@component/Typography'
+import {Box, Button, Card, CardProps, IconButton,} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { useFormik } from 'formik'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useCallback, useState } from 'react'
+import {useFormik} from 'formik'
+import {useRouter} from 'next/router'
+import React, {useCallback, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
-import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
-import {DIST_INFO} from "@component/address/AdressCheck";
-import {phoneRegExp} from "@component/sessions/CompleteProfile";
 import useAuth from "@hook/useAuth";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 

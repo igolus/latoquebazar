@@ -61,7 +61,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoffee } from '@fortawesome/free-solid-svg-icons'
 import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
 import { faMotorcycle } from '@fortawesome/free-solid-svg-icons'
-import DeliveryMode from "../DeliveryMode"
+import { faAddressCard } from '@fortawesome/free-solid-svg-icons'
+
+import PresenterSelect from "../PresenterSelect"
 
 const config = require('../../conf/config.json')
 //import useResponsiveFontSize from "../../hooks/useResponsiveFontSize";
@@ -90,6 +92,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const stripe = useStripe();
   const elements = useElements();
   const [checkoutError, setCheckoutError] = useState();
+  const [useMyAdress, setUseMyAdress] = useState(false);
+  const [selectedAddId, setSelectedAddId] = useState(true);
   const [bookWithoutAccount, setBookWithoutAccount] = useState(false);
   const [paymentCardValid, setPaymentCardValid] = useState(false);
   const classes = useStyles();
@@ -121,39 +125,40 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
             'google-maps',
         );
       }
+      resetDeliveryAdress();
       loaded.current = true;
     }
 
   },  [])
 
 
-  useEffect(async () => {
-
-    let lat;
-    let lng;
-    let label;
-
-    if (currentEstablishment() && orderInCreation) {
-      if (!dbUser) {
-        setAdressValue("")
-        return
-      }
-      //if (dbUser) {
-      lat = dbUser.userProfileInfo.lat;
-      lng = dbUser.userProfileInfo.lng;
-      label = dbUser.userProfileInfo.address;
-      setAdressValue(label)
-      let distanceInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng, label);
-
-      if (distanceInfo) {
-        setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
-      }
-
-      updateCustomer(dbUser)
-      updateDeliveryAdress(label, lat, lng);
-      setAdressEditLock(true);
-    }
-  },  [dbUser])
+  // useEffect(async () => {
+  //
+  //   let lat;
+  //   let lng;
+  //   let label;
+  //
+  //   if (currentEstablishment() && orderInCreation) {
+  //     if (!dbUser) {
+  //       setAdressValue("")
+  //       return
+  //     }
+  //     //if (dbUser) {
+  //     lat = dbUser.userProfileInfo.lat;
+  //     lng = dbUser.userProfileInfo.lng;
+  //     label = dbUser.userProfileInfo.address;
+  //     setAdressValue(label)
+  //     let distanceInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng, label);
+  //
+  //     if (distanceInfo) {
+  //       setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+  //     }
+  //
+  //     updateCustomer(dbUser)
+  //     updateDeliveryAdress(label, lat, lng);
+  //     setAdressEditLock(true);
+  //   }
+  // },  [dbUser])
 
   useEffect(() => {
     if (currentEstablishment() &&
@@ -174,18 +179,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     return ret;
   }
 
-  const processPayment = async(orderId) => {
+  const processPayment = async(orderId, values) => {
     const cardElement = elements.getElement("card");
 
-    const billingDetails = {
-      name: getProfileName(dbUser),
-      email: dbUser.userProfileInfo.email,
-      address: {
-        line1: dbUser.userProfileInfo.address,
-      }
-    };
-
     try {
+
+      const billingDetails = {
+        name: bookWithoutAccount ? (values.firstName + " " + values.lastName).trim() : getProfileName(dbUser),
+        email: bookWithoutAccount ? values.email : dbUser.userProfileInfo.email,
+        address: {
+          line1: !bookWithoutAccount ? dbUser.userProfileInfo.address : null,
+        }
+      };
+
       const { data: clientSecret } = await axios.post(config.paymentUrl, {
         //amount: 200
         orderId: orderId,
@@ -234,7 +240,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
     } catch (err) {
       setCheckoutError(err.message);
-      alert(err.message);
+      //alert(err.message);
       return null;
     }
 
@@ -366,6 +372,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       delete dataOrder.creationDate;
 
+      // delete dataOrder?.deliveryAddress?.id;
+      // delete dataOrder?.deliveryAddress?.additionalInformation;
 
       if (dataOrder.customer) {
         delete dataOrder.customer.creationDate;
@@ -393,10 +401,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       let result;
       delete dataOrder["updateDate"];
+      delete dataOrder["initial"];
+
+
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
       if (paymentMethod === "cc") {
-        let payResult = await processPayment(result.data.addOrder.id);
+        let payResult = await processPayment(result.data.addOrder.id, values);
 
         console.log("payResult " + JSON.stringify(payResult, null, 2))
         if (!payResult) {
@@ -440,7 +451,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     }
     catch (err) {
       console.log(err);
-      alert(err)
+      alert(err.message)
     }
     finally {
       setLoading(false);
@@ -465,14 +476,24 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     })
   }
 
-  function updateDeliveryAdress(address, lat, lng) {
+  function updateDeliveryAdress(address, lat, lng, id, additionalInformation) {
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryAddress: {
         address: address,
         lat: lat,
         lng: lng,
+        id: id,
+        additionalInformation: additionalInformation,
       },
+    })
+  }
+
+
+  function resetDeliveryAdress() {
+    setOrderInCreation({
+      ...getOrderInCreation(),
+      deliveryAddress: null,
     })
   }
 
@@ -502,6 +523,20 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     setPaymentMethod(name)
   }
 
+  async function checkDistance(lat, lng) {
+    if (currentEstablishment()) {
+      let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+      setDistanceAndCheck(distInfo,
+          (maxDistanceReached) => {
+            // if (maxDistanceReached) {
+            //   setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+            // }
+            setMaxDistanceReached(maxDistanceReached);
+          },
+          setDistanceInfo, currentEstablishment);
+    }
+  }
+
   return (
 
 
@@ -525,7 +560,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   setFieldValue,
                 }) => (
                   <form onSubmit={handleSubmit}>
-
+                    {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>*/}
                     {(!dbUser) &&
                     <Card1 sx={{mb: '2rem'}}>
                       <Box mb={2}>
@@ -600,92 +635,211 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                           {localStrings.selectDeliveryMode}
                         </Typography>
                         {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
-                        <DeliveryMode
+                        <PresenterSelect
                             icon={faMotorcycle}
                             title={localStrings.delivery}
                             subtitle={localStrings.deliverySubTitle}
                             selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
-                            onCLickCallBack={() => setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)}
+                            onCLickCallBack={() => {
+                              setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)
+                            }}
                         />
                         }
 
-                        <DeliveryMode
+                        <PresenterSelect
                             icon={faShoppingBag}
                             title={localStrings.clickAndCollect}
                             subtitle={localStrings.clickAndCollectSubTitle}
                             selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
-                            onCLickCallBack={() => setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)}
+                            onCLickCallBack={() => {
+                              setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                            }}
                         />
                       </>
                       <>
-
-
-
-
                       </>
                     </Card1>
                     }
 
                     {(dbUser || bookWithoutAccount) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                     <Card1 sx={{mb: '2rem'}}>
-                    <>
+                      <>
 
-                      {distanceInfo && isDeliveryActive(currentEstablishment()) &&
-                      getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                      <Box p={1}>
-                        <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
-                                        title={maxDistanceReached ?
-                                            localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                        content={localStrings.formatString(localStrings.distanceTime,
-                                            (distanceInfo.distance / 1000),
-                                            formatDuration(distanceInfo, localStrings))}
-                        />
-                      </Box>
-                      }
+                        {distanceInfo && isDeliveryActive(currentEstablishment()) &&
+                        getOrderInCreation().deliveryAddress &&
+                        getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                        <Box p={1}>
+                          <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
+                                          title={maxDistanceReached ?
+                                              localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
+                                          content={localStrings.formatString(localStrings.distanceTime,
+                                              (distanceInfo.distance / 1000),
+                                              formatDuration(distanceInfo, localStrings))}
+                          />
+                        </Box>
+                        }
 
-                      <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                        {localStrings.deliveryAdress}
-                      </Typography>
+                        <Typography fontWeight="600" mb={2} mt={2} variant="h5">
+                          {localStrings.selectDeliveryAdress}
+                        </Typography>
 
-                      <Grid container spacing={3}>
-                        {/*<Box display="flex" p={1}>*/}
-                        <Grid item xs={12} lg={adressEditLock ? 8 : 12}>
-                          <GoogleMapsAutocomplete
-                              //ref={autocomp}
-                              noKeyKnown
-                              required
-                              setterValueSource={setAdressValue}
-                              valueSource={adressValue}
-                              disabled={adressEditLock}
-                              setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                if (currentEstablishment()) {
-                                  let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                  setDistanceAndCheck(distInfo,
-                                      (maxDistanceReached) => {
-                                        if (maxDistanceReached) {
-                                          setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
-                                        }
-                                        setMaxDistanceReached(maxDistanceReached);
-                                      },
-                                      setDistanceInfo, currentEstablishment);
-                                }
-                                //setAdressValue(label)
-                                updateDeliveryAdress(label, lat, lng);
-                                setAdressEditLock(true);
-                              }}/>
-                        </Grid>
-                        {adressEditLock &&
-                        <Grid item xs={12} lg={4}>
-                          <Button variant="contained"
-                                  style={{textTransform: "none"}}
-                                  onClick={() => setAdressEditLock(false)}
-                                  color="primary" type="button" fullWidth>
-                            {localStrings.deliverToOtherAddress}
-                          </Button>
+                        {dbUser &&
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            mb={2}
+                        >
+                          <Box mr={'2rem'}>
+                            <Button
+                                style={{marginRight: "20px"}}
+                                onClick={() => {
+                                  setUseMyAdress(true);
+                                  resetDeliveryAdress();
+                                }}
+                                style={{textTransform: "none"}}
+                                variant="contained" color={useMyAdress ? "primary" : "inherit"}>
+                              {localStrings.useMyAdresses}
+                            </Button>
+                          </Box>
+
+                          <Box ml={2}>
+                            <Button
+                                style={{marginLeft: "20px", textTransform: "none"}}
+                                onClick={() => {
+                                  setUseMyAdress(false);
+                                  resetDeliveryAdress();
+                                }}
+                                variant="contained" color={!useMyAdress ? "primary" : "inherit"}>
+                              {localStrings.useCustomAdresses}
+                            </Button>
+                          </Box>
+                        </Box>
+                        }
+
+
+                        {dbUser && useMyAdress &&
+                        <>
+                          {!dbUser?.userProfileInfo?.address &&
+                          <AlertHtmlLocal
+                              severity="warning"
+                              title={localStrings.warning}
+                              content={localStrings.warningMessage.noMainAddDefined}>
+
+                            <Box display="flex" flexDirection="row-reverse">
+                              <Box mt={2}>
+                                <Link href={"/address/main" + "?back=" + encodeURI("/checkout")}>
+                                  <Button variant="contained" color="primary" type="button" fullWidth
+                                          style={{textTransform: "none"}}
+                                  >
+                                    {localStrings.defineMainAdress}
+                                  </Button>
+                                </Link>
+                              </Box>
+                            </Box>
+                          </AlertHtmlLocal>
+
+                          }
+
+                          {dbUser?.userProfileInfo?.address &&
+                          <PresenterSelect
+                              icon={faAddressCard}
+                              title={localStrings.mainAddress}
+                              subtitle={dbUser?.userProfileInfo?.address}
+                              selected={selectedAddId === "main"}
+                              onCLickCallBack={async () => {
+                                setSelectedAddId("main");
+
+                                await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
+                                updateDeliveryAdress(dbUser?.userProfileInfo?.address,
+                                    dbUser?.userProfileInfo?.lat,
+                                    dbUser?.userProfileInfo?.lng,
+                                    "main",
+                                    dbUser?.userProfileInfo?.additionalInformation
+
+                                );
+                              }}
+                          />
+                          }
+
+                          {dbUser?.userProfileInfo?.address && (dbUser?.userProfileInfo?.otherAddresses || []).map((item, key) =>
+                              <PresenterSelect
+                                  key={key}
+                                  icon={faAddressCard}
+                                  title={item.name}
+                                  subtitle={item.address}
+                                  selected={selectedAddId === item.id}
+                                  onCLickCallBack={async () => {
+                                    setSelectedAddId(item.id);
+                                    await checkDistance(item.lat, item.lng);
+                                    updateDeliveryAdress(item.address,
+                                        item.lat,
+                                        item.lng,
+                                        item.id,
+                                        item.additionalInformation
+                                    );
+                                  }}
+                              />
+                          )}
+
+                          <Box display="flex" flexDirection="row-reverse">
+                            <Box mt={2}>
+                              <Link href={"/address"}>
+                                <Button variant="contained" color="primary" type="button" fullWidth
+                                        style={{textTransform: "none"}}
+                                >
+                                  {localStrings.manageMyAdresses}
+                                </Button>
+                              </Link>
+                            </Box>
+                          </Box>
+
+
+                        </>
+                        }
+
+                        {(!dbUser || !useMyAdress) &&
+                        <Grid container spacing={3}>
+                          {/*<Box display="flex" p={1}>*/}
+                          <Grid item xs={12} lg={adressEditLock ? 8 : 12}>
+                            <GoogleMapsAutocomplete
+                                //ref={autocomp}
+                                noKeyKnown
+                                required
+                                setterValueSource={setAdressValue}
+                                valueSource={adressValue}
+                                disabled={adressEditLock}
+                                setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                  if (currentEstablishment()) {
+                                    let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                    setDistanceAndCheck(distInfo,
+                                        (maxDistanceReached) => {
+                                          if (maxDistanceReached) {
+                                            setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                                          }
+                                          setMaxDistanceReached(maxDistanceReached);
+                                        },
+                                        setDistanceInfo, currentEstablishment);
+                                  }
+                                  //setAdressValue(label)
+                                  updateDeliveryAdress(label, lat, lng);
+                                  setAdressEditLock(true);
+                                }}/>
+                          </Grid>
+                          {adressEditLock &&
+                          <Grid item xs={12} lg={4}>
+                            <Button variant="contained"
+                                    style={{textTransform: "none"}}
+                                    onClick={() => setAdressEditLock(false)}
+                                    type="button" fullWidth>
+                              {localStrings.deliverToOtherAddress}
+                            </Button>
+                          </Grid>
+                          }
                         </Grid>
                         }
-                      </Grid>
-                    </>
+
+                      </>
                     </Card1>
                     }
 
@@ -698,73 +852,73 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       <Grid container spacing={6}>
 
 
-                      <Grid item sm={12} xs={12}>
+                        <Grid item sm={12} xs={12}>
 
-                        {/*<Box display="flex" flexDirection="row-reverse">*/}
-                        {/*  <Box mt={2} mb={2}>*/}
-                        {/*    <Link href="/profile/edit">*/}
-                        {/*      <Button variant="contained" color="primary" type="button" fullWidth*/}
-                        {/*              style={{textTransform: "none"}}*/}
-                        {/*      >*/}
-                        {/*        {localStrings.modifyMyAccount}*/}
-                        {/*      </Button>*/}
-                        {/*    </Link>*/}
-                        {/*  </Box>*/}
-                        {/*</Box>*/}
+                          {/*<Box display="flex" flexDirection="row-reverse">*/}
+                          {/*  <Box mt={2} mb={2}>*/}
+                          {/*    <Link href="/profile/edit">*/}
+                          {/*      <Button variant="contained" color="primary" type="button" fullWidth*/}
+                          {/*              style={{textTransform: "none"}}*/}
+                          {/*      >*/}
+                          {/*        {localStrings.modifyMyAccount}*/}
+                          {/*      </Button>*/}
+                          {/*    </Link>*/}
+                          {/*  </Box>*/}
+                          {/*</Box>*/}
 
-                        <TextField
-                            className={classes.textField}
-                            name="firstName"
-                            label={localStrings.firstName}
-                            fullWidth
-                            sx={{mb: '1rem'}}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            value={values.firstName}
-                            error={!!touched.firstName && !!errors.firstName}
-                            helperText={touched.firstName && errors.firstName}
-                        />
+                          <TextField
+                              className={classes.textField}
+                              name="firstName"
+                              label={localStrings.firstName}
+                              fullWidth
+                              sx={{mb: '1rem'}}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              value={values.firstName}
+                              error={!!touched.firstName && !!errors.firstName}
+                              helperText={touched.firstName && errors.firstName}
+                          />
 
-                        <TextField
-                            className={classes.textField}
-                            name="lastName"
-                            label={localStrings.lastName}
-                            fullWidth
-                            sx={{mb: '1rem'}}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            value={values.lastName}
-                            error={!!touched.lastName && !!errors.lastName}
-                            helperText={touched.lastName && errors.lastName}
-                        />
+                          <TextField
+                              className={classes.textField}
+                              name="lastName"
+                              label={localStrings.lastName}
+                              fullWidth
+                              sx={{mb: '1rem'}}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              value={values.lastName}
+                              error={!!touched.lastName && !!errors.lastName}
+                              helperText={touched.lastName && errors.lastName}
+                          />
 
-                        <TextField
-                            className={classes.textField}
-                            name="email"
-                            label={localStrings.email}
-                            fullWidth
-                            sx={{mb: '1rem'}}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            value={values.email}
-                            error={!!touched.email && !!errors.email}
-                            helperText={touched.email && errors.email}
-                        />
+                          <TextField
+                              className={classes.textField}
+                              name="email"
+                              label={localStrings.email}
+                              fullWidth
+                              sx={{mb: '1rem'}}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              value={values.email}
+                              error={!!touched.email && !!errors.email}
+                              helperText={touched.email && errors.email}
+                          />
 
-                        <TextField
-                            className={classes.textField}
-                            name="phone"
-                            label={localStrings.phone}
-                            fullWidth
-                            sx={{mb: '1rem'}}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            value={values.phone}
-                            error={!!touched.phone && !!errors.phone}
-                            helperText={touched.phone && errors.phone}
-                        />
+                          <TextField
+                              className={classes.textField}
+                              name="phone"
+                              label={localStrings.phone}
+                              fullWidth
+                              sx={{mb: '1rem'}}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              value={values.phone}
+                              error={!!touched.phone && !!errors.phone}
+                              helperText={touched.phone && errors.phone}
+                          />
+                        </Grid>
                       </Grid>
-                    </Grid>
                     </Card1>
                     }
 
@@ -782,7 +936,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                           deliveryMode={getOrderInCreation().deliveryMode}
                           selectedKeyParam={selectedSlotKey}
                           setterSelectedKey={setSelectedSlotKey}
-                          brandId={contextData && contextData.brand.id}
+                          brandId={contextData && contextData?.brand?.id}
                       />
                     </Card1>
                     }
@@ -803,15 +957,37 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                           rows={4}
                           className={classes.textField}
                           name="additionalInformation"
-                          label={localStrings.additionalInformation}
+                          //label={!useMyAdress || localStrings.additionalInformation}
                           fullWidth
                           sx={{mb: '1rem'}}
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          value={dbUser ? dbUser.userProfileInfo.additionalInformation : values.additionalInformation}
+                          disabled={useMyAdress}
+                          value={dbUser && useMyAdress ?
+                              getOrderInCreation()?.deliveryAddress?.additionalInformation
+                              :
+                              values.additionalInformation
+                          }
                           //error={!!touched.additionalInformation && !!errors.additionalInformation}
                           helperText={touched.additionalInformation && errors.additionalInformation}
                       />
+
+
+                      {useMyAdress && getOrderInCreation()?.deliveryAddress?.id &&
+                      <Box display="flex" flexDirection="row-reverse">
+                        <Box mt={2}>
+                          <Link href={"/address/" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
+                            <Button variant="contained" color="primary" type="button" fullWidth
+                                    style={{textTransform: "none"}}
+                            >
+                              {localStrings.updateAddtionalInformation}
+                            </Button>
+                          </Link>
+                        </Box>
+                      </Box>
+                      }
+
+
 
                     </Card1>
                     }
@@ -944,6 +1120,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             type="submit"
                             //endIcon={<SaveIcon />}
                             disabled={
+                              !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
                               !getOrderInCreation().bookingSlot ||
                               loading || getCartItems(getOrderInCreation).length == 0 ||
                               (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
@@ -993,11 +1170,11 @@ const checkoutSchema = (bookWithoutAccount) => {
 
   if (bookWithoutAccount) {
     return yup.object().shape({
-      lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-      email: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-      phone: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
-          .matches(phoneRegExp, localStrings.check.badPhoneFormat)
-    }
+          lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+          email: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+          phone: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
+              .matches(phoneRegExp, localStrings.check.badPhoneFormat)
+        }
     )
   }
   else {

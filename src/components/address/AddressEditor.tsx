@@ -20,9 +20,9 @@ import {cloneDeep} from "@apollo/client/utilities";
 import {updateSiteUserQuery} from "../../gql/siteUserGql";
 import {useRouter} from "next/router";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
+import {uuid} from "uuidv4";
 
-
-const AddressEditor = ({id, mode}) => {
+const AddressEditor = ({id, mode, back}) => {
 
     const router = useRouter();
     const {currentEstablishment, dbUser, currentBrand, setDbUser} = useAuth()
@@ -34,28 +34,75 @@ const AddressEditor = ({id, mode}) => {
     const [adressEditLock, setAdressEditLock] = useState(false);
     const [distanceInfo, setDistanceInfo] = useState(null);
     const [maxDistanceReached, setMaxDistanceReached] = useState(false);
-    const [adressInfo, setAdressInfo] = useState({});
+    const [adressInfo, setAdressInfo] = useState(null);
 
     const handleFormSubmit = async (values: any) => {
         //alert("handleFormSubmit" + values.additionalInformation);
+
         setLoading(true)
         const dbUserCopy = cloneDeep(dbUser);
-        dbUserCopy.userProfileInfo = {
-            ...dbUser.userProfileInfo,
-            address: adressInfo.address,
-            lat: adressInfo.lat,
-            lng: adressInfo.lng,
-            placeId: adressInfo.placeId,
-            additionalInformation: values.additionalInformation,
+        if (id === "main") {
+            dbUserCopy.userProfileInfo = {
+                ...dbUser.userProfileInfo,
+                address: adressInfo.address,
+                lat: adressInfo.lat,
+                lng: adressInfo.lng,
+                placeId: adressInfo.placeId,
+                additionalInformation: values.additionalInformation,
+            }
+
         }
+        else if (id === "new") {
+            dbUserCopy.userProfileInfo = {
+                ...dbUser.userProfileInfo,
+                otherAddresses: [...(dbUser.userProfileInfo.otherAddresses || []),
+                    {
+                        id: uuid(),
+                        name: values.name,
+                        address: adressInfo.address,
+                        lat: adressInfo.lat,
+                        lng: adressInfo.lng,
+                        placeId: adressInfo.placeId,
+                        additionalInformation: values.additionalInformation,
+                    }
+                ]
+            }
+        }
+        else {
+            let oldIndex = dbUser?.userProfileInfo?.otherAddresses.findIndex(other => id === other.id)
+
+            let filterData = dbUser?.userProfileInfo?.otherAddresses
+                .filter(other => id !== other.id);
+
+            let otherAddUpdate = {
+                id: adressInfo.id,
+                name: values.name,
+                address: adressInfo.address,
+                lat: adressInfo.lat,
+                lng: adressInfo.lng,
+                placeId: adressInfo.placeId,
+                additionalInformation: values.additionalInformation,
+            }
+            filterData.splice(oldIndex, 1, otherAddUpdate);
+
+            dbUserCopy.userProfileInfo = {
+                ...dbUser.userProfileInfo,
+                otherAddresses: filterData,
+            }
+        }
+
         let res = await executeMutationUtil(updateSiteUserQuery(currentBrand().id, dbUserCopy))
         let user = res?.data?.updateSiteUser;
         if (user) {
             setDbUser(user);
         }
         setLoading(false);
-        router.push("/address")
-
+        if (back) {
+            router.push(decodeURI(back))
+        }
+        else {
+            router.push("/address")
+        }
     }
 
     function updateDeliveryAdress(address, lat, lng, placeId) {
@@ -78,11 +125,24 @@ const AddressEditor = ({id, mode}) => {
             })
             setAdressValue(dbUser?.userProfileInfo?.address)
         }
+        else if (id !== "new") {
+            let adressInfoFromId = dbUser?.userProfileInfo?.otherAddresses.find(add => add.id === id);
+            if (adressInfoFromId) {
+                setAdressInfo({
+                    ...adressInfoFromId
+                })
+                setAdressValue(adressInfoFromId.address);
+            }
+        }
+
     }, [dbUser])
 
     function getTitle() {
         if (id === "main") {
             return localStrings.modifyMainAddress
+        }
+        if (id === "new") {
+            return localStrings.addNewAddress
         }
         return id ? localStrings.modifyAddress : localStrings.addNewAddress
     }
@@ -91,22 +151,27 @@ const AddressEditor = ({id, mode}) => {
         if (id==="main") {
             return localStrings.updateMainAddress;
         }
+        if (id === "new") {
+            return localStrings.addNewAddress
+        }
+        return localStrings.updateAddress;
     }
 
     return (
         <>
-            {loading || !dbUser ?
+            {loading || !dbUser || (id !== "new" && id !== "main" && !adressInfo)  ?
                 <ClipLoaderComponent/>
                 :
                 <div>
 
-                    <p>{JSON.stringify(adressInfo)}</p>
+                    {/*<p>{JSON.stringify(adressInfo)}</p>*/}
                     <DashboardPageHeader
                         icon={Place}
                         title={getTitle()}
                         button={
                             <Link href="/address">
-                                <Button color="primary" sx={{ bgcolor: 'primary.light', px: '2rem' }}>
+                                <Button color="primary" variant="contained" sx={{
+                                    px: '2rem', textTransform: "none" }}>
                                     {localStrings.backToAdress}
                                 </Button>
                             </Link>
@@ -115,14 +180,20 @@ const AddressEditor = ({id, mode}) => {
 
                     <Card1>
                         <Formik
-                            initialValues={initialValues(id, dbUser)}
-                            validationSchema={checkoutSchema}
+                            initialValues={initialValues(id, dbUser, adressInfo)}
+
+                            // initialValues={{
+                            //     name: "INITIAL",
+                            //     //address: '',
+                            //     additionalInformation: "ADD INFO"
+                            // }}
+                            validationSchema={checkoutSchema(id)}
                             onSubmit={handleFormSubmit}
                         >
                             {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
                                 <form onSubmit={handleSubmit}>
                                     <Box mb={4}>
-
+                                        {/*<p>{JSON.stringify(values)}</p>*/}
                                         <Grid container spacing={3}>
                                             {id && id !== "main" &&
                                             <Grid item md={12} xs={12}>
@@ -133,7 +204,7 @@ const AddressEditor = ({id, mode}) => {
                                                     fullWidth
                                                     onBlur={handleBlur}
                                                     onChange={handleChange}
-                                                    value={values.name || ''}
+                                                    value={values.name}
                                                     error={!!touched.name && !!errors.name}
                                                     helperText={touched.name && errors.name}
                                                 />
@@ -145,6 +216,7 @@ const AddressEditor = ({id, mode}) => {
                                                     noKeyKnown
                                                     required
                                                     setterValueSource={setAdressValue}
+                                                    //initialValue={adressInfo?.address}
                                                     valueSource={adressValue}
                                                     disabled={adressEditLock}
                                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
@@ -190,7 +262,10 @@ const AddressEditor = ({id, mode}) => {
                                         </Grid>
                                     </Box>
 
-                                    <Button  variant="contained" color="primary" type="submit">
+                                    <Button  variant="contained" color="primary"
+                                             style={{textTransform: "none"}}
+                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values)}
+                                             type="submit">
                                         {getSubmitText()}
                                     </Button>
                                 </form>
@@ -203,27 +278,49 @@ const AddressEditor = ({id, mode}) => {
     )
 }
 
-function getInitialAdditionalInformation(id, dbUser) {
+function getInitialAdditionalInformation(id, dbUser, adressInfo) {
     if (id === "main") {
         //alert("dbUser?.userProfileInfo?.additionalInformation " + JSON.stringify(dbUser?.userProfileInfo))
         return dbUser?.userProfileInfo?.additionalInformation;
     }
+    if (id !== "new") {
+        return adressInfo?.additionalInformation
+    }
     return "";
 }
 
-const initialValues = (id, dbUser) => {
+function getInitialName(id, adressInfo) {
+    if (id !== "main" && id !== "new") {
+        // alert("adressInfo " + JSON.stringify(adressInfo))
+        // alert("adressInfo " + adressInfo?.name)
+        //alert("dbUser?.userProfileInfo?.additionalInformation " + JSON.stringify(dbUser?.userProfileInfo))
+        return adressInfo?.name;
+    }
+    return "";
+}
+
+const initialValues = (id, dbUser, adressInfo) => {
     return {
-        name: '',
-        address: '',
-        additionalInformation: getInitialAdditionalInformation(id, dbUser)
+        name: getInitialName(id, adressInfo),
+        //address: '',
+        additionalInformation: getInitialAdditionalInformation(id, dbUser, adressInfo)
     }
 }
 
-const checkoutSchema = yup.object().shape({
+const checkoutSchema = (id) => {
+    if (id === "new") {
+        return yup.object().shape({
+            name: yup.string().required('required'),
+            //address: yup.string().required('required'),
+            // contact: yup.string().required('required'),
+        })
+    }
+    return yup.object().shape({
     //name: yup.string().required('required'),
     //address: yup.string().required('required'),
     // contact: yup.string().required('required'),
-})
+    })
+}
 
 AddressEditor.layout = DashboardLayout
 

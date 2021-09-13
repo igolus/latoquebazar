@@ -4,6 +4,7 @@ import { Button } from '@material-ui/core'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
+import localStrings from "../src/localStrings";
 
 const Error404 = () => {
   const router = useRouter()
@@ -30,17 +31,17 @@ const Error404 = () => {
         }}
       />
       <FlexBox flexWrap="wrap">
-        <Button
-          variant="outlined"
-          color="primary"
-          sx={{ m: '0.5rem' }}
-          onClick={handleGoBack}
-        >
-          Go Back
-        </Button>
+        {/*<Button*/}
+        {/*  variant="outlined"*/}
+        {/*  color="primary"*/}
+        {/*  sx={{ m: '0.5rem', textTransform: "none"}}*/}
+        {/*  onClick={handleGoBack}*/}
+        {/*>*/}
+        {/*  {localStrings.backNav}*/}
+        {/*</Button>*/}
         <Link href="/">
-          <Button variant="contained" color="primary" sx={{ m: '0.5rem' }}>
-            Go to Home
+          <Button variant="contained" color="primary" sx={{ m: '0.5rem', textTransform: "none" }}>
+            {localStrings.backToHome}
           </Button>
         </Link>
       </FlexBox>

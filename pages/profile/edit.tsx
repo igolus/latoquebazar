@@ -188,34 +188,31 @@ const ProfileEditor = () => {
                                 />
                               </Grid>
 
-                              <Grid item md={12} xs={12}>
-                                <GoogleMapsAutocomplete noKeyKnown
-                                                        useTextField
-                                                        required
-                                                        initialValue={values.address || ''}
-                                                        title={localStrings.address}
-                                                        error={!!touched.address && !!errors.address}
-                                                        helperText={touched.address && errors.address}
+                              {/*<Grid item md={12} xs={12}>*/}
+                              {/*  <GoogleMapsAutocomplete noKeyKnown*/}
+                              {/*                          useTextField*/}
+                              {/*                          required*/}
+                              {/*                          initialValue={values.address || ''}*/}
+                              {/*                          title={localStrings.address}*/}
+                              {/*                          error={!!touched.address && !!errors.address}*/}
+                              {/*                          helperText={touched.address && errors.address}*/}
 
-                                    // title={localStrings.address}
-                                    // error={!!touched.address && !!errors.address}
-                                    // helperText={touched.address && errors.address}
-                                                        setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                                            if (currentEstablishment()) {
-                                                                let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                                setDistanceAndCheck(distInfo,
-                                                                    (maxDistanceReached) => {
-                                                                        setMaxDistanceReached(maxDistanceReached);
-                                                                    },
-                                                                    setDistanceInfo, currentEstablishment);
-                                                            }
+                              {/*                          setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {*/}
+                              {/*                              if (currentEstablishment()) {*/}
+                              {/*                                  let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);*/}
+                              {/*                                  setDistanceAndCheck(distInfo,*/}
+                              {/*                                      (maxDistanceReached) => {*/}
+                              {/*                                          setMaxDistanceReached(maxDistanceReached);*/}
+                              {/*                                      },*/}
+                              {/*                                      setDistanceInfo, currentEstablishment);*/}
+                              {/*                              }*/}
 
-                                                            setFieldValue("address", label);
-                                                          setFieldValue("placeId", placeId);
-                                                          setFieldValue("lat", lat);
-                                                          setFieldValue("lng", lng);
-                                                        }}/>
-                              </Grid>
+                              {/*                              setFieldValue("address", label);*/}
+                              {/*                            setFieldValue("placeId", placeId);*/}
+                              {/*                            setFieldValue("lat", lat);*/}
+                              {/*                            setFieldValue("lng", lng);*/}
+                              {/*                          }}/>*/}
+                              {/*</Grid>*/}
                             </Grid>
                           </Box>
 
@@ -240,7 +237,7 @@ const initialValues = (dbUser) => {
     lastName: dbUser?.userProfileInfo?.lastName || '',
     email: dbUser?.userProfileInfo?.email || '',
     phoneNumber: dbUser?.userProfileInfo?.phoneNumber || '',
-    address: dbUser?.userProfileInfo?.address || '',
+    //address: dbUser?.userProfileInfo?.address || '',
   }
 }
 
