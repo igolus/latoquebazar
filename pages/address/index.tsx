@@ -23,8 +23,10 @@ import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {cloneDeep} from "@apollo/client/utilities";
 import {executeMutationUtil} from "../../src/apolloClient/gqlUtil";
 import {updateSiteUserQuery} from "../../src/gql/siteUserGql";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 
-const AddressList = () => {
+const AddressList = ({contextData}) => {
   const {dbUser, currentBrand, setDbUser} = useAuth()
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,7 @@ const AddressList = () => {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout contextData={contextData}>
       {loading ?
         <ClipLoaderComponent/>
           :
@@ -186,5 +188,9 @@ const orderList = [
     price: 300,
   },
 ]
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return await getStaticPropsUtil();
+}
 
 export default AddressList

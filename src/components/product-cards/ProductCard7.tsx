@@ -80,7 +80,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
         minWidth="0px"
         width="100%"
       >
-        <Link href={`/product/detail/${item.productId}`}>
+        <Link href={"/product/detail/" + product.id}>
           <a>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
               {formatProductAndSkuName(item)}

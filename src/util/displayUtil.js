@@ -1,6 +1,13 @@
 import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getProductsQuery} from "../gql/productGql";
-import {getOrderDeliveryMode, getOrderStatus, orderDeliveryMode, TYPE_DEAL, TYPE_PRODUCT} from "./constants";
+import {
+    getOrderDeliveryMode,
+    getOrderStatus,
+    ORDER_DELIVERY_MODE_DELIVERY,
+    orderDeliveryMode,
+    TYPE_DEAL,
+    TYPE_PRODUCT
+} from "./constants";
 import moment from "moment";
 import localStrings from "../localStrings";
 import axios from "axios";
@@ -226,6 +233,21 @@ export function formatOrderConsumingMode(item, localStrings) {
     return ""
 }
 
+export function formatOrderConsumingModeGrid(item, localStrings) {
+    if (item && item.deliveryMode) {
+        let localValue = getOrderDeliveryMode(localStrings).find(source => source.value === item.deliveryMode);
+        if (item.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+            return localValue.name+ "                                                ";
+        }
+        if (localValue) {
+            return localValue.name;
+        }
+        return "";
+    }
+    return ""
+}
+
+
 export function formatOrderStatus(status, localStrings) {
     if (status) {
         let data = getOrderStatus(localStrings).find(item => item.value === status);
@@ -235,6 +257,7 @@ export function formatOrderStatus(status, localStrings) {
     }
     return '';
 }
+
 
 export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, address) => {
     let origins =  establishment.lat + "," + establishment.lng;

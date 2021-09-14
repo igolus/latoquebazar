@@ -402,7 +402,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       let result;
       delete dataOrder["updateDate"];
       delete dataOrder["initial"];
-
+      if (dataOrder?.deliveryAddress) {
+        delete dataOrder.deliveryAddress["id"];
+        delete dataOrder.deliveryAddress["additionalInformation"];
+      }
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
@@ -457,8 +460,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       setLoading(false);
       //setLoading(false);
     }
-
-    router.push('/confirmed/' + orderId)
+    if (orderId != 0) {
+      router.push('/confirmed/' + orderId)
+    }
   }
 
 

@@ -78,8 +78,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
         minWidth="0px"
         width="100%"
       >
-        <Link href={`/product/detail/${item.productId}`}>
-          <a>
+        <>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
               {item.name}
             </Span>
@@ -87,8 +86,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
             <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
               {" " + getPriceDeal(item).toFixed(2)  + " " + currency }
             </Span>
-          </a>
-        </Link>
+        </>
         {/*{JSON.stringify(item.options)}*/}
         {
           deal.productAndSkusLines && deal.productAndSkusLines.map((productAndSkusLine, key) =>

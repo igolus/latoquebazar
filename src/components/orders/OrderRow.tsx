@@ -7,7 +7,12 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 import React from 'react'
 import moment from "moment";
-import {formatOrderStatus} from "../../util/displayUtil";
+import {
+  formatOrderConsumingMode,
+  formatOrderConsumingModeGrid,
+  formatOrderStatus,
+  formatOrderStatusGrid
+} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import {
   ORDER_STATUS_DELIVERING, ORDER_STATUS_FINISHED,
@@ -54,7 +59,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
           <H5 m={0.75} textAlign="left">
             {item.orderNumber}
           </H5>
-          <Box m={0.75}>
+          <Box m={0.75} width={"25px"}>
             <Chip
               size="small"
               label={formatOrderStatus(item.status, localStrings)}
@@ -70,6 +75,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
               }}
             />
           </Box>
+          <Typography className="pre" m={0.75} textAlign="left">
+            {formatOrderConsumingModeGrid(item, localStrings)}
+          </Typography>
           <Typography className="pre" m={0.75} textAlign="left">
             {/*{item.creationDate}*/}
             {moment(parseFloat(item.creationDate)).locale("fr").calendar()}

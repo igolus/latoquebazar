@@ -93,6 +93,9 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                         {localStrings.status}
                     </H5>
                     <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
+                      {localStrings.deliveryMode}
+                    </H5>
+                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
                         {localStrings.purchaseDate}
                     </H5>
                     <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">

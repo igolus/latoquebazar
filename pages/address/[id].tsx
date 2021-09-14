@@ -4,8 +4,10 @@ import React from 'react'
 import {useRouter} from "next/router";
 import useAuth from "@hook/useAuth";
 import {useQuery} from "@apollo/client";
+import {GetStaticPaths, GetStaticProps} from "next";
+import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 
-const AddressUpdater = () => {
+const AddressUpdater = ({contextData}) => {
     const router = useRouter();
     //const { query } = useRouter();
     const { id } = router.query;
@@ -16,10 +18,19 @@ const AddressUpdater = () => {
     //console.log("query -------------" + back)
     //alert("query " + back)
   return (
-    <DashboardLayout>
+    <DashboardLayout contextData={contextData}>
       <AddressEditor id={id} back={back}/>
     </DashboardLayout>
   )
 }
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
+
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+    return getStaticPathsUtil()
+}
+
 
 export default AddressUpdater

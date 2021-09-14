@@ -162,11 +162,12 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                 }
             />
 
-            {!noStatus &&
+            {!noStatus && order?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
             <Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>
                 {refreshing ?
                     <ClipLoaderComponent/>
                     :
+                    <>
                     <StyledFlexbox>
                         {stepIconList.map((Icon, ind) => (
                             <Fragment key={ind}>
@@ -208,6 +209,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                             </Fragment>
                         ))}
                     </StyledFlexbox>
+                    </>
                 }
 
                 <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>
@@ -237,14 +239,27 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                             {formatOrderConsumingMode(order, localStrings)}
                         </Paragraph>
 
-                        {order && order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                        {order &&
                         order.status !== ORDER_STATUS_FINISHED &&
                         <>
                             <H5 mt={0} mb={2} mt={2}>
-                                {localStrings.deliveryHour}
+                                {order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? localStrings.deliveryHour
+                                    : localStrings.pickupHour}
                             </H5>
                             <Paragraph fontSize="14px" my="0px">
                                 {formatOrderDeliveryDateSlot(order)}
+                            </Paragraph>
+                        </>
+                        }
+
+                        {order &&
+                        order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                        <>
+                            <H5 mt={0} mb={2} mt={2}>
+                                {localStrings.deliveryAdress}
+                            </H5>
+                            <Paragraph fontSize="14px" my="0px">
+                                {order?.deliveryAddress?.address}
                             </Paragraph>
                         </>
                         }

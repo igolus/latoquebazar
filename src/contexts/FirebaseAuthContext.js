@@ -282,6 +282,9 @@ export const AuthProvider = ({ children }) => {
             //resetOrderInCreation();
             setOrderInCreation(orderInCreationParsed, true);
           }
+          else {
+            resetOrderInCreation();
+          }
           // else {
           //   resetOrderInCreation()
           // }
@@ -564,11 +567,13 @@ export const AuthProvider = ({ children }) => {
         orderInCreation: orderInCreation,
       }
     });
-    if (localStorage && !doNotupdateLocalStorage) {
+    if (localStorage && !doNotupdateLocalStorage && orderInCreation.order) {
 
       let orderInCreationCopy = cloneDeep(orderInCreation)
       delete orderInCreationCopy["bookingSlot"]
       orderInCreationCopy.updateDate = moment().unix();
+
+      //alert("orderInCreation " + JSON.stringify(orderInCreation));
       localStorage.setItem(CART_KEY, encryptor.encrypt(JSON.stringify(orderInCreationCopy)));
       //localStorage.setItem(CART_KEY, JSON.stringify(orderInCreationCopy));
     }
