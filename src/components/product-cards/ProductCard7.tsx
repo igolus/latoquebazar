@@ -146,7 +146,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             <Button
                 variant="outlined"
                 color="primary"
-                disabled={item.quantity === 1}
+                disabled={item.quantity === 0}
                 sx={{p: '5px'}}
                 onClick={() => decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
             >

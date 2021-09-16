@@ -48,7 +48,7 @@ const OpeningHourRow = ({index, daySetting}) => {
             {day}
         </Typography>
         <Box m={0.75}>
-            {daySettingCurrent.map((item, key) =>
+            {daySettingCurrent.sort((a,b) => b.startHourBooking < a.startHourBooking ? 1 : -1).map((item, key) =>
                 <Typography textAlign="left" key={key}>
                     {(item.startHourBooking || "") + "-" + (item.endHourBooking || "")}
                 </Typography>

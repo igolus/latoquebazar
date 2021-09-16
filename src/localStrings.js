@@ -102,15 +102,16 @@ let localStrings = new LocalizedStrings({
         //myAdresses: "Mes adresses",
 
         distanceTime: " distance jusqu'a l'etablissement: {0} km / {1}",
+        distanceOnly: " distance jusqu'a l'etablissement: {0} km ",
         timeSlot: "Creneau de reservation",
         selectDeliveryTimeSlot: "Selectionner un creneau de livraison",
         selectPickupTimeSlot: "Selectionner un creneau de recupération",
         priceToPay: "Montant a payer",
         pricePaid: "Montant payé",
-        remainingToPay: "Reste a payé: {0}",
+        remainingToPay: "Reste a payer: {0}",
 
         totalNoTax: "Total hors taxes",
-        totalTax: "Total taxes",
+        totalTax: "Total TVA",
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",
 

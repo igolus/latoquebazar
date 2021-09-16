@@ -16,8 +16,8 @@ const ClosingDayItem = ({slot}) => {
         return (<></>);
     }
 
-    let dateStart = moment.unix(slot.startDate).calendar();
-    let dateEnd = moment.unix(slot.endDate).calendar();
+    let dateStart = moment.unix(slot.startDate).locale("fr").calendar();
+    let dateEnd = moment.unix(slot.endDate).locale("fr").calendar();
 
     return (<TableRow sx={{ my: '1rem', padding: '6px 18px' }}>
         <Typography className="pre" m={0.75} textAlign="left">
@@ -29,10 +29,12 @@ const ClosingDayItem = ({slot}) => {
 const ClosingDays = ({}) => {
     const {currentEstablishment} = useAuth()
     //const { height, width } = useWindowDimensions();
-    const closingSlots = currentEstablishment()?.serviceSetting?.closingSlots || [];
+    const closingSlots = (currentEstablishment()?.serviceSetting?.closingSlots || [])
+        .filter(slot => moment.unix(slot.startDate).isAfter());
 
     return (
         <>
+        {/*<p>{JSON.stringify(closingSlots)}</p>*/}
         {closingSlots.length > 0 &&
         <Card1 sx={{mb: '2rem'}}>
 

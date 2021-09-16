@@ -192,12 +192,35 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         }
       };
 
-      const { data: clientSecret } = await axios.post(config.paymentUrl, {
-        //amount: 200
-        orderId: orderId,
-        establishmentId: currentEstablishment().id,
-        brandId: currentBrand().id
-      });
+
+      // const data = await axios.post(config.paymentUrl, {
+      //   //amount: 200
+      //   orderId: orderId,
+      //   establishmentId: currentEstablishment().id,
+      //   brandId: currentBrand().id
+      // });
+
+      //let data;
+      // try
+      // {
+        const data = await axios.post(config.paymentUrl, {
+          //amount: 200
+          orderId: orderId,
+          establishmentId: currentEstablishment().id,
+          brandId: currentBrand().id
+        });
+        //alert("data pay " + JSON.stringify(data))
+        //console.log("data pay " + JSON.stringify(data))
+        if (data.errorMessage) {
+          setCheckoutError(data.errorMessage);
+          //alert("payment error " + resPay.error.message)
+          //alert("config.paymentUrl " + config.paymentUrl)
+          return null;
+        }
+      // }
+      // catch (err) {
+      //     alert("err first " + err)
+      // }
 
       const paymentMethodReq = await stripe.createPaymentMethod({
         type: "card",
@@ -213,11 +236,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         return null;
       }
 
-      const resPay = await stripe.confirmCardPayment(clientSecret, {
+
+      const resPay = await stripe.confirmCardPayment(data.data, {
         payment_method: paymentMethodReq.paymentMethod.id
       });
 
-
+      //alert(JSON.stringify(resPay))
       if (resPay.error) {
         setCheckoutError(resPay.error.message);
         //alert("payment error " + resPay.error.message)
@@ -240,7 +264,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
     } catch (err) {
       setCheckoutError(err.message);
-      //alert(err.message);
+      console.log("error pay" + JSON.stringify(err, null,2));
+      //alert("error pay" + JSON.stringify(err));
       return null;
     }
 
@@ -445,7 +470,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       }
 
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null, 2))
-      let messageNotif = localStrings.formatString(localStrings.notifForBackEnd.orderCreated, getProfileName(dbUser))
+      let messageNotif = localStrings.formatString(localStrings.notifForBackEnd.orderCreated,
+          getProfileName(dataOrder.customer))
       let link = "/app/management/Orders/detail/" + result.data.addOrder.id;
       await sendNotif(currentBrand.id, currentEstablishment().id, messageNotif,
           link, "");
@@ -578,14 +604,24 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       <Grid container spacing={3} mb={2}>
                         <Grid item xs={12} lg={12}>
                           {isMobile ?
+                              <Box>
+                                <Link href="/profile">
+                                  <Button variant={"contained"}
+                                          style={{textTransform: "none"}}
+                                          color="primary" type="button" fullWidth>
+                                    {localStrings.login}
+                                  </Button>
+                                </Link>
 
-                              <Link href="/profile">
                                 <Button variant={"contained"}
-                                        style={{textTransform: "none"}}
+                                        style={{textTransform: "none", marginTop: "1rem"}}
+                                        onClick={() => {
+                                          setBookWithoutAccount(true)
+                                        }}
                                         color="primary" type="button" fullWidth>
-                                  {localStrings.login}
+                                  {localStrings.continueWithoutAccount}
                                 </Button>
-                              </Link>
+                              </Box>
                               :
                               <Box>
                                 <Button variant={"contained"}
@@ -676,9 +712,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                           <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
                                           title={maxDistanceReached ?
                                               localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                          content={localStrings.formatString(localStrings.distanceTime,
-                                              (distanceInfo.distance / 1000),
-                                              formatDuration(distanceInfo, localStrings))}
+                                          content={localStrings.formatString(localStrings.distanceOnly,
+                                              (distanceInfo.distance / 1000))}
                           />
                         </Box>
                         }

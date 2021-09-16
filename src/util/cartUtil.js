@@ -57,6 +57,7 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
                 deals: [...others]
             }
         });
+        itemIoChange.quantity--;
         return;
     }
 
@@ -108,6 +109,7 @@ export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid) {
                 deals: deals
             }
         });
+        itemIoChange.quantity--;
         return;
     }
 

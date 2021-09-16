@@ -148,10 +148,12 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     <Box>
                         <FlexBox justifyContent="center" mb={6}>
                             <LazyImage
-                                src={imgUrl[selectedImage]}
-                                onClick={() =>
-                                    openImageViewer(imgUrl.indexOf(imgUrl[selectedImage]))
-                                }
+                                src={imgUrl[selectedImage] || "/assets/images/Icon_Sandwich.png"}
+                                onClick={() => {
+                                    if (imgUrl[selectedImage]) {
+                                        openImageViewer(imgUrl.indexOf(imgUrl[selectedImage]))
+                                    }
+                                }}
                                 alt={product.name}
                                 height="300px"
                                 width="auto"

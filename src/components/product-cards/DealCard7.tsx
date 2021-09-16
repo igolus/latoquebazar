@@ -163,7 +163,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"
-                disabled={item.quantity === 1}
+                disabled={item.quantity === 0}
                 sx={{p: '5px'}}
                 onClick={() => decreaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
             >

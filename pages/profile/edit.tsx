@@ -79,9 +79,8 @@ const ProfileEditor = () => {
                         <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
                                         title={maxDistanceReached ?
                                             localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                        content={localStrings.formatString(localStrings.distanceTime,
-                                            (distanceInfo.distance / 1000),
-                                            formatDuration(distanceInfo, localStrings))}
+                                        content={localStrings.formatString(localStrings.distanceOnly,
+                                            (distanceInfo.distance / 1000))}
                         />
                     </Box>
                     }

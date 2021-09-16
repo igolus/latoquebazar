@@ -60,9 +60,8 @@ function AdressCheck({closeCallBack}) {
                         {maxDistanceReached ?
                             localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
                         {
-                            localStrings.formatString(localStrings.distanceTime,
-                                (distanceInfo.distance / 1000),
-                                formatDuration(distanceInfo, localStrings))
+                            localStrings.formatString(localStrings.distanceOnly,
+                                (distanceInfo.distance / 1000))
                         }
 
                     </Alert>

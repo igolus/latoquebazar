@@ -346,7 +346,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         variant="outlined"
                         color="primary"
                         sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
-                        disabled={getQteInCart(selectedProductAndSku, getOrderInCreation) == 1}
+                        disabled={getQteInCart(selectedProductAndSku, getOrderInCreation) == 0}
                         onClick={() => {
                           if (selectedProductAndSku.sku.uuid) {
                             decreaseCartQte(getOrderInCreation, setOrderInCreation, selectedProductAndSku.sku.uuid)
@@ -399,7 +399,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                           let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
-                          if (!selectedProductAndSku.sku.uuid) {
+                          if (!selectedProductAndSku.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation) === 0) {
                             let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
                             setSelectedProductSku(selectedWithUuid)
                           }
