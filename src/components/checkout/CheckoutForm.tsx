@@ -1,10 +1,10 @@
 import Card1 from '@component/Card1'
 import {
   Box,
-  Button,
+  Button, Checkbox,
   CircularProgress,
   FormControl,
-  FormControlLabel,
+  FormControlLabel, FormGroup,
   Grid,
   Radio,
   RadioGroup,
@@ -30,7 +30,7 @@ import GoogleMapsAutocomplete, {loadScript} from "@component/map/GoogleMapsAutoc
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
-  formatDuration,
+  formatDuration, formatPaymentMethod,
   getDeliveryDistanceWithFetch,
   getProfileName,
   getSkusListsFromProducts,
@@ -110,8 +110,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
+  const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
 
   useEffect(() => {
+    //resetDeliveryAdress();
     if (typeof window !== 'undefined' && !loaded.current) {
       let element = document.querySelector('#google-maps');
       if (element) {
@@ -333,15 +335,25 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
             });
       }
 
-      let createBookingSlotOccupancy = false;
+      //let createBookingSlotOccupancy = false;
       if (dataOrder.bookingSlot) {
-        createBookingSlotOccupancy = true;
-        //dataOrder.bookingSlot = {...orderInCreation().bookingSlot}
+        //createBookingSlotOccupancy = true;
+        //dataOrder.bookingSlot = {...getOrderInCreation().bookingSlot}
         delete dataOrder.bookingSlot.available;
         delete dataOrder.bookingSlot.full;
         delete dataOrder.bookingSlot.closed;
+
+
+        dataOrder.bookingSlot.startDateIso = dataOrder.bookingSlot.startDate.format();
+        dataOrder.bookingSlot.endDateIso = dataOrder.bookingSlot.endDate.format();
         dataOrder.bookingSlot.startDate = moment(dataOrder.bookingSlot.startDate).unix();
         dataOrder.bookingSlot.endDate = moment(dataOrder.bookingSlot.endDate).unix();
+
+
+        // dataOrder.bookingSlot.startDate = moment(dataOrder.bookingSlot.startDate).unix();
+        // dataOrder.bookingSlot.endDate = moment(dataOrder.bookingSlot.endDate).unix();
+        // dataOrder.bookingSlot.startDateIso = moment(dataOrder.bookingSlot.startDate).toISOString();
+        // dataOrder.bookingSlot.endDateIso = moment(dataOrder.bookingSlot.endDate).toISOString();
       }
       else {
         dataOrder.bookingSlot = {
@@ -432,6 +444,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         delete dataOrder.deliveryAddress["additionalInformation"];
       }
 
+      dataOrder.expectedPayments = expectedPaymentMethods;
+
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
       if (paymentMethod === "cc") {
@@ -459,22 +473,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       }
 
 
-      if (createBookingSlotOccupancy) {
-        await executeMutationUtil(createUpdateBookingSlotOccupancyMutation(currentBrand.id, currentEstablishment().id,
-            {
-              startDate: dataOrder.bookingSlot.startDate,
-              endDate: dataOrder.bookingSlot.endDate,
-              totalPreparationTime: dataOrder.totalPreparationTime,
-              deliveryNumber: dataOrder.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? 1 : 0
-            }));
-      }
+      // if (createBookingSlotOccupancy) {
+      //   await executeMutationUtil(createUpdateBookingSlotOccupancyMutation(currentBrand.id, currentEstablishment().id,
+      //       {
+      //         startDate: dataOrder.bookingSlot.startDate,
+      //         endDate: dataOrder.bookingSlot.endDate,
+      //         totalPreparationTime: dataOrder.totalPreparationTime,
+      //         deliveryNumber: dataOrder.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? 1 : 0
+      //       }));
+      // }
 
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null, 2))
-      let messageNotif = localStrings.formatString(localStrings.notifForBackEnd.orderCreated,
-          getProfileName(dataOrder.customer))
-      let link = "/app/management/Orders/detail/" + result.data.addOrder.id;
-      await sendNotif(currentBrand.id, currentEstablishment().id, messageNotif,
-          link, "");
+      // let messageNotif = localStrings.formatString(localStrings.notifForBackEnd.orderCreated,
+      //     getProfileName(dataOrder.customer))
+      // let link = "/app/management/Orders/detail/" + result.data.addOrder.id;
+      // await sendNotif(currentBrand.id, currentEstablishment().id, messageNotif,
+      //     link, "");
       increaseOrderCount();
       resetOrderInCreation();
     }
@@ -493,6 +507,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
 
   function setSelectedBookingSlot(bookingSlot) {
+    //alert("setSelectedBookingSlot " + JSON.stringify(bookingSlot))
     setOrderInCreation({
       ...getOrderInCreation(),
       bookingSlot: bookingSlot,
@@ -503,6 +518,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryMode: deliveryMode,
+      bookingSlot: null,
     })
   }
 
@@ -521,6 +537,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
 
   function resetDeliveryAdress() {
+    //alert("resetDeliveryAdress")
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryAddress: null,
@@ -565,6 +582,49 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
           },
           setDistanceInfo, currentEstablishment);
     }
+  }
+
+  function getSubmitText() {
+    if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
+      return localStrings.check.noSelectPaymentMethod;
+    }
+
+    if (!getOrderInCreation().bookingSlot) {
+      return localStrings.check.noSelectSlotMethod;
+    }
+
+    if (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) {
+      return localStrings.check.maxDistanceReached;
+    }
+
+    if (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+      return localStrings.check.noDeliveryAdress;
+    }
+
+    if (getCartItems(getOrderInCreation).length === 0) {
+      return localStrings.check.noItemInCart;
+    }
+
+
+    return paymentMethod === "cc" ?
+        localStrings.formatString(localStrings.checkOutNowAndPayCard,
+            computePriceDetail(orderInCreation).total.toFixed(2))
+        :
+        localStrings.formatString(localStrings.checkOutNowAndPayLater,
+            computePriceDetail(orderInCreation).total.toFixed(2))
+  }
+
+  function getPaymentsOnline() {
+    if (!currentEstablishment() || !currentEstablishment().offlinePaymentMethods)
+    {
+      return [];
+    }
+    return currentEstablishment().offlinePaymentMethods.map(methodkey => {
+          return ({
+            valuePayment: methodkey,
+            name: formatPaymentMethod(methodkey, localStrings)
+          })
+        })
   }
 
   return (
@@ -674,6 +734,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                         <Typography fontWeight="800" mb={2} variant="h5">
                           {localStrings.selectDeliveryMode}
                         </Typography>
+                        {/*<p>{JSON.stringify(getOrderInCreation() || {})}</p>*/}
                         {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
                         <PresenterSelect
                             icon={faMotorcycle}
@@ -681,6 +742,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             subtitle={localStrings.deliverySubTitle}
                             selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
                             onCLickCallBack={() => {
+                              //setSelectedBookingSlot({});
                               setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)
                             }}
                         />
@@ -692,6 +754,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             subtitle={localStrings.clickAndCollectSubTitle}
                             selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
                             onCLickCallBack={() => {
+                              //setSelectedBookingSlot({});
                               setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
                             }}
                         />
@@ -1042,7 +1105,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       }
 
                       <Typography fontWeight="600" mb={2}>
-                        {localStrings.payementMethod}
+                        {localStrings.paymentMethod}
                       </Typography>
 
                       <FormControlLabel
@@ -1076,6 +1139,38 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             onChange={handlePaymentMethodChange}
                         />
                       </>
+                      }
+
+                      <Typography fontWeight="600" mb={2}>
+                        {localStrings.paymentMethodsForPickup}
+                      </Typography>
+
+                      {paymentMethod !== 'cc' &&
+                        <FormGroup >
+                          {/*<p>{JSON.stringify(getPaymentsOnline())}</p>*/}
+                          {getPaymentsOnline().map((item, key) =>
+                              <FormControlLabel key={key}
+                                control={
+                                  <Checkbox
+                                      checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
+                                      onChange={(event) => {
+                                        //alert("checked " + event.target.checked);
+                                        if (event.target.checked) {
+                                          setExpectedPaymentMethods([...expectedPaymentMethods, item])
+                                        }
+                                        else {
+                                          let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
+                                          setExpectedPaymentMethods(filter)
+                                        }
+                                      }}
+                                  />
+                                }
+                                label={item.name} />
+                          )}
+
+                          {/*<FormControlLabel control={<Checkbox  />} label="Label" />*/}
+                          {/*<FormControlLabel control={<Checkbox />} label="Disabled" />*/}
+                        </FormGroup>
                       }
 
                       {paymentMethod === 'cc' &&
@@ -1159,6 +1254,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             type="submit"
                             //endIcon={<SaveIcon />}
                             disabled={
+                              (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) ||
                               !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
                               !getOrderInCreation().bookingSlot ||
                               loading || getCartItems(getOrderInCreation).length == 0 ||
@@ -1168,13 +1264,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             }
                             endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
                         >
-                          {paymentMethod === "cc" ?
-                              localStrings.formatString(localStrings.checkOutNowAndPayCard,
-                                  computePriceDetail(orderInCreation).total.toFixed(2))
-                              :
-                              localStrings.formatString(localStrings.checkOutNowAndPayLater,
-                                  computePriceDetail(orderInCreation).total.toFixed(2))
-                          }
+                          {getSubmitText()}
                           {/*<CircularProgress size={24}/>*/}
                           {/*{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
 

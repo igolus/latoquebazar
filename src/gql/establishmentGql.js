@@ -23,6 +23,7 @@ const common = `
         state
         zipCode
         contactMail
+        doNotSendOrderInHubiseAuto
         config {
           key
           value  

@@ -6,6 +6,7 @@ import localStrings from "../../localStrings";
 import {StyledDashboardNav} from "@component/layout/DashboardStyle";
 import {useRouter} from "next/router";
 import {ALL_CAT} from "@component/products/ProductCard1List";
+import {filterCat} from "../../util/displayUtil";
 
 export type FilterProps = {
     selectedCategory: string
@@ -13,16 +14,17 @@ export type FilterProps = {
 
 export type ProductFilterCardProps = {
     categories: [string],
+    products: any,
     tags: any,
     tagsSelected: any,
     setTagsSelected: any,
 }
 
 
-const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, tags, tagsSelected, setTagsSelected}) => {
+const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, products, tags, tagsSelected, setTagsSelected}) => {
     const { asPath } = useRouter()
 
-
+    const filteredCat = filterCat(categories, products)
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
             <H6 mb={1.25}>{localStrings.categories}</H6>
@@ -49,7 +51,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, tags, 
             {/*}*/}
 
 
-            {(categories || []).map((item) => {
+            {(filteredCat || []).map((item) => {
                     //alert(asPath)
                     return ( <StyledDashboardNav
                             isCurrentPath={asPath.includes(encodeURI(item.category))}

@@ -21,6 +21,7 @@ const common = `
         country
         state
         zipCode
+        doNotSendOrderInHubiseAuto
         config {
           key
           value  

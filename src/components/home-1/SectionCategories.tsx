@@ -8,7 +8,7 @@ import Link from 'next/link'
 import React from 'react'
 import CategorySectionHeader from '../CategorySectionHeader'
 import localStrings from "../../localStrings";
-import {getProductFirstImgUrl} from "../../util/displayUtil";
+import {filterCat, getProductFirstImgUrl} from "../../util/displayUtil";
 
 const useStyles = makeStyles(({ shadows }: MuiThemeProps) => ({
   card: {
@@ -26,11 +26,14 @@ const useStyles = makeStyles(({ shadows }: MuiThemeProps) => ({
 
 export interface SectionCategoriesProps {
   categories: any,
+  products: any,
 }
 
 
-const SectionCategories: React.FC<SectionCategoriesProps> = ({categories}) => {
+const SectionCategories: React.FC<SectionCategoriesProps> = ({categories, products}) => {
   const classes = useStyles()
+
+  const filteredCat = filterCat(categories, products)
 
   return (
     <div style={{width: '100%'}}>
@@ -51,7 +54,7 @@ const SectionCategories: React.FC<SectionCategoriesProps> = ({categories}) => {
         {/*      alignItems="center"*/}
         {/*      minHeight="100vh"*/}
         {/*  >*/}
-        {categories.map((item, ind) => (
+        {filteredCat.map((item, ind) => (
           <Grid item lg={2} md={3} sm={4} xs={12} key={ind}>
             <Link href={"/product/shop/" + item.category}>
               <a>

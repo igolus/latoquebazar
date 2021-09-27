@@ -81,21 +81,31 @@ function isClosed(startDate, establishment) {
   }));
 }
 
+function getOffset(deliveryMode, establishment) {
+  if (!deliveryMode || !establishment) {
+    return 0;
+  }
+  let slotDuration = establishment.serviceSetting?.slotDuration || 20;
+
+  //let offset = 0
+  if (deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+    return (establishment.serviceSetting.minimalSlotNumberBooking || 0) * slotDuration;
+  } else if (deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
+    return (establishment.serviceSetting.minimalSlotNumberBookingNoDelivery || 0) * slotDuration;
+  } else {
+    return 0;
+  }
+}
+
+
 export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
+
+
   if (establishment && startDate) {
     //alert("establishment " + establishment);
-    let slotDuration = establishment.serviceSetting.slotDuration || 20;
 
-    let offset = 0
-    if (deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
-      offset = (establishment.serviceSetting.minimalSlotNumberBooking || 0) * slotDuration;
-    }
-    else if (deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
-      offset = (establishment.serviceSetting.minimalSlotNumberBookingNoDelivery || 0) * slotDuration;
-    }
-    else {
-      offset = 0;
-    }
+    let slotDuration = establishment.serviceSetting?.slotDuration || 20;
+    let offset = getOffset(deliveryMode, establishment);
 
     let daySettings = getWeekDaySettingsFromDate(startDate, establishment);
 
@@ -270,6 +280,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
   //const [bookingSlotStartDate, setBookingSlotStartDate] = useState(startDateParam);
 
   const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
+  const [offset, setOffset] = useState(null);
   const [reload, setReload] = useState(true);
   const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation} = useAuth();
@@ -280,13 +291,22 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     }
   };
 
+  useEffect(() => {
+    let offset = getOffset(getOrderInCreation().deliveryMode, currentEstablishment());
+    setOffset(offset)
+  }, [getOrderInCreation().deliveryMode])
+
+  useEffect(async () => {
+    if (currentEstablishment()) {
+      let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
+      //alert("res " + JSON.stringify(res))
+      setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
+    }
+  }, [currentEstablishment()])
+
   useEffect(async () => {
 
-    // if (currentEstablishment()) {
-    //   let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
-    //   alert("res " + JSON.stringify(res))
-    //   setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
-    // }
+
 
     const interval = setInterval(async () => {
       if (currentEstablishment()) {
@@ -371,9 +391,16 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     return allClosed;
   }
 
+  function slotInTime(slot) {
+    let minimumDateStart = moment().add(offset, 'minutes');
+    return slot.startDate.isAfter(minimumDateStart);
+  }
+
   return (
     <div>
-      {/*{JSON.stringify(getOrderInCreation())}*/}
+      {/*<p>{JSON.stringify(timeSlots)}</p>*/}
+      {/*<p>{timeSlots.allSlots.length}</p>*/}
+      {/*<p>{offset}</p>*/}
       {bookingSlotStartDate && reload &&
       // <>
         <div style={{ width: '100%' }}>
@@ -442,7 +469,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
                   value.startDate.format('HH:mm')
                   + "-"
                   + value.endDate.format('HH:mm')
-                if (value.available || isSelectedSlot(value)) {
+                if ((value.available || isSelectedSlot(value)) && slotInTime(value)) {
                   return (
                     <Box m={1}>
                       {/*<p>butt</p>*/}

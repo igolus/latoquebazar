@@ -143,9 +143,11 @@ const common = `
    }
    bookingSlot {
       startDate
+      startDateIso
       endDate
-      
-    }
+      endDateIso
+   }
+   confirmedTime
   deliveryMode
   deliveryAddress {
       address

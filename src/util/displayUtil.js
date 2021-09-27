@@ -2,7 +2,7 @@ import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getProductsQuery} from "../gql/productGql";
 import {
     getOrderDeliveryMode,
-    getOrderStatus,
+    getOrderStatus, getPaymentMethods,
     ORDER_DELIVERY_MODE_DELIVERY,
     orderDeliveryMode,
     TYPE_DEAL,
@@ -258,13 +258,23 @@ export function formatOrderStatus(status, localStrings) {
     return '';
 }
 
+export function formatPaymentMethod(methodKey, localStrings) {
+    if (methodKey) {
+        let data = getPaymentMethods(localStrings).find(item => item.valuePayment === methodKey);
+        if (data) {
+            return data.name;
+        }
+    }
+    return methodKey;
+}
+
 
 export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, address) => {
     let origins =  establishment.lat + "," + establishment.lng;
     let destinations =  lat + "," + lng;
 
     let res = await axios.get(config.distanceUrl + '?origins='+
-            origins + '&destinations=' + destinations + '&key=' + config.googleKey);
+        origins + '&destinations=' + destinations + '&key=' + config.googleKey);
 
     if (res && res.data && res.data.rows && res.data.rows.length > 0) {
         //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
@@ -339,13 +349,13 @@ export const formatDuration = (distanceInfo, localStrings) => {
             //.format()
             .seconds(distanceInfo.duration)
             .format(localStrings.formatDurationNoHour);
-            //.format();
+        //.format();
     }
     else {
         return moment("2015-01-01").startOf('day')
             .seconds(distanceInfo.duration)
             .format(localStrings.formatDuration);
-            //.format();
+        //.format();
     }
 }
 
@@ -460,6 +470,21 @@ export function getRemainingToPay(order) {
         });
     }
     return totalRemaining;
+}
+
+
+export function filterCat(categories, products) {
+    const allCatProductIds = [];
+    products.forEach(p => {
+        let catId = p.category?.id
+        if (catId) {
+            if (!allCatProductIds.includes(catId)) {
+                allCatProductIds.push(catId)
+            }
+        }
+    })
+
+    return categories.filter(cat => allCatProductIds.includes(cat.id));
 }
 
 

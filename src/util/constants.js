@@ -92,6 +92,34 @@ export const getOrderStatus = (localStrings) => {
   ]
 }
 
+
+export const getPaymentMethods = (localStrings) => {
+  return  [
+  {
+    name: localStrings.paymentMethodCash,
+    valuePayment: "PAYMENT_METHOD_CASH",
+  },
+  {
+    name: localStrings.paymentMethodCC,
+    valuePayment: "PAYMENT_METHOD_CC",
+  },
+  {
+    name: localStrings.paymentMethodTicket,
+    valuePayment: "PAYMENT_METHOD_TICKET",
+  },
+  {
+    name: localStrings.paymentMethodCheque,
+    valuePayment: "PAYMENT_METHOD_CHEQUE",
+  },
+  {
+    name: localStrings.paymentMethodStripe,
+    valuePayment: "PAYMENT_METHOD_STRIPE",
+  }
+]
+}
+
+
+
 // export const orderDeliveryMode = [
 //   {
 //     name: localStrings.delivery,

@@ -42,7 +42,9 @@ let localStrings = new LocalizedStrings({
         paymentCreditCard: "Payer par carte bancaire maintenant",
         paymentDelivery: "Payer a la réception",
 
-        payementMethod: "Methode de payment",
+        paymentMethod: "Methode de payment",
+        paymentMethodsForPickup: "Selectionner vos methodes de paiement pour la paiement à la reception",
+
         saveChange: "Sauvegarder les changements",
         backToProfile: "Retour a mon profil",
         notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer les notifications pour ce site, dans la barre de tache de votre navigateur",
@@ -80,7 +82,7 @@ let localStrings = new LocalizedStrings({
         editProfile: "Editer mon compte",
         myOrders: "Mes Commandes",
         purchaseDate: "Date de commande",
-        orderNumber: "Nummero de commande",
+        orderNumber: "Numero de commande",
         orderId: "Identifiant de commande",
         status: "statut",
         myAccount: "Mon compte",
@@ -214,10 +216,10 @@ let localStrings = new LocalizedStrings({
 
         paymentMethodsOffline: "Offline payment methods",
         paymentMethodsOnline: "Online payment methods",
-        paymentMethodCash: "Cash",
-        paymentMethodCC: "Credit card",
+        paymentMethodCash: "Espece",
+        paymentMethodCC: "Carte",
         paymentMethodCheque: "Cheque",
-        paymentMethodTicket: "Ticket",
+        paymentMethodTicket: "Ticket restaurant",
         paymentMethodStripe: "Stripe",
 
         day_1 : "Lundi",
@@ -238,6 +240,13 @@ let localStrings = new LocalizedStrings({
             reTypePassword: "Fournir le mot de passe une nouvelle fois",
             invalidEmail: "eMail invalide",
             noDaySetting: "Pas de creneaux configurés",
+
+            noSelectPaymentMethod: "Aucune methode de paiments selectionné",
+            noSelectSlotMethod: "Aucune Creneau selectionné",
+            noDeliveryAdress: "Aucune addresse de livraison selectionné",
+            maxDistanceReached: "L'adresse est en dehors de la zone",
+            noItemInCart: "Aucun produits dans le panier",
+
         },
 
         info: {
