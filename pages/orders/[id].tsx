@@ -5,7 +5,7 @@ import TruckFilled from '@component/icons/TruckFilled'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import TableRow from '@component/TableRow'
-import {H5, H6, Paragraph, Span} from '@component/Typography'
+import {H2, H5, H6, Paragraph, Span} from '@component/Typography'
 import productDatabase from '@data/product-database'
 import useWindowSize from '@hook/useWindowSize'
 import { Avatar, Button, Card, Divider, Grid, Typography } from '@material-ui/core'
@@ -25,13 +25,27 @@ import {
     formatOrderConsumingMode, formatOrderDeliveryDateSlot,
     formatProductAndSkuName, getBrandCurrency,
     getImgUrlFromProducts,
-    getImgUrlFromProductsWithExtRef, getOrderBookingSlotEndDate, getOrderBookingSlotStartDate
+    getImgUrlFromProductsWithExtRef, getOrderBookingSlotEndDate, getOrderBookingSlotStartDate, getTextStatus
 } from "../../src/util/displayUtil";
 import {getCartItems} from "../../src/util/cartUtil";
 import {
-    ORDER_DELIVERY_MODE_DELIVERY, ORDER_STATUS_DELIVERING, ORDER_STATUS_FINISHED,
+    HUBRISE_ORDER_STATUS_ACCEPTED,
+    HUBRISE_ORDER_STATUS_AWAITING_COLLECTION,
+    HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT,
+    HUBRISE_ORDER_STATUS_CANCELLED,
+    HUBRISE_ORDER_STATUS_COMPLETED,
+    HUBRISE_ORDER_STATUS_DELIVERY_FAILED,
+    HUBRISE_ORDER_STATUS_IN_DELIVERY,
+    HUBRISE_ORDER_STATUS_IN_PREPARATION,
+    HUBRISE_ORDER_STATUS_NEW,
+    HUBRISE_ORDER_STATUS_RECEIVED,
+    HUBRISE_ORDER_STATUS_REJECTED,
+    ORDER_DELIVERY_MODE_DELIVERY,
+    ORDER_STATUS_DELIVERING,
+    ORDER_STATUS_FINISHED,
     ORDER_STATUS_NEW,
-    ORDER_STATUS_PREPARATION, ORDER_STATUS_READY,
+    ORDER_STATUS_PREPARATION,
+    ORDER_STATUS_READY,
     TYPE_DEAL,
     TYPE_PRODUCT
 } from "../../src/util/constants";
@@ -42,6 +56,8 @@ import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
 import OrderContent from '../../src/components/orders/OrderContent';
 import moment from "moment";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
+import BazarMenu from "@component/BazarMenu";
+import BazarImage from "@component/BazarImage";
 
 const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
     flexDirection: 'row',
@@ -150,6 +166,40 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
 
     }
 
+    function getImageStatus() {
+
+        // export const HUBRISE_ORDER_STATUS_NEW = "new";
+        // export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
+        // export const HUBRISE_ORDER_STATUS_ACCEPTED = "accepted";
+        // export const HUBRISE_ORDER_STATUS_IN_PREPARATION = "in_preparation";
+        // export const HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT= "awaiting_shipment";
+        // export const HUBRISE_ORDER_STATUS_AWAITING_COLLECTION= "awaiting_collection";
+        // export const HUBRISE_ORDER_STATUS_IN_DELIVERY= "in_delivery";
+        // export const HUBRISE_ORDER_STATUS_COMPLETED= "completed";
+        // export const HUBRISE_ORDER_STATUS_REJECTED= "rejected";
+        // export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
+        // export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
+        switch (order?.status) {
+            case HUBRISE_ORDER_STATUS_NEW:
+            case HUBRISE_ORDER_STATUS_RECEIVED:
+            case HUBRISE_ORDER_STATUS_ACCEPTED:
+               return "/assets/images/IconsDelivery/Get_box.png"
+            case HUBRISE_ORDER_STATUS_IN_PREPARATION:
+            case HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT:
+            case HUBRISE_ORDER_STATUS_AWAITING_COLLECTION:
+                return "/assets/images/IconsDelivery/Save_box.png"
+            case HUBRISE_ORDER_STATUS_IN_DELIVERY:
+                return "/assets/images/IconsDelivery/Delivery_by_scooter.png"
+            case HUBRISE_ORDER_STATUS_COMPLETED:
+                return "/assets/images/IconsDelivery/Box_received.png"
+            case HUBRISE_ORDER_STATUS_REJECTED:
+            case HUBRISE_ORDER_STATUS_CANCELLED:
+            case HUBRISE_ORDER_STATUS_DELIVERY_FAILED:
+                return "/assets/images/IconsDelivery/Support_delivery.png"
+        }
+        return "/assets/images/IconsDelivery/Get_box.png"
+    }
+
     return (
         <DashboardLayout contextData={contextData}>
             <DashboardPageHeader
@@ -162,69 +212,97 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                 }
             />
 
-            {!noStatus && order?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-            <Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>
+            {!noStatus &&
+            <Card sx={{ p: '.2rem .2rem', mb: '0' }}>
                 {refreshing ?
                     <ClipLoaderComponent/>
                     :
-                    <>
-                    <StyledFlexbox>
-                        {stepIconList.map((Icon, ind) => (
-                            <Fragment key={ind}>
-                                <Box position="relative">
-                                    <Avatar
-                                        sx={{
-                                            height: 64,
-                                            width: 64,
-                                            // bgcolor: false ? 'primary.main' : 'grey.300',
-                                            // color: false ? 'grey.white' : 'primary.main',
-                                            bgcolor: ind <= getStepOrder() ? 'primary.main' : 'grey.300',
-                                            color: ind <=  getStepOrder() ? 'grey.white' : 'primary.main',
-                                        }}
-                                    >
-                                        <Icon color="inherit" sx={{ fontSize: '32px' }} />
-                                    </Avatar>
-                                    {ind <= getStepOrder() && (
-                                        <Box position="absolute" right="0" top="0">
-                                            <Avatar
-                                                sx={{
-                                                    height: 22,
-                                                    width: 22,
-                                                    bgcolor: 'grey.200',
-                                                    color: 'success.main',
-                                                }}
-                                            >
-                                                <Done color="inherit" sx={{ fontSize: '1rem' }} />
-                                            </Avatar>
-                                        </Box>
-                                    )
-                                    }
-                                </Box>
-                                {ind < stepIconList.length - 1 && (
-                                    <Box
-                                        className="line"
-                                        bgcolor={ind < getStepOrder() ? 'primary.main' : 'grey.300'}
-                                    />
-                                )}
-                            </Fragment>
-                        ))}
-                    </StyledFlexbox>
-                    </>
+                    <div style={{width: '100%'}}>
+                        <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
+                            <Box m={5} justifyContent={"center"}>
+                                {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
+                                <BazarImage width={120} height={120} src={getImageStatus()}/>
+                            </Box>
+                            <Box mt={7}>
+                                <H2 my="0px" lineHeight="1" whiteSpace="pre">
+                                    {localStrings.orderStatus}
+                                </H2>
+                                <H5 mt={0} mb={2} mt={2}>
+                                    {getTextStatus(order, localStrings)}
+                                </H5>
+                            </Box>
+                        </Box>
+                    </div>
                 }
 
-                <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>
-                    <Typography
-                        p="0.5rem 1rem"
-                        borderRadius="300px"
-                        bgcolor="primary.light"
-                        color="primary.main"
-                        textAlign="center"
-                    >
-                        {localStrings.formatString(localStrings.deliveryEstimateDate, formatOrderDeliveryDateSlot(order))}
-                    </Typography>
-                </FlexBox>
+                {/*<h1>status</h1>*/}
             </Card>
             }
+
+            {/*{!noStatus && order?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&*/}
+            {/*<Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>*/}
+            {/*    {refreshing ?*/}
+            {/*        <ClipLoaderComponent/>*/}
+            {/*        :*/}
+            {/*        <>*/}
+            {/*        <StyledFlexbox>*/}
+            {/*            <h1>STATUS</h1>*/}
+            {/*            /!*{stepIconList.map((Icon, ind) => (*!/*/}
+            {/*            /!*    <Fragment key={ind}>*!/*/}
+            {/*            /!*        <Box position="relative">*!/*/}
+            {/*            /!*            <Avatar*!/*/}
+            {/*            /!*                sx={{*!/*/}
+            {/*            /!*                    height: 64,*!/*/}
+            {/*            /!*                    width: 64,*!/*/}
+            {/*            /!*                    // bgcolor: false ? 'primary.main' : 'grey.300',*!/*/}
+            {/*            /!*                    // color: false ? 'grey.white' : 'primary.main',*!/*/}
+            {/*            /!*                    bgcolor: ind <= getStepOrder() ? 'primary.main' : 'grey.300',*!/*/}
+            {/*            /!*                    color: ind <=  getStepOrder() ? 'grey.white' : 'primary.main',*!/*/}
+            {/*            /!*                }}*!/*/}
+            {/*            /!*            >*!/*/}
+            {/*            /!*                <Icon color="inherit" sx={{ fontSize: '32px' }} />*!/*/}
+            {/*            /!*            </Avatar>*!/*/}
+            {/*            /!*            {ind <= getStepOrder() && (*!/*/}
+            {/*            /!*                <Box position="absolute" right="0" top="0">*!/*/}
+            {/*            /!*                    <Avatar*!/*/}
+            {/*            /!*                        sx={{*!/*/}
+            {/*            /!*                            height: 22,*!/*/}
+            {/*            /!*                            width: 22,*!/*/}
+            {/*            /!*                            bgcolor: 'grey.200',*!/*/}
+            {/*            /!*                            color: 'success.main',*!/*/}
+            {/*            /!*                        }}*!/*/}
+            {/*            /!*                    >*!/*/}
+            {/*            /!*                        <Done color="inherit" sx={{ fontSize: '1rem' }} />*!/*/}
+            {/*            /!*                    </Avatar>*!/*/}
+            {/*            /!*                </Box>*!/*/}
+            {/*            /!*            )*!/*/}
+            {/*            /!*            }*!/*/}
+            {/*            /!*        </Box>*!/*/}
+            {/*            /!*        {ind < stepIconList.length - 1 && (*!/*/}
+            {/*            /!*            <Box*!/*/}
+            {/*            /!*                className="line"*!/*/}
+            {/*            /!*                bgcolor={ind < getStepOrder() ? 'primary.main' : 'grey.300'}*!/*/}
+            {/*            /!*            />*!/*/}
+            {/*            /!*        )}*!/*/}
+            {/*            /!*    </Fragment>*!/*/}
+            {/*            /!*))}*!/*/}
+            {/*        </StyledFlexbox>*/}
+            {/*        </>*/}
+            {/*    }*/}
+
+            {/*    <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>*/}
+            {/*        <Typography*/}
+            {/*            p="0.5rem 1rem"*/}
+            {/*            borderRadius="300px"*/}
+            {/*            bgcolor="primary.light"*/}
+            {/*            color="primary.main"*/}
+            {/*            textAlign="center"*/}
+            {/*        >*/}
+            {/*            {localStrings.formatString(localStrings.deliveryEstimateDate, formatOrderDeliveryDateSlot(order))}*/}
+            {/*        </Typography>*/}
+            {/*    </FlexBox>*/}
+            {/*</Card>*/}
+            {/*}*/}
             <OrderContent order={order} contextData={contextData}/>
 
 

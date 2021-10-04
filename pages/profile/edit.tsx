@@ -12,14 +12,11 @@ import * as yup from 'yup'
 import localStrings from "../../src/localStrings";
 import Account from "@component/header/Account";
 import useAuth from "@hook/useAuth";
-import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import {executeMutationUtil} from "../../src/apolloClient/gqlUtil";
 import {updateSiteUserQuery} from "../../src/gql/siteUserGql";
 import {cloneDeep} from "@apollo/client/utilities";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
-import {formatDuration, getDeliveryDistanceWithFetch, isDeliveryActive} from "../../src/util/displayUtil";
-import {setDistanceAndCheck} from "@component/address/AdressCheck";
-import {ORDER_DELIVERY_MODE_DELIVERY, ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} from "../../src/util/constants";
+import {isDeliveryActive} from "../../src/util/displayUtil";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {useRouter} from "next/router";
 

@@ -1,16 +1,18 @@
-import FlexBox from '@component/FlexBox'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
-import TableRow from '@component/TableRow'
 import {
   Button,
-  Dialog, DialogActions,
-  DialogContent, DialogContentText,
+  Dialog,
+  DialogActions,
   DialogTitle,
   Divider,
   IconButton,
-  Pagination,
-  Typography
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow
 } from '@material-ui/core'
 import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
@@ -25,6 +27,11 @@ import {executeMutationUtil} from "../../src/apolloClient/gqlUtil";
 import {updateSiteUserQuery} from "../../src/gql/siteUserGql";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import {styled} from "@material-ui/styles";
+
+// function TableContainer(props: { component: OverridableComponent<PaperTypeMap>, children: ReactNode }) {
+//   return null;
+// }
 
 const AddressList = ({contextData}) => {
   const {dbUser, currentBrand, setDbUser} = useAuth()
@@ -54,105 +61,121 @@ const AddressList = ({contextData}) => {
 
   }
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    // root: {
+    //   padding: "0px 0px",
+    //   "&:hover": {
+    //     backgroundColor: "red"
+    //   }
+    // }
+  }));
+
   return (
-    <DashboardLayout contextData={contextData}>
-      {loading ?
-        <ClipLoaderComponent/>
-          :
-          <>
-            <Dialog
-                open={confirmDelete}
-                onClose={() => setConfirmDelete(false)}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{localStrings.confirmMessage.deleteAddress}</DialogTitle>
-              <DialogActions>
-                <Button onClick={() => setConfirmDelete(false)} color="primary" autoFocus>
-                  {localStrings.cancel}
-                </Button>
-                <Button onClick={handleConfirm} color="primary">
-                  {localStrings.confirmAction}
-                </Button>
-              </DialogActions>
-            </Dialog>
+      <DashboardLayout contextData={contextData}>
+        {loading ?
+            <ClipLoaderComponent/>
+            :
+            <>
+              <Dialog
+                  open={confirmDelete}
+                  onClose={() => setConfirmDelete(false)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">{localStrings.confirmMessage.deleteAddress}</DialogTitle>
+                <DialogActions>
+                  <Button onClick={() => setConfirmDelete(false)} color="primary" autoFocus>
+                    {localStrings.cancel}
+                  </Button>
+                  <Button onClick={handleConfirm} color="primary">
+                    {localStrings.confirmAction}
+                  </Button>
+                </DialogActions>
+              </Dialog>
 
-            <DashboardPageHeader
-                title={localStrings.myAddresses}
-                icon={Place}
-                button={
-                  <Link href={"/address/new"}>
-                    <Button color="primary"  variant={"contained"} sx={{ px: '2rem', textTransform: "none" }}>
-                      {localStrings.addNewAddress}
-                    </Button>
-                  </Link>
-                }
-            />
-
-            <TableRow sx={{ my: '1rem', padding: '6px 18px', mb: '2rem'}}>
-              <Typography whiteSpace="pre" m={0.75} textAlign="left">
-                {localStrings.mainAddress}
-              </Typography>
-              <Typography flex="1 1 260px !important" m={0.75} textAlign="left">
-                {dbUser?.userProfileInfo?.address}
-              </Typography>
-              <Typography whiteSpace="pre" m={0.75} textAlign="left">
-                {dbUser?.userProfileInfo?.additionalInformation}
-              </Typography>
-
-              <Typography whiteSpace="pre" textAlign="center" color="grey.600">
-                <Link href="/address/main">
-                  <IconButton>
-                    <Edit fontSize="small" color="inherit" />
-                  </IconButton>
-                </Link>
-                {/*<IconButton onClick={(e) => e.stopPropagation()}>*/}
-                {/*  <Delete fontSize="small" color="inherit" />*/}
-                {/*</IconButton>*/}
-              </Typography>
-            </TableRow>
-
-            <Divider sx={{ mb: '2rem', borderColor: 'grey.300' }} />
-
-            {(dbUser?.userProfileInfo?.otherAddresses || []).map((item, ind) => (
-                <TableRow sx={{ my: '1rem', padding: '6px 18px' }} key={ind}>
-                  <Typography whiteSpace="pre" m={0.75} textAlign="left">
-                    {item.name}
-                  </Typography>
-                  <Typography flex="1 1 260px !important" m={0.75} textAlign="left">
-                    {item.address}
-                  </Typography>
-                  <Typography whiteSpace="pre" m={0.75} textAlign="left">
-                    {item.additionalInformation}
-                  </Typography>
-
-                  <Typography whiteSpace="pre" textAlign="center" color="grey.600">
-                    <Link href={"/address/" + item.id}>
-                      <IconButton>
-                        <Edit fontSize="small" color="inherit" />
-                      </IconButton>
+              <DashboardPageHeader
+                  title={localStrings.myAddresses}
+                  icon={Place}
+                  button={
+                    <Link href={"/address/new"}>
+                      <Button color="primary"  variant={"contained"} sx={{ px: '2rem', textTransform: "none" }}>
+                        {localStrings.addNewAddress}
+                      </Button>
                     </Link>
-                    <IconButton onClick={() => {
-                      setIdDelete(item.id);
-                      setConfirmDelete(true);
-                    }}>
-                      <Delete fontSize="small" color="inherit"/>
-                    </IconButton>
-                  </Typography>
-                </TableRow>
-            ))}
+                  }
+              />
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableBody>
+                    <TableRow
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <StyledTableCell align="left">{localStrings.mainAddress}</StyledTableCell>
+                      <StyledTableCell align="left" >{dbUser?.userProfileInfo?.address}</StyledTableCell>
+                      <StyledTableCell align="left">{dbUser?.userProfileInfo?.additionalInformation}</StyledTableCell>
+                      <StyledTableCell align="right">
+                        <Link href="/address/main">
+                          <IconButton>
+                            <Edit fontSize="small" color="inherit" />
+                          </IconButton>
+                        </Link>
+                      </StyledTableCell>
+                    </TableRow>
 
-            {/*<FlexBox justifyContent="center" mt={5}>*/}
-            {/*  <Pagination*/}
-            {/*    count={5}*/}
-            {/*    onChange={(data) => {*/}
-            {/*      console.log(data)*/}
-            {/*    }}*/}
-            {/*  />*/}
-            {/*</FlexBox>*/}
-          </>
-      }
-    </DashboardLayout>
+
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Divider sx={{ mb: '2rem', borderColor: 'grey.300' }} />
+
+
+              <TableContainer component={Paper}>
+                <Table>
+                  {/*<TableHead>*/}
+                  {/*  <TableRow>*/}
+                  {/*    <TableCell>Dessert (100g serving)</TableCell>*/}
+                  {/*    <TableCell align="right">Calories</TableCell>*/}
+                  {/*    <TableCell align="right">Fat&nbsp;(g)</TableCell>*/}
+                  {/*    <TableCell align="right">Carbs&nbsp;(g)</TableCell>*/}
+                  {/*    <TableCell align="right">Protein&nbsp;(g)</TableCell>*/}
+                  {/*  </TableRow>*/}
+                  {/*</TableHead>*/}
+
+
+
+                  <TableBody>
+
+                    {(dbUser?.userProfileInfo?.otherAddresses || []).map((item, ind) => (
+                        <TableRow
+                            key={ind}
+                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <StyledTableCell align="left">{item.name}</StyledTableCell>
+                          <StyledTableCell align="left" >{item.address}</StyledTableCell>
+                          <StyledTableCell align="left">{item.additionalInformation}</StyledTableCell>
+                          <StyledTableCell align="right">
+                            <Link href={"/address/" + item.id}>
+                              <IconButton>
+                                <Edit fontSize="small" color="inherit" />
+                              </IconButton>
+                            </Link>
+                            <IconButton onClick={() => {
+                              setIdDelete(item.id);
+                              setConfirmDelete(true);
+                            }}>
+                              <Delete fontSize="small" color="inherit"/>
+                            </IconButton>
+                          </StyledTableCell>
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+            </>
+        }
+      </DashboardLayout>
   )
 }
 

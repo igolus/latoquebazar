@@ -5,10 +5,12 @@ import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import {useRouter} from "next/router";
 import useAuth from "@hook/useAuth";
+import {getOrderDeliveryMode, ORDER_DELIVERY_MODE_DELIVERY} from "../../src/util/constants";
 
 export interface OrdersProps {
     contextData?: any
 }
+
 
 const Orders:React.FC<OrdersProps> = ({contextData}) => {
     const router = useRouter();

@@ -4,6 +4,8 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        phoneInternational: "Numero de telephone au format international +...",
+        demoDisclaim: "Ceci est un site de démonstration aucune commande ne sera honorée",
         manageMyAdresses: "Gerer mes adresses",
         updateAddtionalInformation: "Mettre a jour les informations additionnelles",
         defineMainAdress: "Definir mon adresse principale",
@@ -207,6 +209,7 @@ let localStrings = new LocalizedStrings({
         deliveryStatusNotStarted: "Not started",
         deliveryStatusDone: "Done",
 
+        orderStatus: "Statut de la commande",
         orderStatusNew: "Nouveau",
         orderStatusPreparation: "Prepararation",
         orderStatusReady: "Pret",
@@ -229,6 +232,18 @@ let localStrings = new LocalizedStrings({
         day_5 : "Vendredi",
         day_6 : "Samedi",
         day_7 : "Dimanche",
+
+        hrorderStatusNew: "Nouveau",
+        hrorderStatusReceived: "Reçu",
+        hrorderStatusAccepted: "Accepté",
+        hrorderStatusInPreparation: "En preparation",
+        hrorderStatusAwaitingShipment: "Pret a livrer",
+        hrorderStatusAwaitingCollection: "Pret a récuperer",
+        hrorderStatusinDelivery: "Livraison en cours",
+        hrorderStatusCompleted: "Finalisé",
+        hrorderStatusRejected: "Rejetée",
+        hrorderStatusCancelled: "Annulé",
+        hrorderStatusDeliveryFailed: "Echec livraison",
 
         check: {
             fieldRequired: "Le champ {0} est obligatoire",

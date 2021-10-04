@@ -34,6 +34,7 @@ const buildServiceFromDaySetting = (daySetting) => {
     endHourService: setHourFromString(daySetting.dateCurrent, daySetting.endHourService),
     numberOfDeliveryMan: daySetting.numberOfDeliveryMan,
     maxDeliveryPerSlotPerMan: daySetting.maxDeliveryPerSlotPerMan,
+    maxPreparationTimePerSlot: daySetting.maxPreparationTimePerSlot,
   }
 }
 
@@ -98,46 +99,39 @@ function getOffset(deliveryMode, establishment) {
 }
 
 
+function getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy) {
+  if (!getBookingSlotsOccupancy()) {
+    return false;
+  }
+  let slot = getBookingSlotsOccupancy().find(item => {
+    return item.startDate == startDate.unix() &&
+        item.endDate == endDate.unix()
+  })
+  return slot;
+}
+
 export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
-
-
-  if (establishment && startDate) {
-    //alert("establishment " + establishment);
-
-    let slotDuration = establishment.serviceSetting?.slotDuration || 20;
-    let offset = getOffset(deliveryMode, establishment);
+  if (startDate) {
+    let slotDuration = establishment.serviceSetting.slotDuration || 20;
 
     let daySettings = getWeekDaySettingsFromDate(startDate, establishment);
-
-    //there is already a BookingSlotsOccupancy define for this day
-    if (getBookingSlotsOccupancy() && startDate && daySettings.length > 0) {
-      let slot = getBookingSlotsOccupancy().find(slot => {
-        let statDateMoment = moment.unix(slot.startDate);
-        return daySettings[0].dateCurrent.isSame(statDateMoment, 'day')
-      });
-      if (slot) {
-        offset = (slot.endDate - slot.startDate) / 60;
-      }
-    }
-
-    let minimumDateStart = moment().add(offset, 'minutes')
     let allSlots = [];
 
     if (daySettings && daySettings.length > 0) {
       let firstDaySetting = daySettings[0];
-      let iterDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.startHourDelivery);
+      let iterDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.startHourBooking);
       let endServiceDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.endHourService);
 
       while (iterDate.isBefore(endServiceDate)) {
         let startDate = moment(iterDate);
         let endDate = moment(iterDate).add(slotDuration, 'minutes');
-
+        let slotOccupancy = getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy);
         allSlots.push({
           startDate: startDate,
           endDate: endDate,
-          available: moment(iterDate).add(slotDuration, 'minutes').isAfter(minimumDateStart),
-          full: isFull(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy, orderInCreation),
           closed: isClosed(startDate, establishment),
+          totalPreparionTime: slotOccupancy?.totalPreparationTime || 0,
+          deliveryNumber: slotOccupancy?.deliveryNumber || 0
         })
         iterDate = moment(iterDate.add(slotDuration, 'minutes'));
       }
@@ -159,7 +153,7 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
       previousService: previousService,
     }
   }
-  return null
+  return {}
 }
 
 function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
@@ -185,66 +179,66 @@ function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
   return allDaySettings;
 }
 
-function isFull(startDate, endDate, daySetting, getBookingSlotsOccupancy, orderInCreation) {
-  //console.log("isFull brandId " + brandId)
-
-  if (!getBookingSlotsOccupancy) {
-    return true;
-  }
-  let slot = getBookingSlotsOccupancy().find(item => {
-    return item.startDate == startDate.unix() &&
-      item.endDate == endDate.unix()
-  })
-
-  if (!slot) {
-    return
-  }
-
-  //alert("slot" + JSON.stringify(slot))
-  // if (slot) {
-  //   console.log(slot)
-  // }
-
-  if (slot && slot.locked) {
-    return true;
-  }
-
-  let maxDeliveryPerSlotPerMan = daySetting.maxDeliveryPerSlotPerMan;
-
-
-  let numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
-  // if (slot && slot.maxDelivery) {
-  //   numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
-  // }
-  // else {
-  //   numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
-  // }
-  let maxDelivery = maxDeliveryPerSlotPerMan * numberOfDeliveryMan;
-
-  //alert("maxDelivery " + maxDelivery);
-  //alert("slot " + slot);
-
-  //alert("slot.deliveryNumber " + slot.deliveryNumber);
-
-  let maxPreparationTimePerSlot = daySetting.maxPreparationTimePerSlot;
-
-  let excludedDeliveryNumber = slot ? slot.excludedDeliveryNumber || 0 : 0;
-  //alert("excludedDeliveryNumber " + excludedDeliveryNumber);
-  //alert("orderInCreation().deliveryMode " + orderInCreation()?.deliveryMode);
-
-  if (slot && slot.deliveryNumber >= maxDelivery - excludedDeliveryNumber && orderInCreation() &&
-    orderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
-    return true;
-  }
-
-  //compute preparation time
-  let detailPrice = computePriceDetail(orderInCreation());
-  if (slot && detailPrice.totalPreparationTime + slot.totalPreparationTime > maxPreparationTimePerSlot) {
-    return true;
-  }
-  return false;
-
-}
+// function isFull(startDate, endDate, daySetting, getBookingSlotsOccupancy, orderInCreation) {
+//   //console.log("isFull brandId " + brandId)
+//
+//   if (!getBookingSlotsOccupancy) {
+//     return true;
+//   }
+//   let slot = getBookingSlotsOccupancy().find(item => {
+//     return item.startDate == startDate.unix() &&
+//       item.endDate == endDate.unix()
+//   })
+//
+//   if (!slot) {
+//     return
+//   }
+//
+//   //alert("slot" + JSON.stringify(slot))
+//   // if (slot) {
+//   //   console.log(slot)
+//   // }
+//
+//   if (slot && slot.locked) {
+//     return true;
+//   }
+//
+//   let maxDeliveryPerSlotPerMan = daySetting.maxDeliveryPerSlotPerMan;
+//
+//
+//   let numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
+//   // if (slot && slot.maxDelivery) {
+//   //   numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
+//   // }
+//   // else {
+//   //   numberOfDeliveryMan = daySetting.numberOfDeliveryMan;
+//   // }
+//   let maxDelivery = maxDeliveryPerSlotPerMan * numberOfDeliveryMan;
+//
+//   //alert("maxDelivery " + maxDelivery);
+//   //alert("slot " + slot);
+//
+//   //alert("slot.deliveryNumber " + slot.deliveryNumber);
+//
+//   let maxPreparationTimePerSlot = daySetting.maxPreparationTimePerSlot;
+//
+//   let excludedDeliveryNumber = slot ? slot.excludedDeliveryNumber || 0 : 0;
+//   //alert("excludedDeliveryNumber " + excludedDeliveryNumber);
+//   //alert("orderInCreation().deliveryMode " + orderInCreation()?.deliveryMode);
+//
+//   if (slot && slot.deliveryNumber >= maxDelivery - excludedDeliveryNumber && orderInCreation() &&
+//     orderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+//     return true;
+//   }
+//
+//   //compute preparation time
+//   let detailPrice = computePriceDetail(orderInCreation());
+//   if (slot && detailPrice.totalPreparationTime + slot.totalPreparationTime > maxPreparationTimePerSlot) {
+//     return true;
+//   }
+//   return false;
+//
+// }
 
 function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
   let dateCurrent = moment(dateStart);
@@ -386,14 +380,82 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     let allClosed = true;
     for (let i = 0; i < timeSlots.allSlots.length; i++) {
       const timeSlot = timeSlots.allSlots[i];
-      allClosed &= (timeSlot.closed || !timeSlot.available)
+      allClosed &= (timeSlot.closed)
     }
     return allClosed;
   }
 
+  function getFirstSlotInFuture() {
+    return timeSlots.allSlots.find(slot => slot.startDate.isAfter());
+  }
+
+  function slotAlavailableInMode(slot) {
+    let firstSlotInFuture = getFirstSlotInFuture();
+
+    if (!firstSlotInFuture) {
+      return false;
+    }
+    //if (orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+    let minimalSlotDiff = 0;
+    if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+      minimalSlotDiff = currentEstablishment().serviceSetting.minimalSlotNumberBooking
+    }
+    else if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
+      minimalSlotDiff = currentEstablishment().serviceSetting.minimalSlotNumberBookingNoDelivery
+    }
+
+    return  timeSlots.allSlots.indexOf(slot) - timeSlots.allSlots.indexOf(firstSlotInFuture) >= minimalSlotDiff;
+
+    //}
+
+  }
+
   function slotInTime(slot) {
-    let minimumDateStart = moment().add(offset, 'minutes');
-    return slot.startDate.isAfter(minimumDateStart);
+    return slot.startDate.isAfter();
+  }
+
+
+  function enoughTimeForPreparation(slot) {
+
+    let firstSlotInFuture = getFirstSlotInFuture();
+    if (!firstSlotInFuture) {
+      return false;
+    }
+    let cumulRemainingTime = 0;
+    let indexStart = timeSlots.allSlots.indexOf(firstSlotInFuture);
+    let indexEnd = timeSlots.allSlots.indexOf(slot);
+
+    if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+      indexEnd--
+    }
+    indexEnd = Math.max(indexEnd, 0);
+
+    const maxPreparationPerSlot = timeSlots.service.maxPreparationTimePerSlot;
+    for (let i = indexStart; i <= indexEnd; i++) {
+      const slotIter = timeSlots.allSlots[i];
+      cumulRemainingTime += maxPreparationPerSlot - slotIter.totalPreparionTime;
+    }
+
+    let priceDetail = computePriceDetail(getOrderInCreation());
+    //console.log("priceDetail " + JSON.stringify(priceDetail, null, 2))
+    let enoughTime = cumulRemainingTime >= priceDetail.totalPreparationTime;
+    if (!enoughTime && isSelectedSlot(slot)) {
+      if (selectCallBack) {
+        selectCallBack(null);
+      }
+    }
+    return enoughTime;
+    //return true;
+  }
+
+  function isSlotFull(slot) {
+    if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+
+      let maxPreparationPerSlot = (timeSlots.service.maxDeliveryPerSlotPerMan || 0) *
+          (timeSlots.service.numberOfDeliveryMan || 0);
+      return slot.deliveryNumber >= maxPreparationPerSlot;
+    }
+    return false;
   }
 
   return (
@@ -469,16 +531,17 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
                   value.startDate.format('HH:mm')
                   + "-"
                   + value.endDate.format('HH:mm')
-                if ((value.available || isSelectedSlot(value)) && slotInTime(value)) {
+                  if (slotInTime(value) && slotAlavailableInMode(value)) {
                   return (
                     <Box m={1}>
                       {/*<p>butt</p>*/}
                       <BazarButton variant="contained"
                               //disabled={!value.available && !isSelectedSlot(value)}
-                              disabled={value.full || value.closed}
+                              disabled={!enoughTimeForPreparation(value) || isSlotFull(value) || value.locked}
+                              //disabled={!enoughTimeForPreparation(value)}
                               color={isSelectedSlot(value) ? "primary" : "inherit"}
                               onClick={() => select(key, value)}
-                      >{value.closed ? localStrings.closed : format}</BazarButton>
+                      >{(value.closed ? localStrings.closed : format)}</BazarButton>
                     </Box>
                   )
                 }

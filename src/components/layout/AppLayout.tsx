@@ -6,6 +6,7 @@ import Topbar from '@component/topbar/Topbar'
 import Head from 'next/head'
 import React, { Fragment, useCallback, useState } from 'react'
 import {getBrandCurrency} from "../../util/displayUtil";
+import TopbarForTest from "@component/topbar/TopbarForTest";
 
 type AppLayoutProps = {
   title?: string
@@ -38,7 +39,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 
       </Head>
 
-      {/*<Topbar />*/}
+        {contextData && contextData.brand?.demoSite &&
+        <TopbarForTest/>
+        }
 
       <Sticky fixedOn={0} onSticky={toggleIsFixed}>
         <Header isFixed={isFixed} contextData={contextData}/>

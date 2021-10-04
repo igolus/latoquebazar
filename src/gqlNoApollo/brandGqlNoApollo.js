@@ -12,6 +12,7 @@ const common = `
   logoUrl
   iconPath
   iconUrl
+  demoSite
   config {
     smsNotif
     currency

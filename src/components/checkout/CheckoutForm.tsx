@@ -133,35 +133,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
   },  [])
 
-
-  // useEffect(async () => {
-  //
-  //   let lat;
-  //   let lng;
-  //   let label;
-  //
-  //   if (currentEstablishment() && orderInCreation) {
-  //     if (!dbUser) {
-  //       setAdressValue("")
-  //       return
-  //     }
-  //     //if (dbUser) {
-  //     lat = dbUser.userProfileInfo.lat;
-  //     lng = dbUser.userProfileInfo.lng;
-  //     label = dbUser.userProfileInfo.address;
-  //     setAdressValue(label)
-  //     let distanceInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng, label);
-  //
-  //     if (distanceInfo) {
-  //       setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
-  //     }
-  //
-  //     updateCustomer(dbUser)
-  //     updateDeliveryAdress(label, lat, lng);
-  //     setAdressEditLock(true);
-  //   }
-  // },  [dbUser])
-
   useEffect(() => {
     if (currentEstablishment() &&
         isDeliveryPriceDisabled() && orderInCreation.deliveryMode !== ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
@@ -194,35 +165,16 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         }
       };
 
-
-      // const data = await axios.post(config.paymentUrl, {
-      //   //amount: 200
-      //   orderId: orderId,
-      //   establishmentId: currentEstablishment().id,
-      //   brandId: currentBrand().id
-      // });
-
-      //let data;
-      // try
-      // {
-        const data = await axios.post(config.paymentUrl, {
-          //amount: 200
-          orderId: orderId,
-          establishmentId: currentEstablishment().id,
-          brandId: currentBrand().id
-        });
-        //alert("data pay " + JSON.stringify(data))
-        //console.log("data pay " + JSON.stringify(data))
-        if (data.errorMessage) {
-          setCheckoutError(data.errorMessage);
-          //alert("payment error " + resPay.error.message)
-          //alert("config.paymentUrl " + config.paymentUrl)
-          return null;
-        }
-      // }
-      // catch (err) {
-      //     alert("err first " + err)
-      // }
+      const data = await axios.post(config.paymentUrl, {
+        //amount: 200
+        orderId: orderId,
+        establishmentId: currentEstablishment().id,
+        brandId: currentBrand().id
+      });
+      if (data.errorMessage) {
+        setCheckoutError(data.errorMessage);
+        return null;
+      }
 
       const paymentMethodReq = await stripe.createPaymentMethod({
         type: "card",
@@ -233,8 +185,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       if (paymentMethodReq.error) {
         setCheckoutError(paymentMethodReq.error.message);
-        //alert("payment error " + paymentMethodReq.error.message)
-        //setProcessingTo(false);
         return null;
       }
 
@@ -275,16 +225,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
   const handleFormSubmit = async (values: any) => {
 
-    // alert("handleFormSubmit " );
-    // return;
     setLoading(true);
     let orderId = 0;
-    // let payResult = await processPayment();
-    // if (!payResult) {
-    //   setLoading(false);
-    //   return
-    // }
-    //console.log("payResult " + JSON.stringify(payResult, null, 2))
 
     const currentBrand = contextData.brand;
     try {
@@ -342,18 +284,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         delete dataOrder.bookingSlot.available;
         delete dataOrder.bookingSlot.full;
         delete dataOrder.bookingSlot.closed;
+        delete dataOrder.bookingSlot.totalPreparionTime;
+        delete dataOrder.bookingSlot.deliveryNumber;
 
 
         dataOrder.bookingSlot.startDateIso = dataOrder.bookingSlot.startDate.format();
         dataOrder.bookingSlot.endDateIso = dataOrder.bookingSlot.endDate.format();
         dataOrder.bookingSlot.startDate = moment(dataOrder.bookingSlot.startDate).unix();
         dataOrder.bookingSlot.endDate = moment(dataOrder.bookingSlot.endDate).unix();
-
-
-        // dataOrder.bookingSlot.startDate = moment(dataOrder.bookingSlot.startDate).unix();
-        // dataOrder.bookingSlot.endDate = moment(dataOrder.bookingSlot.endDate).unix();
-        // dataOrder.bookingSlot.startDateIso = moment(dataOrder.bookingSlot.startDate).toISOString();
-        // dataOrder.bookingSlot.endDateIso = moment(dataOrder.bookingSlot.endDate).toISOString();
       }
       else {
         dataOrder.bookingSlot = {
@@ -409,9 +347,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       delete dataOrder.creationDate;
 
-      // delete dataOrder?.deliveryAddress?.id;
-      // delete dataOrder?.deliveryAddress?.additionalInformation;
-
       if (dataOrder.customer) {
         delete dataOrder.customer.creationDate;
       }
@@ -423,11 +358,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
           userProfileInfo: {
             additionalInformation: values.additionalInformation,
             email:  values.email,
-            address: getOrderInCreation()?.deliveryAddress?.address,
+            address: getOrderInCreation()?.deliveryAddress?.address || "",
             lat: getOrderInCreation()?.deliveryAddress?.lat,
             lng: getOrderInCreation()?.deliveryAddress?.lng,
             firstName: values.firstName,
             lastName: values.lastName,
+            phoneNumber: values.phone
           }
         }
       }
@@ -472,23 +408,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         }))
       }
 
-
-      // if (createBookingSlotOccupancy) {
-      //   await executeMutationUtil(createUpdateBookingSlotOccupancyMutation(currentBrand.id, currentEstablishment().id,
-      //       {
-      //         startDate: dataOrder.bookingSlot.startDate,
-      //         endDate: dataOrder.bookingSlot.endDate,
-      //         totalPreparationTime: dataOrder.totalPreparationTime,
-      //         deliveryNumber: dataOrder.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? 1 : 0
-      //       }));
-      // }
-
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null, 2))
-      // let messageNotif = localStrings.formatString(localStrings.notifForBackEnd.orderCreated,
-      //     getProfileName(dataOrder.customer))
-      // let link = "/app/management/Orders/detail/" + result.data.addOrder.id;
-      // await sendNotif(currentBrand.id, currentEstablishment().id, messageNotif,
-      //     link, "");
       increaseOrderCount();
       resetOrderInCreation();
     }
@@ -575,9 +495,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
       setDistanceAndCheck(distInfo,
           (maxDistanceReached) => {
-            // if (maxDistanceReached) {
-            //   setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
-            // }
             setMaxDistanceReached(maxDistanceReached);
           },
           setDistanceInfo, currentEstablishment);
@@ -620,11 +537,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       return [];
     }
     return currentEstablishment().offlinePaymentMethods.map(methodkey => {
-          return ({
-            valuePayment: methodkey,
-            name: formatPaymentMethod(methodkey, localStrings)
-          })
-        })
+      return ({
+        valuePayment: methodkey,
+        name: formatPaymentMethod(methodkey, localStrings)
+      })
+    })
   }
 
   return (
@@ -650,6 +567,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   setFieldValue,
                 }) => (
                   <form onSubmit={handleSubmit}>
+
+                    {/*<p>{JSON.stringify(dbUser || {})}</p>*/}
                     {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>*/}
                     {(!dbUser) &&
                     <Card1 sx={{mb: '2rem'}}>
@@ -1146,31 +1065,31 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       </Typography>
 
                       {paymentMethod !== 'cc' &&
-                        <FormGroup >
-                          {/*<p>{JSON.stringify(getPaymentsOnline())}</p>*/}
-                          {getPaymentsOnline().map((item, key) =>
-                              <FormControlLabel key={key}
-                                control={
-                                  <Checkbox
-                                      checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
-                                      onChange={(event) => {
-                                        //alert("checked " + event.target.checked);
-                                        if (event.target.checked) {
-                                          setExpectedPaymentMethods([...expectedPaymentMethods, item])
-                                        }
-                                        else {
-                                          let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
-                                          setExpectedPaymentMethods(filter)
-                                        }
-                                      }}
-                                  />
-                                }
-                                label={item.name} />
-                          )}
+                      <FormGroup >
+                        {/*<p>{JSON.stringify(getPaymentsOnline())}</p>*/}
+                        {getPaymentsOnline().map((item, key) =>
+                            <FormControlLabel key={key}
+                                              control={
+                                                <Checkbox
+                                                    checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
+                                                    onChange={(event) => {
+                                                      //alert("checked " + event.target.checked);
+                                                      if (event.target.checked) {
+                                                        setExpectedPaymentMethods([...expectedPaymentMethods, item])
+                                                      }
+                                                      else {
+                                                        let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
+                                                        setExpectedPaymentMethods(filter)
+                                                      }
+                                                    }}
+                                                />
+                                              }
+                                              label={item.name} />
+                        )}
 
-                          {/*<FormControlLabel control={<Checkbox  />} label="Label" />*/}
-                          {/*<FormControlLabel control={<Checkbox />} label="Disabled" />*/}
-                        </FormGroup>
+                        {/*<FormControlLabel control={<Checkbox  />} label="Label" />*/}
+                        {/*<FormControlLabel control={<Checkbox />} label="Disabled" />*/}
+                      </FormGroup>
                       }
 
                       {paymentMethod === 'cc' &&

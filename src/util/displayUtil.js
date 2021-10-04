@@ -237,7 +237,7 @@ export function formatOrderConsumingModeGrid(item, localStrings) {
     if (item && item.deliveryMode) {
         let localValue = getOrderDeliveryMode(localStrings).find(source => source.value === item.deliveryMode);
         if (item.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
-            return localValue.name+ "                                                ";
+            return localValue.name+ "                                                 ";
         }
         if (localValue) {
             return localValue.name;
@@ -476,8 +476,9 @@ export function getRemainingToPay(order) {
 export function filterCat(categories, products) {
     const allCatProductIds = [];
     products.forEach(p => {
+        let visible = (p.skus || []).some(sku => sku.visible)
         let catId = p.category?.id
-        if (catId) {
+        if (visible && catId) {
             if (!allCatProductIds.includes(catId)) {
                 allCatProductIds.push(catId)
             }
@@ -485,6 +486,11 @@ export function filterCat(categories, products) {
     })
 
     return categories.filter(cat => allCatProductIds.includes(cat.id));
+}
+
+
+export function getTextStatus(order, localStrings) {
+    return formatOrderStatus(order?.status, localStrings)
 }
 
 

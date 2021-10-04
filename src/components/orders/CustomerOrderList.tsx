@@ -1,23 +1,36 @@
 import FlexBox from '@component/FlexBox'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
-import TableRow from '@component/TableRow'
-import { H5 } from '@component/Typography'
-import { Pagination } from '@material-ui/core'
+import {
+  IconButton,
+  Pagination,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@material-ui/core'
 import ShoppingBag from '@material-ui/icons/ShoppingBag'
 import React, {Fragment, useEffect, useState} from 'react'
-import OrderRow from './OrderRow'
 import useAuth from "@hook/useAuth";
 import {getCustomerOrdersQuery} from "../../gql/orderGql";
 import {executeQueryUtil} from "../../apolloClient/gqlUtil";
 import localStrings from "../../localStrings";
-import {getBrandCurrency} from "../../util/displayUtil";
+import {formatOrderConsumingModeGrid, getBrandCurrency} from "../../util/displayUtil";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
+import moment from "moment";
+import East from "@material-ui/icons/East";
+import {styled} from "@material-ui/styles";
+import Link from "next/link";
+import { H5 } from '@component/Typography'
 
 export interface CustomerOrderListProps {
   contextData?: any
 }
 
 const itemPerPage = 10;
+
 
 const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
   const {dbUser} = useAuth();
@@ -28,6 +41,14 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
   const [maxPage, setMaxPage] = React.useState(0);
   const [page, setPage] = React.useState(1);
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    // root: {
+    //   padding: "0px 0px",
+    //   "&:hover": {
+    //     backgroundColor: "red"
+    //   }
+    // }
+  }));
 
   useEffect(() => {
     async function load() {
@@ -77,36 +98,98 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
             ordersDisplay ?
                 <>
                 <DashboardPageHeader title={localStrings.myOrders} icon={ShoppingBag}/>
-                {/*<p>{JSON.stringify(ordersDisplay)}</p>*/}
-                <TableRow
-                    sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        padding: '0px 18px',
-                        background: 'none',
-                    }}
-                    elevation={0}
-                >
-                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-                        {localStrings.orderNumber}
-                    </H5>
-                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-                        {localStrings.status}
-                    </H5>
-                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-                      {localStrings.deliveryMode}
-                    </H5>
-                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-                        {localStrings.purchaseDate}
-                    </H5>
-                    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">
-                        {localStrings.totalTTC}
-                    </H5>
-                    <H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>
-                </TableRow>
 
-                {ordersDisplay.map((item, ind) => (
-                    <OrderRow item={item} key={ind} currency={currency} />
-                ))}
+
+                  <TableContainer component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="left">
+                            <H5 color="grey.600">
+                              {localStrings.orderNumber}
+                            </H5>
+                          </TableCell>
+                          <TableCell align="left">
+                            <H5 color="grey.600">
+                              {localStrings.deliveryMode}
+                            </H5>
+                          </TableCell>
+                          <TableCell align="left">
+                            <H5 color="grey.600">
+                              {localStrings.purchaseDate}
+                            </H5>
+                          </TableCell>
+                          <TableCell align="left">
+                            <H5 color="grey.600">
+                              {localStrings.totalTTC}
+                            </H5>
+                          </TableCell>
+                          <TableCell align="right"></TableCell>
+                        </TableRow>
+                      </TableHead>
+
+
+
+                      <TableBody>
+
+                        {ordersDisplay.map((item, ind) => (
+                            <TableRow
+                                key={ind}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                              <StyledTableCell align="left">{item.orderNumber}</StyledTableCell>
+                              <StyledTableCell align="left" >{formatOrderConsumingModeGrid(item, localStrings)}</StyledTableCell>
+                              <StyledTableCell align="left">{moment(parseFloat(item.creationDate)).locale("fr").calendar()}</StyledTableCell>
+                              <StyledTableCell align="left">{(item.totalPrice || 0).toFixed(2)} {currency}</StyledTableCell>
+                              <StyledTableCell align="right">
+                                <Link href={"/orders/" + item.id}>
+                                  <IconButton>
+                                    <East fontSize="small" color="inherit" />
+                                  </IconButton>
+                                </Link>
+                              </StyledTableCell>
+                              {/*  <Link href={"/address/" + item.id}>*/}
+                              {/*    <IconButton>*/}
+                              {/*      <Edit fontSize="small" color="inherit" />*/}
+                              {/*    </IconButton>*/}
+                              {/*  </Link>*/}
+                              {/*  <IconButton onClick={() => {*/}
+                              {/*    setIdDelete(item.id);*/}
+                              {/*    setConfirmDelete(true);*/}
+                              {/*  }}>*/}
+                              {/*    <Delete fontSize="small" color="inherit"/>*/}
+                              {/*  </IconButton>*/}
+                              {/*</StyledTableCell>*/}
+                            </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+
+
+
+
+                {/*  <TableRow sx={{ my: '1rem', padding: '6px 18px' }}>*/}
+                {/*    <H5 color="grey.600" my="0px" mx={0} textAlign="left">*/}
+                {/*        {localStrings.orderNumber}*/}
+                {/*    </H5>*/}
+
+
+                {/*    <H5 color="grey.600" my="0px" mx={-1} textAlign="left" sx={{width: 250}} >*/}
+                {/*      {localStrings.deliveryMode}*/}
+                {/*    </H5>*/}
+                {/*    <H5 color="grey.600" my="0px" ml={5.5} textAlign="left">*/}
+                {/*        {localStrings.purchaseDate}*/}
+                {/*    </H5>*/}
+                {/*    <H5 color="grey.600" my="0px" textAlign="left">*/}
+                {/*        {localStrings.totalTTC}*/}
+                {/*    </H5>*/}
+                {/*    <H5 flex="0 0 0 !important" color="grey.600" px={1} py={0.5} my={0}></H5>*/}
+                {/*</TableRow>*/}
+
+                {/*{ordersDisplay.map((item, ind) => (*/}
+                {/*    <OrderRow item={item} key={ind} currency={currency} />*/}
+                {/*))}*/}
 
               {maxPage > 1 &&
               <FlexBox

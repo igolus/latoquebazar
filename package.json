@@ -73,6 +73,7 @@
     "react-google-maps": "^9.4.5",
     "react-localization": "^1.0.17",
     "react-markdown": "^6.0.2",
+    "react-phone-input-2": "^2.14.0",
     "react-scroll": "^1.8.2",
     "react-simple-image-viewer": "0.0.8",
     "react-spinners": "^0.11.0",

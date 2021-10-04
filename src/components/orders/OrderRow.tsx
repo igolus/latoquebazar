@@ -59,23 +59,25 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
           <H5 m={0.75} textAlign="left">
             {item.orderNumber}
           </H5>
-          <Box m={0.75} width={"25px"}>
-            <Chip
-              size="small"
-              label={formatOrderStatus(item.status, localStrings)}
-              sx={{
-                p: '0.25rem 0.5rem',
-                fontSize: 12,
-                color: !!getColor(item.status)
-                  ? `${getColor(item.status)}.900`
-                  : 'inherit',
-                backgroundColor: !!getColor(item.status)
-                  ? `${getColor(item.status)}.100`
-                  : 'none',
-              }}
-            />
-          </Box>
-          <Typography className="pre" m={0.75} textAlign="left">
+
+          {/*<Box m={0.75} width={"25px"}>*/}
+          {/*  <Chip*/}
+          {/*    size="small"*/}
+          {/*    label={formatOrderStatus(item.status, localStrings)}*/}
+          {/*    sx={{*/}
+          {/*      p: '0.25rem 0.5rem',*/}
+          {/*      fontSize: 12,*/}
+          {/*      color: !!getColor(item.status)*/}
+          {/*        ? `${getColor(item.status)}.900`*/}
+          {/*        : 'inherit',*/}
+          {/*      backgroundColor: !!getColor(item.status)*/}
+          {/*        ? `${getColor(item.status)}.100`*/}
+          {/*        : 'none',*/}
+          {/*    }}*/}
+          {/*  />*/}
+          {/*</Box>*/}
+          <br/>
+          <Typography className="pre" m={0.75} textAlign="left" sx={{width: 250}}>
             {formatOrderConsumingModeGrid(item, localStrings)}
           </Typography>
           <Typography className="pre" m={0.75} textAlign="left">

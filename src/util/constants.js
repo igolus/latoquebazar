@@ -4,12 +4,24 @@ export const MODE_EDIT = 1;
 export const MODE_CREATE = 2;
 
 export const SEP = "-";
-export const ORDER_STATUS_NEW = "new";
-export const ORDER_STATUS_COMPLETE = "complete";
-export const ORDER_STATUS_FINISHED = "finished";
-export const ORDER_STATUS_DELIVERING = "delivering";
-export const ORDER_STATUS_PREPARATION = "preparation";
-export const ORDER_STATUS_READY = "ready";
+export const ORDER_STATUS_NEW = "ltnew";
+export const ORDER_STATUS_COMPLETE = "ltcomplete";
+export const ORDER_STATUS_FINISHED = "ltfinished";
+export const ORDER_STATUS_DELIVERING = "ltdelivering";
+export const ORDER_STATUS_PREPARATION = "ltpreparation";
+export const ORDER_STATUS_READY = "ltready";
+
+export const HUBRISE_ORDER_STATUS_NEW = "new";
+export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
+export const HUBRISE_ORDER_STATUS_ACCEPTED = "accepted";
+export const HUBRISE_ORDER_STATUS_IN_PREPARATION = "in_preparation";
+export const HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT= "awaiting_shipment";
+export const HUBRISE_ORDER_STATUS_AWAITING_COLLECTION= "awaiting_collection";
+export const HUBRISE_ORDER_STATUS_IN_DELIVERY= "in_delivery";
+export const HUBRISE_ORDER_STATUS_COMPLETED= "completed";
+export const HUBRISE_ORDER_STATUS_REJECTED= "rejected";
+export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
+export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
 
 export const ORDER_SOURCE_ONLINE = "online";
 export const ORDER_SOURCE_OFFLINE = "offline";
@@ -66,19 +78,19 @@ export const getOrderDeliveryMode = (localStrings) => {
 export const getOrderStatus = (localStrings) => {
   return[
     {
-      name: localStrings.orderStatusNew,
+      name: localStrings.hrorderStatusNew,
       value: ORDER_STATUS_NEW,
     },
     {
-      name: localStrings.orderStatusComplete,
+      name: localStrings.hrorderStatusCompleted,
       value: ORDER_STATUS_COMPLETE,
     },
     {
-      name: localStrings.orderStatusDelivering,
+      name: localStrings.hrorderStatusinDelivery,
       value: ORDER_STATUS_DELIVERING,
     },
     {
-      name: localStrings.orderStatusPreparation,
+      name: localStrings.hrorderStatusInPreparation,
       value: ORDER_STATUS_PREPARATION,
     },
     {
@@ -86,11 +98,72 @@ export const getOrderStatus = (localStrings) => {
       value: ORDER_STATUS_READY,
     },
     {
-      name: localStrings.orderStatusFinished,
+      name: localStrings.hrorderStatusCompleted,
       value: ORDER_STATUS_FINISHED,
-    }
+    },
+
+
+
+    {
+      name: localStrings.hrorderStatusNew,
+      value: HUBRISE_ORDER_STATUS_NEW,
+    },
+    {
+      name: localStrings.hrorderStatusReceived,
+      value: HUBRISE_ORDER_STATUS_RECEIVED,
+    },
+    {
+      name: localStrings.hrorderStatusAccepted,
+      value: HUBRISE_ORDER_STATUS_ACCEPTED,
+    },
+    {
+      name: localStrings.hrorderStatusInPreparation,
+      value: HUBRISE_ORDER_STATUS_IN_PREPARATION,
+    },
+    {
+      name: localStrings.hrorderStatusAwaitingShipment,
+      value: HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT,
+    },
+    {
+      name: localStrings.hrorderStatusAwaitingCollection,
+      value: HUBRISE_ORDER_STATUS_AWAITING_COLLECTION,
+    },
+
+
+    {
+      name: localStrings.hrorderStatusinDelivery,
+      value: HUBRISE_ORDER_STATUS_IN_DELIVERY,
+    },
+    {
+      name: localStrings.hrorderStatusCompleted,
+      value: HUBRISE_ORDER_STATUS_COMPLETED,
+    },
+    {
+      name: localStrings.hrorderStatusRejected,
+      value: HUBRISE_ORDER_STATUS_REJECTED,
+    },
+    {
+      name: localStrings.hrorderStatusCancelled,
+      value: HUBRISE_ORDER_STATUS_CANCELLED,
+    },
+    {
+      name: localStrings.hrorderStatusDeliveryFailed,
+      value: HUBRISE_ORDER_STATUS_DELIVERY_FAILED,
+    },
   ]
 }
+
+// export const HUBRISE_ORDER_STATUS_NEW = "new";
+// export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
+// export const HUBRISE_ORDER_STATUS_ACCEPTED = "accepted";
+// export const HUBRISE_ORDER_STATUS_IN_PREPARATION = "in_preparation";
+// export const HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT= "awaiting_shipment";
+// export const HUBRISE_ORDER_STATUS_AWAITING_COLLECTION= "awaiting_collection";
+// export const HUBRISE_ORDER_STATUS_IN_DELIVERY= "in_delivery";
+// export const HUBRISE_ORDER_STATUS_COMPLETED= "completed";
+// export const HUBRISE_ORDER_STATUS_REJECTED= "rejected";
+// export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
+// export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
 
 
 export const getPaymentMethods = (localStrings) => {

@@ -15,6 +15,7 @@ import OpeningHours from "@component/OpeningHours";
 import ClosingDays from "@component/ClosingDays";
 import useAuth from "@hook/useAuth";
 import MyMap from "@component/GoogleMap";
+import useWindowSize from "@hook/useWindowSize";
 
 
 
@@ -24,6 +25,7 @@ export interface IndexPageProps {
 
 // let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
+    const width = useWindowSize()
 
     const {currentEstablishment} = useAuth();
     const config = require("../src/conf/config.json")
@@ -54,6 +56,10 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
             {/*    <Image mb={2.5} src={contextData?.brand?.logoUrl} alt="logo" />*/}
             {/*</Box>*/}
             {/*}*/}
+            <div>
+
+
+            </div>
 
             <AppLayout contextData={contextData}>
 
@@ -91,7 +97,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 <SectionCategories categories={contextData.categories} products={contextData.products}/>
 
 
-                {isMobile &&
+                {width <= 900 &&
                 <div>
                     <Card1 sx={{mb: '2rem', mt:'2rem' }}>
                         <Typography  variant="h6" fontWeight="600" mb={4}>

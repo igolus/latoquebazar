@@ -171,6 +171,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     return (
         <div>
+            {/*<p>{category}</p>*/}
+            {/*<p>{findIdOfCategory(category)}</p>*/}
             {/*<p>{JSON.stringify(contextData?.categories || {})}</p>>*/}
             {/*<p>{JSON.stringify(productDisplay)}</p>*/}
             {/*<p>{JSON.stringify(allProducts)}</p>*/}
