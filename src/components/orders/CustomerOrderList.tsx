@@ -24,6 +24,7 @@ import East from "@material-ui/icons/East";
 import {styled} from "@material-ui/styles";
 import Link from "next/link";
 import { H5 } from '@component/Typography'
+import {isMobile} from "react-device-detect";
 
 export interface CustomerOrderListProps {
   contextData?: any
@@ -106,7 +107,9 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                         <TableRow>
                           <TableCell align="left">
                             <H5 color="grey.600">
-                              {localStrings.orderNumber}
+                              {isMobile ? localStrings.orderNumberMobile : localStrings.orderNumber}
+
+                              {/*{localStrings.orderNumber}*/}
                             </H5>
                           </TableCell>
                           <TableCell align="left">
@@ -124,7 +127,9 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                               {localStrings.totalTTC}
                             </H5>
                           </TableCell>
-                          <TableCell align="right"></TableCell>
+                          {!isMobile &&
+                            <TableCell align="right"></TableCell>
+                          }
                         </TableRow>
                       </TableHead>
 
@@ -133,6 +138,7 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                       <TableBody>
 
                         {ordersDisplay.map((item, ind) => (
+                            <Link href={"/orders/" + item.id}>
                             <TableRow
                                 key={ind}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -141,13 +147,15 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                               <StyledTableCell align="left" >{formatOrderConsumingModeGrid(item, localStrings)}</StyledTableCell>
                               <StyledTableCell align="left">{moment(parseFloat(item.creationDate)).locale("fr").calendar()}</StyledTableCell>
                               <StyledTableCell align="left">{(item.totalPrice || 0).toFixed(2)} {currency}</StyledTableCell>
+                              {!isMobile &&
                               <StyledTableCell align="right">
                                 <Link href={"/orders/" + item.id}>
                                   <IconButton>
-                                    <East fontSize="small" color="inherit" />
+                                    <East fontSize="small" color="inherit"/>
                                   </IconButton>
                                 </Link>
                               </StyledTableCell>
+                              }
                               {/*  <Link href={"/address/" + item.id}>*/}
                               {/*    <IconButton>*/}
                               {/*      <Edit fontSize="small" color="inherit" />*/}
@@ -161,6 +169,7 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                               {/*  </IconButton>*/}
                               {/*</StyledTableCell>*/}
                             </TableRow>
+                            </Link>
                         ))}
                       </TableBody>
                     </Table>

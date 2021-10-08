@@ -5,6 +5,7 @@ const config = require('../conf/config.json')
 const common = `
   id
   external
+  visible
   extName
   shortCode
   name

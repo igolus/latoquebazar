@@ -67,7 +67,7 @@ export async function getStaticPropsUtil() {
                 tags: tags
             },
         },
-        revalidate: 60,
+        revalidate: process.env.REVALIDATE_DATA_TIME || 60,
     }
 
 }

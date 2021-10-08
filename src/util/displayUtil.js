@@ -473,9 +473,10 @@ export function getRemainingToPay(order) {
 }
 
 
-export function filterCat(categories, products) {
+export function filterCat(categories, products, deals) {
     const allCatProductIds = [];
-    products.forEach(p => {
+
+    products?.forEach(p => {
         let visible = (p.skus || []).some(sku => sku.visible)
         let catId = p.category?.id
         if (visible && catId) {
@@ -485,7 +486,22 @@ export function filterCat(categories, products) {
         }
     })
 
+    //alert(JSON.stringify(deals))
+    deals?.forEach(deal => {
+        //if () {
+            let catId = deal.category?.id
+            if (deal.visible && catId) {
+                if (!allCatProductIds.includes(catId)) {
+                    allCatProductIds.push(catId)
+                }
+            }
+
+    })
+
+
+
     return categories.filter(cat => allCatProductIds.includes(cat.id));
+    //return categories;
 }
 
 

@@ -121,6 +121,7 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   },
   dialogContent: {
     paddingBottom: '1.25rem',
+    //maxWidth: "750px"
   },
   backDrop: {
     backdropFilter: "blur(5px)",

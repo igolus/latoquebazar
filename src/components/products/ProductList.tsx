@@ -158,6 +158,7 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                     >
                         {contextData &&
                             <ProductFilterCard tags={contextData.tags}
+                                               deals={contextData.deals}
                                                tagsSelected={tagsSelected} setTagsSelected={setTagsSelected}
                                                products={contextData.products}
                                                categories={contextData.categories}/>

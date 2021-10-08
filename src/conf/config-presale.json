@@ -1,10 +1,10 @@
 {
-  "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
+  "graphQlUrl": "https://us-central1-latoquepresale.cloudfunctions.net/graphQlApi",
   "brandId": "nmhQlVoJR9tkXmze0uGX",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
-  "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
-  "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
-  "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",
-  "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
-  "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment"
+  "distanceUrl": "https://us-central1-latoquepresale.cloudfunctions.net/distanceApi",
+  "sendEmailUrl": "https://us-central1-latoquepresale.cloudfunctions.net/sendMail",
+  "getResetAccountLinkUrl": "https://us-central1-latoquepresale.cloudfunctions.net/getPasswordLink",
+  "getActivationEmailLinkUrl": "https://us-central1-latoquepresale.cloudfunctions.net/activateMailLink",
+  "paymentUrl": "https://us-central1-latoquepresale.cloudfunctions.net/payment"
 }

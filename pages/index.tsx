@@ -94,7 +94,9 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {/*<Section7 />*/}
                 {/*<Section8 />*/}
                 {/*<Section9 />*/}
-                <SectionCategories categories={contextData.categories} products={contextData.products}/>
+                <SectionCategories categories={contextData.categories}
+                                   deals={contextData.deals}
+                                   products={contextData.products}/>
 
 
                 {width <= 900 &&

@@ -205,7 +205,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     <H1 mb={2}>{product.name}</H1>
                     {!valid &&
-                    <Box mb={2}>
+                    <Box mb={2} sx={{maxWidth:"285px"}}>
                         <AlertHtmlLocal severity={"warning"}
                                         title={localStrings.warningMessage.optionMandatory}
                                         content={""}
@@ -260,7 +260,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             {productAndSku.sku.price} {currency}
                         </h2>
                     </Box>
+                    <p>
+                        {product.shortDescription}
 
+                    </p>
                     <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
 
                     {options && options.length > 0 && isAvailableSku() &&

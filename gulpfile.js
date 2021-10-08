@@ -45,23 +45,28 @@ function uploadFtp(cb) {
         .pipe( conn.dest( '/bookingsorcerer.com' ) );
 }
 
-function installInteractive(cb) {
-
-}
+function vercelDeploy (mainWindow, done) {
+    //
+    // var conf = require('../siteLaToque/src/conf/config.json');
+    // console.log('conf '+ JSON.stringify(conf))
+    // console.log('cmd '+ 'vercel --confirm --name '+ conf.siteName)
+    // const child  = exec('vercel --confirm --name '+ conf.siteName, {
+    //     cwd: 'siteLaToque'
+    // })
+    //
+    // child.stdout.on('data', function(data) {
+    //     mainWindow.webContents.send('logs', data.toString());
+    //     console.log(data);
+    // });
+    //
+    // child.stderr.on('data', function (data) {
+    //     mainWindow.webContents.send('logs', data.toString());
+    //     console.log(data);
+    // });
+},
 
 
 function generateConf(cb) {
-    let res;
-    // gulp.src('test.js')
-    //     .pipe(prompt.prompt({
-    //         type: 'input',
-    //         name: 'task',
-    //         message: 'Which task would you like to run?'
-    //     }))
-    //     .pipe(res => {console.log(res)})
-
-
-
     return gulp.src('.')
         .pipe(prompt.prompt([
             {
@@ -86,22 +91,21 @@ function generateConf(cb) {
                 message: 'What is the googleKey ?'
             },
 
-            ], function(res){
-                console.log(res.targetEnv);
-                console.log(res.brandId);
-                console.log(res.projectId);
+        ], function(res){
+            console.log(res.targetEnv);
+            console.log(res.brandId);
+            console.log(res.projectId);
 
-                //if (res.targetEnv === 'dev') {
-                    gulp.src('./src/conf/config-' + res.targetEnv + '.json')
-                        .pipe(rename('config.json'))
-                        .pipe(replace('brandIdReplace', res.brandId))
-                        .pipe(replace('googleKeydReplace', res.googleKey))
-                        .pipe(gulp.dest('./src/conf', {overwrite:true}))
-                        .pipe(gulp.src('./src/conf/project.json'))
-                        .pipe(replace('projectIdReplace', res.projectId))
-                        .pipe(gulp.dest('.vercel', {overwrite:true}), (res) => cb() )
-                        //.done();
-            }));
+            gulp.src('./src/conf/config-' + res.targetEnv + '.json')
+                .pipe(rename('config.json'))
+                .pipe(replace('brandIdReplace', res.brandId))
+                .pipe(replace('googleKeydReplace', res.googleKey))
+                .pipe(gulp.dest('./src/conf', {overwrite:true}))
+                .pipe(gulp.src('./src/conf/project.json'))
+                .pipe(replace('projectIdReplace', res.projectId))
+                .pipe(gulp.dest('.vercel', {overwrite:true}), (res) => cb() )
+            //.done();
+        }));
 
 }
 

@@ -15,18 +15,20 @@ export type FilterProps = {
 export type ProductFilterCardProps = {
     categories: [string],
     products: any,
+    deals: any,
     tags: any,
     tagsSelected: any,
     setTagsSelected: any,
 }
 
 
-const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, products, tags, tagsSelected, setTagsSelected}) => {
+const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, products, deals, tags, tagsSelected, setTagsSelected}) => {
     const { asPath } = useRouter()
 
-    const filteredCat = filterCat(categories, products)
+    const filteredCat = filterCat(categories, products, deals)
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
+            {/*<p>{JSON.stringify(deals || {})}</p>*/}
             <H6 mb={1.25}>{localStrings.categories}</H6>
             {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
             <StyledDashboardNav

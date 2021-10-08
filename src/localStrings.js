@@ -4,6 +4,8 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        back: "Retour",
+        poweredBy: "Site construit avec La toque magique",
         phoneInternational: "Numero de telephone au format international +...",
         demoDisclaim: "Ceci est un site de démonstration aucune commande ne sera honorée",
         manageMyAdresses: "Gerer mes adresses",
@@ -85,6 +87,7 @@ let localStrings = new LocalizedStrings({
         myOrders: "Mes Commandes",
         purchaseDate: "Date de commande",
         orderNumber: "Numero de commande",
+        orderNumberMobile: "N°",
         orderId: "Identifiant de commande",
         status: "statut",
         myAccount: "Mon compte",

@@ -194,7 +194,7 @@ function getSelector(optionList) {
 
               <Box
                   display="flex"
-                  flexWrap="wrap"
+                  flexDirection="column"
               >
                 {optionListComplete.map((optionComplete, key) =>
                     <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio />}
@@ -218,7 +218,7 @@ function getSelector(optionList) {
             <FormGroup>
               <Box
                   display="flex"
-                  flexWrap="wrap"
+                  flexDirection="column"
               >
 
                 {optionListComplete.map((optionComplete, key) =>
@@ -261,7 +261,7 @@ return (
                      mb={1}
                 >
                   {/*{JSON.stringify(optionListMatching || {})}*/}
-                  <Box display="flex" flexDirection="row-reverse" p={1} m={1}>
+                  <Box display="flex" flexDirection="column" p={1} m={1}>
                     <Typography fontSize="14px" fontWeight="600" lineHeight="1">
                       {formatTitleOptionList(optionListMatching)}
                       {/*{optionListMatching.name}*/}
@@ -277,66 +277,6 @@ return (
         })
         }
 
-        {/*<Box*/}
-        {/*    p={2}*/}
-        {/*    display="flex"*/}
-        {/*    justifyContent="flex-end"*/}
-        {/*    alignContent="space-around"*/}
-        {/*>*/}
-        {/*  {cancelProductCallBack &&*/}
-        {/*  <Box ml={2}>*/}
-        {/*    <Button*/}
-        {/*        color="secondary"*/}
-        {/*        variant="contained"*/}
-        {/*        type="submit"*/}
-        {/*        onClick={cancelProductCallBack}*/}
-        {/*    >*/}
-        {/*      {localStrings.cancel}*/}
-        {/*    </Button>*/}
-        {/*  </Box>*/}
-        {/*  }*/}
-        {/*  {selectProductCallBack &&*/}
-        {/*  <Box ml={2}>*/}
-        {/*    <Button ml={2}*/}
-        {/*            color="secondary"*/}
-        {/*            variant="contained"*/}
-        {/*            type="submit"*/}
-        {/*            disabled={!checkValidity()}*/}
-        {/*            onClick={selectProductSku}*/}
-        {/*    >*/}
-        {/*      {getterSkuEdit().selectId ? localStrings.updateProduct : localStrings.selectProduct}*/}
-        {/*    </Button>*/}
-        {/*  </Box>*/}
-        {/*  }*/}
-
-        {/*  {previousCallBack &&*/}
-        {/*  <Box ml={2}>*/}
-        {/*    <Button ml={2}*/}
-        {/*            color="secondary"*/}
-        {/*            variant="contained"*/}
-        {/*            type="submit"*/}
-        {/*            disabled={!canGoPrevious() }*/}
-        {/*            onClick={previousCallBack}*/}
-        {/*    >*/}
-        {/*      {localStrings.previous}*/}
-        {/*    </Button>*/}
-        {/*  </Box>*/}
-        {/*  }*/}
-        {/*  {nextCallBack &&*/}
-        {/*  <Box ml={2}>*/}
-        {/*    <Button ml={2}*/}
-        {/*            color="secondary"*/}
-        {/*            variant="contained"*/}
-        {/*            type="submit"*/}
-        {/*            disabled={!checkValidity()}*/}
-        {/*            onClick={nextCallBack}*/}
-        {/*    >*/}
-        {/*      {nextTitle}*/}
-        {/*    </Button>*/}
-        {/*  </Box>*/}
-        {/*  }*/}
-
-        {/*</Box>*/}
       </Box>
     </>
 );

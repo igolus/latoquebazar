@@ -58,6 +58,7 @@ import moment from "moment";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import BazarMenu from "@component/BazarMenu";
 import BazarImage from "@component/BazarImage";
+import {isMobile} from "react-device-detect";
 
 const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
     flexDirection: 'row',
@@ -117,7 +118,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
         try {
             setRefreshing(true)
             //alert("refresh")
-            if (contextData && contextData.brand) {
+            if (contextData && contextData.brand && currentEstablishment()) {
                 let result = await executeQueryUtil(getOrderByIdQuery(contextData.brand.id, currentEstablishment().id, id));
                 let orderSet = null;
                 if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
@@ -183,7 +184,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
             case HUBRISE_ORDER_STATUS_NEW:
             case HUBRISE_ORDER_STATUS_RECEIVED:
             case HUBRISE_ORDER_STATUS_ACCEPTED:
-               return "/assets/images/IconsDelivery/Get_box.png"
+                return "/assets/images/IconsDelivery/Get_box.png"
             case HUBRISE_ORDER_STATUS_IN_PREPARATION:
             case HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT:
             case HUBRISE_ORDER_STATUS_AWAITING_COLLECTION:
@@ -206,9 +207,13 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                 title={localStrings.orderDetail}
                 icon={ShoppingBag}
                 button={
-                    <Button color="primary" variant="contained" onClick={refresh}>
-                        {localStrings.refresh}
-                    </Button>
+                    <>
+                        {!noStatus &&
+                        <Button color="primary" variant="contained" onClick={refresh}>
+                            {localStrings.refresh}
+                        </Button>
+                        }
+                    </>
                 }
             />
 
@@ -218,91 +223,49 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                     <ClipLoaderComponent/>
                     :
                     <div style={{width: '100%'}}>
-                        <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
-                            <Box m={5} justifyContent={"center"}>
-                                {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
-                                <BazarImage width={120} height={120} src={getImageStatus()}/>
+                        {isMobile && !noStatus &&
+                        <>
+                            <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                                <Box m={5}>
+                                    {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
+                                    <BazarImage width={120} height={120} src={getImageStatus()}/>
+                                </Box>
                             </Box>
-                            <Box mt={7}>
-                                <H2 my="0px" lineHeight="1" whiteSpace="pre">
-                                    {localStrings.orderStatus}
-                                </H2>
-                                <H5 mt={0} mb={2} mt={2}>
-                                    {getTextStatus(order, localStrings)}
-                                </H5>
+
+                            <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
+                                <Box mt={7}>
+                                    <H2 my="0px" lineHeight="1" whiteSpace="pre">
+                                        {localStrings.orderStatus}
+                                    </H2>
+                                    <H5 mt={0} mb={2} mt={2}>
+                                        {getTextStatus(order, localStrings)}
+                                    </H5>
+                                </Box>
                             </Box>
-                        </Box>
+                        </>
+                        }
+                        {!isMobile && !noStatus &&
+                            <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
+                                <Box m={5} justifyContent={"center"}>
+                                    {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
+                                    <BazarImage width={120} height={120} src={getImageStatus()}/>
+                                </Box>
+                                <Box mt={7}>
+                                    <H2 my="0px" lineHeight="1" whiteSpace="pre">
+                                        {localStrings.orderStatus}
+                                    </H2>
+                                    <H5 mt={0} mb={2} mt={2}>
+                                        {getTextStatus(order, localStrings)}
+                                    </H5>
+                                </Box>
+                            </Box>
+                            }
+
                     </div>
                 }
-
-                {/*<h1>status</h1>*/}
             </Card>
             }
 
-            {/*{!noStatus && order?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&*/}
-            {/*<Card sx={{ p: '2rem 1.5rem', mb: '30px' }}>*/}
-            {/*    {refreshing ?*/}
-            {/*        <ClipLoaderComponent/>*/}
-            {/*        :*/}
-            {/*        <>*/}
-            {/*        <StyledFlexbox>*/}
-            {/*            <h1>STATUS</h1>*/}
-            {/*            /!*{stepIconList.map((Icon, ind) => (*!/*/}
-            {/*            /!*    <Fragment key={ind}>*!/*/}
-            {/*            /!*        <Box position="relative">*!/*/}
-            {/*            /!*            <Avatar*!/*/}
-            {/*            /!*                sx={{*!/*/}
-            {/*            /!*                    height: 64,*!/*/}
-            {/*            /!*                    width: 64,*!/*/}
-            {/*            /!*                    // bgcolor: false ? 'primary.main' : 'grey.300',*!/*/}
-            {/*            /!*                    // color: false ? 'grey.white' : 'primary.main',*!/*/}
-            {/*            /!*                    bgcolor: ind <= getStepOrder() ? 'primary.main' : 'grey.300',*!/*/}
-            {/*            /!*                    color: ind <=  getStepOrder() ? 'grey.white' : 'primary.main',*!/*/}
-            {/*            /!*                }}*!/*/}
-            {/*            /!*            >*!/*/}
-            {/*            /!*                <Icon color="inherit" sx={{ fontSize: '32px' }} />*!/*/}
-            {/*            /!*            </Avatar>*!/*/}
-            {/*            /!*            {ind <= getStepOrder() && (*!/*/}
-            {/*            /!*                <Box position="absolute" right="0" top="0">*!/*/}
-            {/*            /!*                    <Avatar*!/*/}
-            {/*            /!*                        sx={{*!/*/}
-            {/*            /!*                            height: 22,*!/*/}
-            {/*            /!*                            width: 22,*!/*/}
-            {/*            /!*                            bgcolor: 'grey.200',*!/*/}
-            {/*            /!*                            color: 'success.main',*!/*/}
-            {/*            /!*                        }}*!/*/}
-            {/*            /!*                    >*!/*/}
-            {/*            /!*                        <Done color="inherit" sx={{ fontSize: '1rem' }} />*!/*/}
-            {/*            /!*                    </Avatar>*!/*/}
-            {/*            /!*                </Box>*!/*/}
-            {/*            /!*            )*!/*/}
-            {/*            /!*            }*!/*/}
-            {/*            /!*        </Box>*!/*/}
-            {/*            /!*        {ind < stepIconList.length - 1 && (*!/*/}
-            {/*            /!*            <Box*!/*/}
-            {/*            /!*                className="line"*!/*/}
-            {/*            /!*                bgcolor={ind < getStepOrder() ? 'primary.main' : 'grey.300'}*!/*/}
-            {/*            /!*            />*!/*/}
-            {/*            /!*        )}*!/*/}
-            {/*            /!*    </Fragment>*!/*/}
-            {/*            /!*))}*!/*/}
-            {/*        </StyledFlexbox>*/}
-            {/*        </>*/}
-            {/*    }*/}
-
-            {/*    <FlexBox justifyContent={width < breakpoint ? 'center' : 'flex-end'}>*/}
-            {/*        <Typography*/}
-            {/*            p="0.5rem 1rem"*/}
-            {/*            borderRadius="300px"*/}
-            {/*            bgcolor="primary.light"*/}
-            {/*            color="primary.main"*/}
-            {/*            textAlign="center"*/}
-            {/*        >*/}
-            {/*            {localStrings.formatString(localStrings.deliveryEstimateDate, formatOrderDeliveryDateSlot(order))}*/}
-            {/*        </Typography>*/}
-            {/*    </FlexBox>*/}
-            {/*</Card>*/}
-            {/*}*/}
             <OrderContent order={order} contextData={contextData}/>
 
 
@@ -361,9 +324,9 @@ export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
     return getStaticPathsUtil()
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
+    export const getStaticProps: GetStaticProps = async (context) => {
     return await getStaticPropsUtil();
 }
 
 
-export default OrderDetails
+    export default OrderDetails

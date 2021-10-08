@@ -50,13 +50,6 @@ const Footer = ({contextData}) => {
                   </a>
                 </Link>
 
-                {/*<Paragraph mb={2.5} color="grey.500">*/}
-                {/*  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Auctor*/}
-                {/*  libero id et, in gravida. Sit diam duis mauris nulla cursus. Erat*/}
-                {/*  et lectus vel ut sollicitudin elit at amet.*/}
-                {/*</Paragraph>*/}
-
-                {/*<AppStore />*/}
               </Grid>
 
               <Grid item lg={3} md={6} sm={6} xs={12}>
@@ -110,8 +103,48 @@ const Footer = ({contextData}) => {
               </Grid>
             </Grid>
           </Box>
+
+          <Box
+              bgcolor="#0c0e30"
+              fontSize="10px"
+              fontWeight="400"
+              //mb={2.5}
+              lineHeight="1"
+              color="grey.100"
+              sx={{
+                display: 'flex',
+                flexDirection: 'row-reverse',
+                // p: 1,
+                mb: 0,
+                bgcolor: "#0c0e30",
+
+              }}
+              >
+
+            <a href="https://latoquemagique.com">{localStrings.poweredBy}</a>
+          </Box>
+
         </Container>
       </Box>
+      {/*<Box*/}
+      {/*    bgcolor="#0c0e30"*/}
+      {/*    fontSize="25px"*/}
+      {/*    fontWeight="600"*/}
+      {/*    //mb={2.5}*/}
+      {/*    lineHeight="1"*/}
+      {/*    color="white"*/}
+      {/*    sx={{*/}
+      {/*      display: 'flex',*/}
+      {/*      flexDirection: 'row-reverse',*/}
+      {/*      // p: 1,*/}
+      {/*      mb: 0,*/}
+      {/*      bgcolor: "#0c0e30",*/}
+
+      {/*    }}*/}
+      {/*    >*/}
+
+      {/*  La toque magique*/}
+      {/*</Box>*/}
     </footer>
   )
 }

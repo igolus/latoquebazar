@@ -27,13 +27,14 @@ const useStyles = makeStyles(({ shadows }: MuiThemeProps) => ({
 export interface SectionCategoriesProps {
   categories: any,
   products: any,
+  deals: any,
 }
 
 
-const SectionCategories: React.FC<SectionCategoriesProps> = ({categories, products}) => {
+const SectionCategories: React.FC<SectionCategoriesProps> = ({categories, products, deals}) => {
   const classes = useStyles()
 
-  const filteredCat = filterCat(categories, products)
+  const filteredCat = filterCat(categories, products, deals)
 
   return (
     <div style={{width: '100%'}}>

@@ -20,6 +20,7 @@ import Signup from "@component/sessions/Signup";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {makeStyles} from "@material-ui/styles";
 import {green} from "@material-ui/core/colors";
+import {isMobile} from "react-device-detect";
 
 const config = require("../../conf/config.json")
 
@@ -37,7 +38,7 @@ type StyledCardProps = {
 }
 
 export const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
-  ({ children, passwordVisibility, ...rest }) => <Card {...rest}>{children}</Card>
+    ({ children, passwordVisibility, ...rest }) => <Card {...rest}>{children}</Card>
 )<CardProps>(({ theme, passwordVisibility }) => ({
   //width: 500,
   [theme.breakpoints.down('sm')]: {
@@ -149,11 +150,11 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
   }
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      onSubmit: handleFormSubmit,
-      initialValues,
-      validationSchema: formSchema,
-    })
+      useFormik({
+        onSubmit: handleFormSubmit,
+        initialValues,
+        validationSchema: formSchema,
+      })
 
   async function handleGoogleClick() {
     try {
@@ -203,181 +204,204 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
   }
 
   return (
-    <>
-      {createAccountEnabled ?
-          <Signup contextData={contextData} callBackBackToLogin={() => setCreateAccountEnabled(false)} callBackBackToLostPassword={callBackBackToLostPassword}/>
-          :
-          <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
-            <form className="content" onSubmit={handleSubmit}>
-              {/*<H3 textAlign="center" mb={1}>*/}
-              {/*  Welcome To Ecommerce*/}
-              {/*</H3>*/}
-              <Small
-                  fontWeight="600"
-                  fontSize="12px"
-                  color="grey.800"
-                  textAlign="center"
-                  mb={4.5}
-                  display="block"
-              >
-                {localStrings.logEmailAndPassword}
-              </Small>
+      <>
+        {createAccountEnabled ?
+            <Signup contextData={contextData} callBackBackToLogin={() => setCreateAccountEnabled(false)} callBackBackToLostPassword={callBackBackToLostPassword}/>
+            :
+            <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
+              <form className="content" onSubmit={handleSubmit}>
+                {/*<H3 textAlign="center" mb={1}>*/}
+                {/*  Welcome To Ecommerce*/}
+                {/*</H3>*/}
+                <Small
+                    fontWeight="600"
+                    fontSize="12px"
+                    color="grey.800"
+                    textAlign="center"
+                    mb={4.5}
+                    display="block"
+                >
+                  {localStrings.logEmailAndPassword}
+                </Small>
 
 
-              {user && verifEmailSentAgain &&
-              <AlertHtmlLocal severity="info"
-                              title={localStrings.infoMessage}
-                              content={localStrings.formatString(localStrings.notif.activationEmailSentNotif, user.email)}
-              />
-              }
+                {user && verifEmailSentAgain &&
+                <AlertHtmlLocal severity="info"
+                                title={localStrings.infoMessage}
+                                content={localStrings.formatString(localStrings.notif.activationEmailSentNotif, user.email)}
+                />
+                }
 
-              {errorSubmit &&
-              <AlertHtmlLocal severity="error"
-                              title={localStrings.warning}
-                              content={errorSubmit}>
+                {errorSubmit &&
+                <AlertHtmlLocal severity="error"
+                                title={localStrings.warning}
+                                content={errorSubmit}>
 
-                              {user && !user.emailVerified &&
+                  {user && !user.emailVerified &&
                   <Box display="flex" flexDirection="row-reverse">
                     <Box mt={2} mb={2}>
-                        <Button variant="contained" color="primary" type="button" fullWidth
-                                endIcon={sendingActivationLink ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
-                                onClick={sendActivationLink}>
-                          {localStrings.sendLinkAgain}
-                        </Button>
+                      <Button variant="contained" color="primary" type="button" fullWidth
+                              endIcon={sendingActivationLink ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
+                              onClick={sendActivationLink}>
+                        {localStrings.sendLinkAgain}
+                      </Button>
                     </Box>
                   </Box>
                   }
                 </AlertHtmlLocal>
+                }
+
+
+                <BazarTextField
+                    mb={1.5}
+                    name="email"
+                    label={localStrings.email}
+                    placeholder="exmple@mail.com"
+                    variant="outlined"
+                    size="small"
+                    type="email"
+                    fullWidth
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.email || ''}
+                    error={!!touched.email && !!errors.email}
+                    helperText={touched.email && errors.email}
+                />
+
+                <BazarTextField
+                    mb={2}
+                    name="password"
+                    label={localStrings.password}
+                    placeholder="*********"
+                    autoComplete="on"
+                    type={passwordVisibility ? 'text' : 'password'}
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                          <IconButton
+                              size="small"
+                              type="button"
+                              onClick={togglePasswordVisibility}
+                          >
+                            {passwordVisibility ? (
+                                <Visibility className="passwordEye" fontSize="small" />
+                            ) : (
+                                <VisibilityOff className="passwordEye" fontSize="small" />
+                            )}
+                          </IconButton>
+                      ),
+                    }}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.password || ''}
+                    error={!!touched.password && !!errors.password}
+                    helperText={touched.password && errors.password}
+                />
+
+                <BazarButton
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    fullWidth
+                    sx={{
+                      mb: '1.65rem',
+                      height: 44,
+                    }}
+                >
+                  {localStrings.login}
+                </BazarButton>
+
+                {/*<BazarButton*/}
+                {/*    className="facebookButton"*/}
+                {/*    onClick={handleFacebookClick}*/}
+                {/*    size="medium"*/}
+                {/*    fullWidth*/}
+                {/*    sx={{*/}
+                {/*      mb: '10px',*/}
+                {/*      height: 44,*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*  <Image*/}
+                {/*      src="/assets/images/icons/facebook-filled-white.svg"*/}
+                {/*      alt="facebook"*/}
+                {/*  />*/}
+                {/*  <Box fontSize="12px" ml={1}>*/}
+                {/*    {localStrings.continueWithFaceook}*/}
+                {/*  </Box>*/}
+                {/*</BazarButton>*/}
+
+
+                <BazarButton
+                    className="googleButton"
+                    size="medium"
+                    onClick={handleGoogleClick}
+                    fullWidth
+                    sx={{
+                      height: 44,
+                    }}
+                >
+                  <Image src="/assets/images/icons/google-1.svg" alt="facebook" />
+                  <Box fontSize="12px" ml={1}>
+                    {localStrings.continueWithGoogle}
+                  </Box>
+                </BazarButton>
+
+                <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
+                  <Box>{localStrings.dontHaveAccount}</Box>
+
+                  <Button variant="outlined" onClick={createAccount} style={{marginLeft:"10px"}}>
+                    {localStrings.signup}
+                  </Button>
+                </FlexBox>
+              </form>
+
+              {isMobile ?
+                  <>
+                    <FlexBox justifyContent="center" alignItems="center" bgcolor="grey.200" py={1}>
+                      <Box>{localStrings.forgotPassword}</Box>
+
+                    </FlexBox>
+
+                    <FlexBox justifyContent="center" alignItems="center" bgcolor="grey.200" py={1}>
+                      <Button variant="outlined" onClick={() => callBackBackToLostPassword()} style={{marginLeft: "10px"}}>
+                        {localStrings.resetPassword}
+                      </Button>
+                    </FlexBox>
+
+                    <FlexBox justifyContent="center" alignItems="center" bgcolor="grey.200" py={1}>
+                      <Link href="/">
+                        <Button variant="outlined" onClick={() => callBackBackToLostPassword()} style={{marginLeft: "10px"}}>
+                          {localStrings.back}
+                        </Button>
+                      </Link>
+                    </FlexBox>
+                  </>
+                  :
+                  <FlexBox justifyContent="center" alignItems="center" bgcolor="grey.200" py={2.5}>
+                    <Box>{localStrings.forgotPassword}</Box>
+
+                    <Button variant="outlined" onClick={() => callBackBackToLostPassword()} style={{marginLeft: "10px"}}>
+                      {localStrings.resetPassword}
+                    </Button>
+                  </FlexBox>
               }
+            </StyledCard>
+        }
 
-
-              <BazarTextField
-                  mb={1.5}
-                  name="email"
-                  label={localStrings.email}
-                  placeholder="exmple@mail.com"
-                  variant="outlined"
-                  size="small"
-                  type="email"
-                  fullWidth
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.email || ''}
-                  error={!!touched.email && !!errors.email}
-                  helperText={touched.email && errors.email}
-              />
-
-              <BazarTextField
-                  mb={2}
-                  name="password"
-                  label={localStrings.password}
-                  placeholder="*********"
-                  autoComplete="on"
-                  type={passwordVisibility ? 'text' : 'password'}
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  InputProps={{
-                    endAdornment: (
-                        <IconButton
-                            size="small"
-                            type="button"
-                            onClick={togglePasswordVisibility}
-                        >
-                          {passwordVisibility ? (
-                              <Visibility className="passwordEye" fontSize="small" />
-                          ) : (
-                              <VisibilityOff className="passwordEye" fontSize="small" />
-                          )}
-                        </IconButton>
-                    ),
-                  }}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.password || ''}
-                  error={!!touched.password && !!errors.password}
-                  helperText={touched.password && errors.password}
-              />
-
-              <BazarButton
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  fullWidth
-                  sx={{
-                    mb: '1.65rem',
-                    height: 44,
-                  }}
-              >
-                {localStrings.login}
-              </BazarButton>
-
-              {/*<BazarButton*/}
-              {/*    className="facebookButton"*/}
-              {/*    onClick={handleFacebookClick}*/}
-              {/*    size="medium"*/}
-              {/*    fullWidth*/}
-              {/*    sx={{*/}
-              {/*      mb: '10px',*/}
-              {/*      height: 44,*/}
-              {/*    }}*/}
-              {/*>*/}
-              {/*  <Image*/}
-              {/*      src="/assets/images/icons/facebook-filled-white.svg"*/}
-              {/*      alt="facebook"*/}
-              {/*  />*/}
-              {/*  <Box fontSize="12px" ml={1}>*/}
-              {/*    {localStrings.continueWithFaceook}*/}
-              {/*  </Box>*/}
-              {/*</BazarButton>*/}
-
-
-              <BazarButton
-                  className="googleButton"
-                  size="medium"
-                  onClick={handleGoogleClick}
-                  fullWidth
-                  sx={{
-                    height: 44,
-                  }}
-              >
-                <Image src="/assets/images/icons/google-1.svg" alt="facebook" />
-                <Box fontSize="12px" ml={1}>
-                  {localStrings.continueWithGoogle}
-                </Box>
-              </BazarButton>
-
-              <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
-                <Box>{localStrings.dontHaveAccount}</Box>
-
-                <Button variant="outlined" onClick={createAccount} style={{marginLeft:"10px"}}>
-                  {localStrings.signup}
-                </Button>
-              </FlexBox>
-            </form>
-
-            <FlexBox justifyContent="center" alignItems="center"  bgcolor="grey.200" py={2.5}>
-              <Box>{localStrings.forgotPassword}</Box>
-
-              <Button variant="outlined" onClick={() => callBackBackToLostPassword()} style={{marginLeft:"10px"}}>
-                {localStrings.resetPassword}
-              </Button>
-            </FlexBox>
-          </StyledCard>
-      }
-
-    </>
+      </>
   )
 }
 
 const initialValues = {
   email: '',
-  password: '',
+      password: '',
 }
 
 const formSchema = yup.object().shape({
   email: yup.string().email(localStrings.check.invalidEmail).required(localStrings.formatString(localStrings.requiredField, '${path}')),
-  password: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+      password: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
 })
 
 export default Login
