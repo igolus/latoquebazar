@@ -96,11 +96,11 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     const [isViewerOpen, setIsViewerOpen] = useState(false)
     const [currentImage, setCurrentImage] = useState(0)
 
-    const { state, dispatch } = useAppContext()
-    const cartList: CartItem[] = state.cart.cartList
+    //const { state, dispatch } = useAppContext()
+    //const cartList: CartItem[] = state.cart.cartList
     const router = useRouter()
-    const routerId = router.query.id as string
-    const cartItem = cartList.find((item) => item.id === id || item.id === routerId)
+    // const routerId = router.query.id as string
+    // const cartItem = cartList.find((item) => item.id === id || item.id === routerId)
 
     const handleImageClick = (ind: number) => () => {
         setSelectedImage(ind)
@@ -118,6 +118,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
 
     function isAvailableSku() {
+        if (!currentEstablishment()) {
+            return false;
+        }
         // if (currentEstablishment()) {
         //     alert(productAndSku?.sku?.unavailableInEstablishmentIds)
         //     alert((productAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id))
@@ -260,10 +263,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             {productAndSku.sku.price} {currency}
                         </h2>
                     </Box>
-                    <p>
-                        {product.shortDescription}
-
-                    </p>
                     <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
 
                     {options && options.length > 0 && isAvailableSku() &&

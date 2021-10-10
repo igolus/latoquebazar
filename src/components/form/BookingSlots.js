@@ -30,7 +30,7 @@ function getDaySettings(establishment, dowString, inverseOrder) {
 const buildServiceFromDaySetting = (daySetting) => {
   return {
     dateStart: setHourFromString(daySetting.dateCurrent, daySetting.startHourBooking),
-    dateEnd: setHourFromString(daySetting.dateCurrent, daySetting.endHourBooking),
+    //dateEnd: setHourFromString(daySetting.dateCurrent, daySetting.endHourBooking),
     endHourService: setHourFromString(daySetting.dateCurrent, daySetting.endHourService),
     numberOfDeliveryMan: daySetting.numberOfDeliveryMan,
     maxDeliveryPerSlotPerMan: daySetting.maxDeliveryPerSlotPerMan,
@@ -165,7 +165,7 @@ function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
       let daySetting = daySettings[j];
       if (!limit || allDaySettings.length < limit) {
         let dateToCompare = moment(dateCurrent);
-        setHourFromString(dateToCompare, daySetting.endHourBooking)
+        setHourFromString(dateToCompare, daySetting.endHourService)
         if (dateCurrent.isBefore(dateToCompare)) {
           allDaySettings.push({
             ...daySetting,
@@ -250,7 +250,7 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
       let daySetting = daySettings[j];
       if (!limit || allDaySettings.length < limit) {
         let dateToCompare = moment(dateCurrent);
-        setHourFromString(dateToCompare, daySetting.endHourBooking)
+        setHourFromString(dateToCompare, daySetting.endHourService)
         if (dateToCompare.isBefore(currentDate)) {
           return null;
         }

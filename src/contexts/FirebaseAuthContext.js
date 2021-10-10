@@ -499,6 +499,8 @@ export const AuthProvider = ({ children }) => {
 
   const setBrand = async (brand) => {
     let res = await executeQueryUtil(establishmentsQuery(brand.id));
+
+    //alert("res setBrand" + JSON.stringify(res))
     let estas = res.data.getEstablishmentByBrandId;
     if (estas && estas.length > 0) {
       dispatch({
@@ -660,7 +662,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
-    // alert("useEffect getBrand" + config.brandId)
+    //alert("useEffect getBrand" + JSON.stringify(res))
     // alert("useEffect getBrand" + JSON.stringify(res.data))
     if (res && res.data) {
       setBrand(res.data.getBrand)

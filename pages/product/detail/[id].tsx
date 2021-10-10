@@ -53,7 +53,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     //alert(" ---------------------- selectedSku -------------- " +  contextData.req.url);
     //console.log(" ---------- contextData.req.url " +  JSON.stringify(contextData.url, null, 2));
 
-    const selectedProduct = (contextData && contextData.products) ? contextData.products.find(p => p.id === productId) : null;
+    const selectedProduct = (contextData && contextData.products) ? (contextData.products || []).find(p => p.id === productId) : null;
 
     const [selectedOption, setSelectedOption] = useState(0)
 

@@ -1,6 +1,6 @@
 {
   "graphQlUrl": "https://us-central1-latoquepresale.cloudfunctions.net/graphQlApi",
-  "brandId": "nmhQlVoJR9tkXmze0uGX",
+  "brandId": "brandIdReplace",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoquepresale.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoquepresale.cloudfunctions.net/sendMail",

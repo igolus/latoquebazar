@@ -45,7 +45,7 @@ function uploadFtp(cb) {
         .pipe( conn.dest( '/bookingsorcerer.com' ) );
 }
 
-function vercelDeploy (mainWindow, done) {
+// function vercelDeploy (mainWindow, done) {
     //
     // var conf = require('../siteLaToque/src/conf/config.json');
     // console.log('conf '+ JSON.stringify(conf))
@@ -63,7 +63,7 @@ function vercelDeploy (mainWindow, done) {
     //     mainWindow.webContents.send('logs', data.toString());
     //     console.log(data);
     // });
-},
+// },
 
 
 function generateConf(cb) {
@@ -112,4 +112,4 @@ function generateConf(cb) {
 exports.uploadFtp = uploadFtp;
 exports.generateZip = generateZip;
 exports.generateConf = generateConf;
-exports.installInteractive = installInteractive;
+//exports.installInteractive = installInteractive;

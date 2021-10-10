@@ -683,7 +683,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                     </Card1>
                     }
 
-                    {(dbUser || bookWithoutAccount) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                    {(dbUser || bookWithoutAccount) && isDeliveryActive(currentEstablishment()) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+
+
                     <Card1 sx={{mb: '2rem'}}>
                       <>
 
@@ -699,7 +701,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                           />
                         </Box>
                         }
-
                         <Typography fontWeight="600" mb={2} mt={2} variant="h5">
                           {localStrings.selectDeliveryAdress}
                         </Typography>
@@ -738,9 +739,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                         </Box>
                         }
 
-
                         {dbUser && useMyAdress &&
-                        <>
+                          <>
                           {!dbUser?.userProfileInfo?.address &&
                           <AlertHtmlLocal
                               severity="warning"

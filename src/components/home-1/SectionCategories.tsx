@@ -38,7 +38,7 @@ const SectionCategories: React.FC<SectionCategoriesProps> = ({categories, produc
 
   return (
     <div style={{width: '100%'}}>
-      <Container sx={{ mb: '70px' }}>
+      <Container sx={{ mb: '70px', mt: '15px' }}>
       <CategorySectionHeader
         title={localStrings.categories}
         icon={<Category color="primary" />}
