@@ -2,7 +2,7 @@ import {getProductsQueryNoApollo} from "./gqlNoApollo/productGqlNoApollo";
 import {getCategoriesQueryNoApollo} from "./gqlNoApollo/categoriesGqlNoApollo";
 
 export async function loadProps() {
-    const config = require("../../../src/conf/config.json")
+    const config = require("../../../src/existingconfs/config.json")
     const resProducts = await getProductsQueryNoApollo(config.brandId);
     let products = [];
 

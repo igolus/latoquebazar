@@ -20,15 +20,15 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
       <Navbar contextData={contextData}/>
 
 
-      {isMobile &&
-          <div style={{width:"100%"}}>
-            {/*<Box mt={-0.5} mb={-0.5} display="flex" justifyContent="center">*/}
-              <Box>
-                <Image mt={1} src={contextData?.brand?.logoUrl}/>
-              </Box>
-            {/*</Box>*/}
-          </div>
-      }
+      {/*{isMobile &&*/}
+      {/*    <div style={{width:"100%"}}>*/}
+      {/*      /!*<Box mt={-0.5} mb={-0.5} display="flex" justifyContent="center">*!/*/}
+      {/*        <Box>*/}
+      {/*          <Image mt={1} src={contextData?.brand?.logoUrl}/>*/}
+      {/*        </Box>*/}
+      {/*      /!*</Box>*!/*/}
+      {/*    </div>*/}
+      {/*}*/}
         {/*<p>{JSON.stringify(contextData.categories)}</p>*/}
         {carouselItems && carouselItems.length > 0 &&
         <Box bgcolor="white" mb={7.5}>

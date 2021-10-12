@@ -1,10 +1,11 @@
 {
-  "graphQlUrl": "https://us-central1-latoquepresale.cloudfunctions.net/graphQlApi",
-  "brandId": "uTpHIDlnsC1EPu1VB4f5",
+  "graphQlUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/graphQlApi",
+  "brandId": "0S93n0HvHamy7TP5vEYF",
+  "appName": "Le brunch club",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
-  "distanceUrl": "https://us-central1-latoquepresale.cloudfunctions.net/distanceApi",
-  "sendEmailUrl": "https://us-central1-latoquepresale.cloudfunctions.net/sendMail",
-  "getResetAccountLinkUrl": "https://us-central1-latoquepresale.cloudfunctions.net/getPasswordLink",
-  "getActivationEmailLinkUrl": "https://us-central1-latoquepresale.cloudfunctions.net/activateMailLink",
-  "paymentUrl": "https://us-central1-latoquepresale.cloudfunctions.net/payment"
+  "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
+  "sendEmailUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/sendMail",
+  "getResetAccountLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/getPasswordLink",
+  "getActivationEmailLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/activateMailLink",
+  "paymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/payment/stripe/charge"
 }

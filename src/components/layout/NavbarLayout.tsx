@@ -3,9 +3,16 @@ import React from 'react'
 import Navbar from '../navbar/Navbar'
 import AppLayout from './AppLayout'
 
-const NavbarLayout: React.FC = ({ children , contextData}) => {
+const NavbarLayout: React.FC = ({ children ,
+                                    contextData,
+                                    title,
+                                    ogImage,
+                                    description}) => {
   return (
-    <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
+    <AppLayout title={title} contextData={contextData}
+               description={description}
+               ogImage={ogImage}
+               navbar={<Navbar contextData={contextData}/>}>
       {/*<h1>AppLayout</h1>*/}
         <Container sx={{ my: '2rem' }}>{children}</Container>
     </AppLayout>

@@ -1,7 +1,8 @@
 {
   "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
   "brandId": "nmhQlVoJR9tkXmze0uGX",
-  "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
+  "appName": "appNameReplace",
+  "googleKey": "googleKeydReplace",
   "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
   "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",

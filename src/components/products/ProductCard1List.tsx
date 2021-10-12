@@ -82,7 +82,10 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
             let search = index.search(query);
             let allRef = search.map(item => item.ref)
-            filteredProduct = productsLoaded.filter(p => allRef.includes(p.id));
+            filteredProduct = productsLoaded
+                .filter(p => allRef.includes(p.id))
+                .filter(p => (p.type === "product"  && p.skus && p.skus.some(s => s.visible))
+                    || p.type === "deal" && p.visible);
             //alert("size search  " + filteredProduct.length)
         }
         else {
@@ -110,7 +113,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             })
         }
 
-        filteredProduct = filteredProduct.filter(p => !p.skus || p.skus.some(s => s.visible))
+        filteredProduct = filteredProduct.filter(p => (p.type === "product"  && p.skus && p.skus.some(s => s.visible))
+            || p.type === "deal" && p.visible);
 
         if (sortOption && sortOption === PRICE_ASC) {
             filteredProduct.sort((p1, p2) => getMininimalSkuPrice(p1) - getMininimalSkuPrice(p2))
@@ -201,6 +205,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                 {/*<h1>{item.name}</h1>*/}
                                 {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
                                 <ProductCard1 {...itemShop} product={item}
+                                              faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                                               options={contextData.options}
                                               currency={getBrandCurrency(contextData.brand)}/>
                                 }

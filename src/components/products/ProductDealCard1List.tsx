@@ -145,6 +145,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                   xs={12} key={ind}>
 
                                 <ProductCardDeal1 product={item}
+                                              faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                                               deal={deal}
                                               options={contextData.options}
                                               lineNumber={lineNumber}

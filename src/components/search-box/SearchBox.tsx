@@ -6,6 +6,7 @@ import React, {useRef, useState} from 'react'
 import {useRouter} from 'next/router'
 import Link from 'next/link'
 import localStrings from "../../localStrings";
+import Image from "@component/BazarImage";
 
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -145,6 +146,17 @@ const SearchBox = () => {
                     color: 'grey.700',
                     overflow: 'hidden',
                   },
+                  // startAdornment: (
+                  //
+                  //     <div style={{width:"100%"}}>
+                  //       {/*<Box mt={-0.5} mb={-0.5} display="flex" justifyContent="center">*/}
+                  //       <Box>
+                  //         <Image mt={1} src={contextData?.brand?.logoUrl}/>
+                  //       </Box>
+                  //       {/*</Box>*/}
+                  //     </div>
+                  //
+                  // )
                   //endAdornment: categoryDropdown,
                   endAdornment: (
                       <>

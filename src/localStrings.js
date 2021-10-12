@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        shareOnFacebook: "Partager ce produit sur facebook",
         back: "Retour",
         poweredBy: "Site construit avec La toque magique",
         phoneInternational: "Numero de telephone au format international +...",

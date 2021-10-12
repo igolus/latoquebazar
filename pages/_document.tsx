@@ -5,12 +5,16 @@ import { ServerStyleSheets } from '@material-ui/styles'
 import theme from '@theme/theme'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 import React from 'react'
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 
 const getCache = () => {
   const cache = createCache({ key: 'css', prepend: true })
   cache.compat = true
   return cache
 }
+
+const conf=require('../src/conf/config.json')
 
 export default class Bazar extends Document {
   render() {
@@ -107,3 +111,4 @@ Bazar.getInitialProps = async (ctx) => {
     ],
   }
 }
+

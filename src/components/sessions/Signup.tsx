@@ -70,7 +70,7 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
   }, [])
 
   const handleFormSubmit = async (values: any) => {
-    //alert("conf Email sent " + values.email + values.password)
+    //alert("existingconfs Email sent " + values.email + values.password)
     try {
       setErrorSubmit(null);
       await createUserWithEmailAndPassword(values.email, values.password);

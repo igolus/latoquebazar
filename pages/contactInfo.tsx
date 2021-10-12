@@ -11,8 +11,8 @@ import useAuth from "@hook/useAuth";
 import Card1 from "@component/Card1";
 import localStrings from "../src/localStrings";
 
-//const config = require("../src/conf/config.json")
-//const config = require("../src/conf/config.json")
+//const config = require("../src/existingconfs/config.json")
+//const config = require("../src/existingconfs/config.json")
 export interface IndexPageProps {
     contextData?: any
 }

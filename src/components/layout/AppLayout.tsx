@@ -2,58 +2,95 @@ import Footer from '@component/footer/Footer'
 import Header from '@component/header/Header'
 import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBar'
 import Sticky from '@component/sticky/Sticky'
-import Topbar from '@component/topbar/Topbar'
 import Head from 'next/head'
-import React, { Fragment, useCallback, useState } from 'react'
-import {getBrandCurrency} from "../../util/displayUtil";
+import React, {Fragment, useCallback, useState} from 'react'
 import TopbarForTest from "@component/topbar/TopbarForTest";
+import {isMobile} from "react-device-detect";
+import {Box} from "@material-ui/core";
+import Image from "@component/BazarImage";
 
 type AppLayoutProps = {
-  title?: string
-  navbar?: React.ReactChild
-  contextData: any
+    title?: string
+    description?: string
+    ogImage?: string
+    navbar?: React.ReactChild
+    contextData: any
 }
 
+const config = require('../../conf/config.json')
+
 const AppLayout: React.FC<AppLayoutProps> = ({
-  children,
-  navbar,
-  title = 'React Next.js Ecommerce Template',
-  contextData
-}) => {
-  const [isFixed, setIsFixed] = useState(false)
+                                                 children,
+                                                 navbar,
+                                                 title ,
+                                                 description,
+                                                 ogImage,
+                                                 contextData
+                                             }) => {
+    const [isFixed, setIsFixed] = useState(false)
 
-  const toggleIsFixed = useCallback((fixed) => {
-    setIsFixed(fixed)
-  }, [])
+    const toggleIsFixed = useCallback((fixed) => {
+        setIsFixed(fixed)
+    }, [])
 
-  return (
-    <Fragment>
-      <Head>
-        <title>{title}</title>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-          {contextData?.brand.iconUrl &&
-          <link rel="shortcut icon" id="favicon"
-                href={contextData.brand.iconUrl}/>
-          }
+    const siteDesc = contextData?.brand?.config?.metaWebConfig?.description;
+    const siteOgImage = contextData?.brand?.config?.metaWebConfig?.ogImage;
+    const siteTitle = contextData?.brand?.config?.metaWebConfig?.title || config.appName;
 
-      </Head>
+    return (
+        <Fragment>
+            <Head>
+                <title>{title || siteTitle}</title>
+                <meta
+                    property="og:title"
+                    content={title || siteTitle}
+                />
+                <meta
+                    name="description"
+                    content={description || siteDesc}
+                />
+                <meta
+                    property="og:description"
+                    content={description || siteDesc}
+                />
+                {(ogImage || siteOgImage) &&
+                    <meta
+                        property="og:image"
+                        content={ogImage || siteOgImage}
+                    />
+                }
 
-        {contextData && contextData.brand?.demoSite &&
-        <TopbarForTest/>
-        }
+                {/*<meta*/}
+                {/*    property="og:title"*/}
+                {/*    content={contextData.brand?.config?.metaWebConfig?.title}*/}
+                {/*/>*/}
+                }
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+                {contextData?.brand.iconUrl &&
+                <link rel="shortcut icon" id="favicon"
+                      href={contextData.brand.iconUrl}/>
+                }
 
-      <Sticky fixedOn={0} onSticky={toggleIsFixed}>
-        <Header isFixed={isFixed} contextData={contextData}/>
-      </Sticky>
+            </Head>
 
-      {navbar && <div className="section-after-sticky">{navbar}</div>}
-      {!navbar ? <div className="section-after-sticky">{children}</div> : children}
+            {contextData && contextData.brand?.demoSite &&
+            <TopbarForTest/>
+            }
 
-      <MobileNavigationBar />
-      <Footer contextData={contextData}/>
-    </Fragment>
-  )
+
+
+            <Sticky fixedOn={0} onSticky={toggleIsFixed}>
+                <Header isFixed={isFixed} contextData={contextData}/>
+            </Sticky>
+
+            {navbar && <div className="section-after-sticky">{navbar}</div>}
+            {!navbar ? <div className="section-after-sticky">{children}</div> : children}
+
+            <MobileNavigationBar />
+            <Footer contextData={contextData}/>
+        </Fragment>
+    )
 }
 
 export default AppLayout

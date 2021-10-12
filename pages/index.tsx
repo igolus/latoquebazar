@@ -16,6 +16,8 @@ import ClosingDays from "@component/ClosingDays";
 import useAuth from "@hook/useAuth";
 import MyMap from "@component/GoogleMap";
 import useWindowSize from "@hook/useWindowSize";
+import {Box} from "@material-ui/system";
+import Image from "@component/BazarImage";
 
 
 
@@ -80,7 +82,19 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {/*</Box>*/}
                 {/*}*/}
 
+                {/*{isMobile &&*/}
+                {/*    <div style={{width:"100%"}}>*/}
+                {/*      /!*<Box mt={-0.5} mb={-0.5} display="flex" justifyContent="center">*!/*/}
+                {/*        <Box>*/}
+                {/*          <Image mt={1} src={contextData?.brand?.logoUrl}/>*/}
+                {/*        </Box>*/}
+                {/*      /!*</Box>*!/*/}
+                {/*    </div>*/}
+                {/*}*/}
+
+                {contextData?.brand?.config?.carouselWebConfig &&
                 <CarouselCompo contextData={contextData}/>
+                }
                 {contextData?.brand?.config?.starWebProducts &&
                 <Section2 contextData={contextData}/>
                 }

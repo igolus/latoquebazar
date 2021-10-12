@@ -1,9 +1,9 @@
 {
-  "short_name": "Pizza kelly",
-  "name": "Pizza kelly",
+  "short_name": "Le brunch club",
+  "name": "Le brunch club",
   "icons": [
     {
-      "src": "iconResto.png",
+      "src": "iconApp.png",
       "sizes": "144x144",
       "type": "image/png"
     }

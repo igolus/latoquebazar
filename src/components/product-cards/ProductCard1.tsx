@@ -38,6 +38,7 @@ export interface ProductCard1Props {
   off?: number
   id: string | number
   product: any
+  faceBookShare: boolean
   options: any,
   currency: string
 }
@@ -138,6 +139,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      rating,
                                                      hoverEffect,
                                                      product,
+                                                     faceBookShare,
                                                      options,
                                                      currency
                                                    }) => {
@@ -433,6 +435,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
+                          faceBookShare={faceBookShare}
                           skuIndex={selectedSkuIndex}
                           product={product}
                           options={options}

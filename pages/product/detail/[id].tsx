@@ -28,8 +28,10 @@ export interface ProductDetailsProps {
     contextData?: any
 }
 
-const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+//const config = require('../../../src/conf/config.json');
 
+const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+    const config = require('../../../src/conf/config.json');
     const router = useRouter();
 
     const { id } = router.query
@@ -48,11 +50,6 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         }
     }
 
-
-    //const { selectedSku } = router.query
-    //alert(" ---------------------- selectedSku -------------- " +  contextData.req.url);
-    //console.log(" ---------- contextData.req.url " +  JSON.stringify(contextData.url, null, 2));
-
     const selectedProduct = (contextData && contextData.products) ? (contextData.products || []).find(p => p.id === productId) : null;
 
     const [selectedOption, setSelectedOption] = useState(0)
@@ -61,10 +58,54 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         setSelectedOption(newValue)
     }
 
+    function buildTitle(selectedProduct: any, brandName: string) {
+        let ret = "";
+        if (selectedProduct?.category?.category) {
+            ret+=selectedProduct.category?.category + " > "
+        }
+        if (selectedProduct?.name) {
+            ret+=selectedProduct.name + " ";
+        }
+        if (selectedProduct?.skus) {
+            let prices = (selectedProduct?.skus || []).map(sku => parseInt(sku.price));
+            // prices.sort((a,b) => a-b);
+            if (prices && prices.length > 0) {
+                prices.sort((a,b) => a-b);
+                ret+=prices[0].toFixed(2)
+                    + " " +
+                    getBrandCurrency(contextData ? contextData.brand : null);
+            }
+        }
+        if (brandName) {
+            ret+= " | " + brandName;
+        }
+
+        if (ret.length === 0) {
+            ret = config.appName;
+        }
+        return ret;
+    }
+
+    function buildDescription(selectedProduct: any) {
+        return selectedProduct?.shortDescription;
+    }
+
+    function buildOgImage(selectedProduct: any) {
+        if (selectedProduct?.files && selectedProduct?.files.length > 0) {
+            return selectedProduct.files[0].url
+        }
+        return null;
+    }
+
     return (
-        <NavbarLayout contextData={contextData}>
+        <NavbarLayout contextData={contextData}
+                      title={buildTitle(selectedProduct, contextData.brand?.brandName)}
+                      ogImage={buildOgImage(selectedProduct)}
+                      description={buildDescription(selectedProduct)}
+        >
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
+                          faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                           routeToCart={true}
                           skuIndex={skuIndex}
                           options={contextData.options} currency={getBrandCurrency(contextData.brand)}/>

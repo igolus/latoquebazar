@@ -28,6 +28,7 @@ import useAuth from "@hook/useAuth";
 import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import {getItemNumberInCart} from "../../util/cartUtil";
 import {layoutConstant} from "../../util/constants";
+import {isMobile} from "react-device-detect";
 
 type HeaderProps = {
     className?: string

@@ -3,7 +3,7 @@ import BazarButton from '@component/BazarButton'
 import LazyImage from '@component/LazyImage'
 import {H1, H3} from '@component/Typography'
 import {useAppContext} from '@context/app/AppContext'
-import {Box, Chip, Grid} from '@material-ui/core'
+import {Box, Chip, Grid, Tooltip} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Remove from '@material-ui/icons/Remove'
 import {CartItem} from '@reducer/cartReducer'
@@ -19,6 +19,7 @@ import {addToCartOrder, buildProductAndSkus} from '../../util/cartUtil'
 import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {formatDuration} from "../../util/displayUtil";
+import {FacebookIcon, FacebookShareButton, TwitterIcon} from "react-share";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -26,6 +27,7 @@ export interface ProductIntroProps {
     price: number
     id?: string | number
     product: any
+    faceBookShare: boolean
     options: any,
     currency: string,
     skuIndex: any,
@@ -43,6 +45,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        price = 200,
                                                        id,
                                                        product,
+                                                       faceBookShare,
                                                        options,
                                                        currency,
                                                        skuIndex,
@@ -280,35 +283,56 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                     {!disableAdd &&
-                    <BazarButton
-                        disabled={!valid || !isAvailableSku()}
-                        variant="contained"
-                        color="primary"
+                    <Box
                         sx={{
-                            mt: '15px',
-                            mb: '36px',
-                            px: '1.75rem',
-                            height: '40px',
-                        }}
-                        onClick={() => {
-                            if (addToCartOrderCallBack) {
-                                addToCartOrderCallBack(productAndSku);
-                                if (routeToCart) {
-                                    router.push("/cart");
-                                }
-                            } else {
-                                addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
-                                if (addCallBack) {
-                                    addCallBack();
-                                }
-                                if (routeToCart) {
-                                    router.push("/cart");
-                                }
-                            }
+                            display: 'flex',
+                            flexDirection: 'row',
                         }}
                     >
-                        {addButtonText || (isAvailableSku() ? localStrings.addToCart : localStrings.unavailable)}
-                    </BazarButton>
+                        <Box>
+                            <BazarButton
+                                disabled={!valid || !isAvailableSku()}
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                    mt: '15px',
+                                    mb: '36px',
+                                    px: '1.75rem',
+                                    height: '40px',
+                                }}
+                                onClick={() => {
+                                    if (addToCartOrderCallBack) {
+                                        addToCartOrderCallBack(productAndSku);
+                                        if (routeToCart) {
+                                            router.push("/cart");
+                                        }
+                                    } else {
+                                        addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                        if (addCallBack) {
+                                            addCallBack();
+                                        }
+                                        if (routeToCart) {
+                                            router.push("/cart");
+                                        }
+                                    }
+                                }}
+                            >
+                                {addButtonText || (isAvailableSku() ? localStrings.addToCart : localStrings.unavailable)}
+                            </BazarButton>
+                        </Box>
+                        {faceBookShare &&
+
+                        <Box ml={2} mt={"16px"}>
+                            <Tooltip title={localStrings.shareOnFacebook}>
+                                <FacebookShareButton url={window.location.href} >
+                                    <FacebookIcon size={38} round={false}/>
+                                </FacebookShareButton>
+                            </Tooltip>
+                        </Box>
+                        }
+
+
+                    </Box>
                     }
 
                 </Grid>

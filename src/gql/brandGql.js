@@ -14,6 +14,7 @@ const common = `
   config {
     smsNotif
     currency
+    siteUrl
     googleKey
     starWebProducts
     notifEmailConfig {
@@ -38,6 +39,12 @@ const common = `
       facebookUrl
       twitterUrl
       instagramUrl
+      enableShareOnFacebookButton
+    }
+    metaWebConfig {
+      title
+      description
+      ogImage
     }
     carouselWebConfig {
       id
