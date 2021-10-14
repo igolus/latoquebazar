@@ -40,6 +40,7 @@ const common = `
   }
   skus {
     name
+    
     visible
     unavailableInEstablishmentIds
     extName
@@ -54,6 +55,18 @@ const common = `
     productName
     extraCharge
     shortCode
+        restrictions {
+        dow {
+          day
+          service
+        }
+        startDate
+        endDate
+        serviceTypes
+        minOrderAmount
+        maxPerOrder
+        maxPerCustomer
+    }
   }
 `
 

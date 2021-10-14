@@ -99,7 +99,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     return (
         <NavbarLayout contextData={contextData}
-                      title={buildTitle(selectedProduct, contextData.brand?.brandName)}
+                      title={buildTitle(selectedProduct, contextData?.brand?.brandName)}
                       ogImage={buildOgImage(selectedProduct)}
                       description={buildDescription(selectedProduct)}
         >

@@ -4,7 +4,7 @@ import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import MuiTheme from '@theme/MuiTheme'
 import Head from 'next/head'
-import Router from 'next/router'
+import Router, {useRouter} from 'next/router'
 import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import React, { Fragment, useEffect } from 'react'
@@ -13,6 +13,8 @@ import firebase from "../src/lib/firebase";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 export const cache = createCache({ key: 'css', prepend: true })
+
+import * as ga from '../lib/ga'
 
 //Binding events.
 Router.events.on('routeChangeStart', () => nProgress.start())
@@ -24,6 +26,24 @@ nProgress.configure({ showSpinner: false })
 const App = ({ Component, pageProps, contextData }: any) => {
 
     const Layout = Component.layout || Fragment
+
+    const router = useRouter()
+
+    useEffect(() => {
+        const handleRouteChange = (url: string) => {
+            //alert("handleRouteChange")
+            ga.pageview(url)
+        }
+        //When the component is mounted, subscribe to router changes
+        //and log those page views
+        router.events.on('routeChangeComplete', handleRouteChange)
+
+        // If the component is unmounted, unsubscribe
+        // from the event with the `off` method
+        return () => {
+            router.events.off('routeChangeComplete', handleRouteChange)
+        }
+    }, [router.events])
 
     useEffect(async () => {
         // Remove the server-side injected CSS.
