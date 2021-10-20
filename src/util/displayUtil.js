@@ -401,19 +401,22 @@ export const getCroppedStringSize = (value, size) => {
 }
 
 export function getImgUrlFromProducts(item, products) {
+
     if (!products) {
         return null;
     }
+    let defaultUrl = "/assets/images/Icon_Sandwich.png";
     if (item.type === TYPE_DEAL) {
-        return getProductFirstImgUrl(item.deal);
+        return getProductFirstImgUrl(item.deal) || defaultUrl;
     }
 
     let product = products.find(p=>p.id === item.productId);
     //if (product && product.files && product.files.leng)
     if (product) {
-        return getProductFirstImgUrl(product);
+        return getProductFirstImgUrl(product) || defaultUrl;
     }
-    return null;
+
+
 }
 
 export function getImgUrlFromProductsWithExtRef(item, products) {

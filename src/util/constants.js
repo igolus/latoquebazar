@@ -164,7 +164,7 @@ export const getOrderStatus = (localStrings) => {
 // export const HUBRISE_ORDER_STATUS_REJECTED= "rejected";
 // export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
 // export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
-
+export const PAYMENT_METHOD_STRIPE = "PAYMENT_METHOD_STRIPE";
 
 export const getPaymentMethods = (localStrings) => {
   return  [
@@ -186,7 +186,7 @@ export const getPaymentMethods = (localStrings) => {
   },
   {
     name: localStrings.paymentMethodStripe,
-    valuePayment: "PAYMENT_METHOD_STRIPE",
+    valuePayment: PAYMENT_METHOD_STRIPE,
   }
 ]
 }

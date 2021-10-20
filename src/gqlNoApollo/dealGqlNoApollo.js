@@ -22,13 +22,16 @@ const common = `
   shortDescription
   additionalInformation
   couponCodes
-  restrictions {
+  restrictionsList {
+    establishmentId
     dow {
-      day
-      service
+        day
+        service
     }
     startDate
     endDate
+    startTime
+    endTime
     serviceTypes
     minOrderAmount
     maxPerOrder

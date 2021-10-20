@@ -3,6 +3,7 @@ import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
   id
+  tempOrder
   creationDate
   orderNumber
   establishmentId
@@ -68,17 +69,20 @@ const common = `
         shortDescription
         additionalInformation
         couponCodes
-        restrictions {
-          dow {
-            day
-            service
-          }
-          startDate
-          endDate
-          serviceTypes
-          minOrderAmount
-          maxPerOrder
-          maxPerCustomer
+        restrictionsList {
+          establishmentId
+            dow {
+              day
+              service
+            }
+            startDate
+            endDate
+            startTime
+            endTime
+            serviceTypes
+            minOrderAmount
+            maxPerOrder
+            maxPerCustomer
         }
         tags {
           id
@@ -232,7 +236,7 @@ export const getOrderByIdQuery = (brandId, establishmentId, orderId) => {
 export const updateOrderMutation = (brandId, establishmentId, data) => {
   delete data.creationDate;
   delete data.updateDate;
-  var dataString = filterDataGql(data, null, ["status", "source"]);
+  var dataString = filterDataGql(data, null, ["status", "source", "service"]);
 
   var debug = `
     mutation {
@@ -342,7 +346,7 @@ export const addOrderToCustomer = (brandId, siteUserId, data) => {
 }
 
 export const createOrderMutation = (brandId, establishmentId, data) => {
-  var dataString = filterDataGql(data, null, ["status", "source"]);
+  var dataString = filterDataGql(data, null, ["status", "source", "service"]);
 
   var debug = `
     mutation {

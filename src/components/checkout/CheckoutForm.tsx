@@ -21,7 +21,7 @@ import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW
+  ORDER_STATUS_NEW, PAYMENT_METHOD_STRIPE
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -381,6 +381,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       }
 
       dataOrder.expectedPayments = expectedPaymentMethods;
+      if (paymentMethod === "cc") {
+        dataOrder.tempOrder = true;
+      }
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;

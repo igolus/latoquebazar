@@ -190,17 +190,31 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               </BazarButton>
             </FlexBox>
 
-            <Link href={`/product/${item.id}`}>
-              <a>
+            {item.type === TYPE_PRODUCT ?
+
+              <Link href={`/product/detail/${item.productId}`}>
+                <a>
+                  <BazarAvatar
+                      src={getImgUrlFromProducts(item, contextData?.products)}
+                      mx={2}
+                      alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
+                      height={76}
+                      width={76}
+                  />
+                </a>
+              </Link>
+
+                :
+
                 <BazarAvatar
-                  src={getImgUrlFromProducts(item, contextData?.products)}
-                  mx={2}
-                  alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
-                  height={76}
-                  width={76}
+                    src={getImgUrlFromProducts(item, contextData?.products)}
+                    mx={2}
+                    alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
+                    height={76}
+                    width={76}
                 />
-              </a>
-            </Link>
+
+            }
 
             <Box flex="1 1 0">
               {/*<Link href={`/product/${item.id}`}>*/}

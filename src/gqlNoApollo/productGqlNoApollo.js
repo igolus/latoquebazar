@@ -55,13 +55,16 @@ const common = `
     productName
     extraCharge
     shortCode
-    restrictions {
+    restrictionsList {
+      establishmentId
         dow {
           day
           service
         }
         startDate
         endDate
+        startTime
+        endTime
         serviceTypes
         minOrderAmount
         maxPerOrder
