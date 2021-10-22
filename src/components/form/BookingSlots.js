@@ -18,13 +18,13 @@ const setHourFromString = (momentDate, hourSt) => {
 }
 
 function getDaySettings(establishment, dowString, inverseOrder) {
-  return establishment.serviceSetting && establishment.serviceSetting.daySetting &&
-    establishment.serviceSetting.daySetting.filter(item => item.day === dowString)
-      .sort((setting1, setting2) => {
-        let val1 = parseInt(setting1.startHourBooking.replace(':', ''));
-        let val2 = parseInt(setting2.startHourBooking.replace(':', ''));
-        return inverseOrder ? (val2 - val1) : (val1 - val2);
-      });
+  return establishment?.serviceSetting && establishment.serviceSetting.daySetting &&
+      establishment.serviceSetting.daySetting.filter(item => item.day === dowString)
+          .sort((setting1, setting2) => {
+            let val1 = parseInt(setting1.startHourBooking.replace(':', ''));
+            let val2 = parseInt(setting2.startHourBooking.replace(':', ''));
+            return inverseOrder ? (val2 - val1) : (val1 - val2);
+          });
 }
 
 const buildServiceFromDaySetting = (daySetting) => {
@@ -108,6 +108,48 @@ function getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy) 
         item.endDate == endDate.unix()
   })
   return slot;
+}
+
+export const LUNCH_PERIOD = "lunch";
+export const DINNER_PERIOD = "dinner";
+
+export const getCurrentService = (establishment, startDate) => {
+  let daySettings = getWeekDaySettingsFromDate(startDate, establishment);
+  if (daySettings && daySettings.length > 0) {
+    let firstDaySetting = daySettings[0];
+    let service = buildServiceFromDaySetting(firstDaySetting);
+
+    let day = startDate.day();
+    let lunchSeparator = establishment?.serviceSetting?.lunchDinnerSeparator || "16:00";
+    //var duration = moment.duration(service.endHourService.diff(moment(service.endHourService.startOf('day'))));
+
+    let lunchSeparatorData=lunchSeparator.split(':');
+    let durationMinutesSeparator = parseInt(lunchSeparatorData[0]) * 60 + parseInt(lunchSeparatorData[1]);
+    let timePeriod;
+
+    let durationStartService = service.dateStart.hour() * 60 + service.dateStart.minutes();
+
+    if (durationStartService <= durationMinutesSeparator) {
+      timePeriod = LUNCH_PERIOD;
+    }
+    else {
+      timePeriod = DINNER_PERIOD;
+    }
+
+
+    return {
+      ...service,
+      dow: {
+        day: day,
+        service: timePeriod
+      },
+      // durationStartService: durationStartService,
+      // durationMinutesSeparator: durationMinutesSeparator,
+      //
+      // lunchSeparator: lunchSeparator,
+    };
+  }
+  return null;
 }
 
 export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
@@ -331,11 +373,11 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     }
   }, [])
 
-  if (currentEstablishment() && !currentEstablishment()?.serviceSetting?.daySetting) {
+  if (currentEstablishment && currentEstablishment() && !currentEstablishment()?.serviceSetting?.daySetting) {
     return (
-      <div>
-        <h3>{localStrings.check.noDaySetting}</h3>
-      </div>
+        <div>
+          <h3>{localStrings.check.noDaySetting}</h3>
+        </div>
     )
   }
 
@@ -362,8 +404,8 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
       return false;
     }
     let selected = getOrderInCreation().bookingSlot != null &&
-      getOrderInCreation()?.bookingSlot?.startDate?.isSame(slot.startDate) &&
-      getOrderInCreation()?.bookingSlot?.endDate?.isSame(slot.endDate);
+        getOrderInCreation()?.bookingSlot?.startDate?.isSame(slot.startDate) &&
+        getOrderInCreation()?.bookingSlot?.endDate?.isSame(slot.endDate);
     return selected;
   }
 
@@ -458,17 +500,24 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     return false;
   }
 
+  function isSlotUnavailable(value) {
+    return !enoughTimeForPreparation(value) || isSlotFull(value) || value.locked;
+  }
+
   return (
-    <div>
-      {/*<p>{JSON.stringify(timeSlots)}</p>*/}
-      {/*<p>{timeSlots.allSlots.length}</p>*/}
-      {/*<p>{offset}</p>*/}
-      {bookingSlotStartDate && reload &&
-      // <>
+      <div>
+
+        {/*<p>{JSON.stringify(timeSlots)}</p>*/}
+        {/*<p>{timeSlots.allSlots.length}</p>*/}
+        {/*<p>{offset}</p>*/}
+        {bookingSlotStartDate && reload &&
+        // <>
         <div style={{ width: '100%' }}>
+          <p>{JSON.stringify(bookingSlotStartDate)}</p>
+
           <Box
-            display="flex"
-            m={1}>
+              display="flex"
+              m={1}>
             {!disableNextDay &&
             <Box>
               <IconButton fontSize="small"
@@ -484,12 +533,12 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
                  justify="center"
             >
               <Grid
-                container
-                spacing={0}
-                direction="column"
-                alignItems="center"
-                justify="center"
-                style={{ marginTop: '12px' }}
+                  container
+                  spacing={0}
+                  direction="column"
+                  alignItems="center"
+                  justify="center"
+                  style={{ marginTop: '12px' }}
               >
                 {timeSlots &&
                 <Grid item>
@@ -510,47 +559,65 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
             </Box>
             }
           </Box>
-        {/*</div>*/}
+          {/*</div>*/}
 
-        <Box
-          display="flex"
-          flexWrap="wrap"
-          alignContent="flex-start"
-          justifyContent="center"
-          p={1}
-          m={1}
-        >
 
-          {allClosed() === true &&
-            <AlertHtmlLocal severity="warning" content={localStrings.closed}></AlertHtmlLocal>
+          {timeSlots && !timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) &&
+
+          <Box
+              display="flex"
+              flexWrap="wrap"
+              alignContent="flex-start"
+              justifyContent="center"
+              p={1}
+              m={1}
+          >
+            <AlertHtmlLocal severity="warning" content={localStrings.noAvail}></AlertHtmlLocal>
+          </Box>
           }
 
-          {
-            !allClosed() && timeSlots && timeSlots.allSlots.map((value, key) => {
-                let format =
-                  value.startDate.format('HH:mm')
-                  + "-"
-                  + value.endDate.format('HH:mm')
-                  if (slotInTime(value) && slotAlavailableInMode(value)) {
-                  return (
-                    <Box m={1}>
-                      {/*<p>butt</p>*/}
-                      <BazarButton variant="contained"
-                              //disabled={!value.available && !isSelectedSlot(value)}
-                              disabled={!enoughTimeForPreparation(value) || isSlotFull(value) || value.locked}
-                              //disabled={!enoughTimeForPreparation(value)}
-                              color={isSelectedSlot(value) ? "primary" : "inherit"}
-                              onClick={() => select(key, value)}
-                      >{(value.closed ? localStrings.closed : format)}</BazarButton>
-                    </Box>
-                  )
-                }
-              }
-            )}
-        </Box>
+          <Box
+              display="flex"
+              flexWrap="wrap"
+              alignContent="flex-start"
+              justifyContent="center"
+              p={1}
+              m={1}
+          >
+
+            {allClosed() === true &&
+            <AlertHtmlLocal severity="warning" content={localStrings.closed}></AlertHtmlLocal>
+            }
+
+            {
+              !allClosed() && timeSlots && timeSlots.allSlots.map((value, key) => {
+                    let format =
+                        value.startDate.format('HH:mm')
+                        + "-"
+                        + value.endDate.format('HH:mm')
+                    if (slotInTime(value) && slotAlavailableInMode(value)) {
+                      return (
+                          <Box m={1}>
+                            {/*<p>butt</p>*/}
+                            <BazarButton variant="contained"
+                                //disabled={!value.available && !isSelectedSlot(value)}
+                                         disabled={isSlotUnavailable(value)}
+                                //disabled={!enoughTimeForPreparation(value)}
+                                         color={isSelectedSlot(value) ? "primary" : "inherit"}
+                                         onClick={() => select(key, value)}
+                            >{(value.closed ? localStrings.closed : format)}</BazarButton>
+                          </Box>
+                      )
+                    }
+                  }
+              )}
+
+
+
+          </Box>
+        </div>
+        }
       </div>
-      }
-    </div>
   );
 }
 

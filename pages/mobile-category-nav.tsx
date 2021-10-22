@@ -13,6 +13,7 @@ import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import {IndexPageProps} from "./index";
 import BazarImage from "@component/BazarImage";
 import localStrings from "../src/localStrings";
+import {filterCat} from "../src/util/displayUtil";
 
 export interface MobileCategoryNavProps {
   contextData?: any
@@ -60,7 +61,7 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
 
 
         {/*<p>{JSON.stringify(contextData)}</p>*/}
-        {contextData && contextData.categories && contextData.categories.map((item) => {
+        {contextData && filterCat(contextData.categories, contextData.products, contextData.deals).map((item) => {
 
           let icon = "";
           if (item.files && item.files.length > 0) {

@@ -109,39 +109,6 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                             </TextField>
                         </FlexBox>
 
-                        {/*<FlexBox alignItems="center" my="0.25rem">*/}
-                        {/*    <Paragraph color="grey.600" mr={1}>*/}
-                        {/*        {localStrings.view}*/}
-                        {/*    </Paragraph>*/}
-                        {/*    <IconButton onClick={toggleView('grid')}>*/}
-                        {/*        <Apps*/}
-                        {/*            color={view === 'grid' ? 'primary' : 'inherit'}*/}
-                        {/*            fontSize="small"*/}
-                        {/*        />*/}
-                        {/*    </IconButton>*/}
-                        {/*    <IconButton onClick={toggleView('list')}>*/}
-                        {/*        <ViewList*/}
-                        {/*            color={view === 'list' ? 'primary' : 'inherit'}*/}
-                        {/*            fontSize="small"*/}
-                        {/*        />*/}
-                        {/*    </IconButton>*/}
-
-                        {/*    {!!isTablet && (*/}
-                        {/*        <Sidenav*/}
-                        {/*            handle={*/}
-                        {/*                <IconButton>*/}
-                        {/*                    <FilterList fontSize="small" />*/}
-                        {/*                </IconButton>*/}
-                        {/*            }*/}
-                        {/*        >*/}
-
-                        {/*            {contextData &&*/}
-                        {/*                <ProductFilterCard tags={contextData.tags}*/}
-                        {/*                                   categories={contextData.categories} haveDeals={contextData.deals.length > 0}/>*/}
-                        {/*            }*/}
-                        {/*        </Sidenav>*/}
-                        {/*    )}*/}
-                        {/*</FlexBox>*/}
                     </FlexBox>
                 </Card>
 

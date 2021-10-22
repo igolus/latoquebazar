@@ -7,6 +7,7 @@ import CategoryMenuItem from './CategoryMenuItem'
 import MegaMenu1 from './mega-menu/MegaMenu1'
 import MegaMenu2 from './mega-menu/MegaMenu2'
 import localStrings from "../../localStrings";
+import {filterCat} from "../../util/displayUtil";
 
 export interface CategoryMenuCardProps {
   open?: boolean
@@ -61,7 +62,7 @@ const CategoryMenuCard: React.FC<CategoryMenuCardProps> = (props) => {
 
 
 
-      {props.contextData && props.contextData.categories && props.contextData.categories.map((item) => {
+      {props.contextData && filterCat(props.contextData.categories, props.contextData.products, props.contextData.deals).map((item) => {
         //let MegaMenu = megaMenu[item.menuComponent]
         let icon = "";
         if (item.files && item.files.length > 0) {

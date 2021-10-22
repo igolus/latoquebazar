@@ -34,6 +34,7 @@ const common = `
   onlinePaymentMethods
   serviceSetting {
     slotDuration
+    lunchDinnerSeparator
     minimalSlotNumberBooking
     minimalSlotNumberBookingNoDelivery
     maxDistanceDelivery

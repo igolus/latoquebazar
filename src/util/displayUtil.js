@@ -502,14 +502,23 @@ export function filterCat(categories, products, deals) {
     })
 
 
-
-    return categories.filter(cat => allCatProductIds.includes(cat.id));
+    return (categories || []).filter(cat => allCatProductIds.includes(cat.id));
     //return categories;
 }
 
 
 export function getTextStatus(order, localStrings) {
     return formatOrderStatus(order?.status, localStrings)
+}
+
+export function getFirstRestrictionItem(item) {
+    if (!item) {
+        return null;
+    }
+    if (item.restrictionsList && item.restrictionsApplied?.length > 0) {
+        return item.restrictionsApplied[0].type;
+    }
+    return null;
 }
 
 

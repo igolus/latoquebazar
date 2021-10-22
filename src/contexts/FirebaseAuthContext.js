@@ -262,6 +262,17 @@ export const AuthProvider = ({ children }) => {
   const { addToast } = useToasts();
 
   useEffect(() => {
+    let interval = setInterval(() => {
+      setBookingSlotStartDate(moment())
+    }, 60000);
+
+    // returned function will be called on component unmount
+    return () => {
+      clearInterval(interval);
+    }
+  }, [])
+
+  useEffect(() => {
     if (localStorage.getItem(CART_KEY)) {
       let orderInCreationSource = encryptor.decrypt(localStorage.getItem(CART_KEY));
       //let orderInCreationSource = localStorage.getItem(CART_KEY);

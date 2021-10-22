@@ -443,8 +443,44 @@ export function buildProductAndSkusNoCheckOrderInCreation(product) {
     return allSkusWithProduct;
 }
 
-export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit) {
+export const RESTRICTION_DOW = "dow";
+export const RESTRICTION_UNAVAILABLE = "unavailable";
 
+export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation) {
+    // alert("computeItemRestriction" + JSON.stringify(item.restrictionsList || {}))
+    // alert("currentService" + JSON.stringify(currentService || {}))
+    item.restrictionsApplied = [];
+    if (!item.restrictionsList || item.restrictionsList.length === 0 ) {
+        return;
+    }
+
+    let restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === currentEstablishment().id);
+    if (!restrictionToApply) {
+        restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === null);
+    }
+    //alert("restrictionToApply" + JSON.stringify(restrictionToApply || {}))
+    if (restrictionToApply?.dow && restrictionToApply?.dow.length > 0) {
+        //alert("restrictionToApply.dow");
+        const norestrictionInCurrentDay = (restrictionToApply.dow || []).find(item => item.dow?.day === currentService.dow?.data &&
+            item.dow?.service === currentService.dow?.service);
+        if (!norestrictionInCurrentDay) {
+            item.restrictionsApplied.push({
+                type: RESTRICTION_DOW
+            })
+        }
+    }
+
+    if (currentEstablishment() && (item?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id)) {
+        item.restrictionsApplied.push({
+            type: RESTRICTION_UNAVAILABLE
+        })
+    }
+
+    //alert("restrictionsApplied" + JSON.stringify(item.restrictionsApplied || {}))
+
+}
+
+export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment, currentService) {
     let allSkusWithProduct = [];
     if (product && product.skus) {
         product.skus.forEach(sku => {
@@ -466,6 +502,7 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
                 let item = dealEdit.productAndSkusLines.find(line => line.lineNumber === dealLinNumber);
                 options = item ? item.options || [] : [];
             }
+            computeItemRestriction(copySku, currentEstablishment, currentService, orderInCreation)
             //if (!sku.unavailableInEstablishmentIds || !sku.unavailableInEstablishmentIds.includes(currentEstablishment().id)) {
             if (sku.visible) {
                 allSkusWithProduct.push({
@@ -476,10 +513,12 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
             }
 
 
+
+
             //}
         })
     }
-
+    //alert("allSkusWithProduct" + JSON.stringify(allSkusWithProduct))
     return allSkusWithProduct;
 }
 

@@ -11,7 +11,8 @@ import React from 'react'
 import FlexBox from '../FlexBox'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
-import {getPriceDeal} from "../../util/displayUtil";
+import {getFirstRestrictionItem, getPriceDeal} from "../../util/displayUtil";
+import {computeItemRestriction} from "../../util/cartUtil";
 
 export interface DealCard1Props {
   className?: string
@@ -24,8 +25,9 @@ export interface DealCard1Props {
   off?: number
   id: string | number
   deal: any
-  options: any,
+  options: any
   currency: string
+  currentService: any
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -120,7 +122,8 @@ const DealCard1: React.FC<DealCard1Props> = ({
                                                hoverEffect,
                                                deal,
                                                options,
-                                               currency
+                                               currency,
+                                               currentService
                                              }) => {
 
   if (!deal) {
@@ -129,7 +132,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
 
     }
   }
-  const {getOrderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment} = useAuth();
 
   const classes = useStyles({ hoverEffect })
   const { state, dispatch } = useAppContext()
@@ -146,12 +149,16 @@ const DealCard1: React.FC<DealCard1Props> = ({
     url = imgUrl;
   }
 
+  computeItemRestriction(deal, currentEstablishment, currentService, getOrderInCreation())
+
   function buildProductDetailRef() {
     return `/product/detailDeal/${deal.id}`;
   }
 
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
+        {/*<p>{JSON.stringify(deal || {})}</p>*/}
+
         <div className={classes.imageHolder}>
           <Box
               display="flex"
@@ -220,11 +227,12 @@ const DealCard1: React.FC<DealCard1Props> = ({
             >
               <Link href={buildProductDetailRef()}>
                 <Button
+                    disabled={getFirstRestrictionItem(deal)}
                     variant="contained"
                     color="primary"
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                 >
-                  {localStrings.selectDeal}
+                  {getFirstRestrictionItem(deal) || localStrings.selectDeal}
                 </Button>
               </Link>
             </FlexBox>

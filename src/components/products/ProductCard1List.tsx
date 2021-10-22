@@ -9,6 +9,8 @@ import DealCard1 from "@component/product-cards/DealCard1";
 import {cloneDeep} from "@apollo/client/utilities";
 import {PRICE_ASC, PRICE_DESC} from "@component/products/ProductList";
 import {createUpdateBookingSlotOccupancyMutation} from "../../gql/BookingSlotOccupancyGql";
+import {getCurrentService} from "@component/form/BookingSlots";
+import useAuth from "@hook/useAuth";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -55,9 +57,11 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     const [allProducts, setAllProducts] = useState(contextData ? (getProductsAndDeals() || []) : []);
     //const [allDeals, setAllDeals] = useState(contextData ? (contextData.deals || []) : []);
-    const [productDisplay, setProductDisplay] = React.useState([]);
-    const [maxPage, setMaxPage] = React.useState(0);
-    const [page, setPage] = React.useState(1);
+    const [productDisplay, setProductDisplay] = useState([]);
+    const [maxPage, setMaxPage] = useState(0);
+    const [page, setPage] = useState(1);
+    const {currentBrand, currentEstablishment, bookingSlotStartDate} = useAuth()
+    const [currentService, setCurrentService] = useState({});
 
     function findIdOfCategory(categoryName) {
         //alert("categoryName " + categoryName)
@@ -65,6 +69,13 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         //console.log("findIdOfCategory " + id);
         return cat?.id
     }
+
+    useEffect(() => {
+        if (currentEstablishment) {
+            setCurrentService(getCurrentService(currentEstablishment(), bookingSlotStartDate));
+        }
+
+    }, [bookingSlotStartDate, currentEstablishment])
 
     useEffect( () => {
         let filteredProduct = [];
@@ -98,14 +109,14 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             }
         }
 
-        if (restrictedskuRefs) {
-            //filteredProduct = filteredProduct.filter(p => p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
-            filteredProduct = filteredProduct.filter(p => p.skus && p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
-            filteredProduct = cloneDeep(filteredProduct);
-            filteredProduct.forEach(product => {
-                product.skus = product.skus.filter(sku => restrictedskuRefs.includes(sku.extRef))
-            })
-        }
+        // if (restrictedskuRefs) {
+        //     //filteredProduct = filteredProduct.filter(p => p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
+        //     filteredProduct = filteredProduct.filter(p => p.skus && p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
+        //     filteredProduct = cloneDeep(filteredProduct);
+        //     filteredProduct.forEach(product => {
+        //         product.skus = product.skus.filter(sku => restrictedskuRefs.includes(sku.extRef))
+        //     })
+        // }
 
         if (tagsSelected && tagsSelected.length > 0) {
             filteredProduct = filteredProduct.filter(product => {
@@ -175,6 +186,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     return (
         <div>
+
+            {/*{JSON.stringify(getCurrentService(currentEstablishment(), bookingSlotStartDate))}*/}
             {/*<p>{category}</p>*/}
             {/*<p>{findIdOfCategory(category)}</p>*/}
             {/*<p>{JSON.stringify(contextData?.categories || {})}</p>>*/}
@@ -204,13 +217,17 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
                                 {/*<h1>{item.name}</h1>*/}
                                 {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
-                                <ProductCard1 {...itemShop} product={item}
+                                <ProductCard1 {...itemShop}
+                                              currentService={currentService}
+                                              product={item}
                                               faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                                               options={contextData.options}
                                               currency={getBrandCurrency(contextData.brand)}/>
                                 }
                                 {item.type === TYPE_DEAL &&
-                                <DealCard1 {...itemShop} deal={item}
+                                <DealCard1 {...itemShop}
+                                              currentService={currentService}
+                                              deal={item}
                                               options={contextData.options}
                                               currency={getBrandCurrency(contextData.brand)}/>
                                 }

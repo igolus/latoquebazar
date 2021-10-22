@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        noAvail: "Desolé il n'y a plus de creneaux disponible",
         shareOnFacebook: "Partager ce produit sur facebook",
         back: "Retour",
         poweredBy: "Site construit avec La toque magique",

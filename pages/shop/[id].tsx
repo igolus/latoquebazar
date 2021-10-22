@@ -1,13 +1,5 @@
-import NavbarLayout from '@component/layout/NavbarLayout'
-import ProductCard1List from '@component/products/ProductCard1List'
-import ProductFilterCard from '@component/products/ProductFilterCard'
-import ShopIntroCard from '@component/shop/ShopIntroCard'
-import Sidenav from '@component/sidenav/Sidenav'
 import useWindowSize from '@hook/useWindowSize'
-import { Grid, IconButton } from '@material-ui/core'
-import FilterList from '@material-ui/icons/FilterList'
 import React, {useCallback, useState} from 'react'
-import {getBrandCurrency} from "../../src/util/displayUtil";
 
 const Shop = () => {
   const width = useWindowSize()

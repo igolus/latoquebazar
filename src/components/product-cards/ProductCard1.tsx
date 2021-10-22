@@ -26,6 +26,7 @@ import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
+import {getFirstRestrictionItem} from "../../util/displayUtil";
 
 export interface ProductCard1Props {
   className?: string
@@ -41,6 +42,7 @@ export interface ProductCard1Props {
   faceBookShare: boolean
   options: any,
   currency: string
+  currentService: any
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -141,7 +143,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      product,
                                                      faceBookShare,
                                                      options,
-                                                     currency
+                                                     currency,
+                                                     currentService
                                                    }) => {
 
   if (!product) {
@@ -152,9 +155,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   useEffect(() => {
-    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation);
+    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation,
+        null, null, currentEstablishment, currentService);
     setProductAndSkus(productAndSkusRes);
-    setSelectedProductSku(productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null)
+
+    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
+
+    //alert("selected " + JSON.stringify(selected || {}));
+    setSelectedProductSku(selected)
     //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
     setSelectedSkuIndex(0)
   }, [product])
@@ -180,7 +188,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
 
   let url = "/assets/images/Icon_Sandwich.png";
-  if (product && product.files && product.files.length > 0) {
+  if (product && product?.files && product?.files?.length > 0) {
     url = product.files[0].url;
   }
   else if (imgUrl) {
@@ -188,7 +196,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   function buildProductDetailRef() {
-    if (!product.skus || product.skus.length == 1) {
+    if (!product.skus || product.skus?.length == 1) {
       return `/product/detail/${id}`;
     }
     return `/product/detail/${id}` + SEP + selectedSkuIndex;
@@ -209,7 +217,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
         {/*<p>{JSON.stringify(currentEstablishment())}</p>*/}
-        {/*<p>{JSON.stringify(product || [])}</p>*/}
+        {/*<p>{JSON.stringify(selectedProductAndSku || {})}</p>*/}
         {/*{product.newProductExpireDate}*/}
         <div className={classes.imageHolder}>
           {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
@@ -273,7 +281,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           setSelectedSkuIndex(key)
                         }}
                         variant="contained"
-                        color={selectedProductAndSku.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
+                        color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
                         sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
                       {productAndSkuItem.sku.name}
                     </BazarButton>
@@ -303,7 +311,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 </a>
               </Link>
 
-              {selectedProductAndSku && selectedProductAndSku.sku.price &&
+              {selectedProductAndSku && selectedProductAndSku?.sku.price &&
               <FlexBox alignItems="center" mt={0.5}>
                 <Box pr={1} fontWeight="600" color="primary.main">
                   {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
@@ -351,8 +359,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
                         disabled={getQteInCart(selectedProductAndSku, getOrderInCreation) == 0}
                         onClick={() => {
-                          if (selectedProductAndSku.sku.uuid) {
-                            decreaseCartQte(getOrderInCreation, setOrderInCreation, selectedProductAndSku.sku.uuid)
+                          if (selectedProductAndSku?.sku.uuid) {
+                            decreaseCartQte(getOrderInCreation, setOrderInCreation, selectedProductAndSku?.sku.uuid)
                           }
                         }}
                     >
@@ -364,7 +372,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     <Button
                         variant="outlined"
                         color="primary"
-                        disabled={!isAvailableSku()}
+                        disabled={getFirstRestrictionItem(selectedProductAndSku?.sku)}
                         sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                         onClick={() => {
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
@@ -383,9 +391,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         }}
                     >
                       {isProductAndSkuGetOption(selectedProductAndSku) ?
-                          isAvailableSku() ? localStrings.selectOptions : localStrings.unavailable
+                          (getFirstRestrictionItem(selectedProductAndSku?.sku) || localStrings.selectOptions)
                           :
-                          isAvailableSku() ? <Add fontSize="small" /> : localStrings.unavailable
+                          getFirstRestrictionItem(selectedProductAndSku?.sku) || <Add fontSize="small" />
                       }
 
                     </Button>
@@ -396,14 +404,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   <Button
                       variant="outlined"
                       color="primary"
-                      disabled={!isAvailableSku()}
+                      disabled={getFirstRestrictionItem(selectedProductAndSku?.sku)}
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                           let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
-                          if (!selectedProductAndSku.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation) === 0) {
-                            let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
+                          if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation) === 0) {
+                            let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
                             setSelectedProductSku(selectedWithUuid)
                           }
                         }
@@ -412,11 +420,21 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         }
                       }}
                   >
-                    {isProductAndSkuGetOption(selectedProductAndSku) ?
-                        isAvailableSku() ? localStrings.selectOptions : localStrings.unavailable
-                        :
-                        isAvailableSku() ? <Add fontSize="small" /> : localStrings.unavailable
+                    {selectedProductAndSku &&
+                      <>
+                        {/*{JSON.stringify(selectedProductAndSku)}*/}
+                        {isProductAndSkuGetOption(selectedProductAndSku) ?
+                            getFirstRestrictionItem(selectedProductAndSku?.sku) || localStrings.selectOptions
+                            :
+                            getFirstRestrictionItem(selectedProductAndSku?.sku) || <Add fontSize="small" />
+                        }
+                      </>
                     }
+                    {/*{selectedProductAndSku && isProductAndSkuGetOption(selectedProductAndSku) ?*/}
+                    {/*    (getFirstRestrictionItem() || localStrings.selectOptions)*/}
+                    {/*    :*/}
+                    {/*    getFirstRestrictionItem() || <Add fontSize="small" />*/}
+                    {/*}*/}
 
                   </Button>
               }

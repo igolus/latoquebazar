@@ -18,7 +18,7 @@ import useAuth from "@hook/useAuth";
 import {addToCartOrder, buildProductAndSkus} from '../../util/cartUtil'
 import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import {formatDuration} from "../../util/displayUtil";
+import {formatDuration, getFirstRestrictionItem} from "../../util/displayUtil";
 import {FacebookIcon, FacebookShareButton, TwitterIcon} from "react-share";
 
 export interface ProductIntroProps {
@@ -36,7 +36,8 @@ export interface ProductIntroProps {
     addToCartOrderCallBack: any,
     addButtonText: string
     routeToCart: boolean,
-    lineNumber: number
+    lineNumber: number,
+    currentService: any,
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -54,7 +55,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        addToCartOrderCallBack,
                                                        addButtonText,
                                                        routeToCart,
-                                                       lineNumber
+                                                       lineNumber,
+                                                       currentService
                                                    }) => {
 
     if (!product) {
@@ -69,18 +71,22 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment} = useAuth();
 
     useEffect(() => {
-        // if (!orderInCreation()) {
-        //   return
-        // }
-        if (skuIndex) {
-            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit)[skuIndex]});
+        if (currentEstablishment && currentEstablishment()) {
+            if (skuIndex) {
+                setProductAndSku({
+                    ...buildProductAndSkus(product, getOrderInCreation,
+                        lineNumber, dealEdit, currentEstablishment, currentService)[skuIndex]
+                });
+            } else {
+                setProductAndSku({
+                    ...buildProductAndSkus(product, getOrderInCreation,
+                        lineNumber, dealEdit, currentEstablishment, currentService)[0]
+                });
+            }
+            //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
         }
-        else {
-            setProductAndSku({...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit)[0]});
-        }
-        //return {...buildProductAndSkus(product, orderInCreation)[0]};
 
-    }, [currentEstablishment()])
+    }, [])
 
     // function getInitialSku() {
     //   // if (!orderInCreation()) {
@@ -120,18 +126,18 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
 
-    function isAvailableSku() {
-        if (!currentEstablishment()) {
-            return false;
-        }
-        // if (currentEstablishment()) {
-        //     alert(productAndSku?.sku?.unavailableInEstablishmentIds)
-        //     alert((productAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id))
-        // }
+    function getFirstRestriction() {
 
-        return !(currentEstablishment() &&
-            productAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
+        return getFirstRestrictionItem(productAndSku?.sku)
+        // return true;
+        // // if (!currentEstablishment()) {
+        // //     return false;
+        // // }
+        // // return !(currentEstablishment() &&
+        // //     productAndSku?.sku?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
     }
+
+    productAndSku?.sku
 
     return (
         <Box width="100%">
@@ -210,7 +216,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
 
                     <H1 mb={2}>{product.name}</H1>
-                    {!valid &&
+                    {!valid && !getFirstRestriction() &&
                     <Box mb={2} sx={{maxWidth:"285px"}}>
                         <AlertHtmlLocal severity={"warning"}
                                         title={localStrings.warningMessage.optionMandatory}
@@ -228,18 +234,23 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     {product.skus && product.skus.length > 1 &&
                     // <div style={{ width: '100%' }}>
                     <Box display="flex" justifyContent="left">
-                        {buildProductAndSkus(product, getOrderInCreation).map((pandsku, key) =>
-                            <Box key={key}>
-                                {/*<BazarButton>grande</BazarButton>*/}
-                                <BazarButton
-                                    onClick={() => setProductAndSku(pandsku)}
-                                    variant="contained"
-                                    color={productAndSku && productAndSku.sku && productAndSku.sku.extRef === pandsku.sku.extRef ? "primary" : undefined}
-                                    sx={{padding: "7px", mr: "7px", mb: "7px"}}>
-                                    {pandsku.sku.name}
-                                </BazarButton>
-                            </Box>
-                        )}
+                        {buildProductAndSkus(product, getOrderInCreation, null, null, currentEstablishment, currentService)
+                            .map((pandsku, key) =>
+                                <>
+                                    {!getFirstRestrictionItem(productAndSku?.sku) &&
+                                    <Box key={key}>
+                                        {/*<BazarButton>grande</BazarButton>*/}
+                                        <BazarButton
+                                            onClick={() => setProductAndSku(pandsku)}
+                                            variant="contained"
+                                            color={productAndSku && productAndSku.sku && productAndSku.sku.extRef === pandsku.sku.extRef ? "primary" : undefined}
+                                            sx={{padding: "7px", mr: "7px", mb: "7px"}}>
+                                            {pandsku.sku.name}
+                                        </BazarButton>
+                                    </Box>
+                                    }
+                                </>
+                            )}
                     </Box>
                         // </div>
                     }
@@ -268,18 +279,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     </Box>
                     <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
 
-                    {options && options.length > 0 && isAvailableSku() &&
-                    <ProductSelector options={options}
-                                     productAndSku={productAndSku}
-                                     productAndSku={productAndSku}
-                                     setterSkuEdit={setProductAndSku}
-                                     skuEdit={productAndSku}
-                                     setterValid={setValid}
-                                     valid={valid}
-                                     currency={currency}
-                                     lineNumber={lineNumber}
-                    />
-                    }
+                    {/*{options && options.length > 0 && !getFirstRestriction() &&*/}
+                    {/*<ProductSelector options={options}*/}
+                    {/*                 productAndSku={productAndSku}*/}
+                    {/*                 setterSkuEdit={setProductAndSku}*/}
+                    {/*                 skuEdit={productAndSku}*/}
+                    {/*                 setterValid={setValid}*/}
+                    {/*                 valid={valid}*/}
+                    {/*                 currency={currency}*/}
+                    {/*                 lineNumber={lineNumber}*/}
+                    {/*/>*/}
+                    {/*}*/}
 
                     {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                     {!disableAdd &&
@@ -291,7 +301,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     >
                         <Box>
                             <BazarButton
-                                disabled={!valid || !isAvailableSku()}
+                                disabled={!valid || getFirstRestriction()}
                                 variant="contained"
                                 color="primary"
                                 sx={{
@@ -317,7 +327,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     }
                                 }}
                             >
-                                {addButtonText || (isAvailableSku() ? localStrings.addToCart : localStrings.unavailable)}
+                                {addButtonText || (getFirstRestriction() || localStrings.addToCart)}
                             </BazarButton>
                         </Box>
                         {faceBookShare &&

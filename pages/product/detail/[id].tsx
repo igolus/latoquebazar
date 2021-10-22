@@ -10,6 +10,8 @@ import localStrings from "../../../src/localStrings";
 import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import {getBrandCurrency} from "../../../src/util/displayUtil";
 import {SEP} from "../../../src/util/constants";
+import {getCurrentService} from "@component/form/BookingSlots";
+import useAuth from "@hook/useAuth";
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 80,
@@ -33,7 +35,7 @@ export interface ProductDetailsProps {
 const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     const config = require('../../../src/conf/config.json');
     const router = useRouter();
-
+    const {currentEstablishment, bookingSlotStartDate} = useAuth();
     const { id } = router.query
     let productId = id;
     let skuIndex;
@@ -105,6 +107,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         >
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
+                          currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate)}
                           faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                           routeToCart={true}
                           skuIndex={skuIndex}
