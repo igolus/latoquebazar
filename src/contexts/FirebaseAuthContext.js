@@ -14,6 +14,8 @@ import {makeStyles} from "@material-ui/styles";
 import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
+import {processOrderInCreation} from "../util/cartUtil";
+import {getCurrentService} from "@component/form/BookingSlots";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -574,6 +576,12 @@ export const AuthProvider = ({ children }) => {
   }
 
   const setOrderInCreation = (orderInCreation, doNotupdateLocalStorage) => {
+    //currentEstablishment, currentService, orderInCreation
+
+    const currentService = getCurrentService(currentEstablishment(), state.bookingSlotStartDate)
+    processOrderInCreation(currentEstablishment, currentService, orderInCreation)
+
+    processOrderInCreation
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {

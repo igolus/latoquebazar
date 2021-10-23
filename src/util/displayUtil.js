@@ -516,7 +516,22 @@ export function getFirstRestrictionItem(item) {
         return null;
     }
     if (item.restrictionsList && item.restrictionsApplied?.length > 0) {
+        //alert("item.restrictionsApplied[0] " + JSON.stringify(item.restrictionsApplied[0]))
         return item.restrictionsApplied[0].type;
+    }
+    return null;
+}
+
+export function getFirstRestrictionDescription(item) {
+    if (!item) {
+        return null;
+    }
+
+
+    if (item.restrictionsList && item.restrictionsApplied?.length > 0) {
+
+        //alert("item.restrictionsApplied[0] " + JSON.stringify(item.restrictionsApplied[0]))
+        return item.restrictionsApplied[0].description;
     }
     return null;
 }

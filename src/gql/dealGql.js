@@ -35,6 +35,10 @@ const common = `
       minOrderAmount
       maxPerOrder
       maxPerCustomer
+      maxOrderAmount
+      minDeliveryDistance
+      maxDeliveryDistance
+      description
   }
   tags {
     id

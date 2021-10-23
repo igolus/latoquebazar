@@ -446,9 +446,24 @@ export function buildProductAndSkusNoCheckOrderInCreation(product) {
 export const RESTRICTION_DOW = "dow";
 export const RESTRICTION_UNAVAILABLE = "unavailable";
 
+export function processOrderInCreation(currentEstablishment, currentService, orderInCreation) {
+    alert("processOrderInCreation " + JSON.stringify(orderInCreation || {}))
+
+    orderInCreation.items.forEach(item => {
+
+
+    })
+
+}
+
+
 export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation) {
     // alert("computeItemRestriction" + JSON.stringify(item.restrictionsList || {}))
     // alert("currentService" + JSON.stringify(currentService || {}))
+    if (!currentEstablishment()) {
+        return;
+    }
+
     item.restrictionsApplied = [];
     if (!item.restrictionsList || item.restrictionsList.length === 0 ) {
         return;
@@ -465,7 +480,8 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
             item.dow?.service === currentService.dow?.service);
         if (!norestrictionInCurrentDay) {
             item.restrictionsApplied.push({
-                type: RESTRICTION_DOW
+                type: RESTRICTION_DOW,
+                description: restrictionToApply.description
             })
         }
     }

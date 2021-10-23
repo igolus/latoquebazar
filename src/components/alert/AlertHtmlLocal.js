@@ -9,12 +9,14 @@ function AlertHtmlLocal({severity, title, content, children}) {
         <Alert severity={severity} style={{marginBottom: 2}} variant="outlined" >
             <AlertTitle style={{fontWeight:600, fontSize:"16px"}} textAlign="left">{title}</AlertTitle>
             {/*{content}*/}
+            {content &&
             <div style={{textAlign: "left"}}>
                 {Parser(content)}
-            {/*    {Parser(content)}*/}
             </div>
-        </Alert>
+            }
             {children}
+        </Alert>
+
         </>
     )
 }

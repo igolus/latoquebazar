@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        restrictionApplies: "Ce produit n'est pas toujours disponible",
         noAvail: "Desolé il n'y a plus de creneaux disponible",
         shareOnFacebook: "Partager ce produit sur facebook",
         back: "Retour",
