@@ -123,7 +123,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
                                                deal,
                                                options,
                                                currency,
-                                               currentService
+                                               currentService,
                                              }) => {
 
   if (!deal) {
@@ -149,7 +149,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
     url = imgUrl;
   }
 
-  computeItemRestriction(deal, currentEstablishment, currentService, getOrderInCreation())
+  //computeItemRestriction(deal, currentEstablishment, currentService, getOrderInCreation())
 
   function buildProductDetailRef() {
     return `/product/detailDeal/${deal.id}`;
@@ -244,9 +244,9 @@ const DealCard1: React.FC<DealCard1Props> = ({
 }
 
 DealCard1.defaultProps = {
-  id: '324321',
-  title: 'ASUS ROG Strix G15',
-  imgUrl: '/assets/images/products/macbook.png',
+  // id: '324321',
+  // title: 'ASUS ROG Strix G15',
+  imgUrl: '/assets/images/Icon_Sandwich.png',
   price: 450,
   rating: 0,
   //off: 20,

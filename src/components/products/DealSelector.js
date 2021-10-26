@@ -79,7 +79,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function addMenuToCart() {
-        addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation, addToast);
+        addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation, addToast, contextData);
         setDealEdit(null);
         router.push("/cart")
     }

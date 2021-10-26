@@ -222,7 +222,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                               product={item}
                                               faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                                               options={contextData.options}
-                                              currency={getBrandCurrency(contextData.brand)}/>
+                                              currency={getBrandCurrency(contextData.brand)}
+                                />
                                 }
                                 {item.type === TYPE_DEAL &&
                                 <DealCard1 {...itemShop}

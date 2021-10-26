@@ -34,8 +34,9 @@ export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDist
     let maxDistReached = distKm > maxDist;
     setMaxDistanceReached(maxDistReached);
     //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
-    setDistanceInfo(distanceInfo)
-    //(value, setMaxDistanceReached, maxDist, setDistanceInfo);
+    setDistanceInfo(distanceInfo);
+    //alert("distanceInfo " + JSON.stringify(distanceInfo));
+
 }
 
 function AdressCheck({closeCallBack}) {
@@ -44,7 +45,7 @@ function AdressCheck({closeCallBack}) {
     const [distanceInfo, setDistanceInfo] = useState(null);
     const [maxDistanceReached, setMaxDistanceReached] = useState(false);
 
-    const {currentEstablishment} = useAuth();
+    const {currentEstablishment, getOrderInCreation, setOrderInCreation} = useAuth();
 
     return(
         <>
@@ -86,9 +87,9 @@ function AdressCheck({closeCallBack}) {
 
                                                 if (currentEstablishment()) {
                                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                    setDistanceAndCheck(distInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment);
+                                                    setDistanceAndCheck(distInfo, setMaxDistanceReached,
+                                                        setDistanceInfo, currentEstablishment);
                                                 }
-                                                //setDistanceAndCheck(dist,setMaxDistanceReached, setDistanceInfo, currentEstablishment);
                                             }}/>
                 </Box>
 

@@ -302,3 +302,29 @@ export const Tiny: React.FC<BoxProps & Props> = ({
     </Box>
   )
 }
+
+export const Tiny2: React.FC<BoxProps & Props> = ({
+                                                     children,
+                                                     className,
+                                                     ellipsis,
+                                                     textTransform,
+                                                     ...props
+                                                 }) => {
+    const classes = useStyles({ textTransform })
+
+    return (
+        <Box
+            className={clsx({
+                [className || '']: true,
+                [classes.root]: true,
+                [classes.ellipsis]: ellipsis,
+            })}
+            component="small"
+            fontSize="12px"
+            lineHeight="1.7"
+            {...props}
+        >
+            {children}
+        </Box>
+    )
+}

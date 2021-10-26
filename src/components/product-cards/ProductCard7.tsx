@@ -1,6 +1,6 @@
 import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
-import { Span } from '@component/Typography'
+import {Span, Tiny2} from '@component/Typography'
 import { useAppContext } from '@context/app/AppContext'
 import {Avatar, Button, IconButton} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
@@ -14,6 +14,8 @@ import useAuth from "@hook/useAuth";
 import {decreaseCartQte, deleteItemInCart, getPriceWithOptions, increaseCartQte} from '../../util/cartUtil'
 import {formatProductAndSkuName, getImgUrlFromProductsWithExtRef} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
+import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 export interface ProductCard7Props {
   id: string | number
@@ -82,13 +84,14 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
       >
         <Link href={"/product/detail/" + product.id}>
           <a>
-            <Span className="title" fontWeight="600" fontSize="18px" mb={1}>
+            <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
               {formatProductAndSkuName(item)}
             </Span>
-
+            {!itemHaveRestriction(item) &&
             <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
-              {" " + parseFloat(item.price).toFixed(2)  + " " + currency }
+              {" " + parseFloat(item.price).toFixed(2) + " " + currency}
             </Span>
+            }
           </a>
         </Link>
         {/*{JSON.stringify(item.options)}*/}
@@ -96,15 +99,19 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
           item.options && item.options.map((option, key) =>
             // <h1>{option.name}</h1>
               <FlexBox flexWrap="wrap" alignItems="center">
-                <Span color="grey.600" fontSize="14px"  mr={1}>
+                <Span color="grey.600" fontSize="14px"  mr={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
                  {option.name}
                 </Span>
-                <Span color="grey.600" fontSize="14px"  mr={1}>
-                  {option.price +  " " + currency} x {item.quantity}
-                </Span>
-                <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
-                  {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}
-                </Span>
+                {! itemHaveRestriction(item) &&
+                    <>
+                      <Span color="grey.600" fontSize="14px"  mr={1}>
+                        {option.price +  " " + currency} x {item.quantity}
+                      </Span>
+                      <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
+                        {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}
+                      </Span>
+                    </>
+                }
               </FlexBox>
 
             //   <Span key={key} className="title" fontWeight="200" fontSize="14px" mb={1}>
@@ -133,20 +140,38 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
           justifyContent="space-between"
           alignItems="flex-end"
         >
+          {!itemHaveRestriction(item) &&
           <FlexBox flexWrap="wrap" alignItems="center">
             <Span color="grey.600" mr={1}>
               {getPriceWithOptions(item, true).toFixed(2) + " " + currency} x {item.quantity}
             </Span>
             <Span fontWeight={600} color="primary.main" mr={2}>
-              {" " + localStrings.total + ": " +  (getPriceWithOptions(item, true) *  item.quantity).toFixed(2) + " " + currency}
+              {" " + localStrings.total + ": " + (getPriceWithOptions(item, true) * item.quantity).toFixed(2) + " " + currency}
             </Span>
           </FlexBox>
+          }
+          {itemHaveRestriction(item) &&
+          <AlertHtmlLocal title={localStrings.productRestricted}>
+            <ul>
+            {item.restrictionsApplied.map((restriction, key) => {
+              return (
+                  <li>
+                    <Tiny2 color="grey.600" key={key}>
+                      {restriction.local || restriction.type}
+                    </Tiny2>
+                  </li>
+              )
+            })}
+            </ul>
+          </AlertHtmlLocal>
+          }
+
           {!modeOrder &&
             <FlexBox alignItems="center">
             <Button
                 variant="outlined"
                 color="primary"
-                disabled={item.quantity === 0}
+                disabled={item.quantity === 0 || itemHaveRestriction(item)}
                 sx={{p: '5px'}}
                 onClick={() => decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
             >
@@ -160,6 +185,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             <Button
                 variant="outlined"
                 color="primary"
+                disabled={item.quantity === 0 || itemHaveRestriction(item)}
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"

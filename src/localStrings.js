@@ -4,6 +4,33 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        detail: "Detail",
+        productRestricted: "Produit indisponible dans ce contexte",
+        cartRestricted: "Produits indisponibles",
+        cartRestrictedDetail: "Certains produits deviennent indisponibles dans ce contexte clicker sur detail pour obtenir l'explication",
+
+        close: "Fermer",
+        unavailableDay: "Indisponible pour le {0}",
+        deliveryUnable: "Indisponible pour le mode {0}",
+
+        deliveryDistanceMin: "La distance jusqu'a l'etablissement doit etre superieure à {0} kms",
+        deliveryDistanceMax: "La distance jusqu'a l'etablissement doit etre inférierure à {0} kms",
+        deliveryDistanceMinMax: "La distance jusqu'a l'etablissement doit comprise entre {0} et {1} kms",
+
+        priceMin: "Le prix total de la commande doit etre superieure à {0} {1}",
+        priceMax: "Le prix total de la commande doit etre inférierure à {0} {1}",
+        priceMinMax: "Le prix total de la commande doit etre compris entre {0} et {1} {2}",
+
+        dateMin: "La date de commande doit etre apres le {0}",
+        dateMax: "La date de commande doit etre avant le {0}",
+        dateMinMax: "La date de commande doit etre  comprise entre le {0} et le {1}",
+
+        hourMin: "L'heure de commande doit etre apres {0}",
+        hourMax: "L'heure de commande doit etre avant le {0}",
+        hourMinMax: "L'heure de commande doit etre  comprise entre le {0} et le {1}",
+
+        maxItems: "Nombre d'elemenent maximum atteinds",
+        
         restrictionApplies: "Ce produit n'est pas toujours disponible",
         noAvail: "Desolé il n'y a plus de creneaux disponible",
         shareOnFacebook: "Partager ce produit sur facebook",
@@ -238,6 +265,9 @@ let localStrings = new LocalizedStrings({
         day_5 : "Vendredi",
         day_6 : "Samedi",
         day_7 : "Dimanche",
+
+        lunch: "dejeuner",
+        dinner: "dinner",
 
         hrorderStatusNew: "Nouveau",
         hrorderStatusReceived: "Reçu",

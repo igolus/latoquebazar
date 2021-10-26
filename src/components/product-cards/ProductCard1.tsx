@@ -144,7 +144,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      faceBookShare,
                                                      options,
                                                      currency,
-                                                     currentService
+                                                     currentService,
                                                    }) => {
 
   if (!product) {
@@ -155,8 +155,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   useEffect(() => {
-    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation,
-        null, null, currentEstablishment, currentService);
+    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
+        null, null, currentEstablishment, currentService, currentBrand());
     setProductAndSkus(productAndSkusRes);
 
     let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
@@ -172,7 +172,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -351,23 +351,23 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
               {selectedProductAndSku && selectedProductAndSku.sku &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
-              getQteInCart(selectedProductAndSku, getOrderInCreation) > 0 ? (
+              getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
                   <Fragment>
                     <Button
                         variant="outlined"
                         color="primary"
                         sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
-                        disabled={getQteInCart(selectedProductAndSku, getOrderInCreation) == 0}
+                        disabled={getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0}
                         onClick={() => {
                           if (selectedProductAndSku?.sku.uuid) {
-                            decreaseCartQte(getOrderInCreation, setOrderInCreation, selectedProductAndSku?.sku.uuid)
+                            decreaseCartQte(getOrderInCreation(), setOrderInCreation, selectedProductAndSku?.sku.uuid)
                           }
                         }}
                     >
                       <Remove fontSize="small" />
                     </Button>
                     <Box color="text.primary" fontWeight="600">
-                      {getQteInCart(selectedProductAndSku, getOrderInCreation)}
+                      {getQteInCart(selectedProductAndSku, getOrderInCreation())}
                     </Box>
                     <Button
                         variant="outlined"
@@ -391,9 +391,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         }}
                     >
                       {isProductAndSkuGetOption(selectedProductAndSku) ?
-                          (getFirstRestrictionItem(selectedProductAndSku?.sku) || localStrings.selectOptions)
+                          (getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : localStrings.selectOptions)
                           :
-                          getFirstRestrictionItem(selectedProductAndSku?.sku) || <Add fontSize="small" />
+                          getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : <Add fontSize="small" />
                       }
 
                     </Button>
@@ -410,7 +410,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                           let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
-                          if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation) === 0) {
+                          if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
                             let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
                             setSelectedProductSku(selectedWithUuid)
                           }
@@ -424,9 +424,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       <>
                         {/*{JSON.stringify(selectedProductAndSku)}*/}
                         {isProductAndSkuGetOption(selectedProductAndSku) ?
-                            getFirstRestrictionItem(selectedProductAndSku?.sku) || localStrings.selectOptions
+                            getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : localStrings.selectOptions
                             :
-                            getFirstRestrictionItem(selectedProductAndSku?.sku) || <Add fontSize="small" />
+                            getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : <Add fontSize="small" />
                         }
                       </>
                     }

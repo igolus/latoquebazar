@@ -4,7 +4,7 @@ import BazarIconButton from '@component/BazarIconButton'
 import FlexBox from '@component/FlexBox'
 import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import LazyImage from '@component/LazyImage'
-import {H5, Span, Tiny} from '@component/Typography'
+import {H5, Span, Tiny, Tiny2} from '@component/Typography'
 import { useAppContext } from '@context/app/AppContext'
 import { Box, Divider } from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
@@ -34,6 +34,11 @@ import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 type MiniCartProps = {
   toggleSidenav?: () => void
   contextData: any
+}
+
+export function itemHaveRestriction(item: any) {
+  return item.restrictionsApplied &&
+      item.restrictionsApplied.length > 0
 }
 
 const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
@@ -90,6 +95,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
     }
     return null;
   }
+
 
   return (
     <Box width="380px">
@@ -149,6 +155,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               <BazarButton
                 variant="outlined"
                 color="primary"
+                disabled={itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal)}
                 sx={{
                   height: '32px',
                   width: '32px',
@@ -156,10 +163,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 }}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    increaseDealCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
+                    increaseDealCartQte(getOrderInCreation, setOrderInCreation, item.uuid, contextData)
                   }
                   else {
-                    increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
+                    increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid, contextData)
                   }
                 }}
               >
@@ -168,6 +175,12 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               <Box fontWeight={600} fontSize="15px" my="3px">
                 {item.quantity}
               </Box>
+
+
+              {/*<Box fontWeight={600} fontSize="15px" my="3px">*/}
+              {/*  {item.quantity}*/}
+              {/*</Box>*/}
+
               <BazarButton
                 variant="outlined"
                 color="primary"
@@ -176,12 +189,13 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                   width: '32px',
                   borderRadius: '300px',
                 }}
+                disabled={itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal)}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    decreaseDealCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
+                    decreaseDealCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                   else {
-                    decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)
+                    decreaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                 }}
                 disabled={item.quantity === 1}
@@ -219,71 +233,43 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             <Box flex="1 1 0">
               {/*<Link href={`/product/${item.id}`}>*/}
               {/*  <a>*/}
-                  <H5 className="title" fontSize="14px">
+                  <H5 className="title" fontSize="14px" style={{ textDecoration :
+                        itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) ? 'line-through' : 'none'}} >
                     {item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
                   </H5>
-              {/*  </a>*/}
-              {/*</Link>*/}
-
-              {/*{*/}
-              {/*  item.productAndSkusLines && item.productAndSkusLines.map((productAndSkusLine, key) =>*/}
-              {/*      // <h1>{option.name}</h1>*/}
-              {/*      <>*/}
-              {/*        <FlexBox flexWrap="wrap" alignItems="center">*/}
-              {/*          <Span color="grey.600" fontSize="14px"  mr={1}>*/}
-              {/*            {formatProductAndSkuName(productAndSkusLine)}*/}
-              {/*          </Span>*/}
-              {/*          <Span color="grey.600" fontSize="14px"  mr={1}>*/}
-              {/*            {productAndSkusLine.price +  " " + currency} x {item.quantity}*/}
-              {/*          </Span>*/}
-              {/*          <Span color="grey.600" fontSize="14px" color="primary.main"  mr={2}>*/}
-              {/*            {(parseFloat(productAndSkusLine.price) * item.quantity).toFixed(2) + " " + currency}*/}
-              {/*          </Span>*/}
-              {/*        </FlexBox>*/}
-
-              {/*        {*/}
-              {/*          productAndSkusLine.options && productAndSkusLine.options.map((option, key) =>*/}
-              {/*                  // <h1>{option.name}</h1>*/}
-              {/*                  <FlexBox flexWrap="wrap" alignItems="center">*/}
-              {/*                    <Span color="grey.700" fontSize="12px"  mr={1}>*/}
-              {/*                      {option.name}*/}
-              {/*                    </Span>*/}
-              {/*                    <Span color="grey.700" fontSize="12px"  mr={1}>*/}
-              {/*                      {option.price +  " " + currency} x {item.quantity}*/}
-              {/*                    </Span>*/}
-              {/*                    <Span fontWeight={600} color="primary.main" fontSize="12px" mr={2}>*/}
-              {/*                      {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}*/}
-              {/*                    </Span>*/}
-              {/*                  </FlexBox>*/}
-
-              {/*              //   <Span key={key} className="title" fontWeight="200" fontSize="14px" mb={1}>*/}
-              {/*              //   {option.name} {}*/}
-              {/*              // </Span>*/}
-
-              {/*          )*/}
-              {/*        }*/}
-
-              {/*      </>*/}
-              {/*  )}*/}
-
-
               {/*<p>{JSON.stringify(item)}</p>*/}
-              <Tiny color="grey.600">
-                {item.type === TYPE_DEAL &&
-                  getPriceWithOptions(item, false).toFixed(2) + " " + currency + " x" + item.quantity
-                }
-                {item.type === TYPE_PRODUCT &&
-                  getPriceWithOptions(item, true).toFixed(2) + " " + currency + " x" + item.quantity
-                }
-              </Tiny>
-              <Box fontWeight={600} fontSize="14px" color="primary.main" mt={0.5}>
-                {item.type === TYPE_DEAL &&
-                (getPriceWithOptions(item, false) * item.quantity).toFixed(2) + " " + currency
-                }
-                {item.type === TYPE_PRODUCT &&
-                (getPriceWithOptions(item, true) * item.quantity).toFixed(2)  + " " + currency
-                }
-              </Box>
+              {!itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) &&
+                  <>
+                    <Tiny color="grey.600">
+                      {item.type === TYPE_DEAL &&
+                        getPriceWithOptions(item, false).toFixed(2) + " " + currency + " x" + item.quantity
+                      }
+                      {item.type === TYPE_PRODUCT &&
+                        getPriceWithOptions(item, true).toFixed(2) + " " + currency + " x" + item.quantity
+                      }
+                    </Tiny>
+                    <Box fontWeight={600} fontSize="14px" color="primary.main" mt={0.5}>
+                      {item.type === TYPE_DEAL &&
+                      (getPriceWithOptions(item, false) * item.quantity).toFixed(2) + " " + currency
+                      }
+                      {item.type === TYPE_PRODUCT &&
+                      (getPriceWithOptions(item, true) * item.quantity).toFixed(2)  + " " + currency
+                      }
+                    </Box>
+                  </>
+              }
+
+
+              {itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) &&
+              (item.type === TYPE_PRODUCT ? item.restrictionsApplied : item.deal.restrictionsApplied)
+                  .map((restriction, key) => {
+                return (
+                    <Tiny2 color="grey.600" key={key}>
+                      {restriction.local || restriction.type}
+                    </Tiny2>
+                )
+              })
+              }
             </Box>
 
             <BazarIconButton

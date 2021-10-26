@@ -16,6 +16,9 @@ import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
 import {processOrderInCreation} from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
+import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
+import Router from 'next/router'
+import {getBrandCurrency} from "../util/displayUtil";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -33,6 +36,7 @@ const LOGIN_DIALOG_OPEN = 'LOGIN_DIALOG_OPEN';
 const LOGIN_ON_GOING = 'LOGIN_ON_GOING';
 const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
 const ORDER_COUNT = 'ORDER_COUNT';
+const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
@@ -81,12 +85,21 @@ const initialAuthState = {
   justCreatedOrder: null,
   loginOnGoing: false,
   orderCount: 0,
-  brandId: 0
+  brandId: 0,
+  globalDialog: null,
 };
 
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
   switch (action.type) {
+
+    case GLOBAL_DIALOG: {
+      const { globalDialog } = action.payload;
+      return {
+        ...state,
+        globalDialog: globalDialog
+      };
+    }
 
     case AUTH_STATE_CHANGE: {
       const { isAuthenticated, user } = action.payload;
@@ -252,16 +265,29 @@ const AuthContext = createContext({
   setJustCreatedOrder: () => {},
 
   increaseOrderCount: () => {},
+
+  setGlobalDialog: () => {},
+  resetGlobalDialog: () => {},
+
+  setRedirectPageGlobal: () => {},
 });
 
 const expireTimeSeconds = 1800;
 
 export const AuthProvider = ({ children }) => {
   const [adressDialogOpen, setAdressDialogOpen] = useState(false)
+  const [redirectPage, setRedirectPage] = useState(null);
+
   const classes = useStyles();
   firebase.auth().useDeviceLanguage();
   const [state, dispatch] = useReducer(reducer, initialAuthState);
   const { addToast } = useToasts();
+
+  useEffect(() => {
+    if(redirectPage ){
+      Router.push(redirectPage)
+    }
+  }, [redirectPage])
 
   useEffect(() => {
     let interval = setInterval(() => {
@@ -493,6 +519,28 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  function setGlobalDialog(content) {
+    dispatch({
+      type: GLOBAL_DIALOG,
+      payload: {
+        globalDialog: content,
+      }
+    });
+  }
+
+  function resetGlobalDialog() {
+    dispatch({
+      type: GLOBAL_DIALOG,
+      payload: {
+        globalDialog: null,
+      }
+    });
+  }
+
+  function setRedirectPageGlobal(page) {
+    setRedirectPage(page)
+  }
+
   const setBookingSlotStartDate = (bookingSlotStartDate) => {
     dispatch({
       type: BOOKING_SLOT_START_DATE,
@@ -579,9 +627,9 @@ export const AuthProvider = ({ children }) => {
     //currentEstablishment, currentService, orderInCreation
 
     const currentService = getCurrentService(currentEstablishment(), state.bookingSlotStartDate)
-    processOrderInCreation(currentEstablishment, currentService, orderInCreation)
+    processOrderInCreation(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+      getBrandCurrency(currentBrand()));
 
-    processOrderInCreation
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
@@ -777,19 +825,40 @@ export const AuthProvider = ({ children }) => {
             setLoginDialogOpen,
             setLoginOnGoing,
             setJustCreatedOrder,
-            increaseOrderCount
+            increaseOrderCount,
+
+            setGlobalDialog,
+            resetGlobalDialog,
+
+            setRedirectPageGlobal
           }}
       >
-        {children}
-        {/*{currentEstablishment() &&*/}
-        {/*<Dialog open={adressDialogOpen} maxWidth="sm"*/}
-        {/*>*/}
-        {/*  <DialogContent className={classes.dialogContent}>*/}
-        {/*    <AdressCheck closeCallBack={() => setAdressDialogOpen(false)}/>*/}
-        {/*  </DialogContent>*/}
-        {/*</Dialog>*/}
-        {/*}*/}
 
+        {state.globalDialog &&
+        <Dialog open={state.globalDialog} maxWidth="sm"
+        >
+          <DialogContent className={classes.dialogContent}>
+            {state.globalDialog.content}
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => resetGlobalDialog()} color="primary">
+              {localStrings.close}
+            </Button>
+
+            {(state.globalDialog.actions || []).map((action, key) =>
+                <Button onClick={() => {
+                  resetGlobalDialog();
+                  action.action();
+                }} color="primary">
+                  {action.title}
+                </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+        }
+
+        {children}
       </AuthContext.Provider>
   );
 };

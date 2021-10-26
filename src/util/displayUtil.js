@@ -11,6 +11,8 @@ import {
 import moment from "moment";
 import localStrings from "../localStrings";
 import axios from "axios";
+import {DINNER_PERIOD, LUNCH_PERIOD} from "@component/form/BookingSlots";
+import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
 const config = require('../conf/config.json')
 
 export const getSkusLists = async (brandId) => {
@@ -107,6 +109,9 @@ export const getTotalPriceOrderInCreation = (orderInCreation) => {
 }
 
 export const computeTotalPriceValue = (itemSkuBooking, mul = 1) => {
+    if (itemHaveRestriction(itemSkuBooking)) {
+        return 0;
+    }
     let sum = parseFloat(itemSkuBooking.price);
     if (itemSkuBooking.options) {
         itemSkuBooking.options.forEach(option => sum+= parseFloat(option.price))
@@ -162,51 +167,54 @@ export const computePriceDetail = (orderInCreation) => {
         total += price;
         let priceNoTax = 0;
         let taxPrice = 0;
-        if (item.preparationTime) {
-            totalPreparationTime += item.preparationTime * item.quantity;
-        }
 
-        if (item.vat) {
-            priceNoTax = price / (1 + (item.vat / 100));
-            totalNoTax += priceNoTax;
-            taxPrice = price - priceNoTax;
-            if (taxDetail[item.vat.toString()]) {
-                taxDetail[item.vat.toString()] = taxDetail[item.vat.toString()] + taxPrice;
+        //alert("itemHaveRestriction(item) " + itemHaveRestriction(item))
+        if (!itemHaveRestriction(item)) {
+            if (item.preparationTime) {
+                totalPreparationTime += item.preparationTime * item.quantity;
             }
-            else {
-                taxDetail[item.vat.toString()] = taxPrice;
+
+            if (item.vat) {
+                priceNoTax = price / (1 + (item.vat / 100));
+                totalNoTax += priceNoTax;
+                taxPrice = price - priceNoTax;
+                if (taxDetail[item.vat.toString()]) {
+                    taxDetail[item.vat.toString()] = taxDetail[item.vat.toString()] + taxPrice;
+                } else {
+                    taxDetail[item.vat.toString()] = taxPrice;
+                }
+            } else {
+                totalNoTax += price
             }
-        }
-        else {
-            totalNoTax += price
         }
     })
 
     orderInCreation?.order?.deals.forEach(deal => {
-        deal.productAndSkusLines.forEach(line => {
-            let price = computeTotalPriceValue(line, deal.quantity);
-            total += price;
-            let priceNoTax = 0;
-            let taxPrice = 0;
-            if (line.vat) {
-                if (line.preparationTime) {
-                    totalPreparationTime += line.preparationTime * deal.quantity;
-                }
+        if (!itemHaveRestriction(deal.deal)) {
+            deal.productAndSkusLines.forEach(line => {
 
-                priceNoTax = price / (1 + (line.vat / 100));
-                totalNoTax += priceNoTax;
-                taxPrice = price - priceNoTax;
-                if (taxDetail[line.vat.toString()]) {
-                    taxDetail[line.vat.toString()] = taxDetail[line.vat.toString()] + taxPrice;
+                let price = computeTotalPriceValue(line, deal.quantity);
+                total += price;
+                let priceNoTax = 0;
+                let taxPrice = 0;
+                if (line.vat) {
+                    if (line.preparationTime) {
+                        totalPreparationTime += line.preparationTime * deal.quantity;
+                    }
+
+                    priceNoTax = price / (1 + (line.vat / 100));
+                    totalNoTax += priceNoTax;
+                    taxPrice = price - priceNoTax;
+                    if (taxDetail[line.vat.toString()]) {
+                        taxDetail[line.vat.toString()] = taxDetail[line.vat.toString()] + taxPrice;
+                    } else {
+                        taxDetail[line.vat.toString()] = taxPrice;
+                    }
+                } else {
+                    totalNoTax += price;
                 }
-                else {
-                    taxDetail[line.vat.toString()] = taxPrice;
-                }
-            }
-            else {
-                totalNoTax += price;
-            }
-        })
+            })
+        }
     })
 
     Object.keys(taxDetail).forEach(key => {
@@ -517,7 +525,7 @@ export function getFirstRestrictionItem(item) {
     }
     if (item.restrictionsList && item.restrictionsApplied?.length > 0) {
         //alert("item.restrictionsApplied[0] " + JSON.stringify(item.restrictionsApplied[0]))
-        return item.restrictionsApplied[0].type;
+        return item.restrictionsApplied[0].local || item.restrictionsApplied[0].type;
     }
     return null;
 }
@@ -536,5 +544,42 @@ export function getFirstRestrictionDescription(item) {
     return null;
 }
 
+export const displayDow = (itemDow) => {
+    return localStrings["day_" + itemDow.day] + " " + localStrings[itemDow.service];
+}
+
+export const displayService = (itemDow) => {
+    if (itemDow.service === DINNER_PERIOD) {
+        return localStrings.dinner;
+    }
+    if (itemDow.service === LUNCH_PERIOD) {
+        return localStrings.lunch;
+    }
+}
+
+export const getMinutesFromHour = (hourString) => {
+    let split = hourString.split(':');
+    if (split.length === 2) {
+        let durationMinutes = parseInt(split[0]) * 60 + parseInt(split[1]);
+        return  durationMinutes;
+    }
+    return 0;
+}
 
 
+export const getMinutesFromDate = (dateTimeString) => {
+    let dateTimeMoment = moment(dateTimeString).locale('fr');
+    alert("dateTimeMoment " + dateTimeMoment.format())
+    alert("duration " + (dateTimeMoment.hour() * 60 + dateTimeMoment.minute()))
+    alert("dateTimeMoment.hour() " + dateTimeMoment.hour())
+    alert("dateTimeMoment.hour() " + (dateTimeMoment.hour() * 60))
+    alert("dateTimeMoment.minute() " + dateTimeMoment.minute())
+    return dateTimeMoment.hour() * 60 + dateTimeMoment.minute();
+
+    // let split = hourString.split(':');
+    // if (split.length === 2) {
+    //     let durationMinutes = parseInt(split[0]) * 60 + parseInt(split[1]);
+    //     return  durationMinutes;
+    // }
+    //return 0;
+}

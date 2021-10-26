@@ -23,7 +23,7 @@ import {
   ORDER_SOURCE_ONLINE,
   ORDER_STATUS_NEW, PAYMENT_METHOD_STRIPE
 } from "../../util/constants";
-import BookingSlots from '../../components/form/BookingSlots';
+import BookingSlots, {getCurrentService} from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
 import moment from 'moment';
 import GoogleMapsAutocomplete, {loadScript} from "@component/map/GoogleMapsAutocomplete";
@@ -51,7 +51,7 @@ import {
   updateOrderMutation
 } from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {getCartItems} from "../../util/cartUtil";
+import {getCartItems, processOrderInCreation} from "../../util/cartUtil";
 import {sendNotif} from "../../util/sendNotif";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, CardNumberElement, Elements, useElements, useStripe} from "@stripe/react-stripe-js";
@@ -105,7 +105,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   const [adressEditLock, setAdressEditLock] = useState(false);
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
-    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount} = useAuth();
+    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setGlobalDialog, setRedirectPageGlobal, bookingSlotStartDate} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
   const loaded = React.useRef(false);
@@ -445,7 +445,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     })
   }
 
-  function updateDeliveryAdress(address, lat, lng, id, additionalInformation) {
+  function updateDeliveryAdress(address, lat, lng, id, additionalInformation, distance) {
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryAddress: {
@@ -454,6 +454,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         lng: lng,
         id: id,
         additionalInformation: additionalInformation,
+        distance: distance
       },
     })
   }
@@ -494,14 +495,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   }
 
   async function checkDistance(lat, lng) {
+    let distInfo;
     if (currentEstablishment()) {
-      let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+      distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
       setDistanceAndCheck(distInfo,
           (maxDistanceReached) => {
             setMaxDistanceReached(maxDistanceReached);
           },
           setDistanceInfo, currentEstablishment);
+      // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
+      // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
+      //     setGlobalDialog, setRedirectPageGlobal, distInfo)
     }
+    return distInfo;
   }
 
   function getSubmitText() {
@@ -555,11 +561,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
             // {false ?
             <ClipLoaderComponent/>
             :
+            <>
+              <p>{JSON.stringify(getOrderInCreation())}</p>
             <Formik
                 initialValues={getInitialValues(dbUser)}
                 validationSchema={checkoutSchema(bookWithoutAccount)}
                 onSubmit={handleFormSubmit}
             >
+
               {({
                   values,
                   errors,
@@ -774,12 +783,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                               onCLickCallBack={async () => {
                                 setSelectedAddId("main");
 
-                                await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
+                                let distInfo = await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
                                 updateDeliveryAdress(dbUser?.userProfileInfo?.address,
                                     dbUser?.userProfileInfo?.lat,
                                     dbUser?.userProfileInfo?.lng,
                                     "main",
-                                    dbUser?.userProfileInfo?.additionalInformation
+                                    dbUser?.userProfileInfo?.additionalInformation,
+                                    distInfo?.distance,
 
                                 );
                               }}
@@ -795,12 +805,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                   selected={selectedAddId === item.id}
                                   onCLickCallBack={async () => {
                                     setSelectedAddId(item.id);
-                                    await checkDistance(item.lat, item.lng);
+                                    const distInfo = await checkDistance(item.lat, item.lng);
                                     updateDeliveryAdress(item.address,
                                         item.lat,
                                         item.lng,
                                         item.id,
-                                        item.additionalInformation
+                                        item.additionalInformation,
+                                        distInfo?.distance
                                     );
                                   }}
                               />
@@ -834,6 +845,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                 valueSource={adressValue}
                                 disabled={adressEditLock}
                                 setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                  let distInfo;
                                   if (currentEstablishment()) {
                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
                                     setDistanceAndCheck(distInfo,
@@ -844,9 +856,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                           setMaxDistanceReached(maxDistanceReached);
                                         },
                                         setDistanceInfo, currentEstablishment);
+                                    // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
+                                    // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
+                                    //     setGlobalDialog, setRedirectPageGlobal, distInfo)
                                   }
                                   //setAdressValue(label)
-                                  updateDeliveryAdress(label, lat, lng);
+                                  updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
                                   setAdressEditLock(true);
                                 }}/>
                           </Grid>
@@ -1197,6 +1212,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   </form>
               )}
             </Formik>
+            </>
 
         }
       </>

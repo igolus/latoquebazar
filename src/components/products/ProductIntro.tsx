@@ -15,6 +15,7 @@ import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getFirstRestrictionDescription, getFirstRestrictionItem} from "../../util/displayUtil";
 import {FacebookIcon, FacebookShareButton} from "react-share";
+import ProductSelector from './ProductSelector'
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -63,19 +64,19 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment} = useAuth();
+    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment, currentBrand} = useAuth();
 
     useEffect(() => {
-        if (currentEstablishment && currentEstablishment()) {
+        if (currentEstablishment && currentEstablishment() && currentBrand()) {
             if (skuIndex) {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, currentEstablishment, currentService)[skuIndex]
+                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand())[skuIndex]
                 });
             } else {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, currentEstablishment, currentService)[0]
+                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand())[0]
                 });
             }
             //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
@@ -94,7 +95,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     // }
 
     const [productAndSku, setProductAndSku] = useState(null);
-    //const [valid, setValid] = useState(false);
+    const [valid, setValid] = useState(false);
     const {addToast} = useToasts()
     const [selectedImage, setSelectedImage] = useState(0)
     const [isViewerOpen, setIsViewerOpen] = useState(false)
@@ -204,7 +205,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
 
                     <H1 mb={2}>{product.name}</H1>
-                    {!getFirstRestriction() &&
+                    {!valid && !getFirstRestriction() &&
                     <Box mb={2} sx={{maxWidth:"285px"}}>
                         <AlertHtmlLocal severity={"warning"}
                                         title={localStrings.warningMessage.optionMandatory}
@@ -216,7 +217,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     {/*<p>{getFirstRestrictionDescription(productAndSku?.sku)}</p>*/}
 
-                    {getFirstRestriction() && getFirstRestrictionDescription(productAndSku?.sku) &&
+                    {getFirstRestrictionDescription(productAndSku?.sku) &&
 
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.restrictionApplies}
@@ -231,7 +232,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         {buildProductAndSkus(product, getOrderInCreation, null, null, currentEstablishment, currentService)
                             .map((pandsku, key) =>
                                 <>
-                                    {!getFirstRestrictionItem(productAndSku?.sku) &&
+                                    {/*{!getFirstRestrictionItem(productAndSku?.sku) &&*/}
                                     <Box key={key}>
                                         {/*<BazarButton>grande</BazarButton>*/}
                                         <BazarButton
@@ -242,7 +243,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                             {pandsku.sku.name}
                                         </BazarButton>
                                     </Box>
-                                    }
+                                    {/*}*/}
                                 </>
                             )}
                     </Box>
@@ -273,17 +274,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     </Box>
                     <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
 
-                    {/*{options && options.length > 0 && !getFirstRestriction() &&*/}
-                    {/*<ProductSelector options={options}*/}
-                    {/*                 productAndSku={productAndSku}*/}
-                    {/*                 setterSkuEdit={setProductAndSku}*/}
-                    {/*                 skuEdit={productAndSku}*/}
-                    {/*                 setterValid={setValid}*/}
-                    {/*                 valid={valid}*/}
-                    {/*                 currency={currency}*/}
-                    {/*                 lineNumber={lineNumber}*/}
-                    {/*/>*/}
-                    {/*}*/}
+                    {options && options.length > 0 && !getFirstRestriction() &&
+                    <ProductSelector options={options}
+                                     productAndSku={productAndSku}
+                                     setterSkuEdit={setProductAndSku}
+                                     skuEdit={productAndSku}
+                                     setterValid={setValid}
+                                     valid={valid}
+                                     currency={currency}
+                                     lineNumber={lineNumber}
+                    />
+                    }
 
                     {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                     {!disableAdd &&
@@ -295,7 +296,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     >
                         <Box>
                             <BazarButton
-                                disabled={getFirstRestriction()}
+                                disabled={!valid || getFirstRestriction()}
                                 variant="contained"
                                 color="primary"
                                 sx={{
@@ -321,7 +322,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     }
                                 }}
                             >
-                                {addButtonText || (getFirstRestriction() || localStrings.addToCart + " ADD")}
+                                {addButtonText || (getFirstRestriction() || localStrings.addToCart)}
                             </BazarButton>
                             <p>{JSON.stringify(productAndSku?.sku)}</p>
                         </Box>
