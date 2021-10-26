@@ -20,7 +20,7 @@ import {
 } from '../../util/cartUtil'
 import {formatProductAndSkuName, getPriceDeal} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
-import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
+import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 export interface DealCard7Props {
@@ -165,7 +165,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
           </FlexBox>
           }
 
-          {itemHaveRestriction(item) &&
+          {(itemHaveRestriction(item) || itemRestrictionMax(item)) &&
           <AlertHtmlLocal title={localStrings.productRestricted}>
             <ul>
               {item.restrictionsApplied.map((restriction, key) => {
@@ -186,13 +186,13 @@ const DealCard7: React.FC<DealCard7Props> = ({
             <Button
                 variant="outlined"
                 color="primary"
-                diabled={!itemHaveRestriction(item)}
+                disabled={!itemHaveRestriction(item) || item.quantity === 0}
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"
-                disabled={item.quantity === 0}
+                //disabled={item.quantity === 0}
                 sx={{p: '5px'}}
-                onClick={() => decreaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
+                onClick={() => decreaseDealCartQte(getOrderInCreation(), setOrderInCreation, deal.uuid)}
             >
               <Remove fontSize="small"/>
             </Button>
@@ -204,12 +204,12 @@ const DealCard7: React.FC<DealCard7Props> = ({
             <Button
                 variant="outlined"
                 color="primary"
-                diabled={!itemHaveRestriction(item)}
+                disabled={itemHaveRestriction(item) || itemRestrictionMax(item)}
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"
                 sx={{p: '5px'}}
-                onClick={() => increaseDealCartQte(getOrderInCreation, setOrderInCreation, deal.uuid)}
+                onClick={() => increaseDealCartQte(getOrderInCreation(), setOrderInCreation, deal.uuid)}
             >
               <Add fontSize="small"/>
             </Button>

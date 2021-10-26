@@ -21,7 +21,7 @@ import {
   deleteItemInCart,
   getCartItems,
   getPriceWithOptions,
-  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart
+  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart, RESTRICTION_MAX_ITEM
 } from "../../util/cartUtil";
 import {
   computePriceDetail, formatProductAndSkuName,
@@ -36,8 +36,13 @@ type MiniCartProps = {
   contextData: any
 }
 
+export function itemRestrictionMax(item: any) {
+  return item.restrictionsApplied && item.restrictionsApplied.length === 1 &&
+      item.restrictionsApplied[0].type === RESTRICTION_MAX_ITEM;
+}
+
 export function itemHaveRestriction(item: any) {
-  return item.restrictionsApplied &&
+  return !itemRestrictionMax(item) && item.restrictionsApplied &&
       item.restrictionsApplied.length > 0
 }
 
@@ -155,7 +160,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               <BazarButton
                 variant="outlined"
                 color="primary"
-                disabled={itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal)}
+                disabled={itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) ||
+                  itemRestrictionMax(item.type === TYPE_PRODUCT ? item : item.deal)}
                 sx={{
                   height: '32px',
                   width: '32px',
@@ -163,10 +169,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 }}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    increaseDealCartQte(getOrderInCreation, setOrderInCreation, item.uuid, contextData)
+                    increaseDealCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                   else {
-                    increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid, contextData)
+                    increaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                 }}
               >
@@ -260,7 +266,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               }
 
 
-              {itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) &&
+              {(itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) ||
+                  itemRestrictionMax(item.type === TYPE_PRODUCT ? item : item.deal)) &&
               (item.type === TYPE_PRODUCT ? item.restrictionsApplied : item.deal.restrictionsApplied)
                   .map((restriction, key) => {
                 return (

@@ -1,7 +1,7 @@
 import moment from "moment";
 import {report} from "next/dist/telemetry/trace/report";
 import cloneDeep from "clone-deep";
-import {TYPE_DEAL, TYPE_PRODUCT} from "./constants";
+import {PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE, TYPE_DEAL, TYPE_PRODUCT} from "./constants";
 import localStrings from "../localStrings";
 import {
     computePriceDetail,
@@ -11,6 +11,10 @@ import {
     getBrandCurrency, getMinutesFromDate, getMinutesFromHour
 } from "./displayUtil";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import {itemRestrictionMax} from "@component/mini-cart/MiniCart";
+import {getChargeQueryNoApollo} from "../gqlNoApollo/chargeGqlNoApollo";
+import {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
+import {getChargesQuery} from "../gql/chargesGql";
 const { uuid } = require('uuidv4');
 
 export function getCartItems(orderInCreation, localStorage) {
@@ -45,21 +49,21 @@ export function getCartItems(orderInCreation, localStorage) {
 }
 
 export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
-    let itemIoChange = orderInCreation().order.deals.find(deal => deal.uuid === uuid);
+    let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
 
     if (!itemIoChange) {
         return;
     }
-    let others = orderInCreation().order.deals.filter(deal => deal.uuid !== uuid);
+    let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
 
     let items = [];
-    if (orderInCreation().order.items) {
-        items = [...orderInCreation().order.items]
+    if (orderInCreation.order.items) {
+        items = [...orderInCreation.order.items]
     }
 
     if (itemIoChange.quantity == 1) {
         setOrderInCreation({
-            ...orderInCreation(),
+            ...orderInCreation,
             order: {
                 items: items,
                 deals: [...others]
@@ -71,7 +75,7 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
 
     itemIoChange.quantity--;
     setOrderInCreation({
-        ...orderInCreation(),
+        ...orderInCreation,
         order: {
             items: items,
             deals: [...others, {...itemIoChange}]
@@ -79,19 +83,19 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
     });
 }
 
-export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
-    let itemIoChange = orderInCreation().order.deals.find(deal => deal.uuid === uuid);
-    let others = orderInCreation().order.deals.filter(deal => deal.uuid !== uuid);
+export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
+    let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
+    let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
 
     let items = [];
-    if (orderInCreation().order.items) {
-        items = [...orderInCreation().order.items]
+    if (orderInCreation.order.items) {
+        items = [...orderInCreation.order.items]
     }
 
     itemIoChange.quantity++;
 
     setOrderInCreation({
-        ...orderInCreation(),
+        ...orderInCreation,
         order: {
             items: items,
             deals: [...others, {...itemIoChange}]
@@ -102,11 +106,11 @@ export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
 
 export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
     let itemIoChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
-    let others = orderInCreation().order.items.filter(itemOrder => itemOrder.uuid !== uuid);
+    let others = orderInCreation.order.items.filter(itemOrder => itemOrder.uuid !== uuid);
 
     let deals = [];
     if (orderInCreation.order.deals) {
-        deals = [...orderInCreation().order.deals]
+        deals = [...orderInCreation.order.deals]
     }
 
     if (itemIoChange.quantity == 1) {
@@ -132,17 +136,17 @@ export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, conte
 }
 
 export function increaseCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
-    let itemIoChange = orderInCreation().order.items.find(itemOrder => itemOrder.uuid === uuid);
-    let others = orderInCreation().order.items.filter(itemOrder => itemOrder.uuid !== uuid);
+    let itemIoChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
+    let others = orderInCreation.order.items.filter(itemOrder => itemOrder.uuid !== uuid);
     itemIoChange.quantity++;
 
     let deals = [];
-    if (orderInCreation().order.deals) {
-        deals = [...orderInCreation().order.deals]
+    if (orderInCreation.order.deals) {
+        deals = [...orderInCreation.order.deals]
     }
 
     setOrderInCreation({
-        ...orderInCreation(),
+        ...orderInCreation,
         order: {
             items: [...others, {...itemIoChange}],
             deals: deals
@@ -486,10 +490,36 @@ function builAlertRestrictionComponent(setRedirectPageGlobal) {
     }
 }
 
+export function processOrderCharge(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal, currency, brandId) {
+    if (!brandId || !orderInCreation) {
+        return;
+    }
+
+    orderInCreation.charges = [];
+    executeQueryUtilSync(getChargesQuery(brandId)).then(res => {
+        let chargeItems = res?.data?.getChargesByBrandId || [];
+        let priceDetail = computePriceDetail(orderInCreation)
+
+
+        chargeItems.forEach(charge => {
+            let chargeCopy = cloneDeep(charge);
+            computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency);
+            if (chargeCopy.restrictionsApplied.length > 0) {
+                if (chargeCopy.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
+                    let percent = parseFloat(chargeCopy.pricingValue);
+                    chargeCopy.price = priceDetail.total * (percent / 100)
+                }
+                else if (chargeCopy.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
+                    chargeCopy.price = parseFloat(chargeCopy.pricingValue);
+                }
+                alert("pushing charge ")
+                orderInCreation.charges.push(chargeCopy);
+            }
+        })
+    })
+}
+
 export function processOrderInCreation(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal, currency) {
-    alert("processOrderInCreation ");
-    //console.log("processOrderInCreation " + JSON.stringify(orderInCreation || {}))
-    //setGlobalDialog(<h1>TEST</h1>);
     if (orderInCreation?.order?.items ) {
         (orderInCreation?.order?.items).forEach(item => {
             const restrictionBefore = (item.restrictionsApplied || [])
@@ -499,7 +529,7 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
             const restrictionAfter = (item.restrictionsApplied || [])
                 .map(res => res.type).sort((a, b) => a.localeCompare(b));
 
-            if (restrictionAfter.length > restrictionBefore.length &&
+            if (restrictionAfter.length > restrictionBefore.length && !itemRestrictionMax(item) &&
                 JSON.stringify(restrictionBefore) !== JSON.stringify(restrictionAfter)) {
                 setGlobalDialog(builAlertRestrictionComponent(setRedirectPageGlobal));
             }
@@ -520,7 +550,7 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
             const restrictionAfter = (deal.restrictionsApplied || [])
                 .map(res => res.type).sort((a, b) => a.localeCompare(b));
 
-            if (restrictionAfter.length > restrictionBefore.length &&
+            if (restrictionAfter.length > restrictionBefore.length && !itemRestrictionMax(deal) &&
                 JSON.stringify(restrictionBefore) !== JSON.stringify(restrictionAfter)) {
                 setGlobalDialog(builAlertRestrictionComponent(setRedirectPageGlobal));
             }
@@ -532,8 +562,8 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
 
 export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency) {
     //alert("computeItemRestriction" + JSON.stringify(item.restrictionsList || {}))
-    alert("currentService" + JSON.stringify(currentService || {}))
-    console.log("currentService" + JSON.stringify(currentService || {}, null, 2))
+    // alert("currentService" + JSON.stringify(currentService || {}))
+    // console.log("currentService" + JSON.stringify(currentService || {}, null, 2))
     // alert("currentService" + JSON.stringify(currentService || {}))
     //alert("before1 ");
     if (!currentEstablishment()) {
@@ -594,8 +624,8 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     if (orderInCreation.deliveryAddress && orderInCreation.deliveryAddress.distance) {
         const distMeter = orderInCreation.deliveryAddress.distance;
 
-        alert("restrictionsApplied distanceInfo" + JSON.stringify(restrictionToApply || {}));
-        alert("distMeter" + distMeter);
+        // alert("restrictionsApplied distanceInfo" + JSON.stringify(restrictionToApply || {}));
+        // alert("distMeter" + distMeter);
         if (restrictionToApply.maxDeliveryDistance || restrictionToApply.minDeliveryDistance) {
             // alert("condition" + distMeter);
             // alert("maxDeliveryDistance" + restrictionToApply.maxDeliveryDistance * 1000);
@@ -620,7 +650,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                     local =  localStrings.formatString(localStrings.deliveryDistanceMax,
                         restrictionToApply.maxDeliveryDistance);
                 }
-                alert("restrictionsApplied distanceInfo add");
+                //alert("restrictionsApplied distanceInfo add");
                 item.restrictionsApplied.push({
                     type: RESTRICTION_DISTANCE,
                     description: RESTRICTION_DISTANCE,
@@ -636,7 +666,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
 
 
     //alert("restrictionToApply " + JSON.stringify(restrictionToApply || {}));
-    console.log("restrictionToApply " + JSON.stringify(restrictionToApply || {}));
+    //console.log("restrictionToApply " + JSON.stringify(restrictionToApply || {}));
     if (restrictionToApply.minOrderAmount || restrictionToApply.maxOrderAmount) {
         //alert("restriction price ");
         let totalPrice = computePriceDetail(orderInCreation).total;
@@ -659,7 +689,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 local =  localStrings.formatString(localStrings.priceMax,
                     restrictionToApply.maxOrderAmount, currency);
             }
-            alert("restrictionPrice price add");
+            //alert("restrictionPrice price add");
             item.restrictionsApplied.push({
                 type: RESTRICTION_PRICE,
                 description: RESTRICTION_PRICE,
@@ -694,7 +724,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 local =  localStrings.formatString(localStrings.dateMax,
                     restrictionEndMoment.locale("fr").calendar());
             }
-            alert("restrictionDate add");
+            //alert("restrictionDate add");
             item.restrictionsApplied.push({
                 type: RESTRICTION_DATE,
                 description: RESTRICTION_DATE,
@@ -709,11 +739,11 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
         let minutesSlot = getMinutesFromDate(orderInCreation.bookingSlot.startDate);
         let minutesStart = restrictionToApply.startTime && getMinutesFromHour(restrictionToApply.startTime);
         let minutesEnd = restrictionToApply.endTime && getMinutesFromHour(restrictionToApply.endTime);
-        alert("restrictionHour hour");
+        //alert("restrictionHour hour");
 
         if (
-            (minutesStart && minutesStart < minutesSlot) ||
-            (minutesEnd && minutesEnd> minutesSlot)
+            (minutesStart && minutesSlot < minutesStart) ||
+            (minutesEnd && minutesSlot > minutesEnd)
         )
         {
             let local = "";
@@ -730,7 +760,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 local =  localStrings.formatString(localStrings.hourMax,
                     restrictionToApply.endTime);
             }
-            alert("restrictionHour add");
+            //alert("restrictionHour add");
             item.restrictionsApplied.push({
                 type: RESTRICTION_HOUR,
                 description: RESTRICTION_HOUR,
@@ -739,17 +769,18 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
         }
     }
 
+    //alert("restrictionsApplied" + JSON.stringify(item.restrictionsApplied || {}))
     if (restrictionToApply.maxPerOrder && parseInt(item.quantity) >= restrictionToApply.maxPerOrder) {
         item.restrictionsApplied.push({
             type: RESTRICTION_MAX_ITEM,
             description: RESTRICTION_MAX_ITEM,
-            local: localStrings.,
+            local: localStrings.maxItems,
         })
 
     }
 
 
-    alert("restrictionsApplied" + JSON.stringify(item.restrictionsApplied || {}))
+    //alert("restrictionsApplied" + JSON.stringify(item.restrictionsApplied || {}))
 
 }
 

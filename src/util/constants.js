@@ -49,6 +49,8 @@ export const DELIVERY_STATUS_DONE = 'done';
 export const USER_STATUS_NONE = "none";
 export const USER_STATUS_DELIVERING = "delivering";
 
+
+
 // export const orderSource = [
 //   {
 //     name: localStrings.orderSourceOnline,
@@ -283,8 +285,8 @@ export const establishmentSetting = {
 
 export const PRICING_EFFECT_UNCHANGED = "unchanged";
 export const PRICING_EFFECT_FIXED_PRICE = "fixed_price";
-export const PRICING_EFFECT_PRICE_OFF = "price_off";
-export const PRICING_EFFECT_PERCENTAGE_OFF = "percentage_off";
+export const PRICING_EFFECT_PRICE = "price";
+export const PRICING_EFFECT_PERCENTAGE = "percentage";
 
 export const CHARGE_DELIVERY = "delivery";
 export const CHARGE_PAYMENT_FEE = "payment_fee";

@@ -562,7 +562,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
             <ClipLoaderComponent/>
             :
             <>
-              <p>{JSON.stringify(getOrderInCreation())}</p>
+              {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
             <Formik
                 initialValues={getInitialValues(dbUser)}
                 validationSchema={checkoutSchema(bookWithoutAccount)}

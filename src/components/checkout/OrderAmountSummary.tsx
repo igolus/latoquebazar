@@ -51,7 +51,30 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     :
                     localStrings.priceToPay}
             </Typography>
+
+            {(getOrder()?.charges || []).map((chargeItem, key) =>
+                <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
+                    <Typography color="grey.600">{chargeItem.name}</Typography>
+                    <FlexBox alignItems="flex-end">
+                        <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                            {chargeItem.price.toFixed(2)} {currency}
+                        </Typography>
+                    </FlexBox>
+                </FlexBox>
+            )}
+
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
+            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography color="grey.600">{localStrings.totalNoTax}</Typography>
+                <FlexBox alignItems="flex-end">
+                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                        {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
+                    </Typography>
+                </FlexBox>
+            </FlexBox>
+
+
+
             <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
                 <Typography color="grey.600">{localStrings.totalNoTax}</Typography>
                 <FlexBox alignItems="flex-end">

@@ -473,9 +473,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 }
 
 ProductCard1.defaultProps = {
-  id: '324321',
-  title: 'ASUS ROG Strix G15',
-  imgUrl: '/assets/images/products/macbook.png',
+  imgUrl: '/assets/images/Icon_Sandwich.png',
   price: 450,
   rating: 0,
   //off: 20,

@@ -29,8 +29,8 @@ let localStrings = new LocalizedStrings({
         hourMax: "L'heure de commande doit etre avant le {0}",
         hourMinMax: "L'heure de commande doit etre  comprise entre le {0} et le {1}",
 
-        maxItems: "Nombre d'elemenent maximum atteinds",
-        
+        maxItems: "Nombre d'elements maximum atteind",
+
         restrictionApplies: "Ce produit n'est pas toujours disponible",
         noAvail: "Desolé il n'y a plus de creneaux disponible",
         shareOnFacebook: "Partager ce produit sur facebook",
@@ -148,6 +148,7 @@ let localStrings = new LocalizedStrings({
         remainingToPay: "Reste a payer: {0}",
 
         totalNoTax: "Total hors taxes",
+        totalCharge: "Total frais",
         totalTax: "Total TVA",
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",

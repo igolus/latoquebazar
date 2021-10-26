@@ -14,7 +14,7 @@ import {makeStyles} from "@material-ui/styles";
 import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
-import {processOrderInCreation} from "../util/cartUtil";
+import {processOrderCharge, processOrderInCreation} from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
@@ -629,6 +629,8 @@ export const AuthProvider = ({ children }) => {
     const currentService = getCurrentService(currentEstablishment(), state.bookingSlotStartDate)
     processOrderInCreation(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
       getBrandCurrency(currentBrand()));
+    processOrderCharge(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+        getBrandCurrency(currentBrand()), currentBrand()?.id);
 
     dispatch({
       type: ORDER_IN_CREATION,

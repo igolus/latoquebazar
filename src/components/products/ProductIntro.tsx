@@ -16,6 +16,7 @@ import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getFirstRestrictionDescription, getFirstRestrictionItem} from "../../util/displayUtil";
 import {FacebookIcon, FacebookShareButton} from "react-share";
 import ProductSelector from './ProductSelector'
+import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -232,7 +233,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         {buildProductAndSkus(product, getOrderInCreation, null, null, currentEstablishment, currentService)
                             .map((pandsku, key) =>
                                 <>
-                                    {/*{!getFirstRestrictionItem(productAndSku?.sku) &&*/}
+                                    {!getFirstRestrictionItem(productAndSku?.sku) &&
                                     <Box key={key}>
                                         {/*<BazarButton>grande</BazarButton>*/}
                                         <BazarButton
@@ -243,7 +244,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                             {pandsku.sku.name}
                                         </BazarButton>
                                     </Box>
-                                    {/*}*/}
+                                    }
                                 </>
                             )}
                     </Box>
@@ -296,7 +297,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     >
                         <Box>
                             <BazarButton
-                                disabled={!valid || getFirstRestriction()}
+                                disabled={!valid || getFirstRestriction() || itemRestrictionMax(productAndSku?.sku)}
                                 variant="contained"
                                 color="primary"
                                 sx={{
@@ -324,7 +325,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             >
                                 {addButtonText || (getFirstRestriction() || localStrings.addToCart)}
                             </BazarButton>
-                            <p>{JSON.stringify(productAndSku?.sku)}</p>
+                            {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
                         </Box>
                         {faceBookShare &&
 

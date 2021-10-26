@@ -513,7 +513,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
         {bookingSlotStartDate && reload &&
         // <>
         <div style={{ width: '100%' }}>
-          <p>{JSON.stringify(bookingSlotStartDate)}</p>
+          {/*<p>{JSON.stringify(bookingSlotStartDate)}</p>*/}
 
           <Box
               display="flex"

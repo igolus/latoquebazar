@@ -14,7 +14,7 @@ import useAuth from "@hook/useAuth";
 import {decreaseCartQte, deleteItemInCart, getPriceWithOptions, increaseCartQte} from '../../util/cartUtil'
 import {formatProductAndSkuName, getImgUrlFromProductsWithExtRef} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
-import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
+import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 export interface ProductCard7Props {
@@ -150,7 +150,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             </Span>
           </FlexBox>
           }
-          {itemHaveRestriction(item) &&
+          {(itemHaveRestriction(item) || itemRestrictionMax(item)) &&
           <AlertHtmlLocal title={localStrings.productRestricted}>
             <ul>
             {item.restrictionsApplied.map((restriction, key) => {
@@ -173,7 +173,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 color="primary"
                 disabled={item.quantity === 0 || itemHaveRestriction(item)}
                 sx={{p: '5px'}}
-                onClick={() => decreaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
+                onClick={() => decreaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid)}
             >
               <Remove fontSize="small"/>
             </Button>
@@ -185,12 +185,12 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
             <Button
                 variant="outlined"
                 color="primary"
-                disabled={item.quantity === 0 || itemHaveRestriction(item)}
+                disabled={item.quantity === 0 || itemHaveRestriction(item) || itemRestrictionMax(item)}
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"
                 sx={{p: '5px'}}
-                onClick={() => increaseCartQte(getOrderInCreation, setOrderInCreation, item.uuid)}
+                onClick={() => increaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid)}
             >
               <Add fontSize="small"/>
             </Button>

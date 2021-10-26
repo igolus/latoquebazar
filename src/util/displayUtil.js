@@ -12,7 +12,7 @@ import moment from "moment";
 import localStrings from "../localStrings";
 import axios from "axios";
 import {DINNER_PERIOD, LUNCH_PERIOD} from "@component/form/BookingSlots";
-import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
+import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 const config = require('../conf/config.json')
 
 export const getSkusLists = async (brandId) => {
@@ -155,13 +155,20 @@ export const computePriceDetail = (orderInCreation) => {
             total: 0,
             totalPreparationTime: 0,
             taxDetail: 0,
+            totalCharge: 0
         };
     }
 
     let totalNoTax = 0;
+    let totalCharge = 0;
     let total = 0;
     let totalPreparationTime= 0;
     let taxDetail = {};
+    (orderInCreation?.charges || []).forEach(charge => {
+        totalCharge += charge.price;
+        total += charge.price;
+    });
+
     orderInCreation?.order?.items.forEach(item => {
         let price = computeTotalPriceValue(item)
         total += price;
@@ -227,6 +234,7 @@ export const computePriceDetail = (orderInCreation) => {
         total: Math.round(total * 100) / 100,
         totalPreparationTime: totalPreparationTime,
         taxDetail: taxDetail,
+        totalCharge: totalCharge
     };
 }
 
@@ -523,8 +531,10 @@ export function getFirstRestrictionItem(item) {
     if (!item) {
         return null;
     }
+    if (itemRestrictionMax(item)) {
+        return null;
+    }
     if (item.restrictionsList && item.restrictionsApplied?.length > 0) {
-        //alert("item.restrictionsApplied[0] " + JSON.stringify(item.restrictionsApplied[0]))
         return item.restrictionsApplied[0].local || item.restrictionsApplied[0].type;
     }
     return null;
@@ -569,11 +579,11 @@ export const getMinutesFromHour = (hourString) => {
 
 export const getMinutesFromDate = (dateTimeString) => {
     let dateTimeMoment = moment(dateTimeString).locale('fr');
-    alert("dateTimeMoment " + dateTimeMoment.format())
-    alert("duration " + (dateTimeMoment.hour() * 60 + dateTimeMoment.minute()))
-    alert("dateTimeMoment.hour() " + dateTimeMoment.hour())
-    alert("dateTimeMoment.hour() " + (dateTimeMoment.hour() * 60))
-    alert("dateTimeMoment.minute() " + dateTimeMoment.minute())
+    // alert("dateTimeMoment " + dateTimeMoment.format())
+    // alert("duration " + (dateTimeMoment.hour() * 60 + dateTimeMoment.minute()))
+    // alert("dateTimeMoment.hour() " + dateTimeMoment.hour())
+    // alert("dateTimeMoment.hour() " + (dateTimeMoment.hour() * 60))
+    // alert("dateTimeMoment.minute() " + dateTimeMoment.minute())
     return dateTimeMoment.hour() * 60 + dateTimeMoment.minute();
 
     // let split = hourString.split(':');
