@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        loginError: "Erreur d'authentification",
         detail: "Detail",
         productRestricted: "Produit indisponible dans ce contexte",
         cartRestricted: "Produits indisponibles",
@@ -152,6 +153,7 @@ let localStrings = new LocalizedStrings({
         totalTax: "Total TVA",
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",
+        totalFee: "Total frais",
 
         deliverToOtherAddress: "Livrer a une autre adresse",
         validateAdress: "Valider l'adresse",

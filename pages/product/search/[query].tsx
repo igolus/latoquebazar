@@ -3,17 +3,19 @@ import {useRouter} from "next/router";
 import ProductList from "@component/products/ProductList";
 import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder"
+import useAuth from "@hook/useAuth";
 
 export interface ProductsSearchResultProps {
     contextData?: any
 }
 
-const ProductsSearchResult:React.FC<ProductsSearchResultProps> = ({ contextData }) => {
-    const router = useRouter()
+const ProductsSearchResult:React.FC<ProductsSearchResultProps> = () => {
+    const router = useRouter();
+    const { getContextData } = useAuth();
     const { query } = router.query
 
     return (
-        <ProductList query={query} contextData={contextData}/>
+        <ProductList query={query} contextData={getContextData()}/>
     )
 }
 

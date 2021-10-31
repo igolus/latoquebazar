@@ -13,6 +13,8 @@ import {CSSProperties} from "@material-ui/styles";
 import localStrings from "../../localStrings";
 import moment from "moment";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
+import {Tiny2} from "@component/Typography";
+import ReactMarkdown from "react-markdown";
 
 export interface OrderAmountSummaryProps {
     currency: string
@@ -43,29 +45,43 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 {modeOrdered ?
 
                     (getRemainingToPay(getOrder()) === 0 ?
-                        localStrings.pricePaid
-                        :
-                        localStrings.formatString(localStrings.remainingToPay,
-                            getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()))
+                            localStrings.pricePaid
+                            :
+                            localStrings.formatString(localStrings.remainingToPay,
+                                getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()))
                     )
                     :
                     localStrings.priceToPay}
             </Typography>
 
             {(getOrder()?.charges || []).map((chargeItem, key) =>
-                <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography color="grey.600">{chargeItem.name}</Typography>
-                    <FlexBox alignItems="flex-end">
-                        <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-                            {chargeItem.price.toFixed(2)} {currency}
-                        </Typography>
+                <>
+                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
+                        <Typography color="grey.600">{chargeItem.name}</Typography>
+                        <FlexBox alignItems="flex-end">
+                            <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                                {chargeItem.price.toFixed(2)} {currency}
+                            </Typography>
+                        </FlexBox>
+
+
+                        {/*<Tiny2 color="grey.600" key={key}>*/}
+                        {/*    {JSON.stringify(chargeItem)}*/}
+                        {/*</Tiny2>*/}
                     </FlexBox>
-                </FlexBox>
+                    {chargeItem.restrictionsList && chargeItem.restrictionsList.length === 1 &&
+                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
+                        <Tiny2 color="grey.600">
+                            <ReactMarkdown>{chargeItem.restrictionsList[0].description}</ReactMarkdown>
+                        </Tiny2>
+                    </FlexBox>
+                    }
+                </>
             )}
 
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
             <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography color="grey.600">{localStrings.totalNoTax}</Typography>
+                <Typography color="grey.600">{localStrings.totalCharge}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
                         {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
@@ -84,10 +100,10 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 </FlexBox>
             </FlexBox>
             <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography color="grey.600">{localStrings.deliveryFee}</Typography>
+                <Typography color="grey.600">{localStrings.totalFee}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-                        -
+                        {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
             </FlexBox>
@@ -95,7 +111,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 <Typography color="grey.600">{localStrings.totalTax}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-                        {parseFloat(priceDetails.total - priceDetails.totalNoTax).toFixed(2)} {currency}
+                        {parseFloat(priceDetails.totalNoCharge - priceDetails.totalNoTax).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
             </FlexBox>
@@ -109,17 +125,17 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {/*</FlexBox>*/}
 
 
-                <Divider sx={{mb: '1rem'}}/>
+            <Divider sx={{mb: '1rem'}}/>
 
-                <Typography
-                    fontSize="25px"
-                    fontWeight="600"
-                    lineHeight="1"
-                    textAlign="right"
-                    mb={3}
-                >
-                    {parseFloat(priceDetails.total).toFixed(2)} {currency}
-                </Typography>
+            <Typography
+                fontSize="25px"
+                fontWeight="600"
+                lineHeight="1"
+                textAlign="right"
+                mb={3}
+            >
+                {parseFloat(priceDetails.total).toFixed(2)} {currency}
+            </Typography>
 
             {!hideDetail &&
             <>
@@ -157,25 +173,25 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 </Typography>
                 {getOrder() && getOrder().bookingSlot ?
                     <>
-                    {modeOrdered ?
-                    <Typography color="grey.600" fontSize="16px">
-                        {moment.unix(getOrder().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
-                        {" "}
-                        {moment.unix(getOrder().bookingSlot.startDate).format("HH:mm")}
-                        -
-                        {moment.unix(getOrder().bookingSlot.endDate).format("HH:mm")}
-                    </Typography>
-                    :
-                        <Typography color="grey.600" fontSize="16px">
-                            {getOrder().bookingSlot.startDate.locale("fr").calendar().split(' ')[0]}
-                            {" "}
-                            {getOrder().bookingSlot.startDate.format("HH:mm")}
-                            -
-                            {getOrder().bookingSlot.endDate.format("HH:mm")}
-                            {/*{JSON.stringify(getOrder().bookingSlot)}*/}
-                        </Typography>
-                    // <p>{JSON.stringify(getOrder().bookingSlot)}</p>
-                    }
+                        {modeOrdered ?
+                            <Typography color="grey.600" fontSize="16px">
+                                {moment.unix(getOrder().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
+                                {" "}
+                                {moment.unix(getOrder().bookingSlot.startDate).format("HH:mm")}
+                                -
+                                {moment.unix(getOrder().bookingSlot.endDate).format("HH:mm")}
+                            </Typography>
+                            :
+                            <Typography color="grey.600" fontSize="16px">
+                                {getOrder().bookingSlot.startDate.locale("fr").calendar().split(' ')[0]}
+                                {" "}
+                                {getOrder().bookingSlot.startDate.format("HH:mm")}
+                                -
+                                {getOrder().bookingSlot.endDate.format("HH:mm")}
+                                {/*{JSON.stringify(getOrder().bookingSlot)}*/}
+                            </Typography>
+                            // <p>{JSON.stringify(getOrder().bookingSlot)}</p>
+                        }
                     </>
                     :
                     <Typography color="grey.600" fontSize="16px">

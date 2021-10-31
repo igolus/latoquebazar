@@ -32,10 +32,10 @@ export interface ProductDetailsProps {
 
 //const config = require('../../../src/conf/config.json');
 
-const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+const ProductDetails:React.FC<ProductDetailsProps> = () => {
     const config = require('../../../src/conf/config.json');
     const router = useRouter();
-    const {currentEstablishment, bookingSlotStartDate} = useAuth();
+    const {currentEstablishment, bookingSlotStartDate, getContextData} = useAuth();
     const { id } = router.query
     let productId = id;
     let skuIndex;
@@ -52,7 +52,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         }
     }
 
-    const selectedProduct = (contextData && contextData.products) ? (contextData.products || []).find(p => p.id === productId) : null;
+    const selectedProduct = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
 
     const [selectedOption, setSelectedOption] = useState(0)
 
@@ -75,7 +75,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                 prices.sort((a,b) => a-b);
                 ret+=prices[0].toFixed(2)
                     + " " +
-                    getBrandCurrency(contextData ? contextData.brand : null);
+                    getBrandCurrency(getContextData() ? getContextData().brand : null);
             }
         }
         if (brandName) {
@@ -100,18 +100,18 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <NavbarLayout contextData={contextData}
-                      title={buildTitle(selectedProduct, contextData?.brand?.brandName)}
+        <NavbarLayout contextData={getContextData()}
+                      title={buildTitle(selectedProduct, getContextData()?.brand?.brandName)}
                       ogImage={buildOgImage(selectedProduct)}
                       description={buildDescription(selectedProduct)}
         >
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
                           currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate)}
-                          faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
+                          faceBookShare={getContextData().brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                           routeToCart={true}
                           skuIndex={skuIndex}
-                          options={contextData.options} currency={getBrandCurrency(contextData.brand)}/>
+                          options={getContextData().options} currency={getBrandCurrency(getContextData().brand)}/>
             }
 
             {selectedProduct && (selectedProduct.description !== "" || selectedProduct.additionalInformation !== "") &&
@@ -152,12 +152,12 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     )
 }
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
-}
-
-export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
+// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+//     return getStaticPathsUtil()
+// }
+//
+// export const getStaticProps: GetStaticProps = async (context) => {
+//     return await getStaticPropsUtil();
+// }
 
 export default ProductDetails

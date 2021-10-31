@@ -17,32 +17,38 @@ import LazyImage from "@component/LazyImage";
 import localStrings from "../src/localStrings";
 import {isMobile} from "react-device-detect";
 import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
+import ChargeCard7 from "@component/product-cards/ChargeCard7";
 
 export interface CartProps {
   contextData?: any
 }
 
-const Cart:React.FC<CartProps> = ({contextData}) => {
-  const { getOrderInCreation } = useAuth();
-  const currency = getBrandCurrency(contextData ? contextData.brand : null)
+const Cart:React.FC<CartProps> = () => {
+  const { getOrderInCreation, getContextData} = useAuth();
+  const currency = getBrandCurrency(getContextData() ? getContextData().brand : null)
 
   return (
-    <CheckoutNavLayout contextData={contextData}>
+    <CheckoutNavLayout contextData={getContextData()}>
       {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
       <Grid container spacing={3}>
         <Grid item lg={8} md={8} xs={12}>
 
-          {getCartItems(getOrderInCreation).map((item) => {
+          {(getOrderInCreation()?.charges || []).map((chargeItem, key) =>
+              <ChargeCard7 item={chargeItem} currency={currency}/>
+          )}
+
+          {getCartItems(getOrderInCreation).map((item, key) => {
 
               //<p>{JSON.stringify(item)}</p>
               if (item.type === TYPE_DEAL) {
-                return(<DealCard7 key={item.id} deal={item} currency={currency} products={contextData ? contextData.products : []}/>)
+                return(<DealCard7 key={key} deal={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
               }
               else if (item.type === TYPE_PRODUCT) {
-                return(<ProductCard7 key={item.id} item={item} currency={currency} products={contextData ? contextData.products : []}/>)
+                return(<ProductCard7 key={key} item={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
               }
           })}
 
+          {/*<p>{JSON.stringify(getOrderInCreation()?.charges || {})}</p>*/}
 
           {getCartItems(getOrderInCreation).length == 0 && (
               <FlexBox
@@ -97,15 +103,15 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 
 
         <Grid item lg={4} md={4} xs={12}>
-          <OrderAmountSummary currency={getBrandCurrency(contextData.brand)} hideDetail/>
+          <OrderAmountSummary currency={getBrandCurrency(getContextData()?.brand)} hideDetail/>
         </Grid>
       </Grid>
     </CheckoutNavLayout>
   )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  return await getStaticPropsUtil();
-}
+// export const getStaticProps: GetStaticProps = async (context) => {
+//   return await getStaticPropsUtil();
+// }
 
 export default Cart

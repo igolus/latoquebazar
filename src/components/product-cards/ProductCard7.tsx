@@ -65,7 +65,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               sx={{height: 80, width: 80, mt: 1, ml: 2, mb: 1}}
           />
           :
-          <Link href={"/product/detail/" + product.id}>
+          <Link href={"/product/detail/" + product?.id}>
             <Image
                 src={imgUrl}
                 height={140}
@@ -82,7 +82,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
         minWidth="0px"
         width="100%"
       >
-        <Link href={"/product/detail/" + product.id}>
+        <Link href={"/product/detail/" + product?.id}>
           <a>
             <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
               {formatProductAndSkuName(item)}

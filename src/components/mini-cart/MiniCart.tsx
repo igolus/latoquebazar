@@ -6,7 +6,7 @@ import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import LazyImage from '@component/LazyImage'
 import {H5, Span, Tiny, Tiny2} from '@component/Typography'
 import { useAppContext } from '@context/app/AppContext'
-import { Box, Divider } from '@material-ui/core'
+import {Box, Divider, Typography} from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
@@ -30,6 +30,7 @@ import {
   getTotalPriceOrderInCreation
 } from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
+import ReactMarkdown from "react-markdown";
 
 type MiniCartProps = {
   toggleSidenav?: () => void
@@ -147,6 +148,57 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             </Box>
           </FlexBox>
         )}
+
+        {(getOrderInCreation()?.charges || []).map((chargeItem, key) =>
+
+            <FlexBox
+                alignItems="center"
+                py={2}
+                px={2.5}
+                borderBottom={`1px solid ${palette.divider}`}
+                key={key}
+            >
+              <BazarAvatar
+                  src={"/assets/images/Icon Color_13.png"}
+                  mx={2}
+                  height={76}
+                  width={76}
+              />
+
+              <Box flex="1 1 0">
+                {/*<Link href={`/product/${item.id}`}>*/}
+                {/*  <a>*/}
+                <H5 className="title" fontSize="14px">
+                  {chargeItem.name}
+                </H5>
+
+                {/*<p>{JSON.stringify(chargeItem)}</p>*/}
+                  <Box fontWeight={600} fontSize="14px" color="primary.main" mt={0.5}>
+                    {chargeItem.price.toFixed(2) +  " " + currency}
+                  </Box>
+                {chargeItem.restrictionsList && chargeItem.restrictionsList.length === 1 &&
+                <Tiny2 color="grey.600">
+                  <ReactMarkdown>{chargeItem.restrictionsList[0].description}</ReactMarkdown>
+                </Tiny2>
+                }
+              </Box>
+
+            </FlexBox>
+            // <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
+            //   <Typography color="grey.600">{chargeItem.name}</Typography>
+            //   <FlexBox alignItems="flex-end">
+            //     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+            //       {chargeItem.price.toFixed(2)} {currency}
+            //     </Typography>
+            //   </FlexBox>
+            //
+            //   <Tiny2 color="grey.600" key={key}>
+            //     {JSON.stringify(chargeItem)}
+            //   </Tiny2>
+            // </FlexBox>
+        )}
+
+
         {getCartItems(getOrderInCreation).map(item => (
             // <p>{JSON.stringify(item)}</p>
           <FlexBox

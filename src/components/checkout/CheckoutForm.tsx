@@ -1,36 +1,36 @@
 import Card1 from '@component/Card1'
 import {
   Box,
-  Button, Checkbox,
+  Button,
+  Checkbox,
   CircularProgress,
-  FormControl,
-  FormControlLabel, FormGroup,
+  FormControlLabel,
+  FormGroup,
   Grid,
   Radio,
-  RadioGroup,
   TextField,
   Typography,
 } from '@material-ui/core'
 import {Formik} from 'formik'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW, PAYMENT_METHOD_STRIPE
+  ORDER_STATUS_NEW
 } from "../../util/constants";
-import BookingSlots, {getCurrentService} from '../../components/form/BookingSlots';
+import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
 import moment from 'moment';
 import GoogleMapsAutocomplete, {loadScript} from "@component/map/GoogleMapsAutocomplete";
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
-  formatDuration, formatPaymentMethod,
+  formatPaymentMethod,
   getDeliveryDistanceWithFetch,
   getProfileName,
   getSkusListsFromProducts,
@@ -42,7 +42,6 @@ import {cloneDeep} from "@apollo/client/utilities";
 import {uuid} from "uuidv4";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
-import {createUpdateBookingSlotOccupancyMutation} from '../../gql/BookingSlotOccupancyGql'
 import {
   addOrderToCustomer,
   bulkDeleteOrderMutation,
@@ -51,22 +50,15 @@ import {
   updateOrderMutation
 } from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {getCartItems, processOrderInCreation} from "../../util/cartUtil";
-import {sendNotif} from "../../util/sendNotif";
+import {getCartItems} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
-import {CardElement, CardNumberElement, Elements, useElements, useStripe} from "@stripe/react-stripe-js";
-import {loadStripe} from "@stripe/stripe-js";
+import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
-import { faShoppingBag } from '@fortawesome/free-solid-svg-icons'
-import { faMotorcycle } from '@fortawesome/free-solid-svg-icons'
-import { faAddressCard } from '@fortawesome/free-solid-svg-icons'
+import {faAddressCard, faMotorcycle, faShoppingBag} from '@fortawesome/free-solid-svg-icons'
 
 import PresenterSelect from "../PresenterSelect"
 
 const config = require('../../conf/config.json')
-//import useResponsiveFontSize from "../../hooks/useResponsiveFontSize";
 
 const useStyles = makeStyles((theme) => ({
   textField: {
@@ -253,6 +245,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                 delete deal.deal.creationTimestamp;
                 delete deal.uuid;
                 delete deal.creationTimestamp;
+                delete deal.restrictionsApplied;
+                delete deal.restrictionsList;
 
                 let productAndSkusLines = cloneDeep(deal.productAndSkusLines);
                 deal.productAndSkusLines = [];
@@ -261,6 +255,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   delete productAndSkusLine.creationTimestamp;
                   delete productAndSkusLine.lineNumber;
                   delete productAndSkusLine.creationTimestamp;
+                  delete productAndSkusLine.restrictionsApplied;
+                  delete productAndSkusLine.restrictionsList;
 
                   let existingSku = (allSkus ? allSkus.data : []).find(sku => sku.extRef == productAndSkusLine.extRef);
                   if (existingSku) {
@@ -305,6 +301,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
               delete item.selectId;
               delete item.creation;
               delete item.optionListExtIds;
+              delete item.restrictionsApplied;
+              delete item.restrictionsList;
+            }
+        )
+      }
+
+      if (dataOrder.charges) {
+        dataOrder.charges.forEach(charge => {
+              delete charge.restrictionsList;
+              delete charge.restrictionsApplied;
+              charge.price = parseFloat(charge.price.toFixed(2))
             }
         )
       }
@@ -445,7 +452,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     })
   }
 
-  function updateDeliveryAdress(address, lat, lng, id, additionalInformation, distance) {
+  function updateDeliveryAdress(address, lat, lng, id, name, distance) {
+    //alert("updateDeliveryAdress " + distance);
+
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryAddress: {
@@ -453,7 +462,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         lat: lat,
         lng: lng,
         id: id,
-        additionalInformation: additionalInformation,
+        name: name,
         distance: distance
       },
     })
@@ -743,6 +752,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                 onClick={() => {
                                   setUseMyAdress(false);
                                   resetDeliveryAdress();
+                                  setAdressEditLock(false);
                                 }}
                                 variant="contained" color={!useMyAdress ? "primary" : "inherit"}>
                               {localStrings.useCustomAdresses}
@@ -810,7 +820,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                         item.lat,
                                         item.lng,
                                         item.id,
-                                        item.additionalInformation,
+                                        item.name,
                                         distInfo?.distance
                                     );
                                   }}
@@ -836,7 +846,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                         {(!dbUser || !useMyAdress) &&
                         <Grid container spacing={3}>
                           {/*<Box display="flex" p={1}>*/}
-                          <Grid item xs={12} lg={adressEditLock ? 8 : 12}>
+                          <Grid item xs={12} lg={12}>
                             <GoogleMapsAutocomplete
                                 //ref={autocomp}
                                 noKeyKnown
@@ -845,9 +855,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                 valueSource={adressValue}
                                 disabled={adressEditLock}
                                 setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                  let distInfo;
+                                  //let distInfo;
                                   if (currentEstablishment()) {
                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                    //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
                                     setDistanceAndCheck(distInfo,
                                         (maxDistanceReached) => {
                                           if (maxDistanceReached) {
@@ -856,25 +867,30 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                           setMaxDistanceReached(maxDistanceReached);
                                         },
                                         setDistanceInfo, currentEstablishment);
+                                        updateDeliveryAdress(label, lat, lng, null, null, distInfo?.distance);
                                     // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
                                     // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
                                     //     setGlobalDialog, setRedirectPageGlobal, distInfo)
                                   }
+                                  else {
+                                    updateDeliveryAdress(label, lat, lng);
+                                  }
                                   //setAdressValue(label)
-                                  updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
+                                  //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
+                                  //updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
                                   setAdressEditLock(true);
                                 }}/>
                           </Grid>
-                          {adressEditLock &&
-                          <Grid item xs={12} lg={4}>
-                            <Button variant="contained"
-                                    style={{textTransform: "none"}}
-                                    onClick={() => setAdressEditLock(false)}
-                                    type="button" fullWidth>
-                              {localStrings.deliverToOtherAddress}
-                            </Button>
-                          </Grid>
-                          }
+                          {/*{adressEditLock &&*/}
+                          {/*<Grid item xs={12} lg={4}>*/}
+                          {/*  <Button variant="contained"*/}
+                          {/*          style={{textTransform: "none"}}*/}
+                          {/*          onClick={() => setAdressEditLock(false)}*/}
+                          {/*          type="button" fullWidth>*/}
+                          {/*    {localStrings.deliverToOtherAddress}*/}
+                          {/*  </Button>*/}
+                          {/*</Grid>*/}
+                          {/*}*/}
                         </Grid>
                         }
 

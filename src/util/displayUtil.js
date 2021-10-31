@@ -153,6 +153,7 @@ export const computePriceDetail = (orderInCreation) => {
         return {
             totalNoTax: 0,
             total: 0,
+            totalNoCharge: 0,
             totalPreparationTime: 0,
             taxDetail: 0,
             totalCharge: 0
@@ -160,18 +161,18 @@ export const computePriceDetail = (orderInCreation) => {
     }
 
     let totalNoTax = 0;
+    let totalNoCharge = 0;
     let totalCharge = 0;
     let total = 0;
     let totalPreparationTime= 0;
     let taxDetail = {};
     (orderInCreation?.charges || []).forEach(charge => {
         totalCharge += charge.price;
-        total += charge.price;
     });
 
     orderInCreation?.order?.items.forEach(item => {
         let price = computeTotalPriceValue(item)
-        total += price;
+        totalNoCharge += price;
         let priceNoTax = 0;
         let taxPrice = 0;
 
@@ -201,7 +202,7 @@ export const computePriceDetail = (orderInCreation) => {
             deal.productAndSkusLines.forEach(line => {
 
                 let price = computeTotalPriceValue(line, deal.quantity);
-                total += price;
+                totalNoCharge += price;
                 let priceNoTax = 0;
                 let taxPrice = 0;
                 if (line.vat) {
@@ -231,7 +232,8 @@ export const computePriceDetail = (orderInCreation) => {
 
     return {
         totalNoTax: Math.round(totalNoTax * 100) / 100,
-        total: Math.round(total * 100) / 100,
+        total: Math.round((totalNoCharge + totalCharge) * 100) / 100,
+        totalNoCharge: Math.round(totalNoCharge * 100) / 100,
         totalPreparationTime: totalPreparationTime,
         taxDetail: taxDetail,
         totalCharge: totalCharge

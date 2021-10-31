@@ -10,7 +10,7 @@ import {MuiThemeProps} from '@theme/theme'
 import React, {useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
 import {
-  PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE_OFF,
+  PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE, PRICING_EFFECT_PERCENTAGE_OFF, PRICING_EFFECT_PRICE,
   PRICING_EFFECT_PRICE_OFF,
   PRICING_EFFECT_UNCHANGED,
   SEP
@@ -203,10 +203,10 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     if (pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
       productAndSku.sku.price = pricingValue;
     }
-    else if (pricingEffect === PRICING_EFFECT_PRICE_OFF) {
+    else if (pricingEffect === PRICING_EFFECT_PRICE) {
       productAndSku.sku.price = Math.max(parseFloat(productAndSku.sku.price) -  parseFloat(pricingValue), 0).toFixed(2);
     }
-    else if (pricingEffect === PRICING_EFFECT_PERCENTAGE_OFF) {
+    else if (pricingEffect === PRICING_EFFECT_PERCENTAGE) {
       let factor = 1 - parseFloat(pricingValue) / 100
       productAndSku.sku.price = (parseFloat(productAndSku.sku.price) * factor).toFixed(2);
     }

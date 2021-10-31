@@ -1,5 +1,5 @@
 {
-  "graphQlUrl": "http://localhost:5001/latoque-b23f1/us-central1/graphQlApi",
+  "graphQlUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/graphQlApi",
   "brandId": "0S93n0HvHamy7TP5vEYF",
   "appName": "Le brunch club",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",

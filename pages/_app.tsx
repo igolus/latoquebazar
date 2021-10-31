@@ -1,20 +1,16 @@
-import { AppProvider } from '@context/app/AppContext'
-import { AuthProvider } from 'contexts/FirebaseAuthContext';
+import {AuthProvider} from 'contexts/FirebaseAuthContext';
 import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import {CacheProvider} from '@emotion/react'
 import MuiTheme from '@theme/MuiTheme'
 import Head from 'next/head'
 import Router, {useRouter} from 'next/router'
 import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import React, { Fragment, useEffect } from 'react'
+import React, {Fragment, useEffect} from 'react'
 import {ToastProvider} from "react-toast-notifications";
-import firebase from "../src/lib/firebase";
-import {GetStaticProps} from "next";
-import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-export const cache = createCache({ key: 'css', prepend: true })
-
 import * as ga from '../lib/ga'
+
+export const cache = createCache({ key: 'css', prepend: true })
 
 //Binding events.
 Router.events.on('routeChangeStart', () => nProgress.start())
@@ -23,13 +19,14 @@ Router.events.on('routeChangeError', () => nProgress.done())
 
 nProgress.configure({ showSpinner: false })
 
-const App = ({ Component, pageProps, contextData }: any) => {
+const App = ({ Component, pageProps}: any) => {
 
     const Layout = Component.layout || Fragment
 
     const router = useRouter()
 
     useEffect(() => {
+        //alert("useEffect App")
         const handleRouteChange = (url: string) => {
             //alert("handleRouteChange")
             ga.pageview(url)
@@ -51,61 +48,6 @@ const App = ({ Component, pageProps, contextData }: any) => {
         if (jssStyles) {
             jssStyles.parentElement!.removeChild(jssStyles)
         }
-
-    //     if("serviceWorker" in navigator) {
-    //         //register(window);
-    //         window.addEventListener("load", function () {
-    //             // navigator.serviceWorker.register("/firebase-messaging-sw.js").then(
-    //             //     function (registration) {
-    //             //         console.log("Service Worker registration successful with scope: ", registration.scope);
-    //             //     },
-    //             //     function (err) {
-    //             //         console.log("Service Worker registration failed: ", err);
-    //             //     }
-    //             // );
-    //
-    //             // navigator.serviceWorker.register("/registerServiceWorker.js").then(
-    //             //     function (registration) {
-    //             //         console.log("Service Worker registration successful with scope: ", registration.scope);
-    //             //     },
-    //             //     function (err) {
-    //             //         console.log("Service Worker registration failed: ", err);
-    //             //     }
-    //             // );
-    //         });
-    //
-    //         // useEffect(async () => {
-    //              try {
-    //                 const messaging = firebase.messaging();
-    //                 await messaging.requestPermission();
-    //                 const token = await messaging.getToken();
-    //                 console.log("token ", token);
-    //                 alert("token " + token);
-    //
-    //                 // messaging.onBackgroundMessage((payload) => {
-    //                 //   console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    //                 //   // Customize notification here
-    //                 //   const notificationTitle = 'Background Message Title';
-    //                 //   const notificationOptions = {
-    //                 //     body: 'Background Message body.',
-    //                 //     //icon: '/firebase-logo.png'
-    //                 //   };
-    //                 //
-    //                 //   // self.registration.showNotification(notificationTitle,
-    //                 //   //     notificationOptions);
-    //                 // });
-    //
-    //
-    //                 //navigator.serviceWorker.addEventListener("message", (message) => console.log("----- MESSAGE " + message));
-    //
-    //             }
-    //             catch (err) {
-    //                 console.log(err);
-    //             }
-    //
-    //         //}, []);
-    //     }
-    //
     }, [])
 
     return (
@@ -156,9 +98,9 @@ const App = ({ Component, pageProps, contextData }: any) => {
 
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
+// export const getStaticProps: GetStaticProps = async (context) => {
+//     return await getStaticPropsUtil();
+// }
 
 // Only uncomment this method if you have blocking data requirements for
 // every single page in your application. This disables the ability to

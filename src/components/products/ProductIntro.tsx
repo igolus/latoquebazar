@@ -65,19 +65,22 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment, currentBrand} = useAuth();
+    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment, currentBrand,
+        setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
     useEffect(() => {
         if (currentEstablishment && currentEstablishment() && currentBrand()) {
             if (skuIndex) {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand())[skuIndex]
+                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand(),
+                        setGlobalDialog, setRedirectPageGlobal)[skuIndex]
                 });
             } else {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand())[0]
+                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand())[0],
+                        setGlobalDialog, setRedirectPageGlobal
                 });
             }
             //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
@@ -230,7 +233,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     {product.skus && product.skus.length > 1 &&
                     <Box display="flex" justifyContent="left">
-                        {buildProductAndSkus(product, getOrderInCreation, null, null, currentEstablishment, currentService)
+                        {buildProductAndSkus(product, getOrderInCreation, null, null,
+                            currentEstablishment, currentService, setGlobalDialog, setRedirectPageGlobal)
                             .map((pandsku, key) =>
                                 <>
                                     {!getFirstRestrictionItem(productAndSku?.sku) &&

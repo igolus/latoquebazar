@@ -156,7 +156,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   useEffect(() => {
     let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
-        null, null, currentEstablishment, currentService, currentBrand());
+        null, null, currentEstablishment, currentService, currentBrand(), setGlobalDialog, setRedirectPageGlobal);
     setProductAndSkus(productAndSkusRes);
 
     let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
@@ -172,7 +172,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand, setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 

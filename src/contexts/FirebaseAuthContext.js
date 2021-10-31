@@ -19,6 +19,8 @@ import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
 import {getBrandCurrency} from "../util/displayUtil";
+import {getStaticPropsUtil} from "../nextUtil/propsBuilder";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -37,6 +39,7 @@ const LOGIN_ON_GOING = 'LOGIN_ON_GOING';
 const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
 const ORDER_COUNT = 'ORDER_COUNT';
 const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
+const CONTEXT_DATA = 'CONTEXT_DATA';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
@@ -87,6 +90,7 @@ const initialAuthState = {
   orderCount: 0,
   brandId: 0,
   globalDialog: null,
+  contextData: null,
 };
 
 const config = require('../conf/config.json');
@@ -98,6 +102,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         globalDialog: globalDialog
+      };
+    }
+
+    case CONTEXT_DATA: {
+      const { contextData } = action.payload;
+      return {
+        ...state,
+        contextData: contextData
       };
     }
 
@@ -269,6 +281,9 @@ const AuthContext = createContext({
   setGlobalDialog: () => {},
   resetGlobalDialog: () => {},
 
+  setContextData: () => {},
+  getContextData: () => {},
+
   setRedirectPageGlobal: () => {},
 });
 
@@ -284,10 +299,34 @@ export const AuthProvider = ({ children }) => {
   const { addToast } = useToasts();
 
   useEffect(() => {
+    // Create an scoped async function in the hook
+    async function loadContextData() {
+      if (!state.contextData) {
+        const data = await getStaticPropsUtil();
+        setContextData(data.props.contextData);
+      }
+    }    // Execute the created function directly
+    loadContextData();
+  }, []);
+
+  useEffect(() => {
     if(redirectPage ){
       Router.push(redirectPage)
     }
   }, [redirectPage])
+
+  // useEffect(() => {
+  //   let interval = setInterval(async () => {
+  //     const data = await getStaticPropsUtil();
+  //     setContextData(data.props.contextData);
+  //   }, 60000);
+  //
+  //   // returned function will be called on component unmount
+  //   return () => {
+  //     clearInterval(interval);
+  //   }
+  // }, [])
+
 
   useEffect(() => {
     let interval = setInterval(() => {
@@ -301,43 +340,40 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    if (localStorage.getItem(CART_KEY)) {
-      let orderInCreationSource = encryptor.decrypt(localStorage.getItem(CART_KEY));
-      //let orderInCreationSource = localStorage.getItem(CART_KEY);
-      if (!orderInCreationSource) {
-        //resetOrderInCreation()
-        localStorage.removeItem(CART_KEY);
-        resetOrderInCreation()
-      }
-      else {
-        try {
-          let orderInCreationParsed = JSON.parse(orderInCreationSource);
-          // alert("orderInCreationParsed.updateDate:" + orderInCreationParsed.updateDate)
-          // alert("moment.unix()" + moment().unix())
-          // alert("moment.unix()" + parseFloat(orderInCreationParsed.updateDate))
-          // alert("diff:" + moment().unix() - parseFloat(orderInCreationParsed.updateDate))
-          if (orderInCreationParsed.updateDate && (moment().unix() - parseFloat(orderInCreationParsed.updateDate)) < expireTimeSeconds) {
-            //alert("setOrderInCreation")
-            //resetOrderInCreation();
-            setOrderInCreation(orderInCreationParsed, true);
-          }
-          else {
-            resetOrderInCreation();
-          }
-          // else {
-          //   resetOrderInCreation()
-          // }
+    async function setOrder() {
 
-        } catch (err) {
-          alert("badParse")
+      if (localStorage.getItem(CART_KEY)) {
+        let orderInCreationSource = encryptor.decrypt(localStorage.getItem(CART_KEY));
+        //let orderInCreationSource = localStorage.getItem(CART_KEY);
+        if (!orderInCreationSource) {
+          //resetOrderInCreation()
           localStorage.removeItem(CART_KEY);
           resetOrderInCreation()
         }
+        else {
+          try {
+            let orderInCreationParsed = JSON.parse(orderInCreationSource);
+            if (orderInCreationParsed.updateDate && (moment().unix() - parseFloat(orderInCreationParsed.updateDate)) < expireTimeSeconds) {
+              await setOrderInCreation(orderInCreationParsed, true);
+            }
+            else {
+              resetOrderInCreation();
+            }
+          } catch (err) {
+            alert("badParse")
+            localStorage.removeItem(CART_KEY);
+            resetOrderInCreation()
+          }
+        }
       }
-    }
-    else {
-      resetOrderInCreation()
-    }
+      else {
+        resetOrderInCreation()
+      }
+    }    // Execute the created function directly
+    setOrder();
+
+
+
   }, []);
 
   useEffect(async () => {
@@ -415,14 +451,29 @@ export const AuthProvider = ({ children }) => {
       return firebase.auth().signInWithPopup(provider);
     }
     catch (err) {
-      console.log(err)
+      setGlobalDialog(<AlertHtmlLocal
+              title={localStrings.loginError}
+              content={err.message}
+          >
+          </AlertHtmlLocal>
+      )
     }
   };
 
   const signInWithFaceBook = () => {
-    setLoginOnGoing(true);
-    const provider = new firebase.auth.FacebookAuthProvider();
-    return firebase.auth().signInWithPopup(provider);
+    try {
+      setLoginOnGoing(true);
+      const provider = new firebase.auth.FacebookAuthProvider();
+      return firebase.auth().signInWithPopup(provider);
+    }
+    catch (err) {
+      setGlobalDialog(<AlertHtmlLocal
+          title={localStrings.loginError}
+          content={err.message}
+      >
+      </AlertHtmlLocal>
+      )
+    }
   };
 
   const logout = async () => {
@@ -467,6 +518,19 @@ export const AuthProvider = ({ children }) => {
       }
     });
   };
+
+  const setContextData = (contextData) => {
+    dispatch({
+      type: CONTEXT_DATA,
+      payload: {
+        contextData: contextData,
+      }
+    });
+  }
+
+  const getContextData = () => {
+    return state.contextData;
+  }
 
   const getDbUser = () => {
     return state.dbUser;
@@ -623,13 +687,13 @@ export const AuthProvider = ({ children }) => {
     return state.orderInCreation;
   }
 
-  const setOrderInCreation = (orderInCreation, doNotupdateLocalStorage) => {
+  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage) => {
     //currentEstablishment, currentService, orderInCreation
 
     const currentService = getCurrentService(currentEstablishment(), state.bookingSlotStartDate)
     processOrderInCreation(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
       getBrandCurrency(currentBrand()));
-    processOrderCharge(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+    await processOrderCharge(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
     dispatch({
@@ -832,7 +896,10 @@ export const AuthProvider = ({ children }) => {
             setGlobalDialog,
             resetGlobalDialog,
 
-            setRedirectPageGlobal
+            setRedirectPageGlobal,
+
+            setContextData,
+            getContextData,
           }}
       >
 

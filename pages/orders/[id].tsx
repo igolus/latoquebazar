@@ -93,13 +93,13 @@ export interface OrderDetailsProps {
     contextData?: any
 }
 
-const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
+const OrderDetails:React.FC<OrderDetailsProps> = () => {
     const router = useRouter();
     const { id } = router.query
     const [refreshing, setRefreshing] = useState(false);
     const [noStatus, setNoStatus] = useState(false);
 
-    const {currentEstablishment, dbUser} = useAuth()
+    const {currentEstablishment, dbUser, getContextData} = useAuth()
     const stepIconList = [PackageBox, TruckFilled, Delivery]
 
     const width = useWindowSize()
@@ -111,15 +111,15 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
 
     useEffect(async() => {
         await refresh();
-    }, [contextData, currentEstablishment(), dbUser])
+    }, [getContextData(), currentEstablishment(), dbUser])
 
 
     async function refresh() {
         try {
             setRefreshing(true)
             //alert("refresh")
-            if (contextData && contextData.brand && currentEstablishment()) {
-                let result = await executeQueryUtil(getOrderByIdQuery(contextData.brand.id, currentEstablishment().id, id));
+            if (getContextData() && getContextData().brand && currentEstablishment()) {
+                let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id, currentEstablishment().id, id));
                 let orderSet = null;
                 if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
                     //alert( "result.data " + result.data)
@@ -129,7 +129,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                     setRefreshing(false)
                 }
                 else if (dbUser) {
-                    let result = await executeQueryUtil(getSiteUserOrderById(contextData.brand.id, dbUser.id, id));
+                    let result = await executeQueryUtil(getSiteUserOrderById(getContextData().brand.id, dbUser.id, id));
                     if (result && result.data && result.data.getSiteUserOrderById) {
                         let order = result.data.getSiteUserOrderById;
                         setOrder(order);
@@ -202,7 +202,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <DashboardLayout contextData={contextData}>
+        <DashboardLayout contextData={getContextData()}>
             <DashboardPageHeader
                 title={localStrings.orderDetail}
                 icon={ShoppingBag}
@@ -245,28 +245,28 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                         </>
                         }
                         {!isMobile && !noStatus &&
-                            <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
-                                <Box m={5} justifyContent={"center"}>
-                                    {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
-                                    <BazarImage width={120} height={120} src={getImageStatus()}/>
-                                </Box>
-                                <Box mt={7}>
-                                    <H2 my="0px" lineHeight="1" whiteSpace="pre">
-                                        {localStrings.orderStatus}
-                                    </H2>
-                                    <H5 mt={0} mb={2} mt={2}>
-                                        {getTextStatus(order, localStrings)}
-                                    </H5>
-                                </Box>
+                        <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
+                            <Box m={5} justifyContent={"center"}>
+                                {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
+                                <BazarImage width={120} height={120} src={getImageStatus()}/>
                             </Box>
-                            }
+                            <Box mt={7}>
+                                <H2 my="0px" lineHeight="1" whiteSpace="pre">
+                                    {localStrings.orderStatus}
+                                </H2>
+                                <H5 mt={0} mb={2} mt={2}>
+                                    {getTextStatus(order, localStrings)}
+                                </H5>
+                            </Box>
+                        </Box>
+                        }
 
                     </div>
                 }
             </Card>
             }
 
-            <OrderContent order={order} contextData={contextData}/>
+            <OrderContent order={order} contextData={getContextData()}/>
 
 
             <Grid container spacing={3}>
@@ -311,7 +311,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
                     <OrderAmountSummary
                         orderSource={order}
                         modeOrdered
-                        currency={getBrandCurrency(contextData ? contextData.brand : null)}
+                        currency={getBrandCurrency(getContextData() ? getContextData().brand : null)}
                         hideDetail/>
 
                 </Grid>
@@ -320,13 +320,13 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
     )
 }
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
-}
+// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+//     return getStaticPathsUtil()
+// }
+//
+// export const getStaticProps: GetStaticProps = async (context) => {
+//     return await getStaticPropsUtil();
+// }
 
-    export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
 
-
-    export default OrderDetails
+export default OrderDetails

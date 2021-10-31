@@ -2,10 +2,11 @@ import {gql} from "@apollo/client";
 import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
-  id
+    id
   tempOrder
   creationDate
   orderNumber
+  hubriseId
   establishmentId
   status
   totalPrice
@@ -14,6 +15,7 @@ const common = `
   percentDiscount
   totalPriceNoTax
   source
+  deliveryMode
   taxDetail {
     rate
     amount
@@ -22,6 +24,7 @@ const common = `
     items
     {
       extName
+      hubriseId
       name
       extRef
       shortCode
@@ -83,10 +86,6 @@ const common = `
             minOrderAmount
             maxPerOrder
             maxPerCustomer
-            maxOrderAmount
-            minDeliveryDistance
-            maxDeliveryDistance
-            description
         }
         tags {
           id
@@ -119,6 +118,7 @@ const common = `
       }
       productAndSkusLines {
         extName
+        hubriseId
         name
         extRef
         shortCode
@@ -144,24 +144,50 @@ const common = `
 
   payments {
       name
+      deleted
+      uuid
+      valuePayment
+      hubriseId
+      ref
+      amount
+      extId
+   }
+   
+   expectedPayments {
+      name
       uuid
       valuePayment
       ref
       amount
+      extId
    }
+   
    bookingSlot {
       startDate
       startDateIso
       endDate
       endDateIso
-   }
-   confirmedTime
-  deliveryMode
+  }
+  
+  charges {
+    id
+    external
+    extName
+    name
+    extRef
+    creationDate
+    updateDate
+    pricingEffect
+    pricingValue
+    price
+  }
+  
+  confirmedTime
   deliveryAddress {
       address
       lat
       lng
-    }
+  }
   additionalInfo
   customer {
       id

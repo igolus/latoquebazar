@@ -24,9 +24,10 @@ export interface ConfirmedProps {
     contextData?: any
 }
 
-const Id:React.FC<ConfirmedProps> = ({contextData}) => {
+const Id:React.FC<ConfirmedProps> = () => {
     const router = useRouter()
-    const {currentBrand, currentEstablishment, dbUser, brand} = useAuth();
+    const {currentBrand, currentEstablishment, dbUser, getContextData} = useAuth();
+
     const { id } = router.query;
 
     const [order, setOrder] = useState(null);
@@ -97,7 +98,7 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
     }
 
     return (
-        <CheckoutNavLayout contextData={contextData}>
+        <CheckoutNavLayout contextData={getContextData()}>
             {order && !loading ?
                 <>
                     {/*<p>{JSON.stringify(order || {})}</p>*/}
@@ -142,12 +143,12 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
 
                     <Grid container flexWrap="wrap-reverse" spacing={3}>
                         <Grid item lg={8} md={8} xs={12} mt={2}>
-                            <ConfirmInfo contextData={contextData} orderSource={order}/>
+                            <ConfirmInfo contextData={getContextData()} orderSource={order}/>
                         </Grid>
                         <Grid item lg={4} md={4} xs={12} mt={2}>
                             <OrderAmountSummary
                                 modeOrdered
-                                currency={getBrandCurrency(contextData.brand)}
+                                currency={getBrandCurrency(getContextData().brand)}
                                 orderSource={order}/>
                         </Grid>
                     </Grid>
@@ -159,12 +160,12 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
-
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
-}
+// export const getStaticProps: GetStaticProps = async (context) => {
+//     return await getStaticPropsUtil();
+// }
+//
+// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+//     return getStaticPathsUtil()
+// }
 
 export default Id
