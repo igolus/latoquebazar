@@ -70,7 +70,7 @@ const AddressEditor = ({id, mode, back}) => {
             let oldIndex = dbUser?.userProfileInfo?.otherAddresses.findIndex(other => id === other.id)
 
             let filterData = dbUser?.userProfileInfo?.otherAddresses
-                .filter(other => id !== other.id);
+                //.filter(other => id !== other.id);
 
             let otherAddUpdate = {
                 id: adressInfo.id,
@@ -85,7 +85,7 @@ const AddressEditor = ({id, mode, back}) => {
 
             dbUserCopy.userProfileInfo = {
                 ...dbUser.userProfileInfo,
-                otherAddresses: filterData,
+                otherAddresses: filterData
             }
         }
 

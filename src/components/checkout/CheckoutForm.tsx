@@ -452,7 +452,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
     })
   }
 
-  function updateDeliveryAdress(address, lat, lng, id, name, distance) {
+  function updateDeliveryAdress(address, lat, lng, id, name, additionalInformation, distance) {
     //alert("updateDeliveryAdress " + distance);
 
     setOrderInCreation({
@@ -463,6 +463,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         lng: lng,
         id: id,
         name: name,
+        additionalInformation: additionalInformation,
         distance: distance
       },
     })
@@ -797,6 +798,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                 updateDeliveryAdress(dbUser?.userProfileInfo?.address,
                                     dbUser?.userProfileInfo?.lat,
                                     dbUser?.userProfileInfo?.lng,
+                                    null,
                                     "main",
                                     dbUser?.userProfileInfo?.additionalInformation,
                                     distInfo?.distance,
@@ -821,6 +823,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                         item.lng,
                                         item.id,
                                         item.name,
+                                        item.additionalInformation,
                                         distInfo?.distance
                                     );
                                   }}
@@ -867,7 +870,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                                           setMaxDistanceReached(maxDistanceReached);
                                         },
                                         setDistanceInfo, currentEstablishment);
-                                        updateDeliveryAdress(label, lat, lng, null, null, distInfo?.distance);
+                                        updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
                                     // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
                                     // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
                                     //     setGlobalDialog, setRedirectPageGlobal, distInfo)

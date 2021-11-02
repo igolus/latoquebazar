@@ -313,24 +313,24 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                   {localStrings.login}
                 </BazarButton>
 
-                <BazarButton
-                    className="facebookButton"
-                    onClick={handleFacebookClick}
-                    size="medium"
-                    fullWidth
-                    sx={{
-                      mb: '10px',
-                      height: 44,
-                    }}
-                >
-                  <Image
-                      src="/assets/images/icons/facebook-filled-white.svg"
-                      alt="facebook"
-                  />
-                  <Box fontSize="12px" ml={1}>
-                    {localStrings.continueWithFaceook}
-                  </Box>
-                </BazarButton>
+                {/*<BazarButton*/}
+                {/*    className="facebookButton"*/}
+                {/*    onClick={handleFacebookClick}*/}
+                {/*    size="medium"*/}
+                {/*    fullWidth*/}
+                {/*    sx={{*/}
+                {/*      mb: '10px',*/}
+                {/*      height: 44,*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*  <Image*/}
+                {/*      src="/assets/images/icons/facebook-filled-white.svg"*/}
+                {/*      alt="facebook"*/}
+                {/*  />*/}
+                {/*  <Box fontSize="12px" ml={1}>*/}
+                {/*    {localStrings.continueWithFaceook}*/}
+                {/*  </Box>*/}
+                {/*</BazarButton>*/}
 
 
                 <BazarButton

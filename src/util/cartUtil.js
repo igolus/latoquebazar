@@ -592,9 +592,12 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     //condition day of week
     if (restrictionToApply?.dow && restrictionToApply?.dow.length > 0) {
         //alert("restrictionToApply.dow");
-        const norestrictionInCurrentDay = (restrictionToApply.dow || []).find(item => item.dow?.day === currentService.dow?.data &&
-            item.dow?.service === currentService.dow?.service);
+        const norestrictionInCurrentDay = (restrictionToApply.dow || []).find(item => item?.day === currentService.dow?.day &&
+            item?.service === currentService.dow?.service);
 
+        // alert("norestrictionInCurrentDay" + JSON.stringify(norestrictionInCurrentDay || {}))
+        // alert("currentService.dow" + JSON.stringify(currentService.dow))
+        // alert("restrictionToApply.dow" + JSON.stringify(restrictionToApply.dow))
         //alert("norestrictionInCurrentDay " + JSON.stringify(norestrictionInCurrentDay || {}));
         const localDay = displayDow(currentService.dow);
         //const localService = displayService(currentService.dow);
