@@ -75,39 +75,7 @@ const CheckoutNavLayout: React.FC = ({ children , contextData}) => {
   return (
     <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>} >
       <Container sx={{ my: '2rem' }}>
-
-        {/*{getCartItems(orderInCreation).length > 0 &&*/}
-        {/*<Box mb={3}>*/}
-        {/*  <Grid container spacing={3}>*/}
-        {/*    <Grid item lg={8} md={8} xs={12}>*/}
-        {/*      <Stepper*/}
-        {/*          lineWidth="15px"*/}
-        {/*          //orientation="vertical"*/}
-        {/*          stepperList={getStepperList()}*/}
-        {/*          selectedStep={selectedStep + 1}*/}
-        {/*          //activeStep={selectedStep + 1}*/}
-        {/*          onChange={handleStepChange}*/}
-        {/*      />*/}
-        {/*    </Grid>*/}
-        {/*  </Grid>*/}
-        {/*</Box>*/}
-        {/*}*/}
         {children}
-        {/*<p>{selectedStep}</p>*/}
-        {/*{selectedStep == 0 &&*/}
-        {/*<Grid container spacing={6} mt={1}>*/}
-        {/*  <Grid item sm={12} xs={12}>*/}
-        {/*    <Link href="/cart">*/}
-        {/*      <Button variant="contained" color="primary" type="button" fullWidth*/}
-        {/*              onClick={() => handleStepChange(selectedStep + 1 )}>*/}
-        {/*        /!*{selectedStep + 1}*!/*/}
-        {/*        /!*{getStepperList()[selectedStep + 1].title}*!/*/}
-        {/*      </Button>*/}
-        {/*    </Link>*/}
-        {/*  </Grid>*/}
-        {/*</Grid>*/}
-        {/*}*/}
-
       </Container>
     </AppLayout>
   )

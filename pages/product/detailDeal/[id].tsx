@@ -6,6 +6,7 @@ import React, {useEffect, useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import DealSelector from '../../../src/components/products/DealSelector'
+import useAuth from "@hook/useAuth";
 
 // const StyledTabs = styled(Tabs)(({ theme }) => ({
 //     marginTop: 80,
@@ -21,18 +22,18 @@ import DealSelector from '../../../src/components/products/DealSelector'
 
 
 export interface ProductDetailsProps {
-    contextData?: any
+    //contextData?: any
 }
 
-const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+const ProductDetails:React.FC<ProductDetailsProps> = () => {
 
     const router = useRouter();
     const [selectedDeal, setSelectedDeal] = useState(null);
-
+    const { getContextData } = useAuth()
     const { id } = router.query
 
     useEffect(() => {
-        setSelectedDeal((contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null)
+        setSelectedDeal((getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null)
     }, [id])
     //const { selectedSku } = router.query
     //alert(" ---------------------- selectedSku -------------- " +  contextData.req.url);
@@ -41,9 +42,9 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     //const selectedDeal = (contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null;
 
     return (
-        <NavbarLayout contextData={contextData}>
+        <NavbarLayout contextData={getContextData()}>
             {selectedDeal &&
-                <DealSelector deal={selectedDeal} contextData={contextData}/>
+                <DealSelector deal={selectedDeal} contextData={getContextData()}/>
             }
 
             {/*{selectedDeal && (selectedDeal.description !== "" || selectedDeal.additionalInformation !== "") &&*/}
@@ -84,17 +85,17 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     )
 }
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return {
-        paths: [], //indicates that no page needs be created at build time
-        fallback: true //indicates the type of fallback
-    }
-
-    // return getStaticPathsUtil()
-}
-
-export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
+// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+//     return {
+//         paths: [], //indicates that no page needs be created at build time
+//         fallback: true //indicates the type of fallback
+//     }
+//
+//     // return getStaticPathsUtil()
+// }
+//
+// export const getStaticProps: GetStaticProps = async (context) => {
+//     return await getStaticPropsUtil();
+// }
 
 export default ProductDetails

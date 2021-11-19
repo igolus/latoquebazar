@@ -47,6 +47,7 @@
     "date-fns": "^2.22.1",
     "elasticlunr": "^0.9.5",
     "firebase": "^8.7.0",
+    "firebase-admin": "^10.0.0",
     "formik": "^2.2.6",
     "graphql": "^15.5.1",
     "graphql-request": "^3.4.0",

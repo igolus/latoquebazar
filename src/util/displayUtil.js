@@ -4,7 +4,7 @@ import {
     getOrderDeliveryMode,
     getOrderStatus, getPaymentMethods,
     ORDER_DELIVERY_MODE_DELIVERY,
-    orderDeliveryMode,
+    orderDeliveryMode, STRIPE_SUB_STATUS_ACTIVE, STRIPE_SUB_STATUS_TRIALING,
     TYPE_DEAL,
     TYPE_PRODUCT
 } from "./constants";
@@ -546,11 +546,7 @@ export function getFirstRestrictionDescription(item) {
     if (!item) {
         return null;
     }
-
-
     if (item.restrictionsList && item.restrictionsApplied?.length > 0) {
-
-        //alert("item.restrictionsApplied[0] " + JSON.stringify(item.restrictionsApplied[0]))
         return item.restrictionsApplied[0].description;
     }
     return null;
@@ -578,20 +574,17 @@ export const getMinutesFromHour = (hourString) => {
     return 0;
 }
 
+export function isBrandInBadStripStatus(brand) {
+    if (!brand) {
+        return true;
+    }
+    //console.log("brand.stripeStatus " + brand?.stripeStatus)
+    return brand.stripeStatus !== STRIPE_SUB_STATUS_ACTIVE && brand.stripeStatus !== STRIPE_SUB_STATUS_TRIALING;
+    //return brand.stripeStatus !== STRIPE_SUB_STATUS_ACTIVE;
+}
+
 
 export const getMinutesFromDate = (dateTimeString) => {
     let dateTimeMoment = moment(dateTimeString).locale('fr');
-    // alert("dateTimeMoment " + dateTimeMoment.format())
-    // alert("duration " + (dateTimeMoment.hour() * 60 + dateTimeMoment.minute()))
-    // alert("dateTimeMoment.hour() " + dateTimeMoment.hour())
-    // alert("dateTimeMoment.hour() " + (dateTimeMoment.hour() * 60))
-    // alert("dateTimeMoment.minute() " + dateTimeMoment.minute())
     return dateTimeMoment.hour() * 60 + dateTimeMoment.minute();
-
-    // let split = hourString.split(':');
-    // if (split.length === 2) {
-    //     let durationMinutes = parseInt(split[0]) * 60 + parseInt(split[1]);
-    //     return  durationMinutes;
-    // }
-    //return 0;
 }

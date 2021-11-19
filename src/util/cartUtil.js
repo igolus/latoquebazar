@@ -570,11 +570,6 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
 
 
 export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch) {
-    //alert("computeItemRestriction" + JSON.stringify(item.restrictionsList || {}))
-    // alert("currentService" + JSON.stringify(currentService || {}))
-    // console.log("currentService" + JSON.stringify(currentService || {}, null, 2))
-    // alert("currentService" + JSON.stringify(currentService || {}))
-    //alert("before1 ");
     let countMatching = 7;
 
     if (!currentEstablishment()) {
@@ -594,13 +589,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
         //alert("restrictionToApply.dow");
         const norestrictionInCurrentDay = (restrictionToApply.dow || []).find(item => item?.day === currentService.dow?.day &&
             item?.service === currentService.dow?.service);
-
-        // alert("norestrictionInCurrentDay" + JSON.stringify(norestrictionInCurrentDay || {}))
-        // alert("currentService.dow" + JSON.stringify(currentService.dow))
-        // alert("restrictionToApply.dow" + JSON.stringify(restrictionToApply.dow))
-        //alert("norestrictionInCurrentDay " + JSON.stringify(norestrictionInCurrentDay || {}));
         const localDay = displayDow(currentService.dow);
-        //const localService = displayService(currentService.dow);
 
         let condition = restrictionToApply.dow && restrictionToApply.dow.length > 0 && !norestrictionInCurrentDay;
         if (invertMatch) {

@@ -19,8 +19,9 @@ import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
 import {getBrandCurrency} from "../util/displayUtil";
-import {getStaticPropsUtil} from "../nextUtil/propsBuilder";
+import {getContextData, getContextDataApollo, getStaticPropsUtil} from "../nextUtil/propsBuilder";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import {getBookingSlotsOccupancyQueryNoApollo} from "../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -92,6 +93,30 @@ const initialAuthState = {
   globalDialog: null,
   contextData: null,
 };
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDKBt5pdqJ5K3qMZXc4v_HnUxAChI9WSyU",
+  authDomain: "latoque-b23f1.firebaseapp.com",
+  databaseURL: "https://latoque-b23f1.firebaseio.com",
+  projectId: "latoque-b23f1",
+  storageBucket: "latoque-b23f1.appspot.com",
+  messagingSenderId: "399587571823",
+  appId: "1:399587571823:web:f46e56774ddfe1a886759a",
+  measurementId: "G-9YPCFBQH7Z"
+};
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(require('./latoque-b23f1-firebase-adminsdk-o5hes-e83acaf80e.json'))
+// });
+
+//const db = firebase.firestore();
+
+// const admin = require('firebase-admin');
+// admin.initializeApp(firebaseConfig);
+// const db = admin.firestore();
+
+//admin.initializeApp(firebaseConfig);
+//const db = admin.firestore();
 
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
@@ -290,6 +315,17 @@ const AuthContext = createContext({
 const expireTimeSeconds = 1800;
 
 export const AuthProvider = ({ children }) => {
+
+  useEffect(async () => {
+    const interval = setInterval(async () => {
+      const contextData = await getContextDataApollo();
+      setContextData(contextData);
+      console.log("reload context !!!!")
+      // return contextData;
+    },  (parseInt(process.env.REVALIDATE_DATA_TIME) || 60) * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [adressDialogOpen, setAdressDialogOpen] = useState(false)
   const [redirectPage, setRedirectPage] = useState(null);
 
@@ -298,16 +334,16 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
   const { addToast } = useToasts();
 
-  useEffect(() => {
-    // Create an scoped async function in the hook
-    async function loadContextData() {
-      if (!state.contextData) {
-        const data = await getStaticPropsUtil();
-        setContextData(data.props.contextData);
-      }
-    }    // Execute the created function directly
-    loadContextData();
-  }, []);
+  // useEffect(() => {
+  //   // Create an scoped async function in the hook
+  //   async function loadContextData() {
+  //     if (!state.contextData) {
+  //       const data = await getStaticPropsUtil();
+  //       setContextData(data.props.contextData);
+  //     }
+  //   }    // Execute the created function directly
+  //   loadContextData();
+  // }, []);
 
   useEffect(() => {
     if(redirectPage ){
@@ -529,6 +565,12 @@ export const AuthProvider = ({ children }) => {
   }
 
   const getContextData = () => {
+    // if (!state.contextData) {
+    //   const contextData = await  getContextDataApollo();
+    //   setContextData(contextData);
+    //   return contextData;
+    // }
+
     return state.contextData;
   }
 

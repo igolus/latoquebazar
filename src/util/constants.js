@@ -300,6 +300,10 @@ export const PRINTER_MODEL_EPSON = "EPSON";
 export const TYPE_DEAL = "deal"
 export const TYPE_PRODUCT = "product"
 
+export const STRIPE_SUB_STATUS_ACTIVE= "active";
+export const STRIPE_SUB_STATUS_TRIALING= "trialing";
+
+
 export const deviceSize = {
   xs: 425,
   sm: 768,

@@ -143,10 +143,6 @@ export const getCurrentService = (establishment, startDate) => {
         day: day,
         service: timePeriod
       },
-      // durationStartService: durationStartService,
-      // durationMinutesSeparator: durationMinutesSeparator,
-      //
-      // lunchSeparator: lunchSeparator,
     };
   }
   return null;
@@ -161,6 +157,11 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
 
     if (daySettings && daySettings.length > 0) {
       let firstDaySetting = daySettings[0];
+      if (firstDaySetting.slotDuration) {
+        slotDuration = firstDaySetting.slotDuration
+      }
+
+
       let iterDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.startHourBooking);
       let endServiceDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.endHourService);
 
@@ -341,9 +342,6 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
   }, [currentEstablishment()])
 
   useEffect(async () => {
-
-
-
     const interval = setInterval(async () => {
       if (currentEstablishment()) {
         let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
@@ -352,8 +350,6 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
       }
     }, 10000);
     return () => clearInterval(interval);
-
-
   }, [currentEstablishment, orderInCreation]);
 
   function getBookingSlotsOccupancy() {
@@ -492,6 +488,10 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
 
   function isSlotFull(slot) {
     if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+
+      if (timeSlots.service.maxDeliveryPerSlotPerMan == 0 && timeSlots.service.maxDeliveryPerSlotPerMan == 0) {
+        return false;
+      }
 
       let maxPreparationPerSlot = (timeSlots.service.maxDeliveryPerSlotPerMan || 0) *
           (timeSlots.service.numberOfDeliveryMan || 0);

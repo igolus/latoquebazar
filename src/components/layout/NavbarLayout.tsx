@@ -2,6 +2,9 @@ import { Container } from '@material-ui/core'
 import React from 'react'
 import Navbar from '../navbar/Navbar'
 import AppLayout from './AppLayout'
+import {isBrandInBadStripStatus} from "../../util/displayUtil";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import localStrings from "../../localStrings";
 
 const NavbarLayout: React.FC = ({ children ,
                                     contextData,
@@ -14,7 +17,15 @@ const NavbarLayout: React.FC = ({ children ,
                ogImage={ogImage}
                navbar={<Navbar contextData={contextData}/>}>
       {/*<h1>AppLayout</h1>*/}
-        <Container sx={{ my: '2rem' }}>{children}</Container>
+      {/*  {isBrandInBadStripStatus(contextData?.brand) ?*/}
+      {/*      <Container sx={{ my: '2rem' }}>*/}
+      {/*          <AlertHtmlLocal title={localStrings.siteUnavailable}*/}
+      {/*                          content={localStrings.siteUnavailableDetail}>*/}
+      {/*          </AlertHtmlLocal>*/}
+      {/*      </Container>*/}
+      {/*  :*/}
+            <Container sx={{ my: '2rem' }}>{children}</Container>
+        {/*}*/}
     </AppLayout>
   )
 }

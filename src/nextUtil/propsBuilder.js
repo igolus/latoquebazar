@@ -14,6 +14,58 @@ export async function getStaticPathsUtil() {
     }
 }
 
+export async function getContextDataApollo() {
+    const config = require("../conf/config.json")
+    const resProducts = await getProductsQueryNoApollo(config.brandId);
+    let products = [];
+
+    if (resProducts && resProducts.getProductsByBrandId) {
+        products = resProducts.getProductsByBrandId;
+    }
+
+    const resDeals = await getDealsQueryNoApollo(config.brandId);
+    let deals = [];
+
+    if (resDeals && resDeals.getDealsByBrandId) {
+        deals = resDeals.getDealsByBrandId;
+    }
+
+    let categories = [];
+    const resCats = await getCategoriesQueryNoApollo(config.brandId)
+    if (resCats && resCats.getProductCategoriesByBrandId) {
+        categories = resCats.getProductCategoriesByBrandId;
+    }
+
+    let tags = [];
+    const resTags = await getTagsQueryNoApollo(config.brandId)
+    if (resTags && resTags.getProductTagsByBrandId) {
+        tags = resTags.getProductTagsByBrandId;
+    }
+
+
+    let options = [];
+    const resOptions = await getOptionsListQueryNoApollo(config.brandId);
+    if (resOptions.getProductOptionListsByBrandId) {
+        options = resOptions.getProductOptionListsByBrandId;
+    }
+
+    let brand = {};
+    const resBrand = await getBrandByIdQueryNoApollo(config.brandId);
+    if (resBrand.getBrand) {
+        brand = resBrand.getBrand;
+    }
+
+    return {
+        products: products,
+        deals: deals,
+        categories: categories,
+        brand: brand,
+        options: options,
+        tags: tags
+    }
+}
+
+
 export async function getStaticPropsUtil() {
     const config = require("../conf/config.json")
     const resProducts = await getProductsQueryNoApollo(config.brandId);
@@ -67,7 +119,7 @@ export async function getStaticPropsUtil() {
                 tags: tags
             },
         },
-        revalidate: parseInt(process.env.REVALIDATE_DATA_TIME) || 60,
+         //revalidate: parseInt(process.env.REVALIDATE_DATA_TIME) || 60,
     }
 
 }

@@ -4,6 +4,7 @@ const config = require('../conf/config.json')
 
 const common = `
   id
+  stripeStatus
   brandName
   brandSiteName
   creationDate

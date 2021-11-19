@@ -57,6 +57,7 @@ import axios from "axios";
 import {faAddressCard, faMotorcycle, faShoppingBag} from '@fortawesome/free-solid-svg-icons'
 
 import PresenterSelect from "../PresenterSelect"
+import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
 
 const config = require('../../conf/config.json')
 
@@ -226,8 +227,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       let dataOrder = cloneDeep(getOrderInCreation());
 
+      //filerRestricted
+      let itemsIdToDelete = [];
+      let dealsIdToDelete = [];
+      //dataOrder.order.items.forEach(item => )
+
+
+
       if (dataOrder.order.items && dataOrder.order.items.length > 0) {
         dataOrder.order.items.forEach(item => {
+          if (itemHaveRestriction(item)) {
+            itemsIdToDelete.push(item.extRef)
+          }
           delete item.productId;
           delete item.creationTimestamp;
           delete item.uuid;
@@ -241,6 +252,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
         dataOrder.order.deals
             .forEach(deal => {
               if (deal !== null) {
+                if (itemHaveRestriction(deal.deal)) {
+                  dealsIdToDelete.push(deal.deal.id)
+                }
+
                 delete deal.deal.type;
                 delete deal.deal.creationTimestamp;
                 delete deal.uuid;
@@ -272,6 +287,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
               }
             });
       }
+
+
+      dataOrder.order.deals = dataOrder.order.deals.filter(deal => {
+        return !dealsIdToDelete.includes(deal.deal.id)
+      })
+
+      dataOrder.order.items = dataOrder.order.items.filter(item => {
+        return !itemsIdToDelete.includes(item.extRef)
+      })
+
+      // alert("dataOrder.order.deals.length " + dataOrder.order.deals.length)
+      // alert("dataOrder.order.items.length " + dataOrder.order.items.length)
 
       //let createBookingSlotOccupancy = false;
       if (dataOrder.bookingSlot) {

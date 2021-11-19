@@ -29,7 +29,7 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
       {/*      /!*</Box>*!/*/}
       {/*    </div>*/}
       {/*}*/}
-        {/*<p>{JSON.stringify(contextData.categories)}</p>*/}
+      {/*  <p>{JSON.stringify(contextData?.brand?.config?.carouselWebConfig)}</p>*/}
         {carouselItems && carouselItems.length > 0 &&
         <Box bgcolor="white" mb={7.5}>
             <Container sx={{py: '2rem'}}>

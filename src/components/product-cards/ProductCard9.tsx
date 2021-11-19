@@ -254,7 +254,7 @@ const ProductCard9: React.FC<ProductCard9Props> = ({
 ProductCard9.defaultProps = {
   title:
     'Apple iPhone 5 Unlocked 16GB 8MP Used Cell-Phone-16gbIOS Used Refurbished 100%Factory Used',
-  imgUrl: '/assets/images/products/macbook.png',
+  imgUrl: '/assets/images/Icon_Sandwich.png',
   off: 50,
   price: 450,
   rating: 0,

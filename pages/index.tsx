@@ -18,6 +18,7 @@ import MyMap from "@component/GoogleMap";
 import useWindowSize from "@hook/useWindowSize";
 import {Box} from "@material-ui/system";
 import Image from "@component/BazarImage";
+import {cloneDeep} from "@apollo/client/utilities";
 
 
 
@@ -27,7 +28,7 @@ export interface IndexPageProps {
 
 // let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
-    const {currentEstablishment, setContextData} = useAuth();
+    const {currentEstablishment, setContextData, getContextData} = useAuth();
 
     useEffect(() => {
         setContextData(contextData);
@@ -37,27 +38,26 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     const config = require("../src/conf/config.json")
 
+    function getContextDataOrInjected() {
+        return getContextData() || contextData;
+    }
+
     return (
         <div>
             <Head>
             </Head>
 
-            <div>
-
-
-            </div>
-
-            <AppLayout contextData={contextData}>
-                {contextData?.brand?.config?.carouselWebConfig &&
-                <CarouselCompo contextData={contextData}/>
+            <AppLayout contextData={getContextDataOrInjected()}>
+                {getContextDataOrInjected()?.brand?.config?.carouselWebConfig &&
+                <CarouselCompo contextData={getContextDataOrInjected()}/>
                 }
-                {contextData?.brand?.config?.starWebProducts &&
-                <Section2 contextData={contextData}/>
+                {getContextDataOrInjected()?.brand?.config?.starWebProducts &&
+                <Section2 contextData={getContextDataOrInjected()}/>
                 }
 
-                <SectionCategories categories={contextData?.categories}
-                                   deals={contextData?.deals}
-                                   products={contextData?.products}/>
+                <SectionCategories categories={getContextDataOrInjected()?.categories}
+                                   deals={getContextDataOrInjected()?.deals}
+                                   products={getContextDataOrInjected()?.products}/>
 
 
                 {width <= 900 &&

@@ -4,6 +4,9 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        siteUnavailable: "Le site n'est pas disponible",
+        siteUnavailableDetail: "Contactez le restaurant pour plus d'information",
+
         loginError: "Erreur d'authentification",
         detail: "Detail",
         productRestricted: "Produit indisponible dans ce contexte",

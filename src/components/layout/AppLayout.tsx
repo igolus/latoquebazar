@@ -6,8 +6,11 @@ import Head from 'next/head'
 import React, {Fragment, useCallback, useState} from 'react'
 import TopbarForTest from "@component/topbar/TopbarForTest";
 import {isMobile} from "react-device-detect";
-import {Box} from "@material-ui/core";
+import {Box, Container} from "@material-ui/core";
 import Image from "@component/BazarImage";
+import {isBrandInBadStripStatus} from "../../util/displayUtil";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import localStrings from "../../localStrings";
 
 type AppLayoutProps = {
     title?: string
@@ -37,6 +40,20 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     const siteOgImage = contextData?.brand?.config?.metaWebConfig?.ogImage;
     const siteTitle = contextData?.brand?.config?.metaWebConfig?.title || config.appName;
 
+    function getChildrenOrUnavailable(children) {
+
+        if (isBrandInBadStripStatus(contextData?.brand)) {
+            return (
+                <Container sx={{ my: '2rem' }}>
+                    <AlertHtmlLocal title={localStrings.siteUnavailable}
+                                    content={localStrings.siteUnavailableDetail}>
+                    </AlertHtmlLocal>
+                </Container>
+            )
+        }
+        return children;
+    }
+
     return (
         <Fragment>
             <Head>
@@ -54,10 +71,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                     content={description || siteDesc}
                 />
                 {(ogImage || siteOgImage) &&
-                    <meta
-                        property="og:image"
-                        content={ogImage || siteOgImage}
-                    />
+                <meta
+                    property="og:image"
+                    content={ogImage || siteOgImage}
+                />
                 }
 
                 {/*<meta*/}
@@ -85,7 +102,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             </Sticky>
 
             {navbar && <div className="section-after-sticky">{navbar}</div>}
-            {!navbar ? <div className="section-after-sticky">{children}</div> : children}
+            {!navbar ? <div className="section-after-sticky">{getChildrenOrUnavailable(children)}</div> : getChildrenOrUnavailable(children)}
 
             <MobileNavigationBar />
             <Footer contextData={contextData}/>
