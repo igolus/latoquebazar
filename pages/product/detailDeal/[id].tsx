@@ -41,11 +41,6 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     useEffect(() => {
         setSelectedDeal((getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null)
     }, [id])
-    //const { selectedSku } = router.query
-    //alert(" ---------------------- selectedSku -------------- " +  contextData.req.url);
-    //console.log(" ---------- contextData.req.url " +  JSON.stringify(contextData.url, null, 2));
-
-    //const selectedDeal = (contextData && contextData.deals) ? contextData.deals.find(d => d.id === id) : null;
 
     return (
         <NavbarLayout contextData={getContextData()}>
