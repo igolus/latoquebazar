@@ -52,41 +52,6 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             {selectedDeal &&
             <DealSelector deal={selectedDeal} contextData={getContextData()}/>
             }
-
-            {/*{selectedDeal && (selectedDeal.description !== "" || selectedDeal.additionalInformation !== "") &&*/}
-            {/*<>*/}
-            {/*    <StyledTabs*/}
-            {/*        value={selectedOption}*/}
-            {/*        onChange={handleOptionClick}*/}
-            {/*        indicatorColor="primary"*/}
-            {/*        textColor="primary"*/}
-            {/*    >*/}
-            {/*        {selectedDeal.description !== "" &&*/}
-            {/*        <Tab className="inner-tab" label={localStrings.description}/>*/}
-            {/*        }*/}
-            {/*        {selectedDeal.additionalInformation !== "" &&*/}
-            {/*        <Tab className="inner-tab" label={localStrings.additionalInformation}/>*/}
-            {/*        }*/}
-            {/*    </StyledTabs>*/}
-
-            {/*    <Box mb={6}>*/}
-            {/*        {selectedOption === 0 && selectedDeal.description !== "" &&*/}
-            {/*            <ReactMarkdown>{selectedDeal.description}</ReactMarkdown>*/}
-            {/*        }*/}
-            {/*        {selectedOption === (selectedDeal.description !== "" ? 1 : 0)*/}
-
-            {/*        && selectedDeal.additionalInformation !== "" &&*/}
-            {/*        <ReactMarkdown>{selectedDeal.additionalInformation}</ReactMarkdown>*/}
-            {/*        }*/}
-            {/*    </Box>*/}
-            {/*</>*/}
-            {/*}*/}
-
-            {/*<FrequentlyBought />*/}
-
-            {/*<AvailableShops />*/}
-
-            {/*<RelatedProducts />*/}
         </NavbarLayout>
     )
 }
