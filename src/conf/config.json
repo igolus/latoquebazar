@@ -8,5 +8,4 @@
   "getResetAccountLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/getPasswordLink",
   "getActivationEmailLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/activateMailLink",
   "paymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/payment/stripe/charge"
-
 }
