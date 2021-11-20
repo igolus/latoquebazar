@@ -1,5 +1,11 @@
 const git = require('simple-git')()
 
+const run = async () => {
+    
+}
+
+run()
+
 git.checkout("brunchClub")
 .then(() => {
 git.mergeFromTo("master", "brunchClub", {
