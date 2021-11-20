@@ -1,8 +1,14 @@
 const git = require('simple-git')()
 
-git.mergeFromTo("master", "brunchClub", {
-    '--no-ff': true,
+git.checkout("brunchClub")
+.then(() => {
+    git.mergeFromTo("master", "brunchClub", {
+        '--no-ff': true,
+    })
+    .then(mergeSummary => {
+        //git.checkout()
+        console.log(mergeSummary)
+    })
 })
-.then(mergeSummary => {
-    console.log(mergeSummary)
-})
+
+

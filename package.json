@@ -110,6 +110,7 @@
     "gulp-replace": "^1.1.3",
     "gulp-zip": "^5.1.0",
     "prettier": "^2.3.2",
+    "simple-git": "^2.47.0",
     "typescript": "^4.2.4",
     "vinyl": "^2.2.1"
   }
