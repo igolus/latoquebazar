@@ -46,6 +46,7 @@ export const getStaticPaths: GetStaticPaths<{ category: string }> = async () => 
     cats.forEach(cat => {
         paths.push({ params: { category: cat.category } })
     })
+    paths.push({ params: { category: "all"} })
 
     return {
         paths: paths, //indicates that no page needs be created at build time
