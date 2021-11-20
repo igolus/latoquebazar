@@ -36,4 +36,6 @@ yarn-error.log*
 /out
 .vercel
 
+mergeInBranches.js
+
 /src/conf/config.json
