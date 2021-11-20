@@ -9,6 +9,7 @@ const run = async () => {
         for (let i = 0; i < branches.length; i++) {
             const branch = branches[i];
             const checkoutResult =  await git.checkout(branch);
+            console.log(checkoutResult);
             const mergeSummary = await git.mergeFromTo(mainBranch, branch, {
                 '--no-ff': true,
             })
