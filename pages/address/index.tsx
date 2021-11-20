@@ -33,8 +33,13 @@ import {styled} from "@material-ui/styles";
 //   return null;
 // }
 
-const AddressList = () => {
-  const {dbUser, currentBrand, setDbUser, getContextData} = useAuth()
+const AddressList = ({contextData}) => {
+
+  function getContextData() {
+    return contextData;
+  }
+
+  const {dbUser, currentBrand, setDbUser} = useAuth()
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [loading, setLoading] = useState(false);
   const [idDelete, setIdDelete] = useState(null);
@@ -212,9 +217,9 @@ const orderList = [
     price: 300,
   },
 ]
-//
-// export const getStaticProps: GetStaticProps = async (context) => {
-//   return await getStaticPropsUtil();
-// }
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return await getStaticPropsUtil();
+}
 
 export default AddressList

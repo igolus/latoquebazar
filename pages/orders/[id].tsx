@@ -93,13 +93,18 @@ export interface OrderDetailsProps {
     contextData?: any
 }
 
-const OrderDetails:React.FC<OrderDetailsProps> = () => {
+const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
+
+    function getContextData() {
+        return contextData;
+    }
+
     const router = useRouter();
     const { id } = router.query
     const [refreshing, setRefreshing] = useState(false);
     const [noStatus, setNoStatus] = useState(false);
 
-    const {currentEstablishment, dbUser, getContextData} = useAuth()
+    const {currentEstablishment, dbUser} = useAuth()
     const stepIconList = [PackageBox, TruckFilled, Delivery]
 
     const width = useWindowSize()
@@ -320,13 +325,13 @@ const OrderDetails:React.FC<OrderDetailsProps> = () => {
     )
 }
 
-// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-//     return getStaticPathsUtil()
-// }
-//
-// export const getStaticProps: GetStaticProps = async (context) => {
-//     return await getStaticPropsUtil();
-// }
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+    return getStaticPathsUtil()
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
 
 
 export default OrderDetails

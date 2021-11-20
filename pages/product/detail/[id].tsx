@@ -12,6 +12,8 @@ import {getBrandCurrency} from "../../../src/util/displayUtil";
 import {SEP} from "../../../src/util/constants";
 import {getCurrentService} from "@component/form/BookingSlots";
 import useAuth from "@hook/useAuth";
+import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
+import {config} from "@fortawesome/fontawesome-svg-core";
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 80,
@@ -32,10 +34,17 @@ export interface ProductDetailsProps {
 
 //const config = require('../../../src/conf/config.json');
 
-const ProductDetails:React.FC<ProductDetailsProps> = () => {
+const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+
+    console.log("process.env.REVALIDATE_DATA_TIME " + process.env.REVALIDATE_DATA_TIME )
+    function getContextData() {
+        return contextData;
+    }
+
+
     const config = require('../../../src/conf/config.json');
     const router = useRouter();
-    const {currentEstablishment, bookingSlotStartDate, getContextData} = useAuth();
+    const {currentEstablishment, bookingSlotStartDate} = useAuth();
     const { id } = router.query
     let productId = id;
     let skuIndex;
@@ -152,12 +161,36 @@ const ProductDetails:React.FC<ProductDetailsProps> = () => {
     )
 }
 
-// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-//     return getStaticPathsUtil()
-// }
-//
-// export const getStaticProps: GetStaticProps = async (context) => {
-//     return await getStaticPropsUtil();
-// }
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+    const config = require("../../../src/conf/config.json")
+    const resProducts = await getProductsQueryNoApollo(config.brandId);
+    let products = [];
+
+    if (resProducts && resProducts.getProductsByBrandId) {
+        products = resProducts.getProductsByBrandId;
+    }
+
+    let paths = []
+    products.forEach(product => {
+        if (product.skus && product.skus.length === 1) {
+            paths.push({ params: { id: product.id } })
+        }
+        else if (product.skus && product.skus.length > 1) {
+            for (let i = 0; i < product.skus.length; i++) {
+                paths.push({ params: { id: product.id + "-" + i } })
+            }
+            //paths.push({ params: { id: product.id } })
+        }
+    })
+
+    return {
+        paths: paths, //indicates that no page needs be created at build time
+        fallback: true //indicates the type of fallback
+    }
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
 
 export default ProductDetails

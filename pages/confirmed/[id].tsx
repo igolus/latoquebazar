@@ -13,7 +13,6 @@ import DashboardPageHeader from "@component/layout/DashboardPageHeader";
 import {useRouter} from "next/router";
 import useAuth from "@hook/useAuth";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import firebase from "../../src/lib/firebase";
 import {executeMutationUtil, executeQueryUtil} from "../../src/apolloClient/gqlUtil";
 import {addSiteUserMessagingToken} from "../../src/gql/siteUserGql";
 import {getOrderByIdQuery} from "../../src/gql/orderGql";
@@ -24,9 +23,14 @@ export interface ConfirmedProps {
     contextData?: any
 }
 
-const Id:React.FC<ConfirmedProps> = () => {
-    const router = useRouter()
-    const {currentBrand, currentEstablishment, dbUser, getContextData} = useAuth();
+const Id:React.FC<ConfirmedProps> = ({contextData}) => {
+    const router = useRouter();
+
+    function getContextData() {
+        return contextData;
+    }
+
+    const {currentBrand, currentEstablishment, dbUser} = useAuth();
 
     const { id } = router.query;
 
@@ -160,12 +164,12 @@ const Id:React.FC<ConfirmedProps> = () => {
     )
 }
 
-// export const getStaticProps: GetStaticProps = async (context) => {
-//     return await getStaticPropsUtil();
-// }
-//
-// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-//     return getStaticPathsUtil()
-// }
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
+
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+    return getStaticPathsUtil()
+}
 
 export default Id

@@ -28,36 +28,41 @@ export interface IndexPageProps {
 
 // let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
-    const {currentEstablishment, setContextData, getContextData} = useAuth();
 
-    useEffect(() => {
-        setContextData(contextData);
-    }, [])
+    function getContextData() {
+        return contextData;
+    }
+
+    const {currentEstablishment, setContextData} = useAuth();
+
+    // useEffect(() => {
+    //     setContextData(contextData);
+    // }, [])
 
     const width = useWindowSize()
 
     const config = require("../src/conf/config.json")
 
-    function getContextDataOrInjected() {
-        return getContextData() || contextData;
-    }
+    // function getContextDataOrInjected() {
+    //     return getContextData() || contextData;
+    // }
 
     return (
         <div>
             <Head>
             </Head>
 
-            <AppLayout contextData={getContextDataOrInjected()}>
-                {getContextDataOrInjected()?.brand?.config?.carouselWebConfig &&
-                <CarouselCompo contextData={getContextDataOrInjected()}/>
+            <AppLayout contextData={getContextData()}>
+                {getContextData()?.brand?.config?.carouselWebConfig &&
+                <CarouselCompo contextData={getContextData()}/>
                 }
-                {getContextDataOrInjected()?.brand?.config?.starWebProducts &&
-                <Section2 contextData={getContextDataOrInjected()}/>
+                {getContextData()?.brand?.config?.starWebProducts &&
+                <Section2 contextData={getContextData()}/>
                 }
 
-                <SectionCategories categories={getContextDataOrInjected()?.categories}
-                                   deals={getContextDataOrInjected()?.deals}
-                                   products={getContextDataOrInjected()?.products}/>
+                <SectionCategories categories={getContextData()?.categories}
+                                   deals={getContextData()?.deals}
+                                   products={getContextData()?.products}/>
 
 
                 {width <= 900 &&

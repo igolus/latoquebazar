@@ -65,6 +65,36 @@ export async function getContextDataApollo() {
     }
 }
 
+export function sortChainList(itemSource) {
+    if (!itemSource || itemSource.length === 0) {
+        return [];
+    }
+    let sorted = [];
+    let firstItem = itemSource.find(item => item.chainedListItem &&
+        (!item.chainedListItem.previousId || item.chainedListItem.previousId=="") && item.chainedListItem.nextId);
+    if (!firstItem) {
+        return itemSource;
+    }
+    sorted.push(firstItem);
+
+
+    var current = firstItem;
+    let counter = 0;
+    while ((current?.chainedListItem?.nextId || (current?.chainedListItem?.nextId && current?.chainedListItem?.nextId != "")) && counter <= itemSource.length) {
+        const nextId = current.chainedListItem?.nextId;
+        current = itemSource.find(item => item.id === nextId);
+        if (current) {
+            sorted.push(current);
+        }
+        counter++
+    }
+    if (counter > itemSource.length) {
+        return itemSource;
+    }
+
+    return sorted;
+}
+
 
 export async function getStaticPropsUtil() {
     const config = require("../conf/config.json")
@@ -79,13 +109,13 @@ export async function getStaticPropsUtil() {
     let deals = [];
 
     if (resDeals && resDeals.getDealsByBrandId) {
-        deals = resDeals.getDealsByBrandId;
+        deals = sortChainList(resDeals.getDealsByBrandId);
     }
 
     let categories = [];
     const resCats = await getCategoriesQueryNoApollo(config.brandId)
     if (resCats && resCats.getProductCategoriesByBrandId) {
-        categories = resCats.getProductCategoriesByBrandId;
+        categories = sortChainList(resCats.getProductCategoriesByBrandId);
     }
 
     let tags = [];
@@ -98,7 +128,7 @@ export async function getStaticPropsUtil() {
     let options = [];
     const resOptions = await getOptionsListQueryNoApollo(config.brandId);
     if (resOptions.getProductOptionListsByBrandId) {
-        options = resOptions.getProductOptionListsByBrandId;
+        options = sortChainList(resOptions.getProductOptionListsByBrandId);
     }
 
     let brand = {};

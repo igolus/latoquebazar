@@ -316,15 +316,15 @@ const expireTimeSeconds = 1800;
 
 export const AuthProvider = ({ children }) => {
 
-  useEffect(async () => {
-    const interval = setInterval(async () => {
-      const contextData = await getContextDataApollo();
-      setContextData(contextData);
-      console.log("reload context !!!!")
-      // return contextData;
-    },  (parseInt(process.env.REVALIDATE_DATA_TIME) || 60) * 1000);
-    return () => clearInterval(interval);
-  }, []);
+  // useEffect(async () => {
+  //   const interval = setInterval(async () => {
+  //     const contextData = await getContextDataApollo();
+  //     setContextData(contextData);
+  //     console.log("reload context !!!!")
+  //     // return contextData;
+  //   },  (parseInt(process.env.REVALIDATE_DATA_TIME) || 60) * 1000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const [adressDialogOpen, setAdressDialogOpen] = useState(false)
   const [redirectPage, setRedirectPage] = useState(null);

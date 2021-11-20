@@ -7,6 +7,8 @@ import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import DealSelector from '../../../src/components/products/DealSelector'
 import useAuth from "@hook/useAuth";
+import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
+import {getDealsQueryNoApollo} from "../../../src/gqlNoApollo/dealGqlNoApollo";
 
 // const StyledTabs = styled(Tabs)(({ theme }) => ({
 //     marginTop: 80,
@@ -22,14 +24,18 @@ import useAuth from "@hook/useAuth";
 
 
 export interface ProductDetailsProps {
-    //contextData?: any
+    contextData?: any
 }
 
-const ProductDetails:React.FC<ProductDetailsProps> = () => {
+const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+
+    function getContextData() {
+        return contextData;
+    }
 
     const router = useRouter();
     const [selectedDeal, setSelectedDeal] = useState(null);
-    const { getContextData } = useAuth()
+    //const { getContextData } = useAuth()
     const { id } = router.query
 
     useEffect(() => {
@@ -44,7 +50,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = () => {
     return (
         <NavbarLayout contextData={getContextData()}>
             {selectedDeal &&
-                <DealSelector deal={selectedDeal} contextData={getContextData()}/>
+            <DealSelector deal={selectedDeal} contextData={getContextData()}/>
             }
 
             {/*{selectedDeal && (selectedDeal.description !== "" || selectedDeal.additionalInformation !== "") &&*/}
@@ -85,17 +91,28 @@ const ProductDetails:React.FC<ProductDetailsProps> = () => {
     )
 }
 
-// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-//     return {
-//         paths: [], //indicates that no page needs be created at build time
-//         fallback: true //indicates the type of fallback
-//     }
-//
-//     // return getStaticPathsUtil()
-// }
-//
-// export const getStaticProps: GetStaticProps = async (context) => {
-//     return await getStaticPropsUtil();
-// }
+export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+    const config = require("../../../src/conf/config.json")
+    const resDeals = await getDealsQueryNoApollo(config.brandId);
+    let deals = [];
+
+    if (resDeals && resDeals.getDealsByBrandId) {
+        deals = resDeals.getDealsByBrandId;
+    }
+
+    let paths = []
+    deals.forEach(deal => {
+        paths.push({ params: { id: deal.id } })
+    })
+
+    return {
+        paths: paths, //indicates that no page needs be created at build time
+        fallback: true //indicates the type of fallback
+    }
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
 
 export default ProductDetails

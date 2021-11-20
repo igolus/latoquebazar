@@ -9,13 +9,13 @@ export interface ProductsSearchResultProps {
     contextData?: any
 }
 
-const ProductsSearchResult:React.FC<ProductsSearchResultProps> = () => {
+const ProductsSearchResult:React.FC<ProductsSearchResultProps> = ({contextData}) => {
     const router = useRouter();
-    const { getContextData } = useAuth();
+    //const { getContextData } = useAuth();
     const { query } = router.query
 
     return (
-        <ProductList query={query} contextData={getContextData()}/>
+        <ProductList query={query} contextData={contextData}/>
     )
 }
 
