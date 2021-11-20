@@ -1,7 +1,7 @@
 const git = require('simple-git')()
 
 const branches = require('./branches.json');
-const mainBranch = "";
+const mainBranch = "master";
 
 const run = async () => {
 
