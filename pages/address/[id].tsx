@@ -2,7 +2,6 @@ import AddressEditor from '@component/address/AddressEditor'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import React from 'react'
 import {useRouter} from "next/router";
-import useAuth from "@hook/useAuth";
 import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import {GetStaticPaths, GetStaticProps} from "next";
 
