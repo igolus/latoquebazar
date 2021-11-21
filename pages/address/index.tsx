@@ -161,7 +161,7 @@ const AddressList = ({contextData}) => {
                           <StyledTableCell align="left" >{item.address}</StyledTableCell>
                           <StyledTableCell align="left">{item.additionalInformation}</StyledTableCell>
                           <StyledTableCell align="right">
-                            <Link href={"/address/" + item.id}>
+                            <Link href={"/address/adressDetail?addId=" + item.id}>
                               <IconButton>
                                 <Edit fontSize="small" color="inherit" />
                               </IconButton>

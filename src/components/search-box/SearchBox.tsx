@@ -101,7 +101,7 @@ const SearchBox = () => {
   function searchTrigger() {
 
     //alert("searchTrigger " + searchText);
-    router.push("/product/search/" + searchText);
+    router.push("/product/search?query=" + searchText);
 
   }
 

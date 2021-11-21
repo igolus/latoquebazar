@@ -12,28 +12,18 @@ const AddressUpdater = ({contextData}) => {
     }
 
     const router = useRouter();
-    //const { query } = useRouter();
-    // const { getContextData } = useAuth();
-    const { id } = router.query;
+    // const { id } = router.query;
     const { back } = router.query;
-    //let query = window.location.query.back
 
-    //const back = query.back
-    //console.log("query -------------" + back)
-    //alert("query " + back)
   return (
-    <DashboardLayout contextData={getContextData()}>
-      <AddressEditor id={id} back={back}/>
+    <DashboardLayout contextData={getContextData()} noIndex={true}>
+      <AddressEditor back={back}/>
     </DashboardLayout>
   )
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
     return await getStaticPropsUtil();
-}
-
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
 }
 
 

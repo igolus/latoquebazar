@@ -1,9 +1,7 @@
 import FlexBox from '@component/FlexBox'
 import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
 import ProductCard7 from '@component/product-cards/ProductCard7'
-import {Span} from '@component/Typography'
-import countryList from '@data/countryList'
-import {Autocomplete, Box, Button, Card, Divider, Grid, MenuItem, TextField,} from '@material-ui/core'
+import {Box, Button, Grid,} from '@material-ui/core'
 import Link from 'next/link'
 import useAuth from "@hook/useAuth";
 import {GetStaticProps} from "next";
@@ -23,8 +21,13 @@ export interface CartProps {
   contextData?: any
 }
 
-const Cart:React.FC<CartProps> = () => {
-  const { getOrderInCreation, getContextData} = useAuth();
+const Cart:React.FC<CartProps> = ({contextData}) => {
+
+  function getContextData() {
+    return contextData;
+  }
+
+  const { getOrderInCreation} = useAuth();
   const currency = getBrandCurrency(getContextData() ? getContextData().brand : null)
 
   return (
@@ -110,8 +113,8 @@ const Cart:React.FC<CartProps> = () => {
   )
 }
 
-// export const getStaticProps: GetStaticProps = async (context) => {
-//   return await getStaticPropsUtil();
-// }
+export const getStaticProps: GetStaticProps = async (context) => {
+  return await getStaticPropsUtil();
+}
 
 export default Cart

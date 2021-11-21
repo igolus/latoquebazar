@@ -1,33 +1,23 @@
-import FlexBox from '@component/FlexBox'
 import Delivery from '@component/icons/Delivery'
 import PackageBox from '@component/icons/PackageBox'
 import TruckFilled from '@component/icons/TruckFilled'
-import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
-import TableRow from '@component/TableRow'
-import {H2, H5, H6, Paragraph, Span} from '@component/Typography'
-import productDatabase from '@data/product-database'
+import {H2, H5, Paragraph} from '@component/Typography'
 import useWindowSize from '@hook/useWindowSize'
-import { Avatar, Button, Card, Divider, Grid, Typography } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
-import Done from '@material-ui/icons/Done'
+import {Button, Card, Grid} from '@material-ui/core'
 import ShoppingBag from '@material-ui/icons/ShoppingBag'
-import { Box, useTheme } from '@material-ui/system'
-import { format } from 'date-fns'
-import React, {Fragment, useEffect, useState} from 'react'
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import {GetStaticPaths, GetStaticProps} from "next";
+import {Box, useTheme} from '@material-ui/system'
+import React, {useEffect, useState} from 'react'
 import {useRouter} from "next/router";
-import {getOrderByIdQuery, getSiteUserOrderById} from "../../src/gql/orderGql";
-import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
+// import {getOrderByIdQuery, getSiteUserOrderById} from "../../src/gql/orderGql";
+// import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
 import useAuth from "@hook/useAuth";
 import {
-    formatOrderConsumingMode, formatOrderDeliveryDateSlot,
-    formatProductAndSkuName, getBrandCurrency,
-    getImgUrlFromProducts,
-    getImgUrlFromProductsWithExtRef, getOrderBookingSlotEndDate, getOrderBookingSlotStartDate, getTextStatus
-} from "../../src/util/displayUtil";
-import {getCartItems} from "../../src/util/cartUtil";
+    formatOrderConsumingMode,
+    formatOrderDeliveryDateSlot,
+    getBrandCurrency,
+    getTextStatus
+} from "../../util/displayUtil";
 import {
     HUBRISE_ORDER_STATUS_ACCEPTED,
     HUBRISE_ORDER_STATUS_AWAITING_COLLECTION,
@@ -42,65 +32,77 @@ import {
     HUBRISE_ORDER_STATUS_REJECTED,
     ORDER_DELIVERY_MODE_DELIVERY,
     ORDER_STATUS_DELIVERING,
-    ORDER_STATUS_FINISHED,
-    ORDER_STATUS_NEW,
-    ORDER_STATUS_PREPARATION,
-    ORDER_STATUS_READY,
-    TYPE_DEAL,
-    TYPE_PRODUCT
-} from "../../src/util/constants";
-import DealCard7 from "@component/product-cards/DealCard7";
-import ProductCard7 from "@component/product-cards/ProductCard7";
-import localStrings from "../../src/localStrings";
+    ORDER_STATUS_FINISHED
+} from "../../util/constants";
 import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
-import OrderContent from '../../src/components/orders/OrderContent';
-import moment from "moment";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
-import BazarMenu from "@component/BazarMenu";
 import BazarImage from "@component/BazarImage";
 import {isMobile} from "react-device-detect";
+import localStrings from "../../localStrings";
+import OrderContent from "@component/orders/OrderContent";
+import {executeQueryUtil} from "../../apolloClient/gqlUtil";
+import {getOrderByIdQuery, getSiteUserOrderById} from "../../gql/orderGql";
 
-const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    marginTop: '2rem',
-    marginBottom: '2rem',
-    [theme.breakpoints.down('sm')]: {
-        flexDirection: 'column',
-    },
-
-    '& .line': {
-        // flex={width < breakpoint ? 'unset' : '1 1 0'}
-        // height={width < breakpoint ? 50 : 4}
-        // minWidth={width < breakpoint ? 4 : 50}
-        // bgcolor={ind < statusIndex ? 'primary.main' : 'grey.300'}
-        flex: '1 1 0',
-        height: 4,
-        minWidth: 50,
-        [theme.breakpoints.down('sm')]: {
-            flex: 'unset',
-            height: 50,
-            minWidth: 4,
-        },
-    },
-}))
-
-type OrderStatus = 'packaging' | 'shipping' | 'delivering' | 'complete'
+// const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     flexWrap: 'wrap',
+//     marginTop: '2rem',
+//     marginBottom: '2rem',
+//     [theme.breakpoints.down('sm')]: {
+//         flexDirection: 'column',
+//     },
+//
+//     '& .line': {
+//         // flex={width < breakpoint ? 'unset' : '1 1 0'}
+//         // height={width < breakpoint ? 50 : 4}
+//         // minWidth={width < breakpoint ? 4 : 50}
+//         // bgcolor={ind < statusIndex ? 'primary.main' : 'grey.300'}
+//         flex: '1 1 0',
+//         height: 4,
+//         minWidth: 50,
+//         [theme.breakpoints.down('sm')]: {
+//             flex: 'unset',
+//             height: 50,
+//             minWidth: 4,
+//         },
+//     },
+// }))
+//
+// type OrderStatus = 'packaging' | 'shipping' | 'delivering' | 'complete'
 
 export interface OrderDetailsProps {
     contextData?: any
 }
 
-const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
+const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
+    //let params = {};
+    let id;
+    let params = {};
+    try {
+        params = new URLSearchParams(window.location.search)
+        id = params?.get("orderId");
+        alert("orderId " + id);
+    }
+    catch (err) {
+
+    }
+
 
     function getContextData() {
         return contextData;
     }
+    // try {
+    //     params = new URLSearchParams(window.location.search)
+    // }
+    // catch(err) {
+    //
+    // }
 
     const router = useRouter();
-    const { id } = router.query
+
+    //alert("orderId " + orderId);
     const [refreshing, setRefreshing] = useState(false);
     const [noStatus, setNoStatus] = useState(false);
 
@@ -123,7 +125,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
         try {
             setRefreshing(true)
             //alert("refresh")
-            if (getContextData() && getContextData().brand && currentEstablishment()) {
+            if (getContextData() && getContextData().brand && currentEstablishment() && id) {
                 let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id, currentEstablishment().id, id));
                 let orderSet = null;
                 if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
@@ -207,7 +209,7 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <DashboardLayout contextData={getContextData()}>
+        <>
             <DashboardPageHeader
                 title={localStrings.orderDetail}
                 icon={ShoppingBag}
@@ -321,17 +323,14 @@ const OrderDetails:React.FC<OrderDetailsProps> = ({contextData}) => {
 
                 </Grid>
             </Grid>
-        </DashboardLayout>
+        </>
     )
 }
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
-}
-
-export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
+// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+//     return getStaticPathsUtil()
+// }
 
 
-export default OrderDetails
+
+export default OrderDetailsComponent

@@ -458,10 +458,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       //setLoading(false);
     }
     if (orderId != 0) {
-      router.push('/confirmed/' + orderId)
+      router.push('/confirmed/confirmedOrder?orderId=' + orderId)
     }
   }
-
 
   function setSelectedBookingSlot(bookingSlot) {
     //alert("setSelectedBookingSlot " + JSON.stringify(bookingSlot))

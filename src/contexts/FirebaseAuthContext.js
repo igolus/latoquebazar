@@ -9,7 +9,7 @@ import {getSiteUserByIdQuery} from "../gql/siteUserGql";
 import moment from "moment";
 import {establishmentsQuery} from "../gql/establishmentGql";
 import {getBrandByIdQuery} from "../gql/brandGql";
-import {ORDER_DELIVERY_MODE_DELIVERY} from "../util/constants"
+import {BRAND_COLLECTION, ORDER_DELIVERY_MODE_DELIVERY, RELOAD_COLLECTION} from "../util/constants"
 import {makeStyles} from "@material-ui/styles";
 import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
@@ -313,8 +313,55 @@ const AuthContext = createContext({
 });
 
 const expireTimeSeconds = 1800;
+export const reloadId = "1";
 
 export const AuthProvider = ({ children }) => {
+
+  useEffect(() => {
+    try {
+      const db = firebase.firestore();
+
+      // db.collection("brands")
+      //     .doc("0S93n0HvHamy7TP5vEYF")
+      //     .collection("reload")
+      //     .doc("8cWLnecWQkyUi3n24ZFC")
+
+      db.collection(BRAND_COLLECTION)
+          .doc(currentBrand().id)
+          .collection(RELOAD_COLLECTION)
+          .doc("1")
+          .onSnapshot((doc) => {
+            console.log("Current data ------ : ", JSON.stringify(doc.data()));
+          });
+    }
+    catch (err) {
+      console.log("error ------ : ", err);
+    }
+
+
+  }, [currentBrand])
+  // const [deliveryItems, loading, error] = useCollectionData(
+  //     db
+  //         .collection(BRAND_COLLECTION).doc(currentBrand().id)
+  //         .collection(RELOAD_COLLECTION).doc("1")
+  //         .collection(DELIVERY_COLLECTION)
+  //         .where('startDate', '>=', getStartDateSeconds())
+  //         .where('startDate', '<=', getEndDateSeconds())
+  //     ,
+  //     {
+  //       snapshotListenOptions: { includeMetadataChanges: true },
+  //     }
+  // );
+
+  useEffect(() => {
+    // Create an scoped async function in the hook
+    async function loadContextData() {
+      const contextData = await getContextDataApollo();
+      setContextData(contextData);
+      //     console.log("reload context !!!!")
+    }    // Execute the created function directly
+    loadContextData();
+  }, []);
 
   // useEffect(async () => {
   //   const interval = setInterval(async () => {

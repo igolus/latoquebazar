@@ -10,7 +10,6 @@ import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
 
 export interface ProductList {
-    query: string
     category: string
     contextData: any
 }
@@ -19,7 +18,20 @@ export interface ProductList {
 export const PRICE_ASC = 'PriceAsc';
 export const PRICE_DESC = 'PriceDesc';
 
-const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
+const ProductList: React.FC<ProductList> = ({category, contextData}) => {
+    let params = {};
+    let query;
+    try {
+        params = new URLSearchParams(window.location.search)
+        query = params?.get("query");
+        alert("query " + query);
+    }
+    catch (err) {
+
+    }
+
+    //const query = params?.get("query");
+
 
     const [tagsSelected, setTagsSelected] = useState([]);
     const [sortOption, setSortOption] = useState("priceAsc");

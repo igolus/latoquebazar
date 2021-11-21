@@ -16,6 +16,7 @@ type AppLayoutProps = {
     title?: string
     description?: string
     ogImage?: string
+    noIndex?: boolean
     navbar?: React.ReactChild
     contextData: any
 }
@@ -28,6 +29,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                                                  title ,
                                                  description,
                                                  ogImage,
+                                                 noIndex,
                                                  contextData
                                              }) => {
     const [isFixed, setIsFixed] = useState(false)
@@ -58,6 +60,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <Fragment>
             <Head>
                 <title>{title || siteTitle}</title>
+                {noIndex &&
+                    <meta name="robots" content="noindex"/>
+                }
+
                 <meta
                     property="og:title"
                     content={title || siteTitle}
