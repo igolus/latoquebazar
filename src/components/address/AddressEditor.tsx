@@ -29,7 +29,7 @@ const AddressEditor = ({back}) => {
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("addId");
-        alert("addId " + id);
+        //alert("addId " + id);
     }
     catch (err) {
 

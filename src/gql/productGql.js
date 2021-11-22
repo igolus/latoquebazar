@@ -3,6 +3,10 @@ import {gql} from "@apollo/client";
 
 const common = `
   id
+  chainedListItem {
+    previousId
+    nextId
+  }
   external
   extId
   extName
@@ -40,11 +44,11 @@ const common = `
   }
   skus {
     name
-    
     visible
     unavailableInEstablishmentIds
     extName
     extRef
+    sourceExtRefDup
     price
     nonDiscountedPrice
     percentDiscount
@@ -55,17 +59,24 @@ const common = `
     productName
     extraCharge
     shortCode
-        restrictions {
-        dow {
-          day
-          service
-        }
-        startDate
-        endDate
-        serviceTypes
-        minOrderAmount
-        maxPerOrder
-        maxPerCustomer
+    restrictionsList {
+      establishmentId
+      dow {
+        day
+        service
+      }
+      startDate
+      endDate
+      startTime
+      endTime
+      serviceTypes
+      minOrderAmount
+      maxPerOrder
+      maxPerCustomer
+      maxOrderAmount
+      minDeliveryDistance
+      maxDeliveryDistance
+      description
     }
   }
 `

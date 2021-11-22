@@ -24,7 +24,7 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
-        alert("orderId " + id);
+        //alert("orderId " + id);
     }
     catch (err) {
 

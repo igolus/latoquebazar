@@ -1,10 +1,8 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {useRouter} from "next/router";
 import ProductList from "@component/products/ProductList";
 import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder"
-import useAuth from "@hook/useAuth";
-import {getDealsQueryNoApollo} from "../../../src/gqlNoApollo/dealGqlNoApollo";
 import {getCategoriesQueryNoApollo} from "../../../src/gqlNoApollo/categoriesGqlNoApollo";
 
 export interface ProductsByCategoryProps {

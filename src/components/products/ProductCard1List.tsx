@@ -218,6 +218,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                 {/*<h1>{item.name}</h1>*/}
                                 {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
                                 <ProductCard1 {...itemShop}
+                                              brand={contextData.brand}
                                               currentService={currentService}
                                               product={item}
                                               faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}

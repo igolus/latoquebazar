@@ -3,7 +3,12 @@ import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
   id
+  chainedListItem {
+    previousId
+    nextId
+  }
   hubriseId
+  visible
   external
   extName
   shortCode
@@ -11,6 +16,8 @@ const common = `
   extRef
   creationDate
   updateDate
+  newProduct
+  newProductExpireDate
   category {
     id
     brandId
@@ -69,6 +76,7 @@ const common = `
     }
   }
 `
+
 export const getDealsQuery = (brandId) => {
   var debug = `
     query {

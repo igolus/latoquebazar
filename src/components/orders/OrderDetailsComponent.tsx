@@ -83,7 +83,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
-        alert("orderId " + id);
+        //alert("orderId " + id);
     }
     catch (err) {
 

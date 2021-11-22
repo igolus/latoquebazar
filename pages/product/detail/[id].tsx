@@ -3,7 +3,7 @@ import ProductIntro from '@component/products/ProductIntro'
 import {Box, Tab, Tabs} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useRouter} from "next/router";
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import ReactMarkdown from "react-markdown";
 import localStrings from "../../../src/localStrings";
@@ -35,18 +35,32 @@ export interface ProductDetailsProps {
 //const config = require('../../../src/conf/config.json');
 
 const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+    const config = require('../../../src/conf/config.json');
+    const router = useRouter();
+
+    const { id } = router.query
+    let productId = id;
+
+    const {currentEstablishment, bookingSlotStartDate, getContextDataAuth} = useAuth();
+
+
+    // const [selectedProduct, setSelectedProduct] = useState(null);
+
+    // useEffect(() => {
+    //     const selectedProductFind = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
+    //     setSelectedProduct(selectedProductFind)
+    // }, [getContextDataAuth()])
 
     console.log("process.env.REVALIDATE_DATA_TIME " + process.env.REVALIDATE_DATA_TIME )
+
     function getContextData() {
+        if (getContextDataAuth() && getContextDataAuth().products.find(p => p.id === id)) {
+            return getContextDataAuth()
+        }
         return contextData;
     }
 
 
-    const config = require('../../../src/conf/config.json');
-    const router = useRouter();
-    const {currentEstablishment, bookingSlotStartDate} = useAuth();
-    const { id } = router.query
-    let productId = id;
     let skuIndex;
     let split;
     if (id) {
@@ -114,8 +128,12 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                       ogImage={buildOgImage(selectedProduct)}
                       description={buildDescription(selectedProduct)}
         >
+            {/*<p>{JSON.stringify(selectedProduct || {})}</p>*/}
+
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
+                          firstEsta={getContextData().establishments[0]}
+                          brand={getContextData().brand}
                           currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate)}
                           faceBookShare={getContextData().brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                           routeToCart={true}

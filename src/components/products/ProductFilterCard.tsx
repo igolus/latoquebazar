@@ -28,7 +28,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
     const filteredCat = filterCat(categories, products, deals)
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
-            {/*<p>{JSON.stringify(deals || {})}</p>*/}
+            {/*<p>{JSON.stringify(categories || {})}</p>*/}
             <H6 mb={1.25}>{localStrings.categories}</H6>
             {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
             <StyledDashboardNav
@@ -41,17 +41,6 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
                 </FlexBox>
                 {/*<span>{item.count}</span>*/}
             </StyledDashboardNav>
-            {/*{haveDeals &&*/}
-            {/*    <StyledDashboardNav*/}
-            {/*        isCurrentPath={asPath.includes(localStrings.deals)}*/}
-            {/*        href={"/product/shop/" + localStrings.deals}*/}
-            {/*    >*/}
-            {/*        <FlexBox alignItems="center">*/}
-            {/*            <span>{localStrings.deals}</span>*/}
-            {/*        </FlexBox>*/}
-            {/*    </StyledDashboardNav>*/}
-            {/*}*/}
-
 
             {(filteredCat || []).map((item) => {
                     //alert(asPath)

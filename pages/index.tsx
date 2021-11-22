@@ -3,12 +3,11 @@ import SectionCategories from '@component/home-1/SectionCategories'
 import AppLayout from '@component/layout/AppLayout'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import React, {useEffect} from "react";
+import React from "react";
 import Head from 'next/head';
 import Section2 from "@component/home-1/Section2";
 
 import {Typography} from "@material-ui/core";
-import {isMobile} from "react-device-detect";
 import Card1 from "@component/Card1";
 import localStrings from "../src/localStrings";
 import OpeningHours from "@component/OpeningHours";
@@ -16,10 +15,6 @@ import ClosingDays from "@component/ClosingDays";
 import useAuth from "@hook/useAuth";
 import MyMap from "@component/GoogleMap";
 import useWindowSize from "@hook/useWindowSize";
-import {Box} from "@material-ui/system";
-import Image from "@component/BazarImage";
-import {cloneDeep} from "@apollo/client/utilities";
-
 
 
 export interface IndexPageProps {
@@ -29,12 +24,21 @@ export interface IndexPageProps {
 // let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
+    const {currentEstablishment, getContextDataAuth} = useAuth();
+
     function getContextData() {
+        if (getContextDataAuth() && getContextDataAuth().brand) {
+            return getContextDataAuth()
+        }
         return contextData;
     }
 
-    const {currentEstablishment, setContextData} = useAuth();
-
+    function firstOrCurrentEstablishment() {
+        if (currentEstablishment()) {
+            return currentEstablishment();
+        }
+        return getContextData().establishments[0];
+    }
     // useEffect(() => {
     //     setContextData(contextData);
     // }, [])
@@ -61,6 +65,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 }
 
                 <SectionCategories categories={getContextData()?.categories}
+                                   contextData={getContextData()}
                                    deals={getContextData()?.deals}
                                    products={getContextData()?.products}/>
 
@@ -72,9 +77,9 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                             {localStrings.place}
                         </Typography>
                         <MyMap
-                            lat={currentEstablishment() ? currentEstablishment().lat : null}
-                            lng={currentEstablishment() ? currentEstablishment().lng : null}
-                            name={currentEstablishment() ? currentEstablishment().establishmentName : null}
+                            lat={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lat : null}
+                            lng={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lng : null}
+                            name={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().establishmentName : null}
                             googleMapURL={"https://maps.googleapis.com/maps/api/js?key=" + config.googleKey + "&libraries=geometry,drawing,places"}
                             loadingElement={<div style={{ height: `100%` }} />}
                             containerElement={<div style={{ height: `400px` }} />}
@@ -87,11 +92,11 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                         <Typography variant="h6" fontWeight="600" mb={4}>
                             {localStrings.openingHours}
                         </Typography>
-                        <OpeningHours/>
+                        <OpeningHours firstEsta={getContextData().establishments[0]}/>
                     </Card1>
 
                     <Card1 sx={{mb: '2rem'}}>
-                        <ClosingDays/>
+                        <ClosingDays firstEsta={getContextData().establishments[0]}/>
                     </Card1>
                 </div>
                 }

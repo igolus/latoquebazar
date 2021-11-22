@@ -500,7 +500,7 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     let res = await executeQueryUtil(getChargesQuery(brandId));
     let chargeItems = res?.data?.getChargesByBrandId || [];
     let priceDetail = computePriceDetail(orderInCreation)
-    //alert("processOrderCharge totalNoCharge " + priceDetail.totalNoCharge)
+    alert("processOrderCharge totalNoCharge " + priceDetail.totalNoCharge)
     if (priceDetail.totalNoCharge === 0) {
         return;
     }
@@ -508,7 +508,7 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     //alert("processOrderCharge3 " + chargeItems.length)
     chargeItems.forEach(charge => {
         let chargeCopy = cloneDeep(charge);
-        //alert("computeItemRestriction")
+        alert("computeItemRestriction charge")
         let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true);
         if (chargeCopy.restrictionsApplied.length > 0 && unMatching == 0) {
             // alert("chargeCopy.restrictionsApplied " + chargeCopy.restrictionsApplied.length)

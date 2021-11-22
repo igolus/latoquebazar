@@ -26,10 +26,19 @@ const ClosingDayItem = ({slot}) => {
     </TableRow>);
 }
 
-const ClosingDays = ({}) => {
-    const {currentEstablishment} = useAuth()
+const ClosingDays = ({firstEsta}) => {
+    const {currentEstablishment} = useAuth();
+
+    function firstOrCurrentEstablishment() {
+        if (currentEstablishment()) {
+            return currentEstablishment();
+        }
+        return firstEsta;
+    }
+
+
     //const { height, width } = useWindowDimensions();
-    const closingSlots = (currentEstablishment()?.serviceSetting?.closingSlots || [])
+    const closingSlots = (firstOrCurrentEstablishment()?.serviceSetting?.closingSlots || [])
         .filter(slot => moment.unix(slot.startDate).isAfter());
 
     return (

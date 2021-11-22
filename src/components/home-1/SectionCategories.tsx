@@ -9,6 +9,7 @@ import React from 'react'
 import CategorySectionHeader from '../CategorySectionHeader'
 import localStrings from "../../localStrings";
 import {filterCat, getProductFirstImgUrl} from "../../util/displayUtil";
+import useAuth from "@hook/useAuth";
 
 const useStyles = makeStyles(({ shadows }: MuiThemeProps) => ({
   card: {
@@ -25,16 +26,27 @@ const useStyles = makeStyles(({ shadows }: MuiThemeProps) => ({
 }))
 
 export interface SectionCategoriesProps {
-  categories: any,
-  products: any,
-  deals: any,
+  contextData: any,
+  // categories: any,
+  // products: any,
+  // deals: any,
 }
 
 
-const SectionCategories: React.FC<SectionCategoriesProps> = ({categories, products, deals}) => {
-  const classes = useStyles()
+const SectionCategories: React.FC<SectionCategoriesProps> = ({contextData}) => {
+  const classes = useStyles();
 
-  const filteredCat = filterCat(categories, products, deals)
+    const {getContextDataAuth} = useAuth();
+
+    //const query = params?.get("query");
+    function getContextData() {
+        if (getContextDataAuth() && getContextDataAuth().products) {
+            return getContextDataAuth()
+        }
+        return contextData;
+    }
+
+  const filteredCat = filterCat(getContextData().categories, getContextData().products, getContextData().deals)
 
   return (
     <div style={{width: '100%'}}>

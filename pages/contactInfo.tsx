@@ -19,7 +19,24 @@ export interface IndexPageProps {
 
 const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
 
-    const {currentEstablishment} = useAuth();
+    const {currentEstablishment, getContextDataAuth} = useAuth();
+
+    function getContextData() {
+        if (getContextDataAuth() && getContextDataAuth().brand) {
+            return getContextDataAuth()
+        }
+        return contextData;
+    }
+
+
+    function firstOrCurrentEstablishment() {
+        if (currentEstablishment()) {
+            return currentEstablishment();
+        }
+        return getContextData().establishments[0];
+    }
+
+
     const config = require("../src/conf/config.json")
     const refDiv = useRef();
     return (
@@ -33,9 +50,9 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
                             {localStrings.place}
                         </Typography>
                         <MyMap
-                            lat={currentEstablishment() ? currentEstablishment().lat : null}
-                            lng={currentEstablishment() ? currentEstablishment().lng : null}
-                            name={currentEstablishment() ? currentEstablishment().establishmentName : null}
+                            lat={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lat : null}
+                            lng={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lng : null}
+                            name={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().establishmentName : null}
                             googleMapURL={"https://maps.googleapis.com/maps/api/js?key=" + config.googleKey + "&libraries=geometry,drawing,places"}
                             loadingElement={<div style={{ height: `100%` }} />}
                             containerElement={<div style={{ height: `400px` }} />}
@@ -48,11 +65,11 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
                         <Typography variant="h6" fontWeight="600" mb={4}>
                             {localStrings.openingHours}
                         </Typography>
-                        <OpeningHours/>
+                        <OpeningHours firstEsta={getContextData().establishments[0]}/>/>
                     </Card1>
 
                     <Card1 sx={{mb: '2rem'}}>
-                        <ClosingDays/>
+                        <ClosingDays firstEsta={getContextData().establishments[0]}/>/>
                     </Card1>
 
                     {/*<GoogleMap widthp={refDiv.current.width}/>*/}

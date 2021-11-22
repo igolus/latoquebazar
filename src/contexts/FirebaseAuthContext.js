@@ -3,7 +3,7 @@ import firebase from '../lib/firebase';
 import localStrings from "../localStrings";
 import {CURRENCY_EUR} from "../util/Currencies";
 import {useToasts} from "react-toast-notifications";
-import {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
+import filterDataGql, {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
 import '@firebase/messaging';
 import {getSiteUserByIdQuery} from "../gql/siteUserGql";
 import moment from "moment";
@@ -19,9 +19,12 @@ import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
 import {getBrandCurrency} from "../util/displayUtil";
-import {getContextData, getContextDataApollo, getStaticPropsUtil} from "../nextUtil/propsBuilder";
+import {getContextData, getContextDataApollo, getStaticPropsUtil, sortChainList} from "../nextUtil/propsBuilder";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getBookingSlotsOccupancyQueryNoApollo} from "../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
+import {getProductsByIdQuery} from "../gql/productGql";
+import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
+import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -306,8 +309,8 @@ const AuthContext = createContext({
   setGlobalDialog: () => {},
   resetGlobalDialog: () => {},
 
-  setContextData: () => {},
-  getContextData: () => {},
+  setContextDataAuth: () => {},
+  getContextDataAuth: () => {},
 
   setRedirectPageGlobal: () => {},
 });
@@ -315,31 +318,211 @@ const AuthContext = createContext({
 const expireTimeSeconds = 1800;
 export const reloadId = "1";
 
+const categoryType= "category";
+const productType= "product";
+const dealType= "deal";
+const tagType= "tag";
+const optionType= "option";
+const brandType= "brand"
+const updateAction= "update";
+const deleteAction= "delete";
+const createAction= "create";
+
 export const AuthProvider = ({ children }) => {
+  const [contextDataState, setContextDataState] = useState(null)
 
-  useEffect(() => {
-    try {
-      const db = firebase.firestore();
-
-      // db.collection("brands")
-      //     .doc("0S93n0HvHamy7TP5vEYF")
-      //     .collection("reload")
-      //     .doc("8cWLnecWQkyUi3n24ZFC")
-
-      db.collection(BRAND_COLLECTION)
-          .doc(currentBrand().id)
-          .collection(RELOAD_COLLECTION)
-          .doc("1")
-          .onSnapshot((doc) => {
-            console.log("Current data ------ : ", JSON.stringify(doc.data()));
-          });
+  function updateItem(dataType, getFunc, res, contextDataParam) {
+    if (!contextDataParam) {
+      return;
     }
-    catch (err) {
-      console.log("error ------ : ", err);
+    let contextCopy = cloneDeep(contextDataParam);
+    let index = contextCopy[dataType].findIndex(item => item.id === getFunc(res).id);
+
+    console.log("index " + index);
+    console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
+    console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
+    console.log("getFunc(res) " + JSON.stringify(getFunc(res)));
+    if (getFunc(res) && index!==-1) {
+      contextCopy[dataType].splice(index, 1, getFunc(res))
+    }
+    else {
+      return;
+    }
+    console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
+    console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
+
+    //contextCopy[dataType] = sortChainList(contextCopy[dataType])
+
+    setContextDataAuth(contextCopy);
+  }
+
+  function deleteItem(dataType, contextDataParam, id) {
+
+    if (!contextDataParam) {
+      return;
+    }
+    let contextCopy = cloneDeep(contextDataParam);
+    let index = contextCopy[dataType].findIndex(item => item.id === id);
+
+    if (index !== -1) {
+      contextCopy[dataType].splice(index, 1)
+    }
+    else {
+      return;
     }
 
+    contextCopy[dataType] = sortChainList(contextCopy[dataType])
 
-  }, [currentBrand])
+    setContextDataAuth(contextCopy, true);
+  }
+
+  function createItem(dataType, getFunc, res, contextDataParam) {
+    console.log("CreateItem " + dataType)
+    console.log("state.contextData " + contextDataParam);
+
+    if (!contextDataParam) {
+      return;
+    }
+    let contextCopy = cloneDeep(contextDataParam);
+    if (getFunc(res)) {
+      contextCopy[dataType].push(getFunc(res))
+      //contextCopy[dataType].splice(index, 1, getFunc(res))
+    }
+    contextCopy[dataType] = sortChainList(contextCopy[dataType])
+
+    setContextDataAuth(contextCopy, true);
+  }
+
+  function reloadContext(reload, contextDataParam) {
+    console.log("reloadContext " + JSON.stringify(reload))
+    console.log("contextDataP " + contextDataParam)
+    const id = reload.id;
+    if (!id) {
+      return;
+    }
+    if (reload.dataType === productType) {
+      if (reload.actionType === updateAction) {
+        executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
+          console.log("update product")
+          //console.log("res " + JSON.stringify(res));
+          updateItem("products", res => {
+            return ({
+              ...res.data.getProductByProductId,
+              type: "product"
+            })
+          }, res, contextDataParam);
+        })
+      }
+      if (reload.actionType === createAction) {
+        executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
+          console.log("create product")
+          //console.log("res " + JSON.stringify(res));
+          createItem("products", res => {
+                return ({
+                  ...res.data.getProductByProductId,
+                  type: "product"
+                })
+              },
+              res, contextDataParam);
+        })
+      }
+      if (reload.actionType === deleteAction) {
+        console.log("delete product")
+        deleteItem("products", contextDataParam, reload.id)
+      }
+    }
+
+    if (reload.dataType === categoryType) {
+      if (reload.actionType === updateAction) {
+        executeQueryUtilSync(getCategoriesByIdQuery(config.brandId, id)).then(res => {
+          console.log("update cat")
+          //console.log("res " + JSON.stringify(res));
+          updateItem("categories", res => res.data.getProductCategoryByCategoryId, res, contextDataParam);
+        })
+      }
+      if (reload.actionType === createAction) {
+        executeQueryUtilSync(getCategoriesByIdQuery(config.brandId, id)).then(res => {
+          console.log("create cat ")
+          //console.log("res " + JSON.stringify(res));
+          createItem("categories", res => res.data.getProductCategoryByCategoryId, res, contextDataParam);
+        })
+      }
+      if (reload.actionType === deleteAction) {
+        console.log("delete cat ");
+        deleteItem("categories", contextDataParam, reload.id)
+      }
+    }
+
+    if (reload.dataType === optionType) {
+      if (reload.actionType === updateAction) {
+        executeQueryUtilSync(getOptionListByOptionListIdQuery(config.brandId, id)).then(res => {
+          console.log("update option ")
+          //console.log("res " + JSON.stringify(res));
+          updateItem("options", res => res.data.getOptionListByOptionListIdQuery, res, contextDataParam);
+        })
+      }
+      if (reload.actionType === createAction) {
+        executeQueryUtilSync(getOptionListByOptionListIdQuery(config.brandId, id)).then(res => {
+          console.log("create option ")
+          //console.log("res " + JSON.stringify(res));
+          createItem("options", res => res.data.getOptionListByOptionListIdQuery, res, contextDataParam);
+        })
+      }
+      if (reload.actionType === deleteAction) {
+        console.log("delete option ")
+        deleteItem("options", contextDataParam, reload.id)
+      }
+    }
+
+    if (reload.dataType === brandType) {
+      if (reload.actionType === updateAction) {
+        executeQueryUtilSync(getBrandByIdQuery(config.brandId)).then(res => {
+          console.log("update Brand")
+
+          let contextCopy = cloneDeep(contextDataParam);
+          if (res.data?.getBrand) {
+            contextCopy.brand = res.data.getBrand;
+            setContextDataAuth(contextCopy, true);
+          }
+        })
+      }
+    }
+  }
+
+
+
+  // useEffect(() => {
+  //   try {
+  //
+  //     //if (state && state.contextData) {
+  //       // db.collection("brands")
+  //       //     .doc("0S93n0HvHamy7TP5vEYF")
+  //       //     .collection("reload")
+  //       //     .doc("8cWLnecWQkyUi3n24ZFC")
+  //       //if (currentBrand()) {
+  //       // const db = firebase.firestore();
+  //       // db.collection(BRAND_COLLECTION)
+  //       //     .doc(config.brandId)
+  //       //     .collection(RELOAD_COLLECTION)
+  //       //     .doc("1")
+  //       //     .onSnapshot((doc) => {
+  //       //       console.log("state.contextData " + state.contextData);
+  //       //       console.log("contextDataState " + contextDataState);
+  //       //       console.log("Current data ------ : ", JSON.stringify(doc.data()));
+  //       //       reloadContext(doc.data());
+  //       //
+  //       //     });
+  //
+  //       // }
+  //     //}
+  //
+  //   }
+  //   catch (err) {
+  //     console.log("error ------ : ", err);
+  //   }
+  //
+  //
+  // }, [contextDataState])
   // const [deliveryItems, loading, error] = useCollectionData(
   //     db
   //         .collection(BRAND_COLLECTION).doc(currentBrand().id)
@@ -357,8 +540,22 @@ export const AuthProvider = ({ children }) => {
     // Create an scoped async function in the hook
     async function loadContextData() {
       const contextData = await getContextDataApollo();
-      setContextData(contextData);
-      //     console.log("reload context !!!!")
+      setContextDataAuth(contextData);
+      console.log("load context !!!!");
+
+      const db = firebase.firestore();
+      db.collection(BRAND_COLLECTION)
+          .doc(config.brandId)
+          .collection(RELOAD_COLLECTION)
+          .doc(reloadId)
+          .onSnapshot((doc) => {
+            console.log("state.contextData " + state.contextData);
+            console.log("contextDataState " + contextData);
+            console.log("Current data ------ : ", JSON.stringify(doc.data()));
+            reloadContext(doc.data(), contextData);
+
+          });
+
     }    // Execute the created function directly
     loadContextData();
   }, []);
@@ -602,22 +799,19 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  const setContextData = (contextData) => {
+  const setContextDataAuth = (contextData) => {
     dispatch({
       type: CONTEXT_DATA,
       payload: {
         contextData: contextData,
       }
     });
+    // if (!noUpdate) {
+    setContextDataState(contextData);
+    // }
   }
 
-  const getContextData = () => {
-    // if (!state.contextData) {
-    //   const contextData = await  getContextDataApollo();
-    //   setContextData(contextData);
-    //   return contextData;
-    // }
-
+  const getContextDataAuth = () => {
     return state.contextData;
   }
 
@@ -642,21 +836,6 @@ export const AuthProvider = ({ children }) => {
       });
       return;
     }
-    // const brandId = currentBrand() ? currentBrand().id : 0;
-    // alert("brandId " + brandId)
-    // if (dbUser && brandId) {
-    //   alert("ORDER_COUNT DIS ")
-    //   let result = await executeQueryUtil(getCustomerOrdersOnlyIdQuery(brandId, dbUser.id));
-    //   if (result && result.data) {
-    //     let count = result.data.getSiteUser.orders.length;
-    //     dispatch({
-    //       type: ORDER_COUNT,
-    //       payload: {
-    //         orderCount: count,
-    //       }
-    //     });
-    //   }
-    // }
   }
 
   function getCurrency() {
@@ -987,8 +1166,8 @@ export const AuthProvider = ({ children }) => {
 
             setRedirectPageGlobal,
 
-            setContextData,
-            getContextData,
+            setContextDataAuth,
+            getContextDataAuth,
           }}
       >
 

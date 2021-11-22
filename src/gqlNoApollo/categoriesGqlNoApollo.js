@@ -3,17 +3,24 @@ import { request, gql } from 'graphql-request'
 const config = require('../conf/config.json')
 const common = `
   id
-        external
-        category
-        creationDate
-        brandId
-        extId
-        extRef
-        description
-        files {
-            path
-            url
-        }
+  chainedListItem {
+    previousId
+    nextId
+  }
+  external
+  category
+  creationDate
+  brandId
+  extId
+  extRef
+  description
+  files {
+    creationDate
+    name
+    url
+    path
+    size
+  }
 `
 
 export const getCategoriesQueryNoApollo = async (brandId) => {

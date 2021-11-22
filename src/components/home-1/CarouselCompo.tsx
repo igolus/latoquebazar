@@ -7,57 +7,52 @@ import {IndexPageProps} from "../../../pages";
 import CarouselCard2 from "@component/carousel-cards/CarouselCard2";
 import {isMobile} from "react-device-detect";
 import Image from "@component/BazarImage";
+import useAuth from "@hook/useAuth";
 
 export interface CarouselCompoProps {
-    contextData?: any
+  contextData?: any
 }
 
 
 const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
-  const carouselItems = contextData?.brand?.config?.carouselWebConfig || [];
-    return (
-    <Fragment>
-      <Navbar contextData={contextData}/>
 
+  const {getContextDataAuth} = useAuth();
 
-      {/*{isMobile &&*/}
-      {/*    <div style={{width:"100%"}}>*/}
-      {/*      /!*<Box mt={-0.5} mb={-0.5} display="flex" justifyContent="center">*!/*/}
-      {/*        <Box>*/}
-      {/*          <Image mt={1} src={contextData?.brand?.logoUrl}/>*/}
-      {/*        </Box>*/}
-      {/*      /!*</Box>*!/*/}
-      {/*    </div>*/}
-      {/*}*/}
-      {/*  <p>{JSON.stringify(contextData?.brand?.config?.carouselWebConfig)}</p>*/}
+  function getContextData() {
+    if (getContextDataAuth() && getContextDataAuth().brand) {
+      return getContextDataAuth()
+    }
+    return contextData;
+  }
+
+  const carouselItems = getContextData()?.brand?.config?.carouselWebConfig || [];
+
+  return (
+      <Fragment>
+        <Navbar contextData={getContextData()}/>
+
         {carouselItems && carouselItems.length > 0 &&
         <Box bgcolor="white" mb={7.5}>
-            <Container sx={{py: '2rem'}}>
-                <Carousel
-                    interval={8000}
-                    totalSlides={carouselItems.length}
-                    visibleSlides={1}
-                    infinite={true}
-                    autoPlay={true}
-                    showDots={carouselItems.length > 1}
-                    showArrow={false}
-                    spacing="0px"
-                >
+          <Container sx={{py: '2rem'}}>
+            <Carousel
+                interval={8000}
+                totalSlides={carouselItems.length}
+                visibleSlides={1}
+                infinite={true}
+                autoPlay={true}
+                showDots={carouselItems.length > 1}
+                showArrow={false}
+                spacing="0px"
+            >
 
-                    {carouselItems.map((carouselItem, key) =>
-                        <CarouselCard1 {...carouselItem} />
-                    )}
-
-                    {/*<CarouselCard2/>*/}
-                    {/*<CarouselCard1 />*/}
-                    {/* <CarouselCard1 /> */}
-                    {/* <CarouselCard1 /> */}
-                    {/* <CarouselCard1 /> */}
-                </Carousel>
-            </Container>
+              {carouselItems.map((carouselItem, key) =>
+                  <CarouselCard1 {...carouselItem} />
+              )}
+            </Carousel>
+          </Container>
         </Box>
         }
-    </Fragment>
+      </Fragment>
   )
 }
 
