@@ -20,7 +20,7 @@ import {
   buildProductAndSkus,
   decreaseCartQte,
   getQteInCart,
-  isProductAndSkuGetOption
+  isProductAndSkuGetOption, RESTRICTION_DELIVERY
 } from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
@@ -239,6 +239,34 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   />
                 </Box>
             }
+
+            {/*{product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&*/}
+            {/*<Box ml='3px' mt='6px' mr='3px'>*/}
+            {/*  <Chip*/}
+            {/*      className={classes.offerChip}*/}
+            {/*      color="secondary"*/}
+            {/*      size="small"*/}
+            {/*      label={localStrings.new}*/}
+            {/*  />*/}
+            {/*</Box>*/}
+            {/*}*/}
+
+            {/*<p>{JSON.stringify(selectedProductAndSku?.sku?.restrictionsApplied || {})}</p>*/}
+
+            {selectedProductAndSku?.sku?.restrictionsApplied &&
+            selectedProductAndSku?.sku?.restrictionsApplied
+                .filter(item => item.type === RESTRICTION_DELIVERY)
+                .map((restriction, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  <Chip
+                      className={classes.offerChip}
+                      color="primary"
+                      size="small"
+                      label={restriction.local}
+                  />
+                </Box>
+            )}
+
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
                   <Chip

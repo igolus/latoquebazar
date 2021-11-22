@@ -4,6 +4,9 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        allCat: "toute categories",
+        categoryTitleDef: "{0} categorie {1}",
+        categoryDescriptionDef: "{0} vous propose les produits de la categorie {1}",
         siteUnavailable: "Le site n'est pas disponible",
         siteUnavailableDetail: "Contactez le restaurant pour plus d'information",
 
@@ -15,7 +18,7 @@ let localStrings = new LocalizedStrings({
 
         close: "Fermer",
         unavailableDay: "Indisponible pour le {0}",
-        deliveryUnable: "Indisponible pour le mode {0}",
+        deliveryUnable: "Indisponible pour {0}",
 
         deliveryDistanceMin: "La distance jusqu'a l'etablissement doit etre superieure à {0} kms",
         deliveryDistanceMax: "La distance jusqu'a l'etablissement doit etre inférierure à {0} kms",

@@ -41,6 +41,22 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
         return contextData;
     }
 
+    function buildTitle() {
+        let categoryName = category;
+        if (category === "all") {
+            categoryName = localStrings.allCat;
+        }
+        return localStrings.formatString(localStrings.categoryTitleDef, getContextData().brand.brandName, categoryName);
+    }
+
+    function buildDescription() {
+        let categoryName = category;
+        if (category === "all") {
+            categoryName = localStrings.allCat;
+        }
+        return localStrings.formatString(localStrings.categoryDescriptionDef, getContextData().brand.brandName, categoryName);
+    }
+
     const [tagsSelected, setTagsSelected] = useState([]);
     const [sortOption, setSortOption] = useState("priceAsc");
     const [view, setView] = useState('grid')
@@ -69,7 +85,11 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
     return (
         <>
             {getContextData() &&
-            <NavbarLayout contextData={getContextData()}>
+            <NavbarLayout
+                title={buildTitle()}
+                description={buildDescription()}
+                descr
+                contextData={getContextData()}>
                 {/*<p>PLIST</p>*/}
                 <Box pt={2.5}>
                     <Card

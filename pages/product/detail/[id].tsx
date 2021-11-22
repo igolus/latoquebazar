@@ -128,7 +128,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                       ogImage={buildOgImage(selectedProduct)}
                       description={buildDescription(selectedProduct)}
         >
-            {/*<p>{JSON.stringify(selectedProduct || {})}</p>*/}
+            <p>{JSON.stringify(selectedProduct || {})}</p>
 
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
