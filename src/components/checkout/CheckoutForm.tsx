@@ -798,7 +798,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
                             <Box display="flex" flexDirection="row-reverse">
                               <Box mt={2}>
-                                <Link href={"/address/main" + "?back=" + encodeURI("/checkout")}>
+                                <Link href={"/address?addId=" + main + "&back=" + encodeURI("/checkout")}>
                                   <Button variant="contained" color="primary" type="button" fullWidth
                                           style={{textTransform: "none"}}
                                   >

@@ -500,7 +500,7 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     let res = await executeQueryUtil(getChargesQuery(brandId));
     let chargeItems = res?.data?.getChargesByBrandId || [];
     let priceDetail = computePriceDetail(orderInCreation)
-    alert("processOrderCharge totalNoCharge " + priceDetail.totalNoCharge)
+    //alert("processOrderCharge totalNoCharge " + priceDetail.totalNoCharge)
     if (priceDetail.totalNoCharge === 0) {
         return;
     }
