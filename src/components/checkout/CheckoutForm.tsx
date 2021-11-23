@@ -798,7 +798,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
                             <Box display="flex" flexDirection="row-reverse">
                               <Box mt={2}>
-                                <Link href={"/address?addId=" + main + "&back=" + encodeURI("/checkout")}>
+                                <Link href={"/address/adressDetail?addId=main&back=" + encodeURI("/checkout")}>
                                   <Button variant="contained" color="primary" type="button" fullWidth
                                           style={{textTransform: "none"}}
                                   >
@@ -1060,7 +1060,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       {useMyAdress && getOrderInCreation()?.deliveryAddress?.id &&
                       <Box display="flex" flexDirection="row-reverse">
                         <Box mt={2}>
-                          <Link href={"/address/" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
+                          <Link href={"/address/adressDetail?" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
                             <Button variant="contained" color="primary" type="button" fullWidth
                                     style={{textTransform: "none"}}
                             >
