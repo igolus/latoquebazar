@@ -41,16 +41,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     const siteTitle = contextData?.brand?.config?.metaWebConfig?.title || config.appName;
 
     function getChildrenOrUnavailable(children) {
-
-        if (isBrandInBadStripStatus(contextData?.brand)) {
-            return (
-                <Container sx={{ my: '2rem' }}>
-                    <AlertHtmlLocal title={localStrings.siteUnavailable}
-                                    content={localStrings.siteUnavailableDetail}>
-                    </AlertHtmlLocal>
-                </Container>
-            )
-        }
+        //TODO ADD BACK RESTRICTION
+        // if (isBrandInBadStripStatus(contextData?.brand)) {
+        //     return (
+        //         <Container sx={{ my: '2rem' }}>
+        //             <AlertHtmlLocal title={localStrings.siteUnavailable}
+        //                             content={localStrings.siteUnavailableDetail}>
+        //             </AlertHtmlLocal>
+        //         </Container>
+        //     )
+        // }
         return children;
     }
 
