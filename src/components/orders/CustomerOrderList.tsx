@@ -106,6 +106,9 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                       <TableHead>
                         <TableRow>
                           <TableCell align="left">
+                            {isMobile &&
+                            <TableCell align="left">{"  "}</TableCell>
+                            }
                             <H5 color="grey.600">
                               {isMobile ? localStrings.orderNumberMobile : localStrings.orderNumber}
 
@@ -143,6 +146,15 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                                 key={ind}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
+                              {isMobile &&
+                              <StyledTableCell align="right">
+                                <Link href={"/orders/" + item.id}>
+                                  <IconButton>
+                                    <East fontSize="small" color="inherit"/>
+                                  </IconButton>
+                                </Link>
+                              </StyledTableCell>
+                              }
                               <StyledTableCell align="left">{item.orderNumber}</StyledTableCell>
                               <StyledTableCell align="left" >{formatOrderConsumingModeGrid(item, localStrings)}</StyledTableCell>
                               <StyledTableCell align="left">{moment(parseFloat(item.creationDate)).locale("fr").calendar()}</StyledTableCell>

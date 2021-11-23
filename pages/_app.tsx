@@ -30,19 +30,21 @@ const App = ({ Component, pageProps}: any) => {
     const router = useRouter()
 
     useEffect(() => {
-        //alert("useEffect App")
-        const handleRouteChange = (url: string) => {
-            //alert("handleRouteChange")
-            ga.pageview(url)
-        }
-        //When the component is mounted, subscribe to router changes
-        //and log those page views
-        router.events.on('routeChangeComplete', handleRouteChange)
+        if (process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS) {
+            //alert("useEffect App")
+            const handleRouteChange = (url: string) => {
+                //alert("handleRouteChange")
+                ga.pageview(url)
+            }
+            //When the component is mounted, subscribe to router changes
+            //and log those page views
+            router.events.on('routeChangeComplete', handleRouteChange)
 
-        // If the component is unmounted, unsubscribe
-        // from the event with the `off` method
-        return () => {
-            router.events.off('routeChangeComplete', handleRouteChange)
+            // If the component is unmounted, unsubscribe
+            // from the event with the `off` method
+            return () => {
+                router.events.off('routeChangeComplete', handleRouteChange)
+            }
         }
     }, [router.events])
 

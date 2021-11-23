@@ -8,6 +8,7 @@
     "build": "next build",
     "postbuild": "next-sitemap",
     "buildStart": "next build && next start -p 3006",
+    "mergeBranch": "node mergeInBranches",
     "start": "next start -p 3006",
     "size": "node --max_old_space_size=4096",
     "mergeInBranche": "node mergeInBranches.js",
