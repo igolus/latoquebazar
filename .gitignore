@@ -35,3 +35,7 @@ yarn-error.log*
 /netlify
 /out
 .vercel
+
+/public/robots.txt
+/public/sitemap.xml
+/public/sw.js
