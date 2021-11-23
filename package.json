@@ -7,6 +7,7 @@
     "dev": "next dev -p 3005",
     "build": "next build",
     "buildStart": "next build && next start -p 3006",
+    "mergeBranch": "node mergeInBranches",
     "start": "next start -p 3006",
     "size": "node --max_old_space_size=4096",
     "fix:prettier": "prettier --write ."
