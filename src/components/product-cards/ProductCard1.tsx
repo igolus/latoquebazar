@@ -20,7 +20,7 @@ import {
   buildProductAndSkus,
   decreaseCartQte,
   getQteInCart,
-  isProductAndSkuGetOption
+  isProductAndSkuGetOption, RESTRICTION_DELIVERY
 } from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
@@ -39,6 +39,7 @@ export interface ProductCard1Props {
   off?: number
   id: string | number
   product: any
+  brand: any,
   faceBookShare: boolean
   options: any,
   currency: string
@@ -141,6 +142,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      rating,
                                                      hoverEffect,
                                                      product,
+                                                     brand,
                                                      faceBookShare,
                                                      options,
                                                      currency,
@@ -156,7 +158,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   useEffect(() => {
     let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
-        null, null, currentEstablishment, currentService, currentBrand(), setGlobalDialog, setRedirectPageGlobal);
+        null, null, currentEstablishment, currentService, brand, setGlobalDialog, setRedirectPageGlobal);
     setProductAndSkus(productAndSkusRes);
 
     let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
@@ -172,7 +174,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand, setGlobalDialog, setRedirectPageGlobal} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment, setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -237,6 +239,34 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   />
                 </Box>
             }
+
+            {/*{product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&*/}
+            {/*<Box ml='3px' mt='6px' mr='3px'>*/}
+            {/*  <Chip*/}
+            {/*      className={classes.offerChip}*/}
+            {/*      color="secondary"*/}
+            {/*      size="small"*/}
+            {/*      label={localStrings.new}*/}
+            {/*  />*/}
+            {/*</Box>*/}
+            {/*}*/}
+
+            {/*<p>{JSON.stringify(selectedProductAndSku?.sku?.restrictionsApplied || {})}</p>*/}
+
+            {selectedProductAndSku?.sku?.restrictionsApplied &&
+            selectedProductAndSku?.sku?.restrictionsApplied
+                .filter(item => item.type === RESTRICTION_DELIVERY)
+                .map((restriction, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  <Chip
+                      className={classes.offerChip}
+                      color="primary"
+                      size="small"
+                      label={restriction.local}
+                  />
+                </Box>
+            )}
+
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
                   <Chip
@@ -453,6 +483,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
+                          brand={brand}
                           faceBookShare={faceBookShare}
                           skuIndex={selectedSkuIndex}
                           product={product}

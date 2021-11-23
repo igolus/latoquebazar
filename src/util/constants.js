@@ -35,6 +35,7 @@ export const DOW_DINNER = "dinner";
 
 export const PRODUCT_USER_COLLECTION = 'productUsers';
 export const BRAND_COLLECTION = 'brands';
+export const RELOAD_COLLECTION = 'reload';
 export const ESTABLISHMENT_COLLECTION = 'establishments';
 export const SITE_USER_COLLECTION = 'siteUsers';
 export const STAT_COLLECTION = 'stats';

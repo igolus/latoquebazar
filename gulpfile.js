@@ -187,7 +187,7 @@ function generateConf(cb) {
             {
                 type: 'input',
                 name: 'projectId',
-                message: 'What is the vercel project Id ?'
+                message: 'What is the vercel project ConfirmedOrder ?'
             },
             {
                 type: 'input',

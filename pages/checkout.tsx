@@ -12,11 +12,16 @@ import useAuth from "@hook/useAuth";
 
 
 export interface CheckoutProps {
-  //contextData?: any
+  contextData?: any
 }
 
-const Checkout:React.FC<Checkout> = () => {
-  const {getContextData, currentBrand} = useAuth();
+const Checkout:React.FC<Checkout> = ({contextData}) => {
+
+  function getContextData() {
+    return contextData;
+  }
+
+  const {currentBrand} = useAuth();
 
   let publicKey = currentBrand()?.config?.paymentWebConfig?.stripePublicKey;
   console.log("publicKey" + publicKey)
@@ -43,8 +48,8 @@ const Checkout:React.FC<Checkout> = () => {
   )
 }
 
-// export const getStaticProps: GetStaticProps = async (context) => {
-//   return await getStaticPropsUtil();
-// }
+export const getStaticProps: GetStaticProps = async (context) => {
+  return await getStaticPropsUtil();
+}
 
 export default Checkout

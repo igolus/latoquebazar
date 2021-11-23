@@ -58,10 +58,18 @@ const OpeningHourRow = ({index, daySetting}) => {
     </TableRow>);
 }
 
-const OpeningHours = ({}) => {
-    const {currentEstablishment} = useAuth()
+const OpeningHours = ({firstEsta}) => {
+    const {currentEstablishment} = useAuth();
+
+    function firstOrCurrentEstablishment() {
+        if (currentEstablishment()) {
+            return currentEstablishment();
+        }
+        return firstEsta;
+    }
+
     //const { height, width } = useWindowDimensions();
-    const daySetting = currentEstablishment()?.serviceSetting?.daySetting;
+    const daySetting = firstOrCurrentEstablishment()?.serviceSetting?.daySetting;
 
     return (<>
         <TableRow

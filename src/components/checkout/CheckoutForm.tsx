@@ -458,10 +458,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
       //setLoading(false);
     }
     if (orderId != 0) {
-      router.push('/confirmed/' + orderId)
+      router.push('/confirmed/confirmedOrder?orderId=' + orderId)
     }
   }
-
 
   function setSelectedBookingSlot(bookingSlot) {
     //alert("setSelectedBookingSlot " + JSON.stringify(bookingSlot))
@@ -799,7 +798,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
                             <Box display="flex" flexDirection="row-reverse">
                               <Box mt={2}>
-                                <Link href={"/address/main" + "?back=" + encodeURI("/checkout")}>
+                                <Link href={"/address/adressDetail?addId=main&back=" + encodeURI("/checkout")}>
                                   <Button variant="contained" color="primary" type="button" fullWidth
                                           style={{textTransform: "none"}}
                                   >
@@ -1061,7 +1060,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                       {useMyAdress && getOrderInCreation()?.deliveryAddress?.id &&
                       <Box display="flex" flexDirection="row-reverse">
                         <Box mt={2}>
-                          <Link href={"/address/" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
+                          <Link href={"/address/adressDetail?" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
                             <Button variant="contained" color="primary" type="button" fullWidth
                                     style={{textTransform: "none"}}
                             >

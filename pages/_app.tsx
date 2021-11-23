@@ -21,6 +21,10 @@ nProgress.configure({ showSpinner: false })
 
 const App = ({ Component, pageProps}: any) => {
 
+
+
+
+
     const Layout = Component.layout || Fragment
 
     const router = useRouter()

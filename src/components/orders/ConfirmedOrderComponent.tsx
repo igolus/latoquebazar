@@ -1,38 +1,44 @@
-import CheckoutForm from '@component/checkout/CheckoutForm'
 import OrderAmountSummary from '@component/checkout/OrderAmountSummary'
-import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
-import {Box, Button, CircularProgress, Grid} from '@material-ui/core'
+import {Button, Grid} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
-import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import {getBrandCurrency} from "../../src/util/displayUtil";
 import ConfirmInfo from "@component/confirm/ConfirmInfo";
-import localStrings from "../../src/localStrings";
 import ShoppingBag from "@material-ui/icons/ShoppingBag";
 import DashboardPageHeader from "@component/layout/DashboardPageHeader";
-import {useRouter} from "next/router";
 import useAuth from "@hook/useAuth";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import {executeMutationUtil, executeQueryUtil} from "../../src/apolloClient/gqlUtil";
-import {addSiteUserMessagingToken} from "../../src/gql/siteUserGql";
-import {getOrderByIdQuery} from "../../src/gql/orderGql";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
-import Link from "next/link";
+import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
+import {addSiteUserMessagingToken} from "../../gql/siteUserGql";
+import {getOrderByIdQuery} from "../../gql/orderGql";
+import localStrings from "../../localStrings";
+import {getBrandCurrency} from "../../util/displayUtil";
 
-export interface ConfirmedProps {
+export interface ConfirmedOrderComponentProps {
     contextData?: any
 }
 
-const Id:React.FC<ConfirmedProps> = ({contextData}) => {
-    const router = useRouter();
+const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}) => {
+
+    let id;
+    let params = {};
+    try {
+        params = new URLSearchParams(window.location.search)
+        id = params?.get("orderId");
+        //alert("orderId " + id);
+    }
+    catch (err) {
+
+    }
+
+    //const router = useRouter();
 
     function getContextData() {
         return contextData;
     }
 
     const {currentBrand, currentEstablishment, dbUser} = useAuth();
-
-    const { id } = router.query;
+    //
+    // const { id } = router.query;
 
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -81,28 +87,14 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
             jssStyles.parentElement!.removeChild(jssStyles)
         }
 
-        // if("serviceWorker" in navigator) {
-        //     //register(window);
-        //     window.addEventListener("load", function () {
-        //         navigator.serviceWorker.register("/firebase-messaging-sw.old").then(
-        //             function (registration) {
-        //                 console.log("Service Worker registration successful with scope: ", registration.scope);
-        //             },
-        //             function (err) {
-        //                 console.log("Service Worker registration failed: ", err);
-        //             }
-        //         );
-        //     });
-        // }
-
     }, [])
 
     function seeMyOrderDetail() {
-        router.push("/orders/" + id)
+        router.push("/orders?orderId" + id)
     }
 
     return (
-        <CheckoutNavLayout contextData={getContextData()}>
+        <>
             {order && !loading ?
                 <>
                     {/*<p>{JSON.stringify(order || {})}</p>*/}
@@ -160,16 +152,8 @@ const Id:React.FC<ConfirmedProps> = ({contextData}) => {
                 :
                 <ClipLoaderComponent/>
             }
-        </CheckoutNavLayout>
+        </>
     )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
-}
-
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
-}
-
-export default Id
+export default ConfirmedOrderComponent

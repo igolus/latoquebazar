@@ -22,7 +22,18 @@ import {useRouter} from "next/router";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {uuid} from "uuidv4";
 
-const AddressEditor = ({id, mode, back}) => {
+const AddressEditor = ({back}) => {
+
+    let id;
+    let params = {};
+    try {
+        params = new URLSearchParams(window.location.search)
+        id = params?.get("addId");
+        //alert("addId " + id);
+    }
+    catch (err) {
+
+    }
 
     const router = useRouter();
     const {currentEstablishment, dbUser, currentBrand, setDbUser, getOrderInCreation, setOrderInCreation} = useAuth()

@@ -103,7 +103,7 @@ const AddressList = ({contextData}) => {
                   title={localStrings.myAddresses}
                   icon={Place}
                   button={
-                    <Link href={"/address/new"}>
+                    <Link href={"/address/adressDetail?addId=new"}>
                       <Button color="primary"  variant={"contained"} sx={{ px: '2rem', textTransform: "none" }}>
                         {localStrings.addNewAddress}
                       </Button>
@@ -120,7 +120,7 @@ const AddressList = ({contextData}) => {
                       <StyledTableCell align="left" >{dbUser?.userProfileInfo?.address}</StyledTableCell>
                       <StyledTableCell align="left">{dbUser?.userProfileInfo?.additionalInformation}</StyledTableCell>
                       <StyledTableCell align="right">
-                        <Link href="/address/main">
+                        <Link href="/address/adressDetail?addId=main">
                           <IconButton>
                             <Edit fontSize="small" color="inherit" />
                           </IconButton>
@@ -161,7 +161,7 @@ const AddressList = ({contextData}) => {
                           <StyledTableCell align="left" >{item.address}</StyledTableCell>
                           <StyledTableCell align="left">{item.additionalInformation}</StyledTableCell>
                           <StyledTableCell align="right">
-                            <Link href={"/address/" + item.id}>
+                            <Link href={"/address/adressDetail?addId=" + item.id}>
                               <IconButton>
                                 <Edit fontSize="small" color="inherit" />
                               </IconButton>

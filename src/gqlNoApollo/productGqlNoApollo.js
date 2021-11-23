@@ -4,6 +4,10 @@ import {TYPE_DEAL, TYPE_PRODUCT} from "../util/constants";
 const config = require('../conf/config.json')
 const common = `
   id
+  chainedListItem {
+    previousId
+    nextId
+  }
   external
   extId
   extName
@@ -45,6 +49,7 @@ const common = `
     unavailableInEstablishmentIds
     extName
     extRef
+    sourceExtRefDup
     price
     nonDiscountedPrice
     percentDiscount
@@ -57,22 +62,22 @@ const common = `
     shortCode
     restrictionsList {
       establishmentId
-        dow {
-          day
-          service
-        }
-        startDate
-        endDate
-        startTime
-        endTime
-        serviceTypes
-        minOrderAmount
-        maxPerOrder
-        maxPerCustomer
-        maxOrderAmount
-        minDeliveryDistance
-        maxDeliveryDistance
-        description
+      dow {
+        day
+        service
+      }
+      startDate
+      endDate
+      startTime
+      endTime
+      serviceTypes
+      minOrderAmount
+      maxPerOrder
+      maxPerCustomer
+      maxOrderAmount
+      minDeliveryDistance
+      maxDeliveryDistance
+      description
     }
   }
 `

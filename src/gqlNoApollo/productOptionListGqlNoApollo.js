@@ -2,26 +2,31 @@ import { request, gql } from 'graphql-request'
 const config = require('../conf/config.json')
 
 const common = `
-    id
-    external
-    extRef
-    creationDate
-    updateDate
+  id
+  chainedListItem {
+    previousId
+    nextId
+  }
+  external
+  extRef
+  creationDate
+  updateDate
+  extId
+  type
+  extName
+  name
+  tags
+  minValue
+  maxValue
+  mandatory
+  options {
     extId
-    type
+    extRef
     extName
+    defaultSelected
     name
-    tags
-    minValue
-    maxValue
-    mandatory
-    options {
-      extId
-      extRef
-      extName
-      name
-      price
-    }
+    price
+  }
 `
 
 export const getOptionsListQueryNoApollo = async (brandId) => {

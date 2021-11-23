@@ -26,6 +26,8 @@ export interface ProductIntroProps {
     product: any
     faceBookShare: boolean
     options: any,
+    brand: any,
+    firstEsta: any,
     currency: string,
     skuIndex: any,
     addCallBack: any
@@ -45,6 +47,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        product,
                                                        faceBookShare,
                                                        options,
+                                                       brand,
+                                                       firstEsta,
                                                        currency,
                                                        skuIndex,
                                                        addCallBack,
@@ -65,21 +69,29 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment, currentBrand,
+    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment,
         setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
+
+    function firstOrCurrentEstablishment() {
+        if (currentEstablishment()) {
+            return currentEstablishment();
+        }
+        return firstEsta;
+    }
+
     useEffect(() => {
-        if (currentEstablishment && currentEstablishment() && currentBrand()) {
+        if (firstOrCurrentEstablishment() && brand) {
             if (skuIndex) {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand(),
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand,
                         setGlobalDialog, setRedirectPageGlobal)[skuIndex]
                 });
             } else {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, currentEstablishment, currentService, currentBrand())[0],
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[0],
                         setGlobalDialog, setRedirectPageGlobal
                 });
             }
@@ -88,28 +100,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     }, [])
 
-    // function getInitialSku() {
-    //   // if (!orderInCreation()) {
-    //   //   return []
-    //   // }
-    //   if (skuIndex) {
-    //     return {...buildProductAndSkus(product, orderInCreation)[skuIndex]}
-    //   }
-    //   return {...buildProductAndSkus(product, orderInCreation)[0]};
-    // }
-
     const [productAndSku, setProductAndSku] = useState(null);
     const [valid, setValid] = useState(false);
     const {addToast} = useToasts()
     const [selectedImage, setSelectedImage] = useState(0)
     const [isViewerOpen, setIsViewerOpen] = useState(false)
     const [currentImage, setCurrentImage] = useState(0)
-
-    //const { state, dispatch } = useAppContext()
-    //const cartList: CartItem[] = state.cart.cartList
     const router = useRouter()
-    // const routerId = router.query.id as string
-    // const cartItem = cartList.find((item) => item.id === id || item.id === routerId)
 
     const handleImageClick = (ind: number) => () => {
         setSelectedImage(ind)
@@ -135,7 +132,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     return (
         <Box width="100%">
 
-            {/*<p>{valid}</p>*/}
+            {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
+            {/*<p>{JSON.stringify(brand || {})}</p>*/}
             {/*  <p>{JSON.stringify(product)}</p>*/}
             {/*  <p>{JSON.stringify(productAndSku?.sku?.unavailableInEstablishmentIds || {})}</p>*/}
             {/*  <p>{JSON.stringify(productAndSku || {})}</p>*/}

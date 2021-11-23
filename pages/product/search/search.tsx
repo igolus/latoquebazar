@@ -12,16 +12,16 @@ export interface ProductsSearchResultProps {
 const ProductsSearchResult:React.FC<ProductsSearchResultProps> = ({contextData}) => {
     const router = useRouter();
     //const { getContextData } = useAuth();
-    const { query } = router.query
+    //const { query } = router.query
 
     return (
-        <ProductList query={query} contextData={contextData}/>
+        <ProductList contextData={contextData}/>
     )
 }
 
-export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    return getStaticPathsUtil()
-}
+// export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
+//     return getStaticPathsUtil()
+// }
 
 export const getStaticProps: GetStaticProps = async (context) => {
     return await getStaticPropsUtil();

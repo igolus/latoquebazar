@@ -508,8 +508,12 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     //alert("processOrderCharge3 " + chargeItems.length)
     chargeItems.forEach(charge => {
         let chargeCopy = cloneDeep(charge);
-        //alert("computeItemRestriction")
+        //alert("computeItemRestriction charge")
         let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true);
+        //alert("unMatching " + unMatching)
+        //console.log("chargeCopy " + JSON.stringify(chargeCopy, null, 2))
+
+
         if (chargeCopy.restrictionsApplied.length > 0 && unMatching == 0) {
             // alert("chargeCopy.restrictionsApplied " + chargeCopy.restrictionsApplied.length)
             // alert("unMatching " + unMatching)
@@ -626,7 +630,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 condition = !condition;
             }
             if (condition) {
-                //alert("add restriction")
+                //alert("add restriction serviceTypes")
                 item.restrictionsApplied.push({
                     type: RESTRICTION_DELIVERY,
                     description: RESTRICTION_DELIVERY,

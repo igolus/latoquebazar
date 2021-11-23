@@ -8,9 +8,9 @@ import {Card, Grid, MenuItem, Select, TextField} from '@material-ui/core'
 import {Box} from '@material-ui/system'
 import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
+import useAuth from "@hook/useAuth";
 
 export interface ProductList {
-    query: string
     category: string
     contextData: any
 }
@@ -19,7 +19,43 @@ export interface ProductList {
 export const PRICE_ASC = 'PriceAsc';
 export const PRICE_DESC = 'PriceDesc';
 
-const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
+const ProductList: React.FC<ProductList> = ({category, contextData}) => {
+    let params = {};
+    let query;
+    try {
+        params = new URLSearchParams(window.location.search)
+        query = params?.get("query");
+        //alert("query " + query);
+    }
+    catch (err) {
+
+    }
+
+    const {getContextDataAuth} = useAuth();
+
+    //const query = params?.get("query");
+    function getContextData() {
+        if (getContextDataAuth() && getContextDataAuth().products) {
+            return getContextDataAuth()
+        }
+        return contextData;
+    }
+
+    function buildTitle() {
+        let categoryName = category;
+        if (category === "all") {
+            categoryName = localStrings.allCat;
+        }
+        return localStrings.formatString(localStrings.categoryTitleDef, getContextData().brand.brandName, categoryName);
+    }
+
+    function buildDescription() {
+        let categoryName = category;
+        if (category === "all") {
+            categoryName = localStrings.allCat;
+        }
+        return localStrings.formatString(localStrings.categoryDescriptionDef, getContextData().brand.brandName, categoryName);
+    }
 
     const [tagsSelected, setTagsSelected] = useState([]);
     const [sortOption, setSortOption] = useState("priceAsc");
@@ -48,8 +84,12 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
 
     return (
         <>
-            {contextData &&
-            <NavbarLayout contextData={contextData}>
+            {getContextData() &&
+            <NavbarLayout
+                title={buildTitle()}
+                description={buildDescription()}
+                descr
+                contextData={getContextData()}>
                 {/*<p>PLIST</p>*/}
                 <Box pt={2.5}>
                     <Card
@@ -125,12 +165,12 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                                 },
                             }}
                         >
-                            {contextData &&
-                            <ProductFilterCard tags={contextData.tags}
-                                               deals={contextData.deals}
+                            {getContextData() &&
+                            <ProductFilterCard tags={getContextData().tags}
+                                               deals={getContextData().deals}
                                                tagsSelected={tagsSelected} setTagsSelected={setTagsSelected}
-                                               products={contextData.products}
-                                               categories={contextData.categories}/>
+                                               products={getContextData().products}
+                                               categories={getContextData().categories}/>
                             }
                         </Grid>
 
@@ -139,7 +179,7 @@ const ProductList: React.FC<ProductList> = ({query, category, contextData}) => {
                                 sortOption={sortOption}
                                 filter={filter} query={query}
                                 tagsSelected={tagsSelected}
-                                category={category} contextData={contextData}/>
+                                category={category} contextData={getContextData()}/>
                         </Grid>
                     </Grid>
                 </Box>
