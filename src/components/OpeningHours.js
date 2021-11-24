@@ -9,6 +9,7 @@ import {Chip, IconButton, Typography} from "@material-ui/core";
 import {formatOrderStatus} from "../util/displayUtil";
 import moment from "moment";
 import East from "@material-ui/icons/East";
+import {ORDER_DELIVERY_MODE_ON_THE_SPOT} from "../util/constants";
 
 const OpeningHourRow = ({index, daySetting}) => {
     if (!daySetting) {
@@ -41,7 +42,9 @@ const OpeningHourRow = ({index, daySetting}) => {
         default:
             englishDay=null;
     }
-    let daySettingCurrent = daySetting.filter(item => item.day === englishDay)
+    let daySettingCurrent = daySetting.filter(item =>
+        item.deliveryMode === ORDER_DELIVERY_MODE_ON_THE_SPOT &&
+        item.day === englishDay)
 
     return (<TableRow sx={{ my: '1rem', padding: '6px 18px' }}>
         <Typography className="pre" m={0.75} textAlign="left">

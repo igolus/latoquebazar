@@ -20,6 +20,9 @@ const run = async () => {
             const pushSummary = await git.push()
             console.log(pushSummary);
         }
+
+        const checkoutResult =  await git.checkout(mainBranch);
+        console.log("back to main");
     }
     catch (err) {
         console.log(err)

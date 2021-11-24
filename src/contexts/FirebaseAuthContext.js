@@ -394,6 +394,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   function reloadContext(reload, contextDataParam) {
+    if (!reload) {
+      return;
+    }
     console.log("reloadContext " + JSON.stringify(reload))
     console.log("contextDataP " + contextDataParam)
     const id = reload.id;

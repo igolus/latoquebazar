@@ -1,20 +1,20 @@
 import React from 'react'
 import {useRouter} from "next/router";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder"
 import ProductList from "@component/products/ProductList";
-import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder"
-import useAuth from "@hook/useAuth";
 
 export interface ProductsSearchResultProps {
     contextData?: any
 }
 
 const ProductsSearchResult:React.FC<ProductsSearchResultProps> = ({contextData}) => {
-    const router = useRouter();
+    //const router = useRouter();
     //const { getContextData } = useAuth();
     //const { query } = router.query
 
     return (
+        // <h1>SEARCH</h1>
         <ProductList contextData={contextData}/>
     )
 }
