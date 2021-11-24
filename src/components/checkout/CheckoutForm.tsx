@@ -78,12 +78,18 @@ const useStyles = makeStyles((theme) => ({
 
 export interface CheckoutFormProps {
   contextData: any
+  noStripe: boolean
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
-  const stripe = useStripe();
-  const elements = useElements();
+  let stripe;
+  let elements;
+  if (!noStripe) {
+    stripe = useStripe();
+    elements = useElements();
+  }
+
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
@@ -146,6 +152,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
   }
 
   const processPayment = async(orderId, values) => {
+
+    if (noStripe) {
+      return;
+    }
     const cardElement = elements.getElement("card");
 
     try {
@@ -421,7 +431,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
-      if (paymentMethod === "cc") {
+      if (paymentMethod === "cc" && !noStripe) {
         let payResult = await processPayment(result.data.addOrder.id, values);
 
         console.log("payResult " + JSON.stringify(payResult, null, 2))
@@ -615,7 +625,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                   setFieldValue,
                 }) => (
                   <form onSubmit={handleSubmit}>
-
                     {/*<p>{JSON.stringify(dbUser || {})}</p>*/}
                     {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>*/}
                     {(!dbUser) &&
@@ -678,8 +687,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                     {(dbUser || bookWithoutAccount) &&
                     <Card1 sx={{mb: '2rem'}}>
                       <>
-                        {isDeliveryPriceDisabled() &&
-
+                        {isDeliveryPriceDisabled() === true &&
+                        <>
+                        {/*<p>DeliveryPriceDisabled</p>*/}
                         <AlertHtmlLocal severity={"warning"}
                                         title={localStrings.warningMessage.deliveryUnavailable}
                                         content={localStrings.formatString(localStrings.warningMessage.minimalPriceForDeliveryNoReached,
@@ -697,6 +707,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData}) => {
                             </Box>
                           </Box>
                         </AlertHtmlLocal>
+                        </>
                         }
                         <Typography fontWeight="800" mb={2} variant="h5">
                           {localStrings.selectDeliveryMode}

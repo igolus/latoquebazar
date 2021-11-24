@@ -224,6 +224,7 @@ function getSelector(optionList) {
                 {optionListComplete.map((optionComplete, key) =>
                     <FormControlLabel style={{marginRight:'20px'}}
                                       control={<Checkbox value={optionComplete}
+                                                         defaultChecked={optionComplete.defaultSelected}
                                                          disabled={!checkQuantity(optionList, optionComplete)}
                                                          checked={isCheckSelect(optionComplete)}
                                                          onChange={(event) => handleChangeSelect(optionComplete)} />}

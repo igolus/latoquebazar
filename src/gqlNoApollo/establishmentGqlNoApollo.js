@@ -45,6 +45,9 @@ const common = `
       day
       uuid
       startHourBooking
+      limitHourEligibility
+      deliveryMode
+      slotDuration
       endHourBooking
       startHourDelivery
       endHourService

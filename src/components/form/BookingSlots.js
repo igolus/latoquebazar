@@ -207,8 +207,14 @@ function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
     for (let j = 0; j< daySettings.length; j++) {
       let daySetting = daySettings[j];
       if (!limit || allDaySettings.length < limit) {
+        if (daySetting.limitHourEligibility)
+        {
+          if (setHourFromString(dateStart, daySetting.limitHourEligibility).isBefore(dateStart)) {
+            continue;
+          }
+        }
         let dateToCompare = moment(dateCurrent);
-        setHourFromString(dateToCompare, daySetting.endHourService)
+        dateToCompare = setHourFromString(dateToCompare, daySetting.endHourService)
         if (dateCurrent.isBefore(dateToCompare)) {
           allDaySettings.push({
             ...daySetting,

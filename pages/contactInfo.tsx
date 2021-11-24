@@ -45,6 +45,19 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
             {/*<div style={{width: '100%', height:'600px'}} ref={refDiv}>*/}
                 <Container sx={{ mb: '70px' }}>
                     {/*<h1>CONTACT INFO TODO</h1>*/}
+                    {firstOrCurrentEstablishment() &&
+                    <Card1 sx={{mb: '2rem', mt: '2rem'}}>
+                        <Typography variant="h4" fontWeight="600" mb={4}>
+                            {firstOrCurrentEstablishment().establishmentName}
+                        </Typography>
+
+                        <Typography variant="h6" fontWeight="600" mb={4}>
+                            {firstOrCurrentEstablishment().address}
+                        </Typography>
+                    </Card1>
+                    }
+
+
                     <Card1 sx={{mb: '2rem', mt:'2rem' }}>
                         <Typography  variant="h6" fontWeight="600" mb={4}>
                             {localStrings.place}
