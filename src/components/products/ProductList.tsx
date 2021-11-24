@@ -9,6 +9,7 @@ import {Box} from '@material-ui/system'
 import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
+import {convertCatName} from "../../util/displayUtil";
 
 export interface ProductList {
     category: string
