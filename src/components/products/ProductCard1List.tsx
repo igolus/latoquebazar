@@ -160,7 +160,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         setProductDisplay(filteredProduct.slice(0,
             Math.min(filteredProduct.length + 1, itemPerPage)))
 
-    }, [category, filter, contextData, restrictedskuRefs, tagsSelected, sortOption])
+    }, [category, filter, contextData, restrictedskuRefs, tagsSelected, sortOption, query])
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         if (!allProducts) {

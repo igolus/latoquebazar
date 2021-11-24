@@ -87,7 +87,9 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
 
             <Divider sx={{ my: '1.5rem' }} />
 
+            {tags && tags.length > 0 &&
             <H6 mb={2}>{localStrings.tags}</H6>
+            }
             {tags.map((tag) => (
                 <FormControlLabel
                     control={<Checkbox
