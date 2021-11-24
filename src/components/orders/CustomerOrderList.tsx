@@ -105,10 +105,13 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                     <Table>
                       <TableHead>
                         <TableRow>
+
+                          {isMobile &&
+                            <TableCell align="left">{"--"}</TableCell>
+                          }
+
                           <TableCell align="left">
-                            {isMobile &&
-                            <TableCell align="left">{"  "}</TableCell>
-                            }
+
                             <H5 color="grey.600">
                               {isMobile ? localStrings.orderNumberMobile : localStrings.orderNumber}
 
@@ -148,7 +151,7 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                             >
                               {isMobile &&
                               <StyledTableCell align="right">
-                                <Link href={"/orders/" + item.id}>
+                                <Link href={"/orders/orderDetail?orderId=" + item.id}>
                                   <IconButton>
                                     <East fontSize="small" color="inherit"/>
                                   </IconButton>

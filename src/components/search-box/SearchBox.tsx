@@ -119,12 +119,6 @@ const SearchBox = () => {
             mx="auto"
             {...{ ref: parentRef }}
         >
-
-          {/*<form*/}
-          {/*    on*/}
-          {/*    action="/product/search/drinks"*/}
-          {/*    method="get">*/}
-          {/*/!*<form>*!/*/}
             <TextField
                 onKeyDown={(e) => {
                   if(e.keyCode == 13){
@@ -161,7 +155,7 @@ const SearchBox = () => {
                   endAdornment: (
                       <>
                         {searchText !== "" ?
-                            <Link href={`/product/search/${searchText}`}
+                            <Link href={`/product/search/?query=${searchText}`}
 
                             >
                               <a>

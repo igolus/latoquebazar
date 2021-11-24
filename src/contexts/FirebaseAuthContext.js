@@ -284,6 +284,7 @@ const AuthContext = createContext({
   getCurrency: () => {},
   setCurrency: () => {},
 
+  // bookingSlotStartDate: () => {},
   setBookingSlotStartDate: () => {},
 
   currentBrand: () => {},
@@ -874,6 +875,10 @@ export const AuthProvider = ({ children }) => {
 
   function setRedirectPageGlobal(page) {
     setRedirectPage(page)
+  }
+
+  const bookingSlotStartDate = () => {
+    return state.bookingSlotStartDate;
   }
 
   const setBookingSlotStartDate = (bookingSlotStartDate) => {
