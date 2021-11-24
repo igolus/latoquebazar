@@ -78,11 +78,11 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
                         <Typography variant="h6" fontWeight="600" mb={4}>
                             {localStrings.openingHours}
                         </Typography>
-                        <OpeningHours firstEsta={getContextData().establishments[0]}/>/>
+                        <OpeningHours firstEsta={getContextData().establishments[0]}/>
                     </Card1>
 
                     <Card1 sx={{mb: '2rem'}}>
-                        <ClosingDays firstEsta={getContextData().establishments[0]}/>/>
+                        <ClosingDays firstEsta={getContextData().establishments[0]}/>
                     </Card1>
 
                     {/*<GoogleMap widthp={refDiv.current.width}/>*/}
