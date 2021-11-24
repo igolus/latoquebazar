@@ -14,7 +14,8 @@ import {getCurrentService} from "@component/form/BookingSlots";
 import useAuth from "@hook/useAuth";
 import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {config} from "@fortawesome/fontawesome-svg-core";
-const removeMarkdown = require("markdown-to-text");
+//const { markdownToTxt } = require('markdown-to-txt');
+import markdownToTxt from 'markdown-to-txt';
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 80,
@@ -114,7 +115,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     function buildDescription(selectedProduct: any) {
         if (selectedProduct?.shortDescription) {
-            return removeMarkdown(selectedProduct?.shortDescription)
+            return markdownToTxt(selectedProduct?.shortDescription)
         }
         return null;
     }
