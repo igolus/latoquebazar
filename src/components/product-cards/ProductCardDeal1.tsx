@@ -191,7 +191,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     url = imgUrl;
   }
   function isProductSelected() {
-    return dealEdit && dealEdit.productAndSkusLines &&
+    return selectedProductAndSku && dealEdit && dealEdit.productAndSkusLines &&
       dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.extRef == selectedProductAndSku.sku.extRef)
   }
 
