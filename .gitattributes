@@ -1,4 +1,6 @@
 /src/conf/config.json merge=ours
+/src/config.js merge=ours
+/public/iconApp.png merge=ours
 /src/theme/theme.ts merge=ours
 /public/manifest-template.json merge=ours
 /public/iconApp.png merge=ours

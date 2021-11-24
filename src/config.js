@@ -1,10 +1,10 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyDEL7JPg7QJpsMtYMOmuBvU1DncVcsaCqM",
-  authDomain: "latoqueprod.firebaseapp.com",
-  databaseURL: "https://latoqueprod-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "latoqueprod",
-  storageBucket: "latoqueprod.appspot.com",
-  messagingSenderId: "1052606901576",
-  appId: "1:1052606901576:web:3fd2815420dbf6d195977d",
-  measurementId: "G-W2JL0HNYP0"
+  apiKey: "AIzaSyDKBt5pdqJ5K3qMZXc4v_HnUxAChI9WSyU",
+  authDomain: "latoque-b23f1.firebaseapp.com",
+  databaseURL: "https://latoque-b23f1.firebaseio.com",
+  projectId: "latoque-b23f1",
+  storageBucket: "latoque-b23f1.appspot.com",
+  messagingSenderId: "399587571823",
+  appId: "1:399587571823:web:260f3a8634976e5c86759a",
+  measurementId: "G-51LESC240G",
 };
