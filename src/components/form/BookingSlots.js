@@ -152,7 +152,10 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
   if (startDate) {
     let slotDuration = establishment.serviceSetting.slotDuration || 20;
 
-    let daySettings = getWeekDaySettingsFromDate(startDate, establishment);
+    let daySettings = getWeekDaySettingsFromDate(startDate, establishment).filter(item => {
+      return !item.deliveryMode || item.deliveryMode === deliveryMode
+    });
+
     let allSlots = [];
 
     if (daySettings && daySettings.length > 0) {
@@ -160,7 +163,6 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
       if (firstDaySetting.slotDuration) {
         slotDuration = firstDaySetting.slotDuration
       }
-
 
       let iterDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.startHourBooking);
       let endServiceDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.endHourService);
@@ -174,13 +176,14 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
           endDate: endDate,
           closed: isClosed(startDate, establishment),
           totalPreparionTime: slotOccupancy?.totalPreparationTime || 0,
-          deliveryNumber: slotOccupancy?.deliveryNumber || 0
+          deliveryNumber: slotOccupancy?.deliveryNumber || 0,
         })
         iterDate = moment(iterDate.add(slotDuration, 'minutes'));
       }
     }
 
-    let service = buildServiceFromDaySetting(daySettings[0]);
+
+    let service = daySettings.length > 0 && buildServiceFromDaySetting(daySettings[0]);
     let previousService;
 
     let previousDaySetting = getPreviousDaySettingsFromDate(startDate, establishment);
@@ -207,7 +210,7 @@ function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
     for (let j = 0; j< daySettings.length; j++) {
       let daySetting = daySettings[j];
       if (!limit || allDaySettings.length < limit) {
-        if (daySetting.limitHourEligibility)
+        if (daySetting.limitHourEligibility && dateCurrent.isSame(dateStart, 'day'))
         {
           if (setHourFromString(dateStart, daySetting.limitHourEligibility).isBefore(dateStart)) {
             continue;
