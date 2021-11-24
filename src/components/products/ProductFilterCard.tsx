@@ -6,7 +6,7 @@ import localStrings from "../../localStrings";
 import {StyledDashboardNav} from "@component/layout/DashboardStyle";
 import {useRouter} from "next/router";
 import {ALL_CAT} from "@component/products/ProductCard1List";
-import {filterCat} from "../../util/displayUtil";
+import {convertCatName, filterCat} from "../../util/displayUtil";
 
 export type FilterProps = {
     selectedCategory: string
@@ -46,7 +46,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
                     //alert(asPath)
                     return ( <StyledDashboardNav
                             isCurrentPath={asPath.includes(encodeURI(item.category))}
-                            href={"/product/shop/" + item.category}
+                            href={"/product/shop/" + convertCatName(item.category)}
                             key={item.category}
                         >
                             <FlexBox alignItems="center">

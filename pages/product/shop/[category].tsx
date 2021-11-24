@@ -31,6 +31,10 @@ const ProductsByCategory:React.FC<ProductsByCategoryProps> = ({contextData}) => 
     )
 }
 
+function convertCatName(category) {
+    return category.replace(/\s+/g, '-')
+}
+
 export const getStaticPaths: GetStaticPaths<{ category: string }> = async () => {
     const config = require("../../../src/conf/config.json")
     const resCats = await getCategoriesQueryNoApollo(config.brandId);
@@ -42,13 +46,13 @@ export const getStaticPaths: GetStaticPaths<{ category: string }> = async () => 
 
     let paths = []
     cats.forEach(cat => {
-        paths.push({ params: { category: cat.category } })
+        paths.push({ params: { category: convertCatName(cat.category) } })
     })
     paths.push({ params: { category: "all"} })
 
     return {
         paths: paths, //indicates that no page needs be created at build time
-        fallback: true //indicates the type of fallback
+        fallback: false //indicates the type of fallback
     }
 }
 
