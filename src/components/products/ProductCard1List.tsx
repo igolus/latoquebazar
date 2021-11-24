@@ -3,7 +3,7 @@ import ProductCard1 from '@component/product-cards/ProductCard1'
 import {Grid, Pagination} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {FilterProps} from "@component/products/ProductFilterCard";
-import {getMininimalSkuPrice, getBrandCurrency} from "../../util/displayUtil";
+import {getMininimalSkuPrice, getBrandCurrency, convertCatName} from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import DealCard1 from "@component/product-cards/DealCard1";
 import {cloneDeep} from "@apollo/client/utilities";
@@ -38,6 +38,9 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                sortOption,
 }) => {
 
+
+    //let categoryConverted = convertProductName(category);
+
     var productMapper = (product) => {
         return {
             "id": product.id,
@@ -65,7 +68,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     function findIdOfCategory(categoryName) {
         //alert("categoryName " + categoryName)
-        let cat = (contextData?.categories || []).find(cat => cat.category === categoryName );
+        let cat = (contextData?.categories || []).find(cat => convertCatName(cat.category) === categoryName );
         //console.log("findIdOfCategory " + id);
         return cat?.id
     }

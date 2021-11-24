@@ -7,7 +7,7 @@ import CategoryMenuItem from './CategoryMenuItem'
 import MegaMenu1 from './mega-menu/MegaMenu1'
 import MegaMenu2 from './mega-menu/MegaMenu2'
 import localStrings from "../../localStrings";
-import {filterCat} from "../../util/displayUtil";
+import {convertCatName, filterCat} from "../../util/displayUtil";
 
 export interface CategoryMenuCardProps {
   open?: boolean
@@ -72,7 +72,7 @@ const CategoryMenuCard: React.FC<CategoryMenuCardProps> = (props) => {
         return (
           <CategoryMenuItem
             title={item.category}
-            href={"/product/shop/" + item.category}
+            href={"/product/shop/" + convertCatName(item.category)}
             icon={icon}
             caret={false}
             key={item.category}

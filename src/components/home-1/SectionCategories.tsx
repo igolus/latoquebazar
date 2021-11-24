@@ -8,7 +8,7 @@ import Link from 'next/link'
 import React from 'react'
 import CategorySectionHeader from '../CategorySectionHeader'
 import localStrings from "../../localStrings";
-import {filterCat, getProductFirstImgUrl} from "../../util/displayUtil";
+import {convertCatName, filterCat, getProductFirstImgUrl} from "../../util/displayUtil";
 import useAuth from "@hook/useAuth";
 
 const useStyles = makeStyles(({ shadows }: MuiThemeProps) => ({
@@ -69,7 +69,7 @@ const SectionCategories: React.FC<SectionCategoriesProps> = ({contextData}) => {
         {/*  >*/}
         {filteredCat.map((item, ind) => (
           <Grid item lg={2} md={3} sm={4} xs={12} key={ind}>
-            <Link href={"/product/shop/" + item.category}>
+            <Link href={"/product/shop/" + convertCatName(item.category)}>
               <a>
                 <BazarCard className={classes.card} elevation={1}>
                   {getProductFirstImgUrl(item) &&

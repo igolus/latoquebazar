@@ -588,3 +588,8 @@ export const getMinutesFromDate = (dateTimeString) => {
     let dateTimeMoment = moment(dateTimeString).locale('fr');
     return dateTimeMoment.hour() * 60 + dateTimeMoment.minute();
 }
+
+export const convertCatName = (productName) => {
+    return productName.replace(/\s+/g, '-')
+}
+

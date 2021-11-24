@@ -13,7 +13,7 @@ import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import {IndexPageProps} from "./index";
 import BazarImage from "@component/BazarImage";
 import localStrings from "../src/localStrings";
-import {filterCat} from "../src/util/displayUtil";
+import {convertCatName, filterCat} from "../src/util/displayUtil";
 
 export interface MobileCategoryNavProps {
   contextData?: any
@@ -69,7 +69,7 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
           }
 
           return (
-          <Link href={"/product/shop/" + item.category}>
+          <Link href={"/product/shop/" + convertCatName(item.category)}>
           <Box
             className="main-category-box"
             borderLeft={`${category?.href === item.href ? '3' : '0'}px solid`}
