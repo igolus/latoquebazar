@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function displayWithPrice (name, price, currency) {
-  return name + " " + price + " " + currency;
+  return name + " " + parseFloat(price).toFixed(2) + " " + currency;
 }
 
 export function formatName(itemSkuBooking) {

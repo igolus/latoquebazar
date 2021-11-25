@@ -176,6 +176,7 @@ let localStrings = new LocalizedStrings({
         categories: "Categories",
         tags: "Tags",
         selectDeal: "Choisir les produits",
+        choose: "Choisir",
         cancel: "Annuler",
         next: "Selectionner le produit suivant",
         select: "Selectionner le produit",
