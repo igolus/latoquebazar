@@ -78,6 +78,14 @@ const App = ({ Component, pageProps}: any) => {
                 </Head>
 
                 <link rel="manifest" href="/manifest.json" />
+                <link rel="stylesheet" href="https://use.typekit.net/bcq8tyr.css" />
+                <link href="https://fonts.googleapis.com/css2?family=Comforter" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Courgette" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Bangers" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Lato" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Charm" rel="stylesheet" />
+                Birthstone Bounce
                 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
                       integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
                       crossOrigin=""/>
