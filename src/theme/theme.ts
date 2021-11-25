@@ -1,9 +1,10 @@
 import { createTheme, Theme } from '@material-ui/core/styles'
 import { error, grey, primary, secondary, success, warning } from './themeColors'
 
-const fontSize = 14
+const fontSize = 16
 
 const fontFamily = [
+  'acumin-pro',
   'Open Sans',
   'Roboto',
   '-apple-system',
@@ -56,12 +57,17 @@ const bazarTheme = createTheme({
     fontSize,
     fontFamily,
     htmlFontSize: 16,
-    body1: { fontSize },
-    body2: { fontSize },
+    body1: { fontSize, fontFamily: 'Lato' },
+    body2: { fontSize, fontFamily: 'Lato' },
+    // h1:  { fontSize, fontFamily: 'Courgette' },
+    // h2:  { fontSize, fontFamily: 'Courgette' },
+    // h3:  { fontSize, fontFamily: 'Courgette' },
+    // h3:  { fontSize, fontFamily: 'Comforter' },
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        h1:  { fontSize, fontFamily: 'Charm' },
         ul: {
           margin: 0,
           padding: 0,
