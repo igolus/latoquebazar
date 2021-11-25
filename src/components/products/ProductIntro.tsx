@@ -131,7 +131,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     return (
         <Box width="100%">
-
+            <h1>PRO</h1>
             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
             {/*<p>{JSON.stringify(brand || {})}</p>*/}
             {/*  <p>{JSON.stringify(product)}</p>*/}
@@ -333,7 +333,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                         <Box ml={2} mt={"16px"}>
                             <Tooltip title={localStrings.shareOnFacebook}>
-                                <FacebookShareButton url={window.location.href} >
+                                <FacebookShareButton url={"/product/detail/" + product?.id} >
                                     <FacebookIcon size={38} round={false}/>
                                 </FacebookShareButton>
                             </Tooltip>
