@@ -483,6 +483,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
+                          disableFacebook={true}
                           brand={brand}
                           faceBookShare={faceBookShare}
                           skuIndex={selectedSkuIndex}
