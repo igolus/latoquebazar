@@ -232,7 +232,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
                     color="primary"
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                 >
-                  {getFirstRestrictionItem(deal) || localStrings.selectDeal}
+                  {getFirstRestrictionItem(deal) || localStrings.choose}
                 </Button>
               </Link>
             </FlexBox>

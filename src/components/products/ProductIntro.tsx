@@ -131,7 +131,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     return (
         <Box width="100%">
-            <h1>PRO</h1>
+            {/*<h1>PRO</h1>*/}
             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
             {/*<p>{JSON.stringify(brand || {})}</p>*/}
             {/*  <p>{JSON.stringify(product)}</p>*/}
