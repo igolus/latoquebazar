@@ -37,6 +37,7 @@ export interface ProductIntroProps {
     routeToCart: boolean,
     lineNumber: number,
     currentService: any,
+    disableFacebook: boolean
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -57,7 +58,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        addButtonText,
                                                        routeToCart,
                                                        lineNumber,
-                                                       currentService
+                                                       currentService,
+                                                       disableFacebook
                                                    }) => {
 
     if (!product) {
@@ -131,6 +133,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     return (
         <Box width="100%">
+            {/*<p>{window.location.protocol + "/" + window.location.host + "/product/detail/" + product?.id}</p>*/}
             {/*<h1>PRO</h1>*/}
             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
             {/*<p>{JSON.stringify(brand || {})}</p>*/}
@@ -329,11 +332,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             </BazarButton>
                             {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
                         </Box>
-                        {faceBookShare &&
-
+                        {faceBookShare && !disableFacebook &&
                         <Box ml={2} mt={"16px"}>
                             <Tooltip title={localStrings.shareOnFacebook}>
-                                <FacebookShareButton url={"/product/detail/" + product?.id} >
+                                <FacebookShareButton url={window.location.href} >
                                     <FacebookIcon size={38} round={false}/>
                                 </FacebookShareButton>
                             </Tooltip>

@@ -337,6 +337,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
           <DialogContent className={classes.dialogContent}>
             {/*<h1>DIALOG DEAL</h1>*/}
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
+                          disableFacebook={true}
                           faceBookShare={faceBookShare}
                           skuIndex={selectedSkuIndex}
                           product={product}
