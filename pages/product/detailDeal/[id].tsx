@@ -1,5 +1,5 @@
 import NavbarLayout from '@component/layout/NavbarLayout'
-import {Tabs} from '@material-ui/core'
+import {Box, Tab, Tabs} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useRouter} from "next/router";
 import React, {useEffect, useState} from 'react'
@@ -9,6 +9,9 @@ import DealSelector from '../../../src/components/products/DealSelector'
 import useAuth from "@hook/useAuth";
 import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {getDealsQueryNoApollo} from "../../../src/gqlNoApollo/dealGqlNoApollo";
+import localStrings from "../../../src/localStrings";
+import ReactMarkdown from "react-markdown";
+import {StyledTabs} from "../detail/[id]";
 
 // const StyledTabs = styled(Tabs)(({ theme }) => ({
 //     marginTop: 80,
@@ -27,7 +30,9 @@ export interface ProductDetailsProps {
     contextData?: any
 }
 
-const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
+
+    const [selectedOption, setSelectedOption] = useState(0)
 
     function getContextData() {
         return contextData;
@@ -42,11 +47,48 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         setSelectedDeal((getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null)
     }, [id])
 
+    const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: number) => {
+        setSelectedOption(newValue)
+    }
+
     return (
         <NavbarLayout contextData={getContextData()}>
             {selectedDeal &&
             <DealSelector deal={selectedDeal} contextData={getContextData()}/>
             }
+
+            {selectedDeal && (selectedDeal.description !== "" || selectedDeal.additionalInformation !== "") &&
+            <>
+                {/*<p>{JSON.stringify(selectedDeal)}</p>*/}
+                {/*<p>{selectedDeal.description}</p>*/}
+                {/*<p>{selectedDeal.additionalInformation}</p>*/}
+
+                <StyledTabs
+                    value={selectedOption}
+                    onChange={handleOptionClick}
+                    indicatorColor="primary"
+                    textColor="primary"
+                >
+                    {selectedDeal.description !== "" &&
+                    <Tab className="inner-tab" label={localStrings.description}/>
+                    }
+                    {selectedDeal.additionalInformation !== "" &&
+                    <Tab className="inner-tab" label={localStrings.additionalInformation}/>
+                    }
+                </StyledTabs>
+
+                <Box mb={6}>
+                    {selectedOption === 0 && selectedDeal.description !== "" &&
+                    <ReactMarkdown>{selectedDeal.description}</ReactMarkdown>
+                    }
+                    {selectedOption === (selectedDeal.description !== "" ? 1 : 0)
+                    && selectedDeal.additionalInformation !== "" &&
+                    <ReactMarkdown>{selectedDeal.additionalInformation}</ReactMarkdown>
+                    }
+                </Box>
+            </>
+            }
+
         </NavbarLayout>
     )
 }
@@ -75,4 +117,4 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return await getStaticPropsUtil();
 }
 
-export default ProductDetails
+export default DealDetail

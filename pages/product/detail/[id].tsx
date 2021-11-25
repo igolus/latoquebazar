@@ -17,7 +17,7 @@ import {config} from "@fortawesome/fontawesome-svg-core";
 //const { markdownToTxt } = require('markdown-to-txt');
 import markdownToTxt from 'markdown-to-txt';
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
+export const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 80,
     marginBottom: 24,
     minHeight: 0,
