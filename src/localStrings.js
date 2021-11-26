@@ -307,6 +307,7 @@ let localStrings = new LocalizedStrings({
             noDeliveryAdress: "Aucune addresse de livraison selectionné",
             maxDistanceReached: "L'adresse est en dehors de la zone",
             noItemInCart: "Aucun produits dans le panier",
+            badContactInfo: "Information de contact invalides",
 
         },
 
