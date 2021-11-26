@@ -398,8 +398,8 @@ export const AuthProvider = ({ children }) => {
     if (!reload) {
       return;
     }
-    console.log("reloadContext " + JSON.stringify(reload))
-    console.log("contextDataP " + contextDataParam)
+    // console.log("reloadContext " + JSON.stringify(reload))
+    // console.log("contextDataP " + contextDataParam)
     const id = reload.id;
     if (!id) {
       return;
@@ -407,7 +407,7 @@ export const AuthProvider = ({ children }) => {
     if (reload.dataType === productType) {
       if (reload.actionType === updateAction) {
         executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
-          console.log("update product")
+          // console.log("update product")
           //console.log("res " + JSON.stringify(res));
           updateItem("products", res => {
             return ({
@@ -419,7 +419,7 @@ export const AuthProvider = ({ children }) => {
       }
       if (reload.actionType === createAction) {
         executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
-          console.log("create product")
+          // console.log("create product")
           //console.log("res " + JSON.stringify(res));
           createItem("products", res => {
                 return ({
@@ -553,9 +553,9 @@ export const AuthProvider = ({ children }) => {
           .collection(RELOAD_COLLECTION)
           .doc(reloadId)
           .onSnapshot((doc) => {
-            console.log("state.contextData " + state.contextData);
-            console.log("contextDataState " + contextData);
-            console.log("Current data ------ : ", JSON.stringify(doc.data()));
+            //console.log("state.contextData " + state.contextData);
+            //console.log("contextDataState " + contextData);
+            //console.log("Current data ------ : ", JSON.stringify(doc.data()));
             reloadContext(doc.data(), contextData);
 
           });

@@ -556,7 +556,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return distInfo;
   }
 
-  function getSubmitText() {
+  function getSubmitText(values) {
     if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
       return localStrings.check.noSelectPaymentMethod;
     }
@@ -575,6 +575,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     if (getCartItems(getOrderInCreation).length === 0) {
       return localStrings.check.noItemInCart;
+    }
+
+    if (!checkoutSchema(bookWithoutAccount).isValidSync(values)) {
+      return localStrings.check.badContactInfo;
     }
 
 
@@ -1257,7 +1261,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             }
                             endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
                         >
-                          {getSubmitText()}
+                          {getSubmitText(values)}
                           {/*<CircularProgress size={24}/>*/}
                           {/*{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
 
