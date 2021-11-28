@@ -1,11 +1,11 @@
 {
-  "graphQlUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/graphQlApi",
-  "brandId": "0S93n0HvHamy7TP5vEYF",
-  "appName": "Le brunch club",
+  "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
+  "brandId": "KSfP69svg0MVJWLFqljM",
+  "appName": "B.Happy",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
-  "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
-  "sendEmailUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/sendMail",
-  "getResetAccountLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/getPasswordLink",
-  "getActivationEmailLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/activateMailLink",
-  "paymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/payment/stripe/charge2"
+  "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
+  "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
+  "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",
+  "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
+  "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment/stripe/charge2"
 }
