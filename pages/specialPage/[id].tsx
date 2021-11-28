@@ -40,7 +40,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
 
     function getContextData() {
-        if (getContextDataAuth() && getContextDataAuth().products.find(p => p.id === id)) {
+        if (getContextDataAuth() && getContextDataAuth().extraPages.find(page => page.id === pageId)) {
             return getContextDataAuth()
         }
         return contextData;
@@ -54,7 +54,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             <p>
                 {pageId}
             </p>
-            {extraPage.content &&
+            {extraPage && extraPage.content &&
             <ReactMarkdown>{extraPage.content}</ReactMarkdown>
             }
         </NavbarLayout>
