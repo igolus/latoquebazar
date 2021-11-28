@@ -14,6 +14,7 @@ import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {createSiteUserMutation} from "../../gql/siteUserGql";
 import {DIST_INFO} from "@component/address/AdressCheck";
 import {useToasts} from "react-toast-notifications";
+import parsePhoneNumber from "libphonenumber-js";
 
 const fbStyle = {
   background: '#3B5998',
@@ -102,6 +103,7 @@ const CompleteProfile = ({closeCallBack}) => {
     delete valueCopy.agreement;
     delete valueCopy.submit
     delete valueCopy.establishments
+    valueCopy.phoneNumber = parsePhoneNumber(values.phoneNumber, 'FR').number
     data.userProfileInfo = { ...valueCopy };
     delete data.userProfileInfo.lat;
     delete data.userProfileInfo.lng;
@@ -346,8 +348,18 @@ export const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|(
 const formSchema = yup.object().shape({
   lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
   //address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-  phoneNumber: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
-      .matches(phoneRegExp, localStrings.check.badPhoneFormat),
+  phoneNumber: yup.string()
+      .test(
+          'goodFormat',
+          localStrings.check.badPhoneFormat,
+          value => {
+            const phoneNumber = parsePhoneNumber(value, 'FR');
+            //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
+            return phoneNumber?.isValid();
+          })
+
+  // phoneNumber: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
+  //     .matches(phoneRegExp, localStrings.check.badPhoneFormat),
   // agreement: yup
   //     .bool()
   //     .test(

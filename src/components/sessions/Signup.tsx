@@ -74,8 +74,9 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
     try {
       setErrorSubmit(null);
       await createUserWithEmailAndPassword(values.email, values.password);
-      await sendEmailVerification(contextData.brand, currentEstablishment());
       callBackBackToLogin();
+      await sendEmailVerification(contextData.brand, currentEstablishment());
+
     }
     catch (err) {
       //alert("err " + err);

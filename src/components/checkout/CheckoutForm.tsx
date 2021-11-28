@@ -1306,11 +1306,7 @@ const checkoutSchema = (bookWithoutAccount) => {
                       localStrings.check.badPhoneFormat,
                       value => {
                         const phoneNumber = parsePhoneNumber(value, 'FR');
-                        console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
-                        // alert("phoneNumber " + JSON.stringify(phoneNumber));
-                        // alert("phoneNumber " + JSON.stringify(phoneNumber.number));
-                        //alert("phoneNumber " + JSON.stringify(phoneNumber?.isValid()));
-                        //return phoneNumber?.isValid();
+                        //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
                         return phoneNumber?.isValid();
                       })
                         // !value || value === "" || (value + "").match(/^[0-9]+(\.[0-9]{1,2})?$/)),
