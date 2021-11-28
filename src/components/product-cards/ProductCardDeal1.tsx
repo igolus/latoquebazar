@@ -44,6 +44,7 @@ export interface ProductCardDeal1Props {
   currency: string,
   lineNumber: number,
   deal: any
+  contextData: any
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -148,7 +149,8 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                                                      options,
                                                      currency,
                                                      lineNumber,
-                                                     deal
+                                                     deal,
+                                                     contextData,
                                                    }) => {
 
   if (!product) {
@@ -226,6 +228,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
   return (
       <Box {...defaultProps}>
+        {/*<p>{JSON.stringify(options)}</p>*/}
         <BazarCard  className={classes.root} hoverEffect={hoverEffect}>
         <div className={classes.imageHolder}>
 
@@ -335,12 +338,15 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
         <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
-            {/*<h1>DIALOG DEAL</h1>*/}
+
+            {/*<p>{JSON.stringify(product)}</p>*/}
             <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
                           disableFacebook={true}
                           faceBookShare={faceBookShare}
                           skuIndex={selectedSkuIndex}
                           product={product}
+                          firstEsta={contextData.establishments[0]}
+                          brand={contextData.brand}
                           options={options}
                           currency={currency}
                           disableAdd={!isProductAndSkuGetOption(selectedProductAndSku)}

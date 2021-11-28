@@ -83,7 +83,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
     useEffect(() => {
+        // alert("skuIndex " + skuIndex);
+        // alert("firstOrCurrentEstablishment " + firstOrCurrentEstablishment())
         if (firstOrCurrentEstablishment() && brand) {
+            // alert("firstOrCurrentEstablishment ")
             if (skuIndex) {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
@@ -133,6 +136,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     return (
         <Box width="100%">
+            {/*{JSON.stringify(productAndSku || {})}*/}
             {/*<p>{window.location.protocol + "/" + window.location.host + "/product/detail/" + product?.id}</p>*/}
             {/*<h1>PRO</h1>*/}
             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
