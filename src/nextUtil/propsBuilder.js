@@ -155,10 +155,10 @@ export async function getStaticPropsUtil() {
     }
 
     let extraPages = [];
-    // const resExtraPages = await getExtraPagesQueryNoApollo(config.brandId);
-    // if (resExtraPages.getExtraPages) {
-    //     extraPages = resEstas.getExtraPages;
-    // }
+    const resExtraPages = await getExtraPagesQueryNoApollo(config.brandId);
+    if (resExtraPages.getExtraPages) {
+        extraPages = resExtraPages.getExtraPages || [];
+    }
 
     return {
         props: {
