@@ -28,7 +28,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
     const filteredCat = filterCat(categories, products, deals)
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
-            {asPath.split("/").slice(-1)}
+            {/*{asPath.split("/").slice(-1)}*/}
             {/*<p>{JSON.stringify(categories || {})}</p>*/}
             <H6 mb={1.25}>{localStrings.categories}</H6>
             {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
