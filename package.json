@@ -39,6 +39,7 @@
     "@material-ui/system": "^5.0.0-alpha.38",
     "@stripe/react-stripe-js": "^1.4.1",
     "@stripe/stripe-js": "^1.17.1",
+    "@uiw/react-md-editor": "^3.8.2",
     "add": "^2.0.6",
     "apollo-link-http": "^1.5.17",
     "apollo-link-timeout": "^4.0.0",
