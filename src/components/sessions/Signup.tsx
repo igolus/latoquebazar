@@ -74,12 +74,7 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
     try {
       setErrorSubmit(null);
       await createUserWithEmailAndPassword(values.email, values.password);
-      // await updateProfile({
-      //   displayName: values.firstName + " " + values.lastName,
-      // })
       await sendEmailVerification(contextData.brand, currentEstablishment());
-      //router.push('/profile')
-      //alert("Email sent " + values.email + values.password);
       callBackBackToLogin();
     }
     catch (err) {
