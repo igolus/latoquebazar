@@ -149,6 +149,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                               deal={deal}
                                               options={contextData.options}
                                               lineNumber={lineNumber}
+                                              contextData={contextData}
                                               currency={getBrandCurrency(contextData.brand)}/>
                             </Grid>
                         )

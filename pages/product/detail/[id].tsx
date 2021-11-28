@@ -53,7 +53,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     //     setSelectedProduct(selectedProductFind)
     // }, [getContextDataAuth()])
 
-    console.log("process.env.REVALIDATE_DATA_TIME " + process.env.REVALIDATE_DATA_TIME )
+    // console.log("process.env.REVALIDATE_DATA_TIME " + process.env.REVALIDATE_DATA_TIME )
 
     function getContextData() {
         if (getContextDataAuth() && getContextDataAuth().products.find(p => p.id === id)) {

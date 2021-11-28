@@ -33,8 +33,12 @@ export interface ProductDetailsProps {
 const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const [selectedOption, setSelectedOption] = useState(0)
+    const {getContextDataAuth} = useAuth();
 
     function getContextData() {
+        if (getContextDataAuth() && getContextDataAuth().deals.find(d => d.id === id)) {
+            return getContextDataAuth()
+        }
         return contextData;
     }
 
