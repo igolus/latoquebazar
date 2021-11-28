@@ -206,7 +206,10 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
   return (
       <>
         {createAccountEnabled ?
-            <Signup contextData={contextData} callBackBackToLogin={() => setCreateAccountEnabled(false)} callBackBackToLostPassword={callBackBackToLostPassword}/>
+            <Signup contextData={contextData} callBackBackToLogin={() => {
+              alert("callBack Signup")
+              setCreateAccountEnabled(false)
+            }} callBackBackToLostPassword={callBackBackToLostPassword}/>
             :
             <StyledCard elevation={3} passwordVisibility={passwordVisibility}>
               <form className="content" onSubmit={handleSubmit}>
