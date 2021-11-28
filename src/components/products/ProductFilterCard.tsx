@@ -28,6 +28,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
     const filteredCat = filterCat(categories, products, deals)
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
+            {asPath.split("/").slice(-1)}
             {/*<p>{JSON.stringify(categories || {})}</p>*/}
             <H6 mb={1.25}>{localStrings.categories}</H6>
             {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
@@ -45,7 +46,8 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
             {(filteredCat || []).map((item) => {
                     //alert(asPath)
                     return ( <StyledDashboardNav
-                            isCurrentPath={convertCatName(asPath).includes(encodeURI(convertCatName(item.category)))}
+                            isCurrentPath={convertCatName(asPath.split("/").slice(-1)[0]) === convertCatName(item.category)}
+                            // isCurrentPath={asPath === convertCatName(item.category)}
                             href={"/product/shop/" + convertCatName(item.category)}
                             key={item.category}
                         >
