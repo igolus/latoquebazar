@@ -340,9 +340,9 @@ export const AuthProvider = ({ children }) => {
     let index = contextCopy[dataType].findIndex(item => item.id === getFunc(res).id);
 
     console.log("index " + index);
-    console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
+    //console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
     console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
-    console.log("getFunc(res) " + JSON.stringify(getFunc(res)));
+    //console.log("getFunc(res) " + JSON.stringify(getFunc(res)));
     if (getFunc(res) && index!==-1) {
       contextCopy[dataType].splice(index, 1, getFunc(res))
     }
