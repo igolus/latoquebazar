@@ -7,6 +7,7 @@ import useAuth from "@hook/useAuth";
 import {useRouter} from "next/router";
 import ReactMarkdown from "react-markdown";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import MDEditor from "@uiw/react-md-editor";
 //const { markdownToTxt } = require('markdown-to-txt');
 
 export const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -55,6 +56,8 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                 {pageId}
             </p>
             {extraPage && extraPage.content &&
+
+            // <MDEditor.Markdown source="Hello Markdown! `Hi!`" />
             <ReactMarkdown>{extraPage.content}</ReactMarkdown>
             }
         </NavbarLayout>

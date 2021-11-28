@@ -65,6 +65,14 @@ export async function getContextDataApollo() {
         establishments = resEstas.getEstablishmentByBrandId;
     }
 
+    let extraPages = [];
+    const resExtraPages = await getExtraPagesQueryNoApollo(config.brandId);
+    if (resExtraPages.getExtraPages) {
+        extraPages = resExtraPages.getExtraPages || [];
+    }
+
+
+
     return {
         products: products,
         deals: deals,
@@ -72,7 +80,8 @@ export async function getContextDataApollo() {
         brand: brand,
         options: options,
         tags: tags,
-        establishments: establishments
+        establishments: establishments,
+        extraPages: extraPages
     }
 }
 
