@@ -94,7 +94,7 @@ export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-    
+
     return await getStaticPropsUtil();
 }
 
