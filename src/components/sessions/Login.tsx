@@ -207,7 +207,7 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
       <>
         {createAccountEnabled ?
             <Signup contextData={contextData} callBackBackToLogin={() => {
-              alert("callBack Signup")
+              //alert("callBack Signup")
               setCreateAccountEnabled(false)
             }} callBackBackToLostPassword={callBackBackToLostPassword}/>
             :
