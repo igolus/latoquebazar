@@ -3,11 +3,10 @@ import {Tabs} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import React from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import useAuth from "@hook/useAuth";
-import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {useRouter} from "next/router";
 import ReactMarkdown from "react-markdown";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 //const { markdownToTxt } = require('markdown-to-txt');
 
 export const StyledTabs = styled(Tabs)(({ theme }) => ({
