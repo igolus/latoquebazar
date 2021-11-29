@@ -180,13 +180,13 @@ const DealCard7: React.FC<DealCard7Props> = ({
             </ul>
           </AlertHtmlLocal>
           }
-
+          {/*<p>{JSON.stringify(deal)}</p>*/}
           {!modeOrder &&
           <FlexBox alignItems="center">
             <Button
                 variant="outlined"
                 color="primary"
-                disabled={!itemHaveRestriction(item) || item.quantity === 0}
+                disabled={item.quantity === 0}
                 // padding="5px"
                 // size="none"
                 // borderColor="primary.light"

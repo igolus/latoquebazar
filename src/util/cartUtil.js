@@ -1,7 +1,13 @@
 import moment from "moment";
 import {report} from "next/dist/telemetry/trace/report";
 import cloneDeep from "clone-deep";
-import {PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE, TYPE_DEAL, TYPE_PRODUCT} from "./constants";
+import {
+    PRICING_EFFECT_FIXED_PRICE,
+    PRICING_EFFECT_PERCENTAGE,
+    PRICING_EFFECT_PRICE,
+    TYPE_DEAL,
+    TYPE_PRODUCT
+} from "./constants";
 import localStrings from "../localStrings";
 import {
     computePriceDetail,
@@ -208,9 +214,25 @@ function sameItem(item, itemToAdd, optionsInit) {
 }
 
 export function selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber) {
+    let price;
+    let pricingEffect = dealEdit.deal.lines[lineNumber].pricingEffect;
+    let pricingValue = dealEdit.deal.lines[lineNumber].pricingValue;
+
+    if (pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
+        price = pricingValue;
+    }
+    else if (pricingEffect === PRICING_EFFECT_PRICE) {
+        price = Math.max(parseFloat(productAndSku.sku.price) -  parseFloat(pricingValue), 0).toFixed(2);
+    }
+    else if (pricingEffect === PRICING_EFFECT_PERCENTAGE) {
+        let factor = 1 - parseFloat(pricingValue) / 100
+        price = (parseFloat(productAndSku.sku.price) * factor).toFixed(2);
+    }
+
 
     let itemToAdd = { ...productAndSku.sku}
-    itemToAdd.quantity = 1
+    itemToAdd.price = price;
+    itemToAdd.quantity = 1;
     itemToAdd.productName = productAndSku.product.name;
     itemToAdd.productId = productAndSku.product.id;
     itemToAdd.creationTimestamp = moment().unix();
@@ -427,6 +449,11 @@ export function getPriceWithOptions(item, single) {
         (item.options || []).forEach( option => tot+= parseFloat(option.price));
     }
     else {
+        // item.deal.lines.forEach(line => {
+        //     let totSku = parseFloat(line.pricingValue);
+        //     tot += totSku;
+        // })
+
         item.productAndSkusLines.forEach(productAndSkusLine => {
             let totSku = parseFloat(productAndSkusLine.price);
             (productAndSkusLine.options || []).forEach( option => totSku+= parseFloat(option.price));

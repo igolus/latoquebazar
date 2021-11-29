@@ -54,7 +54,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     }
 
     const getProductsAndDeals = () => {
-        return contextData.products.concat(contextData.deals)
+        //return contextData.products.concat(contextData.deals)
+        return contextData.deals
         //return contextData.products;
     }
 
@@ -195,7 +196,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             {/*<p>{findIdOfCategory(category)}</p>*/}
             {/*<p>{JSON.stringify(contextData?.categories || {})}</p>>*/}
             {/*<p>{JSON.stringify(productDisplay)}</p>*/}
-            {/*<p>{JSON.stringify(allProducts)}</p>*/}
+            {/*<p>{JSON.stringify(allProducts[0])}</p>*/}
             {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
             <Grid container spacing={3} justifyContent="center" >
                 {productDisplay.map((item, ind) => {

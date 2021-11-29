@@ -214,8 +214,8 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     }
 
     selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
-
-    //console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
+    //alert()
+    console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
     setOpen(false)
   }
 
