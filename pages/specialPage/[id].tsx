@@ -32,13 +32,13 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const { id } = router.query
     let pageId = id;
-    const extraPage = contextData.extraPages.find(page => page.id === pageId);
+    const extraPage = (contextData?.extraPages || []).find(page => page.id === pageId);
 
     const {currentEstablishment, bookingSlotStartDate, getContextDataAuth} = useAuth();
 
 
     function getContextData() {
-        if (getContextDataAuth() && getContextDataAuth().extraPages.find(page => page.id === pageId)) {
+        if (getContextDataAuth() && (getContextDataAuth()?.extraPages || []).find(page => page.id === pageId)) {
             return getContextDataAuth()
         }
         return contextData;
