@@ -253,6 +253,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           delete item.productId;
           delete item.creationTimestamp;
           delete item.uuid;
+
+          (item.options || []).forEach(opt => {
+            delete opt.defaultSelected
+          })
+
         });
 
       }
@@ -283,6 +288,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   delete productAndSkusLine.creationTimestamp;
                   delete productAndSkusLine.restrictionsApplied;
                   delete productAndSkusLine.restrictionsList;
+                  (productAndSkusLine.options || []).forEach(opt => {
+                        delete opt.defaultSelected
+                  })
+                  // (productAndSkusLine.options || []).forEach(option =>
+                  //   delete option.defaultSelected;
+                  // })
 
                   let existingSku = (allSkus ? allSkus.data : []).find(sku => sku.extRef == productAndSkusLine.extRef);
                   if (existingSku) {
