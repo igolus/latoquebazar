@@ -271,7 +271,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 delete deal.deal.creationTimestamp;
                 delete deal.uuid;
                 delete deal.creationTimestamp;
-                delete deal.restrictionsApplied;
+                delete deal.deal.restrictionsApplied;
                 delete deal.restrictionsList;
 
                 let productAndSkusLines = cloneDeep(deal.productAndSkusLines);
