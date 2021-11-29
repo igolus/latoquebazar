@@ -54,9 +54,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     }
 
     const getProductsAndDeals = () => {
-        //return contextData.products.concat(contextData.deals)
-        return contextData.deals
-        //return contextData.products;
+        return contextData.products.concat(contextData.deals)
     }
 
     const [allProducts, setAllProducts] = useState(contextData ? (getProductsAndDeals() || []) : []);

@@ -5,28 +5,25 @@ import React from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import useAuth from "@hook/useAuth";
 import {useRouter} from "next/router";
-import ReactMarkdown from "react-markdown";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import MDEditor from "@uiw/react-md-editor";
-//const { markdownToTxt } = require('markdown-to-txt');
-
-export const StyledTabs = styled(Tabs)(({ theme }) => ({
-    marginTop: 80,
-    marginBottom: 24,
-    minHeight: 0,
-    borderBottom: `1px solid ${theme.palette.text.disabled}`,
-    '& .inner-tab': {
-        fontWeight: 600,
-        minHeight: 40,
-        textTransform: 'capitalize',
-    },
-}))
-
 
 export interface ProductDetailsProps {
     contextData?: any
 }
 
+export function renderMd(contentMd) {
+
+    var md = require('markdown-it')({
+        html: true,
+        linkify: true,
+        typographer: true
+    });
+
+    return md.render(contentMd);
+    //
+    // var markdown = ReactMarkdown.parse(this.props.markdown);
+    // return <div dangerouslySetInnerHTML={{__html:markdown}} />;
+}
 //const config = require('../../../src/conf/config.json');
 
 const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
@@ -50,15 +47,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     return (
         <NavbarLayout contextData={getContextData()}
         >
-            {/*<p>{JSON.stringify(selectedProduct || {})}</p>*/}
-
-            <p>
-                {pageId}
-            </p>
             {extraPage && extraPage.content &&
-
-            // <MDEditor.Markdown source="Hello Markdown! `Hi!`" />
-            <ReactMarkdown>{extraPage.content}</ReactMarkdown>
+            <div
+                dangerouslySetInnerHTML={{__html: renderMd(extraPage.content)}}
+            />
             }
         </NavbarLayout>
     )

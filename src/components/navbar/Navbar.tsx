@@ -197,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
           </BazarButton>
         </CategoryMenu>
 
-        <FlexBox>{renderNestedNav(navbarNavigations(dbUser), true)}</FlexBox>
+        <FlexBox>{renderNestedNav(navbarNavigations(dbUser, contextData.extraPages), true)}</FlexBox>
       </Container>
     </BazarCard>
   )
