@@ -12,13 +12,14 @@ import {addSiteUserMessagingToken} from "../../gql/siteUserGql";
 import {getOrderByIdQuery} from "../../gql/orderGql";
 import localStrings from "../../localStrings";
 import {getBrandCurrency} from "../../util/displayUtil";
+import {useRouter} from "next/router";
 
 export interface ConfirmedOrderComponentProps {
     contextData?: any
 }
 
 const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}) => {
-
+    const router = useRouter();
     let id;
     let params = {};
     try {
