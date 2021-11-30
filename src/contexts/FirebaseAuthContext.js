@@ -69,7 +69,7 @@ const initialAuthState = {
   sortCategory: null,
   sortTags: [],
   sortOption: null,
-  language: localStrings.getLanguage(),
+  language: localStrings?.getLanguage() || "fr",
   currency: CURRENCY_EUR,
   totalCartPrice: -1,
   globalProductVariants: null,
