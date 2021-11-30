@@ -91,7 +91,7 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
     }, [])
 
     function seeMyOrderDetail() {
-        router.push("/orders?orderId=" + id)
+        router.push("/orders/orderDetail?orderId=" + id)
     }
 
     return (
