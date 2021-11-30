@@ -17,7 +17,7 @@ import {config} from "@fortawesome/fontawesome-svg-core";
 //const { markdownToTxt } = require('markdown-to-txt');
 import markdownToTxt from 'markdown-to-txt';
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
+export const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 80,
     marginBottom: 24,
     minHeight: 0,
@@ -53,7 +53,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     //     setSelectedProduct(selectedProductFind)
     // }, [getContextDataAuth()])
 
-    console.log("process.env.REVALIDATE_DATA_TIME " + process.env.REVALIDATE_DATA_TIME )
+    // console.log("process.env.REVALIDATE_DATA_TIME " + process.env.REVALIDATE_DATA_TIME )
 
     function getContextData() {
         if (getContextDataAuth() && getContextDataAuth().products.find(p => p.id === id)) {

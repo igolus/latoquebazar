@@ -284,6 +284,7 @@ const AuthContext = createContext({
   getCurrency: () => {},
   setCurrency: () => {},
 
+  // bookingSlotStartDate: () => {},
   setBookingSlotStartDate: () => {},
 
   currentBrand: () => {},
@@ -339,9 +340,9 @@ export const AuthProvider = ({ children }) => {
     let index = contextCopy[dataType].findIndex(item => item.id === getFunc(res).id);
 
     console.log("index " + index);
-    console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
+    //console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
     console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
-    console.log("getFunc(res) " + JSON.stringify(getFunc(res)));
+    //console.log("getFunc(res) " + JSON.stringify(getFunc(res)));
     if (getFunc(res) && index!==-1) {
       contextCopy[dataType].splice(index, 1, getFunc(res))
     }
@@ -397,8 +398,8 @@ export const AuthProvider = ({ children }) => {
     if (!reload) {
       return;
     }
-    console.log("reloadContext " + JSON.stringify(reload))
-    console.log("contextDataP " + contextDataParam)
+    // console.log("reloadContext " + JSON.stringify(reload))
+    // console.log("contextDataP " + contextDataParam)
     const id = reload.id;
     if (!id) {
       return;
@@ -406,7 +407,7 @@ export const AuthProvider = ({ children }) => {
     if (reload.dataType === productType) {
       if (reload.actionType === updateAction) {
         executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
-          console.log("update product")
+          // console.log("update product")
           //console.log("res " + JSON.stringify(res));
           updateItem("products", res => {
             return ({
@@ -418,7 +419,7 @@ export const AuthProvider = ({ children }) => {
       }
       if (reload.actionType === createAction) {
         executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
-          console.log("create product")
+          // console.log("create product")
           //console.log("res " + JSON.stringify(res));
           createItem("products", res => {
                 return ({
@@ -552,9 +553,9 @@ export const AuthProvider = ({ children }) => {
           .collection(RELOAD_COLLECTION)
           .doc(reloadId)
           .onSnapshot((doc) => {
-            console.log("state.contextData " + state.contextData);
-            console.log("contextDataState " + contextData);
-            console.log("Current data ------ : ", JSON.stringify(doc.data()));
+            //console.log("state.contextData " + state.contextData);
+            //console.log("contextDataState " + contextData);
+            //console.log("Current data ------ : ", JSON.stringify(doc.data()));
             reloadContext(doc.data(), contextData);
 
           });
@@ -874,6 +875,10 @@ export const AuthProvider = ({ children }) => {
 
   function setRedirectPageGlobal(page) {
     setRedirectPage(page)
+  }
+
+  const bookingSlotStartDate = () => {
+    return state.bookingSlotStartDate;
   }
 
   const setBookingSlotStartDate = (bookingSlotStartDate) => {

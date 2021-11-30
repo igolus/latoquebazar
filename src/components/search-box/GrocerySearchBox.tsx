@@ -103,7 +103,7 @@ const GrocerySearchBox = () => {
       {!!resultList.length && (
         <Card className={classes.searchResultCard} elevation={2}>
           {resultList.map((item) => (
-            <Link href={`/product/search/${item}`} key={item}>
+            <Link href={`/product/search?query=${item}`} key={item}>
               <MenuItem key={item}>{item}</MenuItem>
             </Link>
           ))}

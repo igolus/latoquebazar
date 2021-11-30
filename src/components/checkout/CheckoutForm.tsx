@@ -58,6 +58,7 @@ import {faAddressCard, faMotorcycle, faShoppingBag} from '@fortawesome/free-soli
 
 import PresenterSelect from "../PresenterSelect"
 import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
+import parsePhoneNumber from 'libphonenumber-js'
 
 const config = require('../../conf/config.json')
 
@@ -407,7 +408,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
             lng: getOrderInCreation()?.deliveryAddress?.lng,
             firstName: values.firstName,
             lastName: values.lastName,
-            phoneNumber: values.phone
+            phoneNumber: parsePhoneNumber(values.phone, 'FR').number
           }
         }
       }
@@ -556,7 +557,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return distInfo;
   }
 
-  function getSubmitText() {
+  function getSubmitText(values) {
     if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
       return localStrings.check.noSelectPaymentMethod;
     }
@@ -575,6 +576,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     if (getCartItems(getOrderInCreation).length === 0) {
       return localStrings.check.noItemInCart;
+    }
+
+    if (!checkoutSchema(bookWithoutAccount).isValidSync(values)) {
+      return localStrings.check.badContactInfo;
     }
 
 
@@ -1257,7 +1262,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             }
                             endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
                         >
-                          {getSubmitText()}
+                          {getSubmitText(values)}
                           {/*<CircularProgress size={24}/>*/}
                           {/*{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
 
@@ -1295,8 +1300,40 @@ const checkoutSchema = (bookWithoutAccount) => {
     return yup.object().shape({
           lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
           email: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-          phone: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
-              .matches(phoneRegExp, localStrings.check.badPhoneFormat)
+          phone: yup.string()
+                    .test(
+                      'goodFormat',
+                      localStrings.check.badPhoneFormat,
+                      value => {
+                        const phoneNumber = parsePhoneNumber(value, 'FR');
+                        //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
+                        return phoneNumber?.isValid();
+                      })
+                        // !value || value === "" || (value + "").match(/^[0-9]+(\.[0-9]{1,2})?$/)),
+
+          // phone: yup.string().when('phone', (value, schema) => {
+          //   const phoneNumber = parsePhoneNumber(value, 'FR');
+          //   alert("phoneNumber " + JSON.stringify(phoneNumber))
+          //   return schema.valid;
+
+            //return schema.valid;
+            //parsePhoneNumber()
+            // if (value === PRICING_EFFECT_UNCHANGED) {
+            //   return schema.valid;
+            // }
+            // if (value === PRICING_EFFECT_PERCENTAGE) {
+            //   return schema
+            //       .required(localStrings.formatString(localStrings.check.fieldRequired, localStrings.value))
+            //       .matches(/^(100(\.0{1,2})?|[1-9]?\d(\.\d{1,2})?)$/, localStrings.formatString(localStrings.check.percentCheck, localStrings.value))
+            // }
+            // return schema
+            //     .required(localStrings.formatString(localStrings.check.fieldRequired, localStrings.value))
+            //     .matches(/^[0-9]+(\.[0-9]{1,2})?$/, localStrings.formatString(localStrings.check.priceFormat, localStrings.value))
+          // }),
+
+          //phone: yup.
+          // phone: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
+          //     .matches(phoneRegExp, localStrings.check.badPhoneFormat)
         }
     )
   }

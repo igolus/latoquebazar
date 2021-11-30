@@ -143,12 +143,13 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                   lg={getLgSize(modeFullScren)}
                                   sm={getSmSize(modeFullScren)}
                                   xs={12} key={ind}>
-
+                                {/*<p>{JSON.stringify(deal)}</p>*/}
                                 <ProductCardDeal1 product={item}
                                               faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                                               deal={deal}
                                               options={contextData.options}
                                               lineNumber={lineNumber}
+                                              contextData={contextData}
                                               currency={getBrandCurrency(contextData.brand)}/>
                             </Grid>
                         )

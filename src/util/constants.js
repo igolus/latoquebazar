@@ -29,6 +29,7 @@ export const ORDER_SOURCE_OFFLINE = "offline";
 export const ORDER_DELIVERY_MODE_DELIVERY = "delivery";
 export const ORDER_DELIVERY_MODE_PICKUP_ON_SPOT = "pickupOnSpot";
 export const ORDER_DELIVERY_MODE_ON_THE_SPOT = "onTheSpot";
+export const ORDER_DELIVERY_MODE_ALL = "all";
 
 export const DOW_LUNCH = "lunch";
 export const DOW_DINNER = "dinner";

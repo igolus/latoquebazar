@@ -8,6 +8,7 @@ import {getTagsQueryNoApollo} from "../gqlNoApollo/tagsGqlNoApollo";
 import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getBrandByIdQuery} from "../gql/brandGql";
 import {getEstablishmentQueryNoApollo, getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
+import {getExtraPagesQueryNoApollo} from "../gqlNoApollo/extraPagesGqlNoApollo";
 
 
 export async function getStaticPathsUtil() {
@@ -64,6 +65,14 @@ export async function getContextDataApollo() {
         establishments = resEstas.getEstablishmentByBrandId;
     }
 
+    let extraPages = [];
+    const resExtraPages = await getExtraPagesQueryNoApollo(config.brandId);
+    if (resExtraPages.getExtraPages) {
+        extraPages = resExtraPages.getExtraPages || [];
+    }
+
+
+
     return {
         products: products,
         deals: deals,
@@ -71,7 +80,8 @@ export async function getContextDataApollo() {
         brand: brand,
         options: options,
         tags: tags,
-        establishments: establishments
+        establishments: establishments,
+        extraPages: extraPages
     }
 }
 
@@ -153,6 +163,12 @@ export async function getStaticPropsUtil() {
         establishments = resEstas.getEstablishmentByBrandId;
     }
 
+    let extraPages = [];
+    const resExtraPages = await getExtraPagesQueryNoApollo(config.brandId);
+    if (resExtraPages.getExtraPages) {
+        extraPages = resExtraPages.getExtraPages || [];
+    }
+
     return {
         props: {
             contextData: {
@@ -162,7 +178,8 @@ export async function getStaticPropsUtil() {
                 brand: brand,
                 options: options,
                 tags: tags,
-                establishments: establishments
+                establishments: establishments,
+                extraPages: extraPages
             },
         },
          //revalidate: parseInt(process.env.REVALIDATE_DATA_TIME) || 60,

@@ -4,7 +4,11 @@ import moment from 'moment';
 import {ArrowBackIos, ArrowForwardIos} from '@material-ui/icons';
 import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
-import {ORDER_DELIVERY_MODE_DELIVERY, ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} from "../../util/constants";
+import {
+  ORDER_DELIVERY_MODE_ALL,
+  ORDER_DELIVERY_MODE_DELIVERY,
+  ORDER_DELIVERY_MODE_PICKUP_ON_SPOT
+} from "../../util/constants";
 import {Button, IconButton} from "@material-ui/core";
 import {computePriceDetail} from "../../util/displayUtil";
 import Grid from "@material-ui/core/Grid";
@@ -152,7 +156,10 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
   if (startDate) {
     let slotDuration = establishment.serviceSetting.slotDuration || 20;
 
-    let daySettings = getWeekDaySettingsFromDate(startDate, establishment);
+    let daySettings = getWeekDaySettingsFromDate(startDate, establishment, null, orderInCreation().deliveryMode).filter(item => {
+      return !item.deliveryMode || item.deliveryMode === deliveryMode
+    });
+
     let allSlots = [];
 
     if (daySettings && daySettings.length > 0) {
@@ -160,7 +167,6 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
       if (firstDaySetting.slotDuration) {
         slotDuration = firstDaySetting.slotDuration
       }
-
 
       let iterDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.startHourBooking);
       let endServiceDate = setHourFromString(moment(firstDaySetting.dateCurrent), firstDaySetting.endHourService);
@@ -174,13 +180,14 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
           endDate: endDate,
           closed: isClosed(startDate, establishment),
           totalPreparionTime: slotOccupancy?.totalPreparationTime || 0,
-          deliveryNumber: slotOccupancy?.deliveryNumber || 0
+          deliveryNumber: slotOccupancy?.deliveryNumber || 0,
         })
         iterDate = moment(iterDate.add(slotDuration, 'minutes'));
       }
     }
 
-    let service = buildServiceFromDaySetting(daySettings[0]);
+
+    let service = daySettings.length > 0 && buildServiceFromDaySetting(daySettings[0]);
     let previousService;
 
     let previousDaySetting = getPreviousDaySettingsFromDate(startDate, establishment);
@@ -199,17 +206,23 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
   return {}
 }
 
-function getWeekDaySettingsFromDate(dateStart, establishment, limit) {
+function getWeekDaySettingsFromDate(dateStart, establishment, limit, deliveryMode) {
   let dateCurrent = moment(dateStart);
   let allDaySettings = [];
   for (let i = 1; i < 15; i++) {
     let daySettings = getDaySettings(establishment, getDowStringFromDowInt(dateCurrent.day())) || [];
     for (let j = 0; j< daySettings.length; j++) {
       let daySetting = daySettings[j];
+      if (daySetting.deliveryMode != null
+          && daySetting.deliveryMode !== ORDER_DELIVERY_MODE_ALL
+          && daySetting.deliveryMode !== deliveryMode) {
+        continue;
+      }
+
       if (!limit || allDaySettings.length < limit) {
-        if (daySetting.limitHourEligibility)
+        if (daySetting.limitHourEligibility && dateCurrent.isSame(dateStart, 'day'))
         {
-          if (setHourFromString(dateStart, daySetting.limitHourEligibility).isBefore(dateStart)) {
+          if (setHourFromString(dateStart, daySetting.limitHourEligibility).isBefore( moment(dateStart))) {
             continue;
           }
         }
@@ -411,7 +424,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     return selected;
   }
 
-  let timeSlots = buildTimeSlots(currentEstablishment(), getBookingSlotsOccupancy, getOrderInCreation, bookingSlotStartDate, deliveryMode);
+  let timeSlots = buildTimeSlots(currentEstablishment(), getBookingSlotsOccupancy, getOrderInCreation, moment(), deliveryMode);
 
   function formatService(service) {
     if (!service) {

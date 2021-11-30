@@ -84,6 +84,7 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
                   {item.type === TYPE_PRODUCT &&
                   <ProductCard1
                     {...itemShop}
+                    brand={contextData.brand}
                     product={item}
                     options={contextData.options}
                     currency={getBrandCurrency(contextData.brand)}/>

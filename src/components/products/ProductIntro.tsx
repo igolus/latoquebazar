@@ -37,6 +37,7 @@ export interface ProductIntroProps {
     routeToCart: boolean,
     lineNumber: number,
     currentService: any,
+    disableFacebook: boolean
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -57,7 +58,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        addButtonText,
                                                        routeToCart,
                                                        lineNumber,
-                                                       currentService
+                                                       currentService,
+                                                       disableFacebook
                                                    }) => {
 
     if (!product) {
@@ -81,7 +83,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
     useEffect(() => {
+        // alert("skuIndex " + skuIndex);
+        // alert("firstOrCurrentEstablishment " + firstOrCurrentEstablishment())
         if (firstOrCurrentEstablishment() && brand) {
+            // alert("firstOrCurrentEstablishment ")
             if (skuIndex) {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
@@ -131,7 +136,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     return (
         <Box width="100%">
-
+            {/*{JSON.stringify(productAndSku || {})}*/}
+            {/*<p>{window.location.protocol + "/" + window.location.host + "/product/detail/" + product?.id}</p>*/}
+            {/*<h1>PRO</h1>*/}
             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
             {/*<p>{JSON.stringify(brand || {})}</p>*/}
             {/*  <p>{JSON.stringify(product)}</p>*/}
@@ -329,8 +336,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             </BazarButton>
                             {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
                         </Box>
-                        {faceBookShare &&
-
+                        {faceBookShare && !disableFacebook &&
                         <Box ml={2} mt={"16px"}>
                             <Tooltip title={localStrings.shareOnFacebook}>
                                 <FacebookShareButton url={window.location.href} >
