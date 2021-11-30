@@ -19,9 +19,11 @@ import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {isDeliveryActive} from "../../src/util/displayUtil";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {useRouter} from "next/router";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 
 
-const ProfileEditor = () => {
+const ProfileEditor = ({contextData}) => {
   const router = useRouter();
   const {dbUser, setDbUser, currentBrand, currentEstablishment, maxDistanceReached, setMaxDistanceReached} = useAuth();
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,7 @@ const ProfileEditor = () => {
   return (
       <>
         {dbUser &&
-        <CustomerDashboardLayout>
+        <CustomerDashboardLayout contextData={contextData}>
           {loading ?
               <ClipLoaderComponent/>
               :
@@ -236,6 +238,11 @@ const initialValues = (dbUser) => {
     //address: dbUser?.userProfileInfo?.address || '',
   }
 }
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
+
 
 const checkoutSchema = yup.object().shape({
   firstName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
