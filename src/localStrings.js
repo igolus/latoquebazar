@@ -91,7 +91,7 @@ let localStrings = new LocalizedStrings({
         backToProfile: "Retour a mon profil",
         notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer les notifications pour ce site, dans la barre de tache de votre navigateur",
         activateNotification: "Activer les notifications",
-        home: "Acceuil",
+        home: "Accueil",
         orderCount: "Commandes",
         awaitingOrders: "Commandes en attente",
         myProfile: "Mon profil",
