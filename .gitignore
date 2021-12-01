@@ -39,5 +39,6 @@ yarn-error.log*
 /public/robots.txt
 /public/sitemap.xml
 /public/sw.js
+/public/sw.js.map
 
 /public/workbox-*
