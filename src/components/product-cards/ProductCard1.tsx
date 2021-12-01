@@ -14,7 +14,7 @@ import React, {Fragment, useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
 import ProductIntro from '../products/ProductIntro'
 import BazarButton from "@component/BazarButton";
-import {SEP} from "../../util/constants";
+import {ORDER_DELIVERY_MODE_DELIVERY, SEP} from "../../util/constants";
 import {
   addToCartOrder,
   buildProductAndSkus,
@@ -26,7 +26,7 @@ import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
-import {getFirstRestrictionItem} from "../../util/displayUtil";
+import {getBrandCurrency, getFirstRestrictionItem} from "../../util/displayUtil";
 
 export interface ProductCard1Props {
   className?: string
@@ -132,6 +132,24 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
     backgroundColor:'rgba(0,0,30,0.4)'
   },
 }))
+
+export function isProductUnavailableInDelivery(selectedProductAndSku: any) {
+  if (!selectedProductAndSku?.sku?.restrictionsList || selectedProductAndSku?.sku?.restrictionsList.length == 0) {
+    return false;
+  }
+  let firstRestriction = selectedProductAndSku?.sku?.restrictionsList[0];
+  return !(firstRestriction?.serviceTypes || []).includes(ORDER_DELIVERY_MODE_DELIVERY)
+}
+
+export function isProductUnavailableInEstablishment(selectedProductAndSku: any, currentEstablishment) {
+  if (!currentEstablishment() || !selectedProductAndSku?.sku?.unavailableInEstablishmentIds || selectedProductAndSku?.sku?.unavailableInEstablishmentIds.length == 0) {
+    return false;
+  }
+
+  return selectedProductAndSku?.sku?.unavailableInEstablishmentIds.includes(currentEstablishment().id);
+}
+
+
 
 const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      id,
@@ -251,21 +269,33 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             {/*</Box>*/}
             {/*}*/}
 
-            {/*<p>{JSON.stringify(selectedProductAndSku?.sku?.restrictionsApplied || {})}</p>*/}
+            {/*<p>{JSON.stringify(selectedProductAndSku?.sku || {})}</p>*/}
 
-            {selectedProductAndSku?.sku?.restrictionsApplied &&
-            selectedProductAndSku?.sku?.restrictionsApplied
-                .filter(item => item.type === RESTRICTION_DELIVERY)
-                .map((restriction, key) =>
-                <Box key={key} ml='3px' mt='6px' mr='3px'>
-                  <Chip
-                      className={classes.offerChip}
-                      color="primary"
-                      size="small"
-                      label={restriction.local}
-                  />
-                </Box>
-            )}
+            {isProductUnavailableInDelivery(selectedProductAndSku) &&
+              <Box ml='3px' mt='6px' mr='3px'>
+                <Chip
+                    className={classes.offerChip}
+                    color="primary"
+                    size="small"
+                    label={localStrings.unavailableInDelivery}
+                />
+              </Box>
+
+            }
+
+            {/*{selectedProductAndSku?.sku?.restrictionsApplied &&*/}
+            {/*selectedProductAndSku?.sku?.restrictionsApplied*/}
+            {/*    .filter(item => item.type === RESTRICTION_DELIVERY)*/}
+            {/*    .map((restriction, key) =>*/}
+            {/*    <Box key={key} ml='3px' mt='6px' mr='3px'>*/}
+            {/*      <Chip*/}
+            {/*          className={classes.offerChip}*/}
+            {/*          color="primary"*/}
+            {/*          size="small"*/}
+            {/*          label={restriction.local}*/}
+            {/*      />*/}
+            {/*    </Box>*/}
+            {/*)}*/}
 
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
@@ -402,7 +432,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     <Button
                         variant="outlined"
                         color="primary"
-                        disabled={getFirstRestrictionItem(selectedProductAndSku?.sku)}
+                        disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
                         sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                         onClick={() => {
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
@@ -421,9 +451,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         }}
                     >
                       {isProductAndSkuGetOption(selectedProductAndSku) ?
-                          (getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : localStrings.selectOptions)
+                          isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
                           :
-                          getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : <Add fontSize="small" />
+                          isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : <Add fontSize="small" />
                       }
 
                     </Button>
@@ -434,7 +464,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   <Button
                       variant="outlined"
                       color="primary"
-                      disabled={getFirstRestrictionItem(selectedProductAndSku?.sku)}
+                      disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
@@ -454,9 +484,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       <>
                         {/*{JSON.stringify(selectedProductAndSku)}*/}
                         {isProductAndSkuGetOption(selectedProductAndSku) ?
-                            getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : localStrings.selectOptions
+                            isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
                             :
-                            getFirstRestrictionItem(selectedProductAndSku?.sku) ? localStrings.unavailable : <Add fontSize="small" />
+                            isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : <Add fontSize="small" />
                         }
                       </>
                     }
