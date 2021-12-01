@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        unavailableInDelivery: "Indisponible en livraison",
         allCat: "toute categories",
         categoryTitleDef: "{0} categorie {1}",
         categoryDescriptionDef: "{0} vous propose les produits de la categorie {1}",
