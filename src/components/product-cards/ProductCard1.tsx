@@ -353,7 +353,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
           <FlexBox>
             <Box flex="1 1 0" minWidth="0px" mr={1}>
-              <Link href={`/product/${id}`}>
+              <Link href={`/product/detail/${id}`}>
                 <a>
                   <H3
                       className="title"
