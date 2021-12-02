@@ -349,7 +349,7 @@ export const AuthProvider = ({ children }) => {
     else {
       return;
     }
-    console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
+    //console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
     console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
 
     //contextCopy[dataType] = sortChainList(contextCopy[dataType])
