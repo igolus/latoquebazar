@@ -9,7 +9,7 @@ import 'nprogress/nprogress.css'
 import React, {Fragment, useEffect} from 'react'
 import {ToastProvider} from "react-toast-notifications";
 import * as ga from '../lib/ga'
-
+import "../global.css";
 export const cache = createCache({ key: 'css', prepend: true })
 
 //Binding events.
@@ -20,11 +20,6 @@ Router.events.on('routeChangeError', () => nProgress.done())
 nProgress.configure({ showSpinner: false })
 
 const App = ({ Component, pageProps}: any) => {
-
-
-
-
-
     const Layout = Component.layout || Fragment
 
     const router = useRouter()

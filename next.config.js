@@ -1,4 +1,6 @@
+//const withPlugins = require('next-compose-plugins');
 const withPWA = require('next-pwa')
+// const withFonts = require('next-fonts');
 
 module.exports = withPWA({
   pwa: {

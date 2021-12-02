@@ -20,8 +20,11 @@ export default class Bazar extends Document {
   render() {
     return (
       <Html lang="en">
+
+
         <Head>
           <link rel="manifest" href="/manifest.json" />
+          {/*<link href="/fonts/fonts.css" rel="stylesheet"/>*/}
           <link rel="apple-touch-icon" href="/iconApp.png"></link>
           <meta name="theme-color" content="#fff" />
           {/* PWA primary color */}
