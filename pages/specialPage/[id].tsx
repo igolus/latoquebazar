@@ -6,6 +6,7 @@ import {GetStaticPaths, GetStaticProps} from "next";
 import useAuth from "@hook/useAuth";
 import {useRouter} from "next/router";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import MdRender from "../../src/components/MdRender";
 
 export interface ProductDetailsProps {
     contextData?: any
@@ -48,9 +49,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         <NavbarLayout contextData={getContextData()}
         >
             {extraPage && extraPage.content &&
-            <div
-                dangerouslySetInnerHTML={{__html: renderMd(extraPage.content)}}
-            />
+            <MdRender content = {extraPage.content}/>
+            // <div
+            //     dangerouslySetInnerHTML={{__html: renderMd(extraPage.content)}}
+            // />
             }
         </NavbarLayout>
     )
