@@ -7,7 +7,7 @@ import React from "react";
 import Head from 'next/head';
 import Section2 from "@component/home-1/Section2";
 
-import {Typography} from "@material-ui/core";
+import {Box, Button, Typography} from "@material-ui/core";
 import Card1 from "@component/Card1";
 import localStrings from "../src/localStrings";
 import OpeningHours from "@component/OpeningHours";
@@ -15,6 +15,7 @@ import ClosingDays from "@component/ClosingDays";
 import useAuth from "@hook/useAuth";
 import MyMap from "@component/GoogleMap";
 import useWindowSize from "@hook/useWindowSize";
+import Link from "next/link";
 
 
 export interface IndexPageProps {
@@ -47,6 +48,16 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     const config = require("../src/conf/config.json")
 
+    const extraPages = contextData?.extraPages;
+    let firstPage;
+    let secondPage;
+    let thirdPage;
+
+    if (extraPages && extraPages.length > 0) {
+        firstPage = extraPages.find(page => page.id === "1" && page.active);
+        secondPage = extraPages.find(page => page.id === "2" && page.active);
+        thirdPage = extraPages.find(page => page.id === "3" && page.active);
+    }
     // function getContextDataOrInjected() {
     //     return getContextData() || contextData;
     // }
@@ -60,6 +71,43 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {getContextData()?.brand?.config?.carouselWebConfig &&
                 <CarouselCompo contextData={getContextData()}/>
                 }
+
+                {width <= 900 &&
+                    <Box display="flex" justifyContent='space-evenly' p={1} m={1}>
+                        {firstPage &&
+                        <Box>
+                            <Link href={"/specialPage/" + firstPage.id}>
+                                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>
+                                    {firstPage.title}
+                                </Button>
+                            </Link>
+                        </Box>
+                        }
+
+                        {secondPage &&
+                        <Box>
+                            <Link href={"/specialPage/'" + secondPage.id}>
+                                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>
+                                    {secondPage.title}
+                                </Button>
+                            </Link>
+                        </Box>
+                        }
+
+                        {thirdPage &&
+                        <Box>
+                            <Link href={"/specialPage/'" + thirdPage.id}>
+                                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>
+                                    {thirdPage.title}
+                                </Button>
+                            </Link>
+                        </Box>
+                        }
+
+                    </Box>
+                }
+
+
                 {getContextData()?.brand?.config?.starWebProducts &&
                 <Section2 contextData={getContextData()}/>
                 }
@@ -72,6 +120,43 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
                 {width <= 900 &&
                 <div>
+
+
+                    {/*<Box display="flex" justifyContent='space-evenly' p={1} m={1}>*/}
+
+                    {/*    {firstPage &&*/}
+                    {/*    <Box>*/}
+                    {/*        <Link href={"/specialPage/'" + firstPage.id}>*/}
+                    {/*            <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
+                    {/*                {firstPage.title}*/}
+                    {/*            </Button>*/}
+                    {/*        </Link>*/}
+                    {/*    </Box>*/}
+                    {/*    }*/}
+
+                    {/*    {secondPage &&*/}
+                    {/*    <Box>*/}
+                    {/*        <Link href={"/specialPage/'" + secondPage.id}>*/}
+                    {/*            <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
+                    {/*                {secondPage.title}*/}
+                    {/*            </Button>*/}
+                    {/*        </Link>*/}
+                    {/*    </Box>*/}
+                    {/*    }*/}
+
+                    {/*    {thirdPage &&*/}
+                    {/*    <Box>*/}
+                    {/*        <Link href={"/specialPage/'" + thirdPage.id}>*/}
+                    {/*            <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
+                    {/*                {thirdPage.title}*/}
+                    {/*            </Button>*/}
+                    {/*        </Link>*/}
+                    {/*    </Box>*/}
+                    {/*    }*/}
+
+                    {/*</Box>*/}
+
+
                     <Card1 sx={{mb: '2rem', mt:'2rem' }}>
                         <Typography  variant="h6" fontWeight="600" mb={4}>
                             {localStrings.place}
