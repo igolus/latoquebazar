@@ -17,6 +17,10 @@ const fontFamily = [
   'Droid Sans',
   'Helvetica Neue',
   'sans-serif',
+  'Quizine',
+  'ForbesTypefaceAlt',
+  'fjord-font',
+  'Selfie_Regular',
 ].join(',')
 
 const customTheme = createTheme({
@@ -67,7 +71,14 @@ const bazarTheme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        h1:  { fontSize, fontFamily: 'Charm' },
+        h1:  {
+          fontFamily: 'Selfie_Regular',
+          fontSize: '50px !important',
+        },
+        h2:  {
+          fontFamily: 'Selfie_Regular',
+          // fontSize: '50px !important',
+        },
         ul: {
           margin: 0,
           padding: 0,
