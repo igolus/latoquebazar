@@ -75,10 +75,10 @@ const bazarTheme = createTheme({
           fontFamily: 'Selfie_Regular',
           fontSize: '50px !important',
         },
-        h2:  {
-          fontFamily: 'Selfie_Regular',
-          // fontSize: '50px !important',
-        },
+        // h2:  {
+        //   fontFamily: 'Selfie_Regular',
+        //   // fontSize: '50px !important',
+        // },
         ul: {
           margin: 0,
           padding: 0,
