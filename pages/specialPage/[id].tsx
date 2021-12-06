@@ -35,7 +35,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     let pageId = id;
     const extraPage = (contextData?.extraPages || []).find(page => page.id === pageId);
 
-    const {currentEstablishment, bookingSlotStartDate, getContextDataAuth} = useAuth();
+    const {getContextDataAuth} = useAuth();
 
 
     function getContextData() {
@@ -50,9 +50,6 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         >
             {extraPage && extraPage.content &&
             <MdRender content = {extraPage.content}/>
-            // <div
-            //     dangerouslySetInnerHTML={{__html: renderMd(extraPage.content)}}
-            // />
             }
         </NavbarLayout>
     )

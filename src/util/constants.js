@@ -51,7 +51,8 @@ export const DELIVERY_STATUS_DONE = 'done';
 export const USER_STATUS_NONE = "none";
 export const USER_STATUS_DELIVERING = "delivering";
 
-
+export const PAYMENT_MODE_STRIPE = "stripe";
+export const PAYMENT_MODE_SYSTEM_PAY = "systemPay";
 
 // export const orderSource = [
 //   {

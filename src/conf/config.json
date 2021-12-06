@@ -7,5 +7,7 @@
   "sendEmailUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/sendMail",
   "getResetAccountLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/getPasswordLink",
   "getActivationEmailLinkUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/activateMailLink",
-  "paymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/payment/stripe/charge2"
+  "paymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/payment/stripe/charge2",
+  "systemPayTokenUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/servicepayment/systemPayToken",
+  "systemPayValidatePaymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/servicepayment/systemPayValidatePayment"
 }
