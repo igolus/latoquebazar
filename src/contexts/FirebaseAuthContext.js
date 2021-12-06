@@ -903,6 +903,7 @@ export const AuthProvider = ({ children }) => {
 
     //alert("res setBrand" + JSON.stringify(res))
     let estas = res.data.getEstablishmentByBrandId;
+    console.log("estas setBrand " + JSON.stringify(res.data.getEstablishmentByBrandId));
     if (estas && estas.length > 0) {
       dispatch({
         type: ESTABLISHMENT_LIST,
@@ -910,7 +911,8 @@ export const AuthProvider = ({ children }) => {
           establishmentList: estas,
         }
       });
-      setEstablishment(estas[0]);
+      console.log("setEstablishment " + estas[0].id);
+      await setEstablishment(estas[0]);
     }
     //alert("dispatch brand " + JSON.stringify(brand))
     dispatch({

@@ -33,8 +33,11 @@ const common = `
       pushNotificationImgUrl
     }
     paymentWebConfig {
+      paymentType
       activateOnlinePayment
       stripePublicKey
+      systemPayPublicKey
+      systemPayEndPoint
     }
     socialWebConfig {
       facebookUrl

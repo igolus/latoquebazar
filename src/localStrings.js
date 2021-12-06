@@ -4,6 +4,8 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        legaNotice: "Mentions Legales",
+        cgv: "Condition générales de ventes",
         unavailableInDelivery: "Indisponible en livraison",
         allCat: "toute categories",
         categoryTitleDef: "{0} categorie {1}",

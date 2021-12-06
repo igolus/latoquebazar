@@ -593,3 +593,10 @@ export const convertCatName = (productName) => {
     return productName.replace(/\s+/g, '-')
 }
 
+export const firstOrCurrentEstablishment = (currentEstablishment, contextData) => {
+    if (currentEstablishment()) {
+        return currentEstablishment();
+    }
+    return contextData.establishments[0];
+}
+

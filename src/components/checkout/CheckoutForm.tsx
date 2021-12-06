@@ -21,7 +21,7 @@ import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW
+  ORDER_STATUS_NEW, PAYMENT_MODE_STRIPE, PAYMENT_MODE_SYSTEM_PAY
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -30,7 +30,7 @@ import GoogleMapsAutocomplete, {loadScript} from "@component/map/GoogleMapsAutoc
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
-  formatPaymentMethod,
+  formatPaymentMethod, getBrandCurrency,
   getDeliveryDistanceWithFetch,
   getProfileName,
   getSkusListsFromProducts,
@@ -59,6 +59,8 @@ import {faAddressCard, faMotorcycle, faShoppingBag} from '@fortawesome/free-soli
 import PresenterSelect from "../PresenterSelect"
 import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
 import parsePhoneNumber from 'libphonenumber-js'
+import KRPayment from "../../components/payment/KRPayment";
+import EmptyBasket from "@component/shop/EmptyBasket";
 
 const config = require('../../conf/config.json')
 
@@ -90,27 +92,37 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     stripe = useStripe();
     elements = useElements();
   }
+  const classes = useStyles();
+  const autocomp = useRef(null);
 
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
+
   const [bookWithoutAccount, setBookWithoutAccount] = useState(false);
   const [paymentCardValid, setPaymentCardValid] = useState(false);
-  const classes = useStyles();
-  const autocomp = useRef(null);
   const router = useRouter()
   const [selectedSlotKey, setSelectedSlotKey] = useState(null);
   //const [reloadDist, seReloadDist] = useState(false);
   const [adressValue, setAdressValue] = useState("");
   const [adressEditLock, setAdressEditLock] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setGlobalDialog, setRedirectPageGlobal, bookingSlotStartDate} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
+
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
+
+  function firstOrCurrentEstablishment() {
+    if (currentEstablishment()) {
+      return currentEstablishment();
+    }
+    return contextData.establishments[0];
+  }
 
   useEffect(() => {
     //resetDeliveryAdress();
@@ -139,6 +151,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
     }
   }, [orderInCreation])
+
+
+
 
   function buildOrderInformation() {
     let ret = "";
@@ -227,7 +242,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   }
 
-  const handleFormSubmit = async (values: any) => {
+  const handleFormSubmit = async (values: any, transactionId: string, uuidvalue: string) => {
 
     setLoading(true);
     let orderId = 0;
@@ -237,6 +252,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null,2))
 
       let dataOrder = cloneDeep(getOrderInCreation());
+
+      if (transactionId) {
+        dataOrder.paymentTransactionId = transactionId;
+      }
+      if (uuidvalue) {
+        dataOrder.paymentUuid = uuidvalue;
+      }
 
       //filerRestricted
       let itemsIdToDelete = [];
@@ -443,7 +465,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
-      if (paymentMethod === "cc" && !noStripe) {
+      if (paymentMethod === "cc" && !noStripe && !isPaymentSystemPay()) {
         let payResult = await processPayment(result.data.addOrder.id, values);
 
         console.log("payResult " + JSON.stringify(payResult, null, 2))
@@ -615,677 +637,725 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     })
   }
 
+  function isPaymentDisabled(values) {
+    return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0) ||
+        !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
+        !getOrderInCreation().bookingSlot ||
+        loading || getCartItems(getOrderInCreation).length == 0 ||
+        (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
+        (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) ||
+        paymentMethod === "cc" && !paymentCardValid && !isPaymentSystemPay();
+  }
+
+  function isPaymentSystemPay() {
+    return currentBrand()?.config?.paymentWebConfig.paymentType === PAYMENT_MODE_SYSTEM_PAY
+  }
+
+  function isPaymentSystemPayAndCCSelected() {
+    return isPaymentSystemPay() && paymentMethod === 'cc'
+  }
+
+  function isPaymentStripe() {
+    return currentBrand()?.config?.paymentWebConfig.paymentType === PAYMENT_MODE_STRIPE
+  }
+
+  function getOrderAmount() {
+    let detailPrice = computePriceDetail(getOrderInCreation());
+    return parseFloat(detailPrice.total);
+  }
+
+  function getEmailCustomer(values) {
+    if (bookWithoutAccount) {
+      return values.email
+    }
+    else {
+      return dbUser.userProfileInfo.email;
+    }
+  }
+
+  function getSystemPublicKey() {
+    return contextData.brand.config.paymentWebConfig.systemPayPublicKey;
+  }
+
+  function getSystemEndPoint() {
+    let systemPayEndPoint = contextData.brand.config.paymentWebConfig.systemPayEndPoint;
+
+    var pathArray = systemPayEndPoint.split( '/' );
+    var protocol = pathArray[0];
+    var host = pathArray[2];
+    var url = protocol + '//' + host;
+
+    return url;
+  }
+
   return (
-
-
       <>
-        {!currentEstablishment() || !orderInCreation ?
-            // {false ?
-            <ClipLoaderComponent/>
-            :
-            <>
-              {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
-            <Formik
-                initialValues={getInitialValues(dbUser)}
-                validationSchema={checkoutSchema(bookWithoutAccount)}
-                onSubmit={handleFormSubmit}
-            >
-
-              {({
-                  values,
-                  errors,
-                  touched,
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  setFieldValue,
-                }) => (
-                  <form onSubmit={handleSubmit}>
-                    {/*<p>{JSON.stringify(dbUser || {})}</p>*/}
-                    {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>*/}
-                    {(!dbUser) &&
-                    <Card1 sx={{mb: '2rem'}}>
-                      <Box mb={2}>
-                        <AlertHtmlLocal severity="info"
-                                        title={localStrings.warning}
-                                        content={localStrings.info.connectToOrder}
-                        />
-
-                      </Box>
-
-                      <Grid container spacing={3} mb={2}>
-                        <Grid item xs={12} lg={12}>
-                          {isMobile ?
-                              <Box>
-                                <Link href="/profile">
-                                  <Button variant={"contained"}
-                                          style={{textTransform: "none"}}
-                                          color="primary" type="button" fullWidth>
-                                    {localStrings.login}
-                                  </Button>
-                                </Link>
-
-                                <Button variant={"contained"}
-                                        style={{textTransform: "none", marginTop: "1rem"}}
-                                        onClick={() => {
-                                          setBookWithoutAccount(true)
-                                        }}
-                                        color="primary" type="button" fullWidth>
-                                  {localStrings.continueWithoutAccount}
-                                </Button>
-                              </Box>
-                              :
-                              <Box>
-                                <Button variant={"contained"}
-                                        style={{textTransform: "none"}}
-                                        onClick={() => {
-                                          setLoginDialogOpen(true);
-                                        }}
-                                        color="primary" type="button" fullWidth>
-                                  {localStrings.login}
-                                </Button>
-
-                                <Button variant={"contained"}
-                                        style={{textTransform: "none", marginTop: "1rem"}}
-                                        onClick={() => {
-                                          setBookWithoutAccount(true)
-                                        }}
-                                        color="primary" type="button" fullWidth>
-                                  {localStrings.continueWithoutAccount}
-                                </Button>
-                              </Box>
-                          }
-                        </Grid>
-                      </Grid>
-                    </Card1>
-                    }
-
-                    {(dbUser || bookWithoutAccount) &&
-                    <Card1 sx={{mb: '2rem'}}>
-                      <>
-                        {isDeliveryPriceDisabled() === true &&
-                        <>
-                        {/*<p>DeliveryPriceDisabled</p>*/}
-                        <AlertHtmlLocal severity={"warning"}
-                                        title={localStrings.warningMessage.deliveryUnavailable}
-                                        content={localStrings.formatString(localStrings.warningMessage.minimalPriceForDeliveryNoReached,
-                                            currentEstablishment().serviceSetting.minimalDeliveryOrderPrice)}
-                        >
-                          <Box display="flex" flexDirection="row-reverse">
-                            <Box mt={2}>
-                              <Link href="/product/shop/all">
-                                <Button variant="contained" color="primary" type="button" fullWidth
-                                        style={{textTransform: "none"}}
-                                >
-                                  {localStrings.continueShopping}
-                                </Button>
-                              </Link>
-                            </Box>
-                          </Box>
-                        </AlertHtmlLocal>
-                        </>
-                        }
-                        <Typography fontWeight="800" mb={2} variant="h5">
-                          {localStrings.selectDeliveryMode}
-                        </Typography>
-                        {/*<p>{JSON.stringify(getOrderInCreation() || {})}</p>*/}
-                        {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
-                        <PresenterSelect
-                            icon={faMotorcycle}
-                            title={localStrings.delivery}
-                            subtitle={localStrings.deliverySubTitle}
-                            selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
-                            onCLickCallBack={() => {
-                              //setSelectedBookingSlot({});
-                              setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)
-                            }}
-                        />
-                        }
-
-                        <PresenterSelect
-                            icon={faShoppingBag}
-                            title={localStrings.clickAndCollect}
-                            subtitle={localStrings.clickAndCollectSubTitle}
-                            selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
-                            onCLickCallBack={() => {
-                              //setSelectedBookingSlot({});
-                              setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
-                            }}
-                        />
-                      </>
-                      <>
-                      </>
-                    </Card1>
-                    }
-
-                    {(dbUser || bookWithoutAccount) && isDeliveryActive(currentEstablishment()) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+        {getCartItems(getOrderInCreation).length == 0 && (
+            <EmptyBasket/>
+        )}
 
 
-                    <Card1 sx={{mb: '2rem'}}>
-                      <>
 
-                        {distanceInfo && isDeliveryActive(currentEstablishment()) &&
-                        getOrderInCreation().deliveryAddress &&
-                        getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                        <Box p={1}>
-                          <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
-                                          title={maxDistanceReached ?
-                                              localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                          content={localStrings.formatString(localStrings.distanceOnly,
-                                              (distanceInfo.distance / 1000))}
-                          />
-                        </Box>
-                        }
-                        <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                          {localStrings.selectDeliveryAdress}
-                        </Typography>
+        {/*<p>{firstOrCurrentEstablishment().id}</p>*/}
+        {getCartItems(getOrderInCreation).length > 0 &&
+        <>
+          {(!firstOrCurrentEstablishment() || !orderInCreation) ?
+              // {false ?
+              <ClipLoaderComponent/>
+              :
+              <>
+                {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
+                <Formik
+                    initialValues={getInitialValues(dbUser)}
+                    validationSchema={checkoutSchema(bookWithoutAccount)}
+                    onSubmit={handleFormSubmit}
+                >
 
-                        {dbUser &&
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            mb={2}
-                        >
-                          <Box mr={'2rem'}>
-                            <Button
-                                style={{marginRight: "20px"}}
-                                onClick={() => {
-                                  setUseMyAdress(true);
-                                  resetDeliveryAdress();
-                                }}
-                                style={{textTransform: "none"}}
-                                variant="contained" color={useMyAdress ? "primary" : "inherit"}>
-                              {localStrings.useMyAdresses}
-                            </Button>
+                  {({
+                      values,
+                      errors,
+                      touched,
+                      handleChange,
+                      handleBlur,
+                      handleSubmit,
+                      setFieldValue,
+                    }) => (
+                      <form onSubmit={handleSubmit}>
+                        {/*<p>{JSON.stringify(dbUser || {})}</p>*/}
+                        {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>*/}
+                        {(!dbUser) &&
+                        <Card1 sx={{mb: '2rem'}}>
+                          <Box mb={2}>
+                            <AlertHtmlLocal severity="info"
+                                            title={localStrings.warning}
+                                            content={localStrings.info.connectToOrder}
+                            />
+
                           </Box>
 
-                          <Box ml={2}>
-                            <Button
-                                style={{marginLeft: "20px", textTransform: "none"}}
-                                onClick={() => {
-                                  setUseMyAdress(false);
-                                  resetDeliveryAdress();
-                                  setAdressEditLock(false);
-                                }}
-                                variant="contained" color={!useMyAdress ? "primary" : "inherit"}>
-                              {localStrings.useCustomAdresses}
-                            </Button>
-                          </Box>
-                        </Box>
+                          <Grid container spacing={3} mb={2}>
+                            <Grid item xs={12} lg={12}>
+                              {isMobile ?
+                                  <Box>
+                                    <Link href="/profile">
+                                      <Button variant={"contained"}
+                                              style={{textTransform: "none"}}
+                                              color="primary" type="button" fullWidth>
+                                        {localStrings.login}
+                                      </Button>
+                                    </Link>
+
+                                    <Button variant={"contained"}
+                                            style={{textTransform: "none", marginTop: "1rem"}}
+                                            onClick={() => {
+                                              setBookWithoutAccount(true)
+                                            }}
+                                            color="primary" type="button" fullWidth>
+                                      {localStrings.continueWithoutAccount}
+                                    </Button>
+                                  </Box>
+                                  :
+                                  <Box>
+                                    <Button variant={"contained"}
+                                            style={{textTransform: "none"}}
+                                            onClick={() => {
+                                              setLoginDialogOpen(true);
+                                            }}
+                                            color="primary" type="button" fullWidth>
+                                      {localStrings.login}
+                                    </Button>
+
+                                    <Button variant={"contained"}
+                                            style={{textTransform: "none", marginTop: "1rem"}}
+                                            onClick={() => {
+                                              setBookWithoutAccount(true)
+                                            }}
+                                            color="primary" type="button" fullWidth>
+                                      {localStrings.continueWithoutAccount}
+                                    </Button>
+                                  </Box>
+                              }
+                            </Grid>
+                          </Grid>
+                        </Card1>
                         }
 
-                        {dbUser && useMyAdress &&
+                        {(dbUser || bookWithoutAccount) &&
+                        <Card1 sx={{mb: '2rem'}}>
                           <>
-                          {!dbUser?.userProfileInfo?.address &&
-                          <AlertHtmlLocal
-                              severity="warning"
-                              title={localStrings.warning}
-                              content={localStrings.warningMessage.noMainAddDefined}>
+                            {isDeliveryPriceDisabled() === true &&
+                            <>
+                              {/*<p>DeliveryPriceDisabled</p>*/}
+                              <AlertHtmlLocal severity={"warning"}
+                                              title={localStrings.warningMessage.deliveryUnavailable}
+                                              content={localStrings.formatString(localStrings.warningMessage.minimalPriceForDeliveryNoReached,
+                                                  currentEstablishment().serviceSetting.minimalDeliveryOrderPrice)}
+                              >
+                                <Box display="flex" flexDirection="row-reverse">
+                                  <Box mt={2}>
+                                    <Link href="/product/shop/all">
+                                      <Button variant="contained" color="primary" type="button" fullWidth
+                                              style={{textTransform: "none"}}
+                                      >
+                                        {localStrings.continueShopping}
+                                      </Button>
+                                    </Link>
+                                  </Box>
+                                </Box>
+                              </AlertHtmlLocal>
+                            </>
+                            }
+                            <Typography fontWeight="800" mb={2} variant="h5">
+                              {localStrings.selectDeliveryMode}
+                            </Typography>
+                            {/*<p>{JSON.stringify(getOrderInCreation() || {})}</p>*/}
+                            {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
+                            <PresenterSelect
+                                icon={faMotorcycle}
+                                title={localStrings.delivery}
+                                subtitle={localStrings.deliverySubTitle}
+                                selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
+                                onCLickCallBack={() => {
+                                  //setSelectedBookingSlot({});
+                                  setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)
+                                }}
+                            />
+                            }
 
-                            <Box display="flex" flexDirection="row-reverse">
-                              <Box mt={2}>
-                                <Link href={"/address/adressDetail?addId=main&back=" + encodeURI("/checkout")}>
-                                  <Button variant="contained" color="primary" type="button" fullWidth
-                                          style={{textTransform: "none"}}
-                                  >
-                                    {localStrings.defineMainAdress}
-                                  </Button>
-                                </Link>
+                            <PresenterSelect
+                                icon={faShoppingBag}
+                                title={localStrings.clickAndCollect}
+                                subtitle={localStrings.clickAndCollectSubTitle}
+                                selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
+                                onCLickCallBack={() => {
+                                  //setSelectedBookingSlot({});
+                                  setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                                }}
+                            />
+                          </>
+                          <>
+                          </>
+                        </Card1>
+                        }
+
+                        {(dbUser || bookWithoutAccount) && isDeliveryActive(currentEstablishment()) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+
+
+                        <Card1 sx={{mb: '2rem'}}>
+                          <>
+
+                            {distanceInfo && isDeliveryActive(currentEstablishment()) &&
+                            getOrderInCreation().deliveryAddress &&
+                            getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                            <Box p={1}>
+                              <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
+                                              title={maxDistanceReached ?
+                                                  localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
+                                              content={localStrings.formatString(localStrings.distanceOnly,
+                                                  (distanceInfo.distance / 1000))}
+                              />
+                            </Box>
+                            }
+                            <Typography fontWeight="600" mb={2} mt={2} variant="h5">
+                              {localStrings.selectDeliveryAdress}
+                            </Typography>
+
+                            {dbUser &&
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                mb={2}
+                            >
+                              <Box mr={'2rem'}>
+                                <Button
+                                    style={{marginRight: "20px"}}
+                                    onClick={() => {
+                                      setUseMyAdress(true);
+                                      resetDeliveryAdress();
+                                    }}
+                                    style={{textTransform: "none"}}
+                                    variant="contained" color={useMyAdress ? "primary" : "inherit"}>
+                                  {localStrings.useMyAdresses}
+                                </Button>
+                              </Box>
+
+                              <Box ml={2}>
+                                <Button
+                                    style={{marginLeft: "20px", textTransform: "none"}}
+                                    onClick={() => {
+                                      setUseMyAdress(false);
+                                      resetDeliveryAdress();
+                                      setAdressEditLock(false);
+                                    }}
+                                    variant="contained" color={!useMyAdress ? "primary" : "inherit"}>
+                                  {localStrings.useCustomAdresses}
+                                </Button>
                               </Box>
                             </Box>
-                          </AlertHtmlLocal>
+                            }
 
-                          }
+                            {dbUser && useMyAdress &&
+                            <>
+                              {!dbUser?.userProfileInfo?.address &&
+                              <AlertHtmlLocal
+                                  severity="warning"
+                                  title={localStrings.warning}
+                                  content={localStrings.warningMessage.noMainAddDefined}>
 
-                          {dbUser?.userProfileInfo?.address &&
-                          <PresenterSelect
-                              icon={faAddressCard}
-                              title={localStrings.mainAddress}
-                              subtitle={dbUser?.userProfileInfo?.address}
-                              selected={selectedAddId === "main"}
-                              onCLickCallBack={async () => {
-                                setSelectedAddId("main");
+                                <Box display="flex" flexDirection="row-reverse">
+                                  <Box mt={2}>
+                                    <Link href={"/address/adressDetail?addId=main&back=" + encodeURI("/checkout")}>
+                                      <Button variant="contained" color="primary" type="button" fullWidth
+                                              style={{textTransform: "none"}}
+                                      >
+                                        {localStrings.defineMainAdress}
+                                      </Button>
+                                    </Link>
+                                  </Box>
+                                </Box>
+                              </AlertHtmlLocal>
 
-                                let distInfo = await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
-                                updateDeliveryAdress(dbUser?.userProfileInfo?.address,
-                                    dbUser?.userProfileInfo?.lat,
-                                    dbUser?.userProfileInfo?.lng,
-                                    null,
-                                    "main",
-                                    dbUser?.userProfileInfo?.additionalInformation,
-                                    distInfo?.distance,
+                              }
 
-                                );
-                              }}
-                          />
-                          }
-
-                          {dbUser?.userProfileInfo?.address && (dbUser?.userProfileInfo?.otherAddresses || []).map((item, key) =>
+                              {dbUser?.userProfileInfo?.address &&
                               <PresenterSelect
-                                  key={key}
                                   icon={faAddressCard}
-                                  title={item.name}
-                                  subtitle={item.address}
-                                  selected={selectedAddId === item.id}
+                                  title={localStrings.mainAddress}
+                                  subtitle={dbUser?.userProfileInfo?.address}
+                                  selected={selectedAddId === "main"}
                                   onCLickCallBack={async () => {
-                                    setSelectedAddId(item.id);
-                                    const distInfo = await checkDistance(item.lat, item.lng);
-                                    updateDeliveryAdress(item.address,
-                                        item.lat,
-                                        item.lng,
-                                        item.id,
-                                        item.name,
-                                        item.additionalInformation,
-                                        distInfo?.distance
+                                    setSelectedAddId("main");
+
+                                    let distInfo = await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
+                                    updateDeliveryAdress(dbUser?.userProfileInfo?.address,
+                                        dbUser?.userProfileInfo?.lat,
+                                        dbUser?.userProfileInfo?.lng,
+                                        null,
+                                        "main",
+                                        dbUser?.userProfileInfo?.additionalInformation,
+                                        distInfo?.distance,
                                     );
                                   }}
                               />
-                          )}
+                              }
 
+                              {dbUser?.userProfileInfo?.address && (dbUser?.userProfileInfo?.otherAddresses || []).map((item, key) =>
+                                  <PresenterSelect
+                                      key={key}
+                                      icon={faAddressCard}
+                                      title={item.name}
+                                      subtitle={item.address}
+                                      selected={selectedAddId === item.id}
+                                      onCLickCallBack={async () => {
+                                        setSelectedAddId(item.id);
+                                        const distInfo = await checkDistance(item.lat, item.lng);
+                                        updateDeliveryAdress(item.address,
+                                            item.lat,
+                                            item.lng,
+                                            item.id,
+                                            item.name,
+                                            item.additionalInformation,
+                                            distInfo?.distance
+                                        );
+                                      }}
+                                  />
+                              )}
+
+                              <Box display="flex" flexDirection="row-reverse">
+                                <Box mt={2}>
+                                  <Link href={"/address"}>
+                                    <Button variant="contained" color="primary" type="button" fullWidth
+                                            style={{textTransform: "none"}}
+                                    >
+                                      {localStrings.manageMyAdresses}
+                                    </Button>
+                                  </Link>
+                                </Box>
+                              </Box>
+
+
+                            </>
+                            }
+
+                            {(!dbUser || !useMyAdress) &&
+                            <Grid container spacing={3}>
+                              {/*<Box display="flex" p={1}>*/}
+                              <Grid item xs={12} lg={12}>
+                                <GoogleMapsAutocomplete
+                                    //ref={autocomp}
+                                    noKeyKnown
+                                    required
+                                    setterValueSource={setAdressValue}
+                                    valueSource={adressValue}
+                                    disabled={adressEditLock}
+                                    setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                      //let distInfo;
+                                      if (currentEstablishment()) {
+                                        let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                        //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
+                                        setDistanceAndCheck(distInfo,
+                                            (maxDistanceReached) => {
+                                              if (maxDistanceReached) {
+                                                setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                                              }
+                                              setMaxDistanceReached(maxDistanceReached);
+                                            },
+                                            setDistanceInfo, currentEstablishment);
+                                        updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
+                                        // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
+                                        // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
+                                        //     setGlobalDialog, setRedirectPageGlobal, distInfo)
+                                      } else {
+                                        updateDeliveryAdress(label, lat, lng);
+                                      }
+                                      //setAdressValue(label)
+                                      //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
+                                      //updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
+                                      setAdressEditLock(true);
+                                    }}/>
+                              </Grid>
+                            </Grid>
+                            }
+
+                          </>
+                        </Card1>
+                        }
+
+                        {(bookWithoutAccount && !dbUser) &&
+                        <Card1 sx={{mb: '2rem'}}>
+
+                          <Typography fontWeight="600" mb={2} variant="h5">
+                            {localStrings.personalInformation}
+                          </Typography>
+                          <Grid container spacing={6}>
+
+
+                            <Grid item sm={12} xs={12}>
+
+                              <TextField
+                                  className={classes.textField}
+                                  name="firstName"
+                                  label={localStrings.firstName}
+                                  fullWidth
+                                  sx={{mb: '1rem'}}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                  value={values.firstName}
+                                  error={!!touched.firstName && !!errors.firstName}
+                                  helperText={touched.firstName && errors.firstName}
+                              />
+
+                              <TextField
+                                  className={classes.textField}
+                                  name="lastName"
+                                  label={localStrings.lastName}
+                                  fullWidth
+                                  sx={{mb: '1rem'}}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                  value={values.lastName}
+                                  error={!!touched.lastName && !!errors.lastName}
+                                  helperText={touched.lastName && errors.lastName}
+                              />
+
+                              <TextField
+                                  className={classes.textField}
+                                  name="email"
+                                  label={localStrings.email}
+                                  fullWidth
+                                  sx={{mb: '1rem'}}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                  value={values.email}
+                                  error={!!touched.email && !!errors.email}
+                                  helperText={touched.email && errors.email}
+                              />
+
+                              <TextField
+                                  className={classes.textField}
+                                  name="phone"
+                                  label={localStrings.phone}
+                                  fullWidth
+                                  sx={{mb: '1rem'}}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                  value={values.phone}
+                                  error={!!touched.phone && !!errors.phone}
+                                  helperText={touched.phone && errors.phone}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Card1>
+                        }
+
+                        {(dbUser || bookWithoutAccount) &&
+                        <Card1 sx={{mb: '2rem'}}>
+                          <Typography fontWeight="600" mb={2} variant="h5">
+                            {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ?
+                                localStrings.selectDeliveryTimeSlot : localStrings.selectPickupTimeSlot}
+                          </Typography>
+
+                          <BookingSlots
+                              contextData={contextData}
+                              disableNextDay
+                              startDateParam={moment()}
+                              selectCallBack={(bookingSlot) => setSelectedBookingSlot(bookingSlot)}
+                              deliveryMode={getOrderInCreation().deliveryMode}
+                              selectedKeyParam={selectedSlotKey}
+                              setterSelectedKey={setSelectedSlotKey}
+                              brandId={contextData && contextData?.brand?.id}
+                          />
+                        </Card1>
+                        }
+
+                        {(dbUser || bookWithoutAccount) && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                        <Card1 sx={{mb: '2rem'}}>
+
+                          <Typography fontWeight="600" mb={2}>
+                            {localStrings.bookingadditionalInformation}
+                          </Typography>
+
+                          <Typography variant="body2" fontWeight="400" mb={2}>
+                            {localStrings.bookingadditionalInformationExample}
+                          </Typography>
+
+                          <TextField
+                              multiline
+                              rows={4}
+                              className={classes.textField}
+                              name="additionalInformation"
+                              //label={!useMyAdress || localStrings.additionalInformation}
+                              fullWidth
+                              sx={{mb: '1rem'}}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              disabled={useMyAdress}
+                              value={dbUser && useMyAdress ?
+                                  getOrderInCreation()?.deliveryAddress?.additionalInformation
+                                  :
+                                  values.additionalInformation
+                              }
+                              //error={!!touched.additionalInformation && !!errors.additionalInformation}
+                              helperText={touched.additionalInformation && errors.additionalInformation}
+                          />
+
+
+                          {useMyAdress && getOrderInCreation()?.deliveryAddress?.id &&
                           <Box display="flex" flexDirection="row-reverse">
                             <Box mt={2}>
-                              <Link href={"/address"}>
+                              <Link
+                                  href={"/address/adressDetail?" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
                                 <Button variant="contained" color="primary" type="button" fullWidth
                                         style={{textTransform: "none"}}
                                 >
-                                  {localStrings.manageMyAdresses}
+                                  {localStrings.updateAddtionalInformation}
                                 </Button>
                               </Link>
                             </Box>
                           </Box>
+                          }
 
 
-                        </>
+                        </Card1>
                         }
 
-                        {(!dbUser || !useMyAdress) &&
-                        <Grid container spacing={3}>
-                          {/*<Box display="flex" p={1}>*/}
-                          <Grid item xs={12} lg={12}>
-                            <GoogleMapsAutocomplete
-                                //ref={autocomp}
-                                noKeyKnown
-                                required
-                                setterValueSource={setAdressValue}
-                                valueSource={adressValue}
-                                disabled={adressEditLock}
-                                setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                  //let distInfo;
-                                  if (currentEstablishment()) {
-                                    let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                    //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
-                                    setDistanceAndCheck(distInfo,
-                                        (maxDistanceReached) => {
-                                          if (maxDistanceReached) {
-                                            setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
-                                          }
-                                          setMaxDistanceReached(maxDistanceReached);
-                                        },
-                                        setDistanceInfo, currentEstablishment);
-                                        updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
-                                    // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
-                                    // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
-                                    //     setGlobalDialog, setRedirectPageGlobal, distInfo)
-                                  }
-                                  else {
-                                    updateDeliveryAdress(label, lat, lng);
-                                  }
-                                  //setAdressValue(label)
-                                  //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
-                                  //updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
-                                  setAdressEditLock(true);
-                                }}/>
-                          </Grid>
-                          {/*{adressEditLock &&*/}
-                          {/*<Grid item xs={12} lg={4}>*/}
-                          {/*  <Button variant="contained"*/}
-                          {/*          style={{textTransform: "none"}}*/}
-                          {/*          onClick={() => setAdressEditLock(false)}*/}
-                          {/*          type="button" fullWidth>*/}
-                          {/*    {localStrings.deliverToOtherAddress}*/}
-                          {/*  </Button>*/}
-                          {/*</Grid>*/}
-                          {/*}*/}
-                        </Grid>
-                        }
+                        {(dbUser || bookWithoutAccount) &&
+                        <Card1 sx={{mb: '2rem'}}>
 
-                      </>
-                    </Card1>
-                    }
-
-                    {(bookWithoutAccount && !dbUser) &&
-                    <Card1 sx={{mb: '2rem'}}>
-
-                      <Typography fontWeight="600" mb={2} variant="h5">
-                        {localStrings.personalInformation}
-                      </Typography>
-                      <Grid container spacing={6}>
-
-
-                        <Grid item sm={12} xs={12}>
-
-                          {/*<Box display="flex" flexDirection="row-reverse">*/}
-                          {/*  <Box mt={2} mb={2}>*/}
-                          {/*    <Link href="/profile/edit">*/}
-                          {/*      <Button variant="contained" color="primary" type="button" fullWidth*/}
-                          {/*              style={{textTransform: "none"}}*/}
-                          {/*      >*/}
-                          {/*        {localStrings.modifyMyAccount}*/}
-                          {/*      </Button>*/}
-                          {/*    </Link>*/}
-                          {/*  </Box>*/}
-                          {/*</Box>*/}
-
-                          <TextField
-                              className={classes.textField}
-                              name="firstName"
-                              label={localStrings.firstName}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values.firstName}
-                              error={!!touched.firstName && !!errors.firstName}
-                              helperText={touched.firstName && errors.firstName}
+                          {checkoutError &&
+                          <AlertHtmlLocal severity={"error"}
+                                          title={localStrings.warningMessage.paymentIssue}
+                                          content={checkoutError.toString()}
                           />
-
-                          <TextField
-                              className={classes.textField}
-                              name="lastName"
-                              label={localStrings.lastName}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values.lastName}
-                              error={!!touched.lastName && !!errors.lastName}
-                              helperText={touched.lastName && errors.lastName}
-                          />
-
-                          <TextField
-                              className={classes.textField}
-                              name="email"
-                              label={localStrings.email}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values.email}
-                              error={!!touched.email && !!errors.email}
-                              helperText={touched.email && errors.email}
-                          />
-
-                          <TextField
-                              className={classes.textField}
-                              name="phone"
-                              label={localStrings.phone}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              value={values.phone}
-                              error={!!touched.phone && !!errors.phone}
-                              helperText={touched.phone && errors.phone}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Card1>
-                    }
-
-                    {(dbUser || bookWithoutAccount) &&
-                    <Card1 sx={{mb: '2rem'}}>
-                      <Typography fontWeight="600" mb={2} variant="h5">
-                        {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ?
-                            localStrings.selectDeliveryTimeSlot : localStrings.selectPickupTimeSlot}
-                      </Typography>
-
-                      <BookingSlots
-                          disableNextDay
-                          startDateParam={moment()}
-                          selectCallBack={(bookingSlot) => setSelectedBookingSlot(bookingSlot)}
-                          deliveryMode={getOrderInCreation().deliveryMode}
-                          selectedKeyParam={selectedSlotKey}
-                          setterSelectedKey={setSelectedSlotKey}
-                          brandId={contextData && contextData?.brand?.id}
-                      />
-                    </Card1>
-                    }
-
-                    {(dbUser || bookWithoutAccount) && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                    <Card1 sx={{mb: '2rem'}}>
-
-                      <Typography fontWeight="600" mb={2}>
-                        {localStrings.bookingadditionalInformation}
-                      </Typography>
-
-                      <Typography variant="body2" fontWeight="400" mb={2}>
-                        {localStrings.bookingadditionalInformationExample}
-                      </Typography>
-
-                      <TextField
-                          multiline
-                          rows={4}
-                          className={classes.textField}
-                          name="additionalInformation"
-                          //label={!useMyAdress || localStrings.additionalInformation}
-                          fullWidth
-                          sx={{mb: '1rem'}}
-                          onBlur={handleBlur}
-                          onChange={handleChange}
-                          disabled={useMyAdress}
-                          value={dbUser && useMyAdress ?
-                              getOrderInCreation()?.deliveryAddress?.additionalInformation
-                              :
-                              values.additionalInformation
                           }
-                          //error={!!touched.additionalInformation && !!errors.additionalInformation}
-                          helperText={touched.additionalInformation && errors.additionalInformation}
-                      />
 
+                          <Typography fontWeight="600" mb={2}>
+                            {localStrings.paymentMethod}
+                          </Typography>
 
-                      {useMyAdress && getOrderInCreation()?.deliveryAddress?.id &&
-                      <Box display="flex" flexDirection="row-reverse">
-                        <Box mt={2}>
-                          <Link href={"/address/adressDetail?" + getOrderInCreation().deliveryAddress.id + "?back=" + encodeURI("/checkout")}>
-                            <Button variant="contained" color="primary" type="button" fullWidth
-                                    style={{textTransform: "none"}}
-                            >
-                              {localStrings.updateAddtionalInformation}
-                            </Button>
-                          </Link>
-                        </Box>
-                      </Box>
-                      }
-
-
-
-                    </Card1>
-                    }
-
-                    {(dbUser || bookWithoutAccount) &&
-                    <Card1 sx={{mb: '2rem'}}>
-
-                      {checkoutError &&
-                      <AlertHtmlLocal severity={"error"}
-                                      title={localStrings.warningMessage.paymentIssue}
-                                      content={checkoutError.toString()}
-                      />
-                      }
-
-                      <Typography fontWeight="600" mb={2}>
-                        {localStrings.paymentMethod}
-                      </Typography>
-
-                      <FormControlLabel
-                          name="delivery"
-                          label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
-                          control={
-                            <Radio
-                                checked={paymentMethod === 'delivery'}
-                                color="secondary"
-                                size="small"
-                            />
-                          }
-                          sx={{ mb: '.5rem' }}
-                          onChange={handlePaymentMethodChange}
-                      />
-
-                      {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
-                      <>
-                        <br/>
-                        <FormControlLabel
-                            name="cc"
-                            label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
-                            control={
-                              <Radio
-                                  checked={paymentMethod === 'cc'}
-                                  color="secondary"
-                                  size="small"
-                              />
-                            }
-                            sx={{ mb: '0.5rem' }}
-                            onChange={handlePaymentMethodChange}
-                        />
-                      </>
-                      }
-
-                      <Typography fontWeight="600" mb={2}>
-                        {localStrings.paymentMethodsForPickup}
-                      </Typography>
-
-                      {paymentMethod !== 'cc' &&
-                      <FormGroup >
-                        {/*<p>{JSON.stringify(getPaymentsOnline())}</p>*/}
-                        {getPaymentsOnline().map((item, key) =>
-                            <FormControlLabel key={key}
-                                              control={
-                                                <Checkbox
-                                                    checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
-                                                    onChange={(event) => {
-                                                      //alert("checked " + event.target.checked);
-                                                      if (event.target.checked) {
-                                                        setExpectedPaymentMethods([...expectedPaymentMethods, item])
-                                                      }
-                                                      else {
-                                                        let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
-                                                        setExpectedPaymentMethods(filter)
-                                                      }
-                                                    }}
-                                                />
-                                              }
-                                              label={item.name} />
-                        )}
-
-                        {/*<FormControlLabel control={<Checkbox  />} label="Label" />*/}
-                        {/*<FormControlLabel control={<Checkbox />} label="Disabled" />*/}
-                      </FormGroup>
-                      }
-
-                      {paymentMethod === 'cc' &&
-                      <>
-
-                        {/*<CardNumberElement/>*/}
-
-                        {/*<Typography variant="subtitle2" mb={2}>*/}
-                        {/*  {localStrings.creditCardDetail}*/}
-                        {/*</Typography>*/}
-                        <div
-                            style={
-                              {
-                                border: '1px solid #C4CCD5',
-                                borderRadius: "5px",
-                                padding: '9px'
+                          <FormControlLabel
+                              name="delivery"
+                              label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
+                              control={
+                                <Radio
+                                    checked={paymentMethod === 'delivery'}
+                                    color="secondary"
+                                    size="small"
+                                />
                               }
-                            }
-                        >
-                          <CardElement
-                              id="card-element"
+                              sx={{mb: '.5rem'}}
+                              onChange={handlePaymentMethodChange}
+                          />
 
-                              //onComplete={}
-                              onReady={() => {
-
-                                //setPaymentCardValid(true);
-                                console.log("Card ready")
-                              }}
-
-                              onChange={(event) => {
-
-                                if (event.complete) {
-                                  setPaymentCardValid(true);
-                                } else if (event.error) {
-                                  setPaymentCardValid(false);
+                          {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
+                          <>
+                            <br/>
+                            <FormControlLabel
+                                name="cc"
+                                label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                control={
+                                  <Radio
+                                      checked={paymentMethod === 'cc'}
+                                      color="secondary"
+                                      size="small"
+                                  />
                                 }
-                              }}
+                                sx={{mb: '0.5rem'}}
+                                onChange={handlePaymentMethodChange}
+                            />
+                          </>
+                          }
 
-                              options={{
-                                style: {
-                                  base: {
-                                    fontSize: '14px',
-                                    color: '#424770',
-                                    '::placeholder': {
-                                      color: '#aab7c4',
-                                    },
-                                  },
-                                  invalid: {
-                                    color: '#9e2146',
-                                  },
-                                },
-                              }}/>
-                        </div>
+                          <Typography fontWeight="600" mb={2}>
+                            {localStrings.paymentMethodsForPickup}
+                          </Typography>
 
-                      </>
-                      }
-                    </Card1>
-                    }
 
-                    {(dbUser || bookWithoutAccount) &&
-                    <Grid container spacing={6}>
-                      <Grid item sm={6} xs={12}>
-                        <Link href="/cart">
-                          <Button
-                              style={{textTransform: "none"}}
-                              variant="outlined" color="primary" type="button" fullWidth style={{textTransform: "none"}}>
-                            {localStrings.backToCart}
-                          </Button>
-                        </Link>
-                      </Grid>
+                          {paymentMethod !== 'cc' &&
+                          <FormGroup>
+                            {getPaymentsOnline().map((item, key) =>
+                                <FormControlLabel key={key}
+                                                  control={
+                                                    <Checkbox
+                                                        checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
+                                                        onChange={(event) => {
+                                                          //alert("checked " + event.target.checked);
+                                                          if (event.target.checked) {
+                                                            setExpectedPaymentMethods([...expectedPaymentMethods, item])
+                                                          } else {
+                                                            let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
+                                                            setExpectedPaymentMethods(filter)
+                                                          }
+                                                        }}
+                                                    />
+                                                  }
+                                                  label={item.name}/>
+                            )}
+                          </FormGroup>
+                          }
 
-                      <Grid item sm={6} xs={12}>
-                        {/*<p>{JSON.stringify(getOrderInCreation()?.bookingSlot || {})}</p>*/}
-                        {/*<p>{getCartItems(getOrderInCreation).length}</p>*/}
-                        {/*<p>{JSON.stringify(getOrderInCreation()?.deliveryAddress)}</p>*/}
-                        {/*<p>{getOrderInCreation()?.deliveryMode}</p>*/}
+                          {paymentMethod === 'cc' &&
+                          <>
+                            {isPaymentSystemPay() &&
+                            <>
+                              {!loading &&
+                              <KRPayment
+                                  paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
+                                  publicKey={getSystemPublicKey()}
+                                  endPoint={getSystemEndPoint()}
+                                  email={getEmailCustomer(values)}
+                                  amount={getOrderAmount()}
+                                  currency={contextData.brand.config.currency}
+                                  errorCallBack={message => setCheckoutError(message)}
+                                  brandId={contextData.brand.id}
+                                  text={getSubmitText(values)}
+                                  disabled={
+                                    isPaymentDisabled(values)
+                                  }
+                              />
+                              }
 
-                        <Button
-                            style={{textTransform: "none"}}
-                            variant="contained" color="primary" type="submit" fullWidth
-                            type="submit"
-                            //endIcon={<SaveIcon />}
-                            disabled={
-                              (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) ||
-                              !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
-                              !getOrderInCreation().bookingSlot ||
-                              loading || getCartItems(getOrderInCreation).length == 0 ||
-                              (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
-                              (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) ||
-                              (paymentMethod === "cc" && !paymentCardValid)
+                              {isPaymentDisabled(values) && !loading &&
+                              <Button
+                                  style={{textTransform: "none"}}
+                                  variant="contained" color="primary" type="submit" fullWidth
+                                  disabled
+                              >
+                                {getSubmitText(values)}
+                              </Button>
+                              }
+                            </>
                             }
-                            endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
-                        >
-                          {getSubmitText(values)}
-                          {/*<CircularProgress size={24}/>*/}
-                          {/*{loading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
+                            {isPaymentStripe() &&
+                            <div
+                                style={
+                                  {
+                                    border: '1px solid #C4CCD5',
+                                    borderRadius: "5px",
+                                    padding: '9px'
+                                  }
+                                }
+                            >
+                              <CardElement
+                                  id="card-element"
 
-                        </Button>
-                      </Grid>
-                    </Grid>
-                    }
-                  </form>
-              )}
-            </Formik>
-            </>
+                                  //onComplete={}
+                                  onReady={() => {
 
+                                    //setPaymentCardValid(true);
+                                    console.log("Card ready")
+                                  }}
+
+                                  onChange={(event) => {
+
+                                    if (event.complete) {
+                                      setPaymentCardValid(true);
+                                    } else if (event.error) {
+                                      setPaymentCardValid(false);
+                                    }
+                                  }}
+
+                                  options={{
+                                    style: {
+                                      base: {
+                                        fontSize: '14px',
+                                        color: '#424770',
+                                        '::placeholder': {
+                                          color: '#aab7c4',
+                                        },
+                                      },
+                                      invalid: {
+                                        color: '#9e2146',
+                                      },
+                                    },
+                                  }}/>
+                            </div>
+                            }
+
+                          </>
+                          }
+                        </Card1>
+                        }
+
+                        {(dbUser || bookWithoutAccount) &&
+                        <Grid container spacing={6}>
+                          <Grid item sm={isPaymentSystemPayAndCCSelected() ? 12 : 6} xs={12}>
+                            <Link href="/cart">
+                              <Button
+                                  style={{textTransform: "none"}}
+                                  variant="outlined" color="primary" type="button" fullWidth
+                                  style={{textTransform: "none"}}>
+                                {localStrings.backToCart}
+                              </Button>
+                            </Link>
+                          </Grid>
+
+                          {!isPaymentSystemPayAndCCSelected() &&
+                          <Grid item sm={6} xs={12}>
+                            <Button
+                                style={{textTransform: "none"}}
+                                variant="contained" color="primary" type="submit" fullWidth
+                                type="submit"
+                                //endIcon={<SaveIcon />}
+                                disabled={
+                                  isPaymentDisabled(values)
+                                }
+                                endIcon={loading ?
+                                    <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
+                            >
+                              {getSubmitText(values)}
+                            </Button>
+                          </Grid>
+                          }
+                        </Grid>
+                        }
+                      </form>
+                  )}
+                </Formik>
+              </>
+          }
+        </>
         }
       </>
 
@@ -1312,39 +1382,17 @@ const checkoutSchema = (bookWithoutAccount) => {
           lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
           email: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
           phone: yup.string()
-                    .test(
-                      'goodFormat',
-                      localStrings.check.badPhoneFormat,
-                      value => {
-                        const phoneNumber = parsePhoneNumber(value, 'FR');
-                        //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
-                        return phoneNumber?.isValid();
-                      })
-                        // !value || value === "" || (value + "").match(/^[0-9]+(\.[0-9]{1,2})?$/)),
-
-          // phone: yup.string().when('phone', (value, schema) => {
-          //   const phoneNumber = parsePhoneNumber(value, 'FR');
-          //   alert("phoneNumber " + JSON.stringify(phoneNumber))
-          //   return schema.valid;
-
-            //return schema.valid;
-            //parsePhoneNumber()
-            // if (value === PRICING_EFFECT_UNCHANGED) {
-            //   return schema.valid;
-            // }
-            // if (value === PRICING_EFFECT_PERCENTAGE) {
-            //   return schema
-            //       .required(localStrings.formatString(localStrings.check.fieldRequired, localStrings.value))
-            //       .matches(/^(100(\.0{1,2})?|[1-9]?\d(\.\d{1,2})?)$/, localStrings.formatString(localStrings.check.percentCheck, localStrings.value))
-            // }
-            // return schema
-            //     .required(localStrings.formatString(localStrings.check.fieldRequired, localStrings.value))
-            //     .matches(/^[0-9]+(\.[0-9]{1,2})?$/, localStrings.formatString(localStrings.check.priceFormat, localStrings.value))
-          // }),
-
-          //phone: yup.
-          // phone: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
-          //     .matches(phoneRegExp, localStrings.check.badPhoneFormat)
+              .test(
+                  'goodFormat',
+                  localStrings.check.badPhoneFormat,
+                  value => {
+                    if (!value) {
+                      return false;
+                    }
+                    const phoneNumber = parsePhoneNumber(value, 'FR');
+                    //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
+                    return phoneNumber?.isValid();
+                  })
         }
     )
   }

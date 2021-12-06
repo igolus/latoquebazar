@@ -16,6 +16,7 @@ import localStrings from "../src/localStrings";
 import {isMobile} from "react-device-detect";
 import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
 import ChargeCard7 from "@component/product-cards/ChargeCard7";
+import EmptyBasket from "../src/components/shop/EmptyBasket";
 
 export interface CartProps {
   contextData?: any
@@ -54,28 +55,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
           {/*<p>{JSON.stringify(getOrderInCreation()?.charges || {})}</p>*/}
 
           {getCartItems(getOrderInCreation).length == 0 && (
-              <FlexBox
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  //mt="calc(100% - 74px)"
-                  height={isMobile ? "none" : "calc(100% - 74px)"}
-              >
-                <LazyImage
-                    src="/assets/images/logos/shopping-bag.svg"
-                    width="200px"
-                    height="100%"
-                />
-                <Box
-                    component="p"
-                    mt={2}
-                    color="grey.600"
-                    textAlign="center"
-                    maxWidth="200px"
-                >
-                  {localStrings.emptyBasket}
-                </Box>
-              </FlexBox>
+              <EmptyBasket/>
           )}
 
           {getCartItems(getOrderInCreation).length > 0 &&

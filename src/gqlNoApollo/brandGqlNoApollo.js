@@ -41,6 +41,13 @@ const common = `
       description
       ogImage
     }
+    paymentWebConfig {
+      paymentType
+      activateOnlinePayment
+      stripePublicKey
+      systemPayPublicKey
+      systemPayEndPoint
+    }
     carouselWebConfig {
       id
       name

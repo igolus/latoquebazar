@@ -120,9 +120,37 @@ const Footer = ({contextData}) => {
 
               }}
               >
-
-            <a href="https://latoquemagique.com">{localStrings.poweredBy}</a>
+            <Box mr={2}>
+              <a href="https://latoquemagique.com" target="new">{localStrings.poweredBy}</a>
+            </Box>
+            <Box mr={2}>
+              <a href="/legaNotice" target="new">{localStrings.legaNotice}</a>
+            </Box>
+            <Box mr={2}>
+              <a href="/cgv" target="new">{localStrings.cgv}</a>
+            </Box>
           </Box>
+
+          {/*<Box*/}
+          {/*    bgcolor="#0c0e30"*/}
+          {/*    fontSize="10px"*/}
+          {/*    fontWeight="400"*/}
+          {/*    //mb={2.5}*/}
+          {/*    lineHeight="1"*/}
+          {/*    color="grey.100"*/}
+          {/*    sx={{*/}
+          {/*      display: 'flex',*/}
+          {/*      flexDirection: 'row-reverse',*/}
+          {/*      // p: 1,*/}
+          {/*      mb: 0,*/}
+          {/*      bgcolor: "#0c0e30",*/}
+
+          {/*    }}*/}
+          {/*>*/}
+
+          {/*  <a href="/cgv">{localStrings.cgv}</a>*/}
+          {/*</Box>*/}
+
 
         </Container>
       </Box>
