@@ -10,7 +10,7 @@ import {
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT
 } from "../../util/constants";
 import {Button, IconButton} from "@material-ui/core";
-import {computePriceDetail} from "../../util/displayUtil";
+import {computePriceDetail, firstOrCurrentEstablishment} from "../../util/displayUtil";
 import Grid from "@material-ui/core/Grid";
 import BazarButton from "@component/BazarButton";
 import {getBookingSlotsOccupancyQueryNoApollo} from "../../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
@@ -330,7 +330,7 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
   return null;
 }
 
-function BookingSlots({selectCallBack, startDateParam, deliveryMode,
+function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode,
                         selectedKeyParam, setterSelectedKey, brandId, disableNextDay}) {
 
   //const [bookingSlotStartDate, setBookingSlotStartDate] = useState(startDateParam);
@@ -347,23 +347,27 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     }
   };
 
+  const currentEstablishmentOrFirst = () => {
+    return firstOrCurrentEstablishment(currentEstablishment, contextData);
+  }
+
   useEffect(() => {
-    let offset = getOffset(getOrderInCreation().deliveryMode, currentEstablishment());
+    let offset = getOffset(getOrderInCreation().deliveryMode, currentEstablishmentOrFirst());
     setOffset(offset)
   }, [getOrderInCreation().deliveryMode])
 
   useEffect(async () => {
-    if (currentEstablishment()) {
-      let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
+    if (currentEstablishmentOrFirst()) {
+      let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
       //alert("res " + JSON.stringify(res))
       setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
     }
-  }, [currentEstablishment()])
+  }, [currentEstablishmentOrFirst()])
 
   useEffect(async () => {
     const interval = setInterval(async () => {
-      if (currentEstablishment()) {
-        let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishment().id);
+      if (currentEstablishmentOrFirst()) {
+        let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
         //alert("res " + JSON.stringify(res))
         setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
       }
@@ -388,7 +392,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     }
   }, [])
 
-  if (currentEstablishment && currentEstablishment() && !currentEstablishment()?.serviceSetting?.daySetting) {
+  if (currentEstablishment && currentEstablishmentOrFirst() && !currentEstablishmentOrFirst()?.serviceSetting?.daySetting) {
     return (
         <div>
           <h3>{localStrings.check.noDaySetting}</h3>
@@ -424,7 +428,7 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     return selected;
   }
 
-  let timeSlots = buildTimeSlots(currentEstablishment(), getBookingSlotsOccupancy, getOrderInCreation, moment(), deliveryMode);
+  let timeSlots = buildTimeSlots(currentEstablishmentOrFirst(), getBookingSlotsOccupancy, getOrderInCreation, moment(), deliveryMode);
 
   function formatService(service) {
     if (!service) {
@@ -455,10 +459,10 @@ function BookingSlots({selectCallBack, startDateParam, deliveryMode,
     //if (orderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
     let minimalSlotDiff = 0;
     if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
-      minimalSlotDiff = currentEstablishment().serviceSetting.minimalSlotNumberBooking
+      minimalSlotDiff = currentEstablishmentOrFirst().serviceSetting.minimalSlotNumberBooking
     }
     else if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
-      minimalSlotDiff = currentEstablishment().serviceSetting.minimalSlotNumberBookingNoDelivery
+      minimalSlotDiff = currentEstablishmentOrFirst().serviceSetting.minimalSlotNumberBookingNoDelivery
     }
 
     return  timeSlots.allSlots.indexOf(slot) - timeSlots.allSlots.indexOf(firstSlotInFuture) >= minimalSlotDiff;

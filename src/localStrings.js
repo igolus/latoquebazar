@@ -4,6 +4,10 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        cgvAccept: "J'accepte le termes et conditions",
+        seeCgvAccept: "Voir les termes et conditions",
+        legaNotice: "Mentions Legales",
+        cgv: "Condition générales de ventes",
         unavailableInDelivery: "Indisponible en livraison",
         allCat: "toute categories",
         categoryTitleDef: "{0} categorie {1}",
@@ -88,13 +92,13 @@ let localStrings = new LocalizedStrings({
         paymentMethodsForPickup: "Selectionner vos methodes de paiement pour la paiement à la reception",
 
         saveChange: "Sauvegarder les changements",
-        backToProfile: "Retour a mon profil",
+        backToProfile: "Retour a mon profile",
         notificationInfo: "Afin de recevoir des notification lorsque votre commande est prète vous pouvez activer les notifications pour ce site, dans la barre de tache de votre navigateur",
         activateNotification: "Activer les notifications",
         home: "Accueil",
         orderCount: "Commandes",
         awaitingOrders: "Commandes en attente",
-        myProfile: "Mon profil",
+        myProfile: "Mon profile",
         seeMyOrderDetail: "Voir le status de ma commande",
         orderCompletedThanks : "Merci d'avoir commandé avec {0}",
         orderCompleted: "Commande confirmée",
@@ -199,7 +203,7 @@ let localStrings = new LocalizedStrings({
         categorie: "Categories",
         searchResults: 'Resultats de recherche pour: "{0}"',
         searchFor: "Rechercher un produit ....",
-        continueWithGoogle: "Continuer avec google",
+        continueWithGoogle: "Identification avec google",
         continueWithFaceook: "Continuer avec facebook",
         profile: "Profile",
         myAccount: "Mon compte",
@@ -221,7 +225,7 @@ let localStrings = new LocalizedStrings({
         logout: "Se deconnecter",
         password: "Mot de passe",
         reTypePassword: "Repeter le mot de passe",
-        logEmailAndPassword: "Se connecter avec email et mot de passe",
+        logEmailAndPassword: "Identifiez vous",
         dontHaveAccount: "Vous n'avez pas de compte?",
         signup: "Creer un compte",
         resetPassword: "Réinitialiser le mot de passe",
@@ -309,7 +313,7 @@ let localStrings = new LocalizedStrings({
             maxDistanceReached: "L'adresse est en dehors de la zone",
             noItemInCart: "Aucun produits dans le panier",
             badContactInfo: "Information de contact invalides",
-
+            pleaseAcceptCgv: "Merci d'accepter les termes et conditions",
         },
 
         info: {

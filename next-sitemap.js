@@ -8,5 +8,7 @@ module.exports = {
         "/address",
         "/cart",
         "/confirmed/*",
+        "/cgv",
+        "/legalNotice"
     ]
 }

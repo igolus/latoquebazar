@@ -216,7 +216,7 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                 {/*<H3 textAlign="center" mb={1}>*/}
                 {/*  Welcome To Ecommerce*/}
                 {/*</H3>*/}
-                <Small
+                <H3
                     fontWeight="600"
                     fontSize="12px"
                     color="grey.800"
@@ -225,7 +225,7 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                     display="block"
                 >
                   {localStrings.logEmailAndPassword}
-                </Small>
+                </H3>
 
 
                 {user && verifEmailSentAgain &&
@@ -253,6 +253,22 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                   }
                 </AlertHtmlLocal>
                 }
+
+
+                <BazarButton
+                    className="googleButton"
+                    size="medium"
+                    onClick={handleGoogleClick}
+                    fullWidth
+                    sx={{
+                      height: 44,
+                    }}
+                >
+                  <Image src="/assets/images/icons/google-1.svg" alt="google" />
+                  <Box fontSize="12px" ml={1}>
+                    {localStrings.continueWithGoogle}
+                  </Box>
+                </BazarButton>
 
 
                 <BazarTextField
@@ -335,21 +351,6 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                 {/*  </Box>*/}
                 {/*</BazarButton>*/}
 
-
-                <BazarButton
-                    className="googleButton"
-                    size="medium"
-                    onClick={handleGoogleClick}
-                    fullWidth
-                    sx={{
-                      height: 44,
-                    }}
-                >
-                  <Image src="/assets/images/icons/google-1.svg" alt="google" />
-                  <Box fontSize="12px" ml={1}>
-                    {localStrings.continueWithGoogle}
-                  </Box>
-                </BazarButton>
 
                 <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
                   <Box>{localStrings.dontHaveAccount}</Box>
