@@ -53,7 +53,7 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
         }
         //axios.post(con)
         const dataPay = {
-            "amount": amount * 100,
+            "amount": Math.round(amount * 100),
             "currency": currency,
             "customer": {
                 "email": email

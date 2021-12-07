@@ -29,6 +29,7 @@ import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import {getItemNumberInCart} from "../../util/cartUtil";
 import {layoutConstant} from "../../util/constants";
 import {isMobile} from "react-device-detect";
+import {useRouter} from "next/router";
 
 type HeaderProps = {
     className?: string
@@ -57,7 +58,7 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
 const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     const [sidenavOpen, setSidenavOpen] = useState(false)
     //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
-
+    const router = useRouter()
     //alert("contextData brand " + contextData.brand)
     const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen, user, dbUser} = useAuth();
     const theme = useTheme()
@@ -127,6 +128,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 </FlexBox>
 
                 <FlexBox alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
+                    {/*<Link href={}*/}
                     <Box
                         component={IconButton}
                         ml={2}
@@ -135,7 +137,8 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
 
                         onClick={() => {
                             if (!currentUser() || !dbUser) {
-                                toggleDialog();
+                                router.push("/profile")
+                                //toggleDialog();
                             }
                         }}
                     >
