@@ -461,7 +461,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       }
 
       dataOrder.expectedPayments = expectedPaymentMethods;
-      if (paymentMethod === "cc") {
+      if (paymentMethod === "cc" && !isPaymentSystemPay()) {
         dataOrder.tempOrder = true;
       }
 
@@ -714,7 +714,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 <Formik
                     initialValues={getInitialValues(dbUser)}
                     validationSchema={checkoutSchema(bookWithoutAccount)}
-                    onSubmit={handleFormSubmit}
+                    onSubmit={(values) => handleFormSubmit(values, null, null)}
                 >
 
                   {({
