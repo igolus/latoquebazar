@@ -277,6 +277,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           delete item.productId;
           delete item.creationTimestamp;
           delete item.uuid;
+
+          (item.options || []).forEach(opt => {
+            delete opt.defaultSelected
+          })
+
         });
 
       }
@@ -295,7 +300,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 delete deal.deal.creationTimestamp;
                 delete deal.uuid;
                 delete deal.creationTimestamp;
-                delete deal.restrictionsApplied;
+                delete deal.deal.restrictionsApplied;
                 delete deal.restrictionsList;
 
                 let productAndSkusLines = cloneDeep(deal.productAndSkusLines);
@@ -310,6 +315,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   (productAndSkusLine.options || []).forEach(opt => {
                     delete opt.defaultSelected
                   })
+                  // (productAndSkusLine.options || []).forEach(option =>
+                  //   delete option.defaultSelected;
+                  // })
 
                   let existingSku = (allSkus ? allSkus.data : []).find(sku => sku.extRef == productAndSkusLine.extRef);
                   if (existingSku) {
@@ -453,7 +461,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       }
 
       dataOrder.expectedPayments = expectedPaymentMethods;
-      if (paymentMethod === "cc") {
+      if (paymentMethod === "cc" && !isPaymentSystemPay()) {
         dataOrder.tempOrder = true;
       }
 
@@ -706,7 +714,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 <Formik
                     initialValues={getInitialValues(dbUser)}
                     validationSchema={checkoutSchema(bookWithoutAccount)}
-                    onSubmit={handleFormSubmit}
+                    onSubmit={(values) => handleFormSubmit(values, null, null)}
                 >
 
                   {({
@@ -1312,33 +1320,33 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             }
                           </>
                           }
-                         <Box display="flex" flexDirection="row" mt={2}>
-                          <FormGroup>
-                            <Box>
-                              <FormControlLabel control={
-                                <Checkbox checked={cgvChecked}
-                                          onChange={event => setCgvChecked(event.target.checked)} />
-                              }
-                                label={
-                                  <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
-                                    {/*{localStrings.bySigningTermsAndConditions}*/}
-                                    <a href="/cgv" target="_blank">
-                                      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                                        {localStrings.cgvAccept}
-                                      </H6>
-                                    </a>
-                                  </FlexBox>
-                              } />
-                            </Box>
+                          <Box display="flex" flexDirection="row" mt={2}>
+                            <FormGroup>
+                              <Box>
+                                <FormControlLabel control={
+                                  <Checkbox checked={cgvChecked}
+                                            onChange={event => setCgvChecked(event.target.checked)} />
+                                }
+                                                  label={
+                                                    <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                                                      {/*{localStrings.bySigningTermsAndConditions}*/}
+                                                      <a href="/cgv" target="_blank">
+                                                        <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                                                          {localStrings.cgvAccept}
+                                                        </H6>
+                                                      </a>
+                                                    </FlexBox>
+                                                  } />
+                              </Box>
 
 
-                            {/*<Checkbox defaultChecked />*/}
-                            {/*<Box>*/}
-                            {/*  <a href={"/cgv"} target="new">*/}
-                            {/*      {localStrings.seeCgvAccept}*/}
-                            {/*  </a>*/}
-                            {/*</Box>*/}
-                          </FormGroup>
+                              {/*<Checkbox defaultChecked />*/}
+                              {/*<Box>*/}
+                              {/*  <a href={"/cgv"} target="new">*/}
+                              {/*      {localStrings.seeCgvAccept}*/}
+                              {/*  </a>*/}
+                              {/*</Box>*/}
+                            </FormGroup>
                           </Box>
 
                         </Card1>
