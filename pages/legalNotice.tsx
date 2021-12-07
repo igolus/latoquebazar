@@ -4,13 +4,14 @@ import useAuth from "@hook/useAuth";
 import MdRender from "@component/MdRender";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import axios from "axios";
+import {Head} from "next/document";
 
 export interface ProductDetailsProps {
     contextData?: any
 }
 //const config = require('../../../src/conf/config.json');
 
-const LegalNotice:React.FC<ProductDetailsProps> = () => {
+const LegalNotice:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const [mdSource, setMdSource] = useState(null)
     useEffect(() => {
@@ -22,16 +23,23 @@ const LegalNotice:React.FC<ProductDetailsProps> = () => {
         load();
     }, []);
     return (
-        <div style={{margin:"25px"}}>
-            {mdSource &&
-            <MdRender content={mdSource}/>
-            }
-        </div>
+        <>
+            {/*<Head>*/}
+            {/*    <link rel="shortcut icon" id="favicon"*/}
+            {/*          href={contextData?.brand?.iconUrl}/>*/}
+            {/*</Head>*/}
+            <div style={{margin:"25px"}}>
+                {mdSource &&
+                <MdRender content={mdSource}/>
+                }
+            </div>
+        </>
+
     )
 }
 
-// export const getStaticProps: GetStaticProps = async () => {
-//     return await getStaticPropsUtil();
-// }
+export const getStaticProps: GetStaticProps = async () => {
+    return await getStaticPropsUtil();
+}
 
 export default LegalNotice
