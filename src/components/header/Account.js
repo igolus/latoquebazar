@@ -43,6 +43,7 @@ const Account = ({noLinkMode}) => {
     };
     return (
         <>
+            {/*<Link href={"/profile"}*/}
             <Box
                 display="flex"
                 alignItems="center"

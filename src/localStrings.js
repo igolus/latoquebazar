@@ -5,6 +5,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 let localStrings = new LocalizedStrings({
     fr: {
         cgvAccept: "J'accepte le termes et conditions",
+        commercialAgreementAccept: "J'accepte de recevoir des proposition commerciales par email",
         seeCgvAccept: "Voir les termes et conditions",
         legaNotice: "Mentions Legales",
         cgv: "Condition générales de ventes",

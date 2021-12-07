@@ -61,6 +61,8 @@ import {itemHaveRestriction} from "@component/mini-cart/MiniCart";
 import parsePhoneNumber from 'libphonenumber-js'
 import KRPayment from "../../components/payment/KRPayment";
 import EmptyBasket from "@component/shop/EmptyBasket";
+import FlexBox from "@component/FlexBox";
+import {H6} from "@component/Typography";
 
 const config = require('../../conf/config.json')
 
@@ -94,7 +96,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
   const classes = useStyles();
   const autocomp = useRef(null);
-  const [cgvChecked, setCgvChecked] = React.useState(true);
+  const [cgvChecked, setCgvChecked] = React.useState(false);
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
@@ -1324,16 +1326,26 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                               <FormControlLabel control={
                                 <Checkbox checked={cgvChecked}
                                           onChange={event => setCgvChecked(event.target.checked)} />
-                              } label={localStrings.cgvAccept} />
+                              }
+                                label={
+                                  <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                                    {/*{localStrings.bySigningTermsAndConditions}*/}
+                                    <a href="/cgv" target="_blank">
+                                      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                                        {localStrings.cgvAccept}
+                                      </H6>
+                                    </a>
+                                  </FlexBox>
+                              } />
                             </Box>
 
 
                             {/*<Checkbox defaultChecked />*/}
-                            <Box>
-                              <a href={"/cgv"} target="new">
-                                  {localStrings.seeCgvAccept}
-                              </a>
-                            </Box>
+                            {/*<Box>*/}
+                            {/*  <a href={"/cgv"} target="new">*/}
+                            {/*      {localStrings.seeCgvAccept}*/}
+                            {/*  </a>*/}
+                            {/*</Box>*/}
                           </FormGroup>
                           </Box>
 
