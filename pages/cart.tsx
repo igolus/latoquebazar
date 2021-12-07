@@ -24,7 +24,12 @@ export interface CartProps {
 
 const Cart:React.FC<CartProps> = ({contextData}) => {
 
+  const {getContextDataAuth} = useAuth();
+
   function getContextData() {
+    if (getContextDataAuth()) {
+      return getContextDataAuth()
+    }
     return contextData;
   }
 

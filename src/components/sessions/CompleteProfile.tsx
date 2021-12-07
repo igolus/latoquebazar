@@ -1,8 +1,8 @@
 import BazarButton from '@component/BazarButton'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
-import {H3, Small} from '@component/Typography'
-import {Card, CardProps,} from '@material-ui/core'
+import {H3, H6, Small} from '@component/Typography'
+import {Card, CardProps, Checkbox, FormControlLabel,} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useFormik} from 'formik'
 import {useRouter} from 'next/router'
@@ -72,6 +72,7 @@ const CompleteProfile = ({closeCallBack}) => {
     firstName: user.name && user.name !== user.email && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
     lastName: user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : '',
     agreement: false,
+    agreementAdd: false,
     //address: JSON.parse(localStorage.getItem(DIST_INFO)).address || '',
     placeId: '',
     city: '',
@@ -80,6 +81,7 @@ const CompleteProfile = ({closeCallBack}) => {
     lat: '',
     lng: '',
     phoneNumber: '',
+
   }
 
   const togglePasswordVisibility = useCallback(() => {

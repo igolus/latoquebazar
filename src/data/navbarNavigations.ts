@@ -228,25 +228,33 @@ const navbarNavigations = (dbUser, extraPages) => {
       currentIndex++;
     }
   }
-  if (dbUser) {
+  //if (dbUser) {
     items.push({
       title: localStrings.profilePageTitle,
-      child: [
-        {
-          title: localStrings.myOrders,
-          url: '/orders'
-        },
-        {
-          title: localStrings.myAccount,
-          url: '/profile'
-        },
-        {
-          title: localStrings.myAddresses,
-          url: '/address'
-        }
-      ]
+      url: '/profile',
+      regExpMatch: '\/orders|\/profile|\/address'
+      // child: [
+      //   {
+      //     title: localStrings.myOrders,
+      //     url: '/orders'
+      //   },
+      //   {
+      //     title: localStrings.myAccount,
+      //     url: '/profile'
+      //   },
+      //   {
+      //     title: localStrings.myAddresses,
+      //     url: '/address'
+      //   }
+      // ]
     })
-  }
+  // }
+  // else {
+  //   items.push({
+  //     title: localStrings.profilePageTitle,
+  //     url: '/profile',}
+  //   )
+  // }
   return items;
 }
 
