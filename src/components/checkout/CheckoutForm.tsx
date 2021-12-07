@@ -94,7 +94,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
   const classes = useStyles();
   const autocomp = useRef(null);
-
+  const [cgvChecked, setCgvChecked] = React.useState(true);
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
@@ -615,6 +615,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.badContactInfo;
     }
 
+    if (!cgvChecked) {
+      return localStrings.check.pleaseAcceptCgv;
+    }
 
     return paymentMethod === "cc" ?
         localStrings.formatString(localStrings.checkOutNowAndPayCard,
@@ -639,6 +642,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function isPaymentDisabled(values) {
     return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0) ||
+        !cgvChecked ||
         !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
         !getOrderInCreation().bookingSlot ||
         loading || getCartItems(getOrderInCreation).length == 0 ||
@@ -648,7 +652,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function isPaymentSystemPay() {
-    return currentBrand()?.config?.paymentWebConfig.paymentType === PAYMENT_MODE_SYSTEM_PAY
+    return currentBrand()?.config?.paymentWebConfig?.paymentType === PAYMENT_MODE_SYSTEM_PAY
   }
 
   function isPaymentSystemPayAndCCSelected() {
@@ -656,7 +660,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function isPaymentStripe() {
-    return currentBrand()?.config?.paymentWebConfig.paymentType === PAYMENT_MODE_STRIPE
+    return currentBrand()?.config?.paymentWebConfig?.paymentType === PAYMENT_MODE_STRIPE
   }
 
   function getOrderAmount() {
@@ -1312,11 +1316,31 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   }}/>
                             </div>
                             }
-
                           </>
                           }
+                         <Box display="flex" flexDirection="row" mt={2}>
+                          <FormGroup>
+                            <Box>
+                              <FormControlLabel control={
+                                <Checkbox checked={cgvChecked}
+                                          onChange={event => setCgvChecked(event.target.checked)} />
+                              } label={localStrings.cgvAccept} />
+                            </Box>
+
+
+                            {/*<Checkbox defaultChecked />*/}
+                            <Box>
+                              <a href={"/cgv"} target="new">
+                                  {localStrings.seeCgvAccept}
+                              </a>
+                            </Box>
+                          </FormGroup>
+                          </Box>
+
                         </Card1>
                         }
+
+
 
                         {(dbUser || bookWithoutAccount) &&
                         <Grid container spacing={6}>

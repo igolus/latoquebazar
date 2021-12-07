@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 const Account = ({noLinkMode}) => {
     const classes = useStyles();
     const ref = useRef(null);
-    const { currentUser, logout, userInDb } = useAuth();
+    const { currentUser, logout, userInDb, dbUser } = useAuth();
     const [isOpen, setOpen] = useState(false);
 
     const handleLogout = async () => {
@@ -54,7 +54,7 @@ const Account = ({noLinkMode}) => {
                 <Avatar
                     alt="User"
                     className={classes.avatar}
-                    //src={currentUser().photoURL}
+                    src={currentUser()?.photoURL}
                 />
                 <Hidden smDown>
                     <Typography

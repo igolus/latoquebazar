@@ -14,7 +14,7 @@ const LoginOrSignup = ({closeCallBack, contextData}) => {
 
     const {getDbUser, user, dbUser, setDbUser, loginOnGoing, currentUser} = useAuth();
     useEffect(() => {
-        if (dbUser) {
+        if (dbUser && closeCallBack) {
             closeCallBack();
         }
     }, [dbUser, setDbUser, user, currentUser()])
