@@ -7,7 +7,7 @@ let localStrings = new LocalizedStrings({
         cgvAccept: "J'accepte le termes et conditions",
         commercialAgreementAccept: "J'accepte de recevoir des proposition commerciales par email",
         seeCgvAccept: "Voir les termes et conditions",
-        legaNotice: "Mentions Legales",
+        legalNotice: "Mentions Legales",
         cgv: "Condition générales de vente",
         unavailableInDelivery: "Indisponible en livraison",
         allCat: "toute categories",

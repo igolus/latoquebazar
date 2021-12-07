@@ -3,6 +3,7 @@ import {GetStaticProps} from "next";
 import useAuth from "@hook/useAuth";
 import MdRender from "@component/MdRender";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
+import {Head} from "next/document";
 
 export interface ProductDetailsProps {
     contextData?: any
@@ -27,11 +28,18 @@ const Cgv:React.FC<ProductDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <div style={{margin:"25px"}}>
-            {extraPage && extraPage.content &&
-            <MdRender content = {extraPage.content}/>
-            }
-        </div>
+        <>
+            {/*<Head>*/}
+            {/*    <link rel="shortcut icon" id="favicon"*/}
+            {/*          href={contextData?.brand?.iconUrl}/>*/}
+            {/*</Head>*/}
+
+            <div style={{margin:"25px"}}>
+                {extraPage && extraPage.content &&
+                <MdRender content = {extraPage.content}/>
+                }
+            </div>
+        </>
     )
 }
 

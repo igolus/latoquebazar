@@ -124,7 +124,7 @@ const Footer = ({contextData}) => {
               <a href="https://latoquemagique.com" target="new">{localStrings.poweredBy}</a>
             </Box>
             <Box mr={2}>
-              <a href="/legaNotice" target="new">{localStrings.legaNotice}</a>
+              <a href="/legalNotice" target="new">{localStrings.legalNotice}</a>
             </Box>
             <Box mr={2}>
               <a href="/cgv" target="new">{localStrings.cgv}</a>
