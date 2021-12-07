@@ -72,7 +72,7 @@ const CompleteProfile = ({closeCallBack}) => {
     firstName: user.name && user.name !== user.email && user.name.split(" ").length > 0 ? user.name.split(" ")[0] : '',
     lastName: user.name && user.name.split(" ").length > 1 ? user.name.split(" ")[1] : '',
     agreement: false,
-    agreementAdd: false,
+    commercialAgreement: true,
     //address: JSON.parse(localStorage.getItem(DIST_INFO)).address || '',
     placeId: '',
     city: '',
@@ -105,10 +105,12 @@ const CompleteProfile = ({closeCallBack}) => {
     delete valueCopy.agreement;
     delete valueCopy.submit
     delete valueCopy.establishments
+    delete valueCopy.commercialAgreement
     valueCopy.phoneNumber = parsePhoneNumber(values.phoneNumber, 'FR').number
     data.userProfileInfo = { ...valueCopy };
     delete data.userProfileInfo.lat;
     delete data.userProfileInfo.lng;
+    data.commercialAgreement = values.commercialAgreement;
     data.webUser = true;
     // alert("user.uid " + user.uid)
     // alert("user " + JSON.stringify(user));
@@ -240,28 +242,53 @@ const CompleteProfile = ({closeCallBack}) => {
           />
 
 
-          {/*<FormControlLabel*/}
-          {/*    className="agreement"*/}
-          {/*    name="agreement"*/}
-          {/*    onChange={handleChange}*/}
-          {/*    control={*/}
-          {/*      <Checkbox*/}
-          {/*          size="small"*/}
-          {/*          color="secondary"*/}
-          {/*          checked={values.agreement || false}*/}
-          {/*      />*/}
-          {/*    }*/}
-          {/*    label={*/}
-          {/*      <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">*/}
-          {/*        {localStrings.bySigningTermsAndConditions}*/}
-          {/*        <a href="/" target="_blank" rel="noreferrer noopener">*/}
-          {/*          <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
-          {/*            {localStrings.termsAndConditions}*/}
-          {/*          </H6>*/}
-          {/*        </a>*/}
-          {/*      </FlexBox>*/}
-          {/*    }*/}
-          {/*/>*/}
+          <FormControlLabel
+              className="agreement"
+              name="agreement"
+              //onChange={handleChange}
+              control={
+                <Checkbox
+                    onChange={(event ) => setFieldValue('agreement', event.target.checked)}
+                    size="small"
+                    color="secondary"
+                    checked={values.agreement || false}
+                />
+              }
+              label={
+                <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                  {/*{localStrings.bySigningTermsAndConditions}*/}
+                  <a href="/cgv" target="_blank" rel="noreferrer noopener">
+                    <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                      {localStrings.cgvAccept}
+                    </H6>
+                  </a>
+                </FlexBox>
+              }
+          />
+
+          <FormControlLabel
+              className="agreement"
+              name="commercialAgreement"
+              onChange={handleChange}
+              control={
+                <Checkbox
+                    onChange={(event ) => setFieldValue('commercialAgreement', event.target.checked)}
+                    size="small"
+                    color="secondary"
+                    checked={values.commercialAgreement || false}
+                />
+              }
+              label={
+                <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                  {/*{localStrings.bySigningTermsAndConditions}*/}
+                  {/*<a href="/cgv" target="_blank">*/}
+                    <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                      {localStrings.commercialAgreementAccept}
+                    </H6>
+                  {/*</a>*/}
+                </FlexBox>
+              }
+          />
 
           <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
             <BazarButton
@@ -269,6 +296,7 @@ const CompleteProfile = ({closeCallBack}) => {
                 color="primary"
                 type="submit"
                 fullWidth
+                disabled={!values.agreement}
                 sx={{
                   height: 44,
                 }}
@@ -355,6 +383,9 @@ const formSchema = yup.object().shape({
           'goodFormat',
           localStrings.check.badPhoneFormat,
           value => {
+            if (!value) {
+              return false
+            }
             const phoneNumber = parsePhoneNumber(value, 'FR');
             //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
             return phoneNumber?.isValid();

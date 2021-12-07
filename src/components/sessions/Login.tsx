@@ -217,12 +217,12 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                 {/*  Welcome To Ecommerce*/}
                 {/*</H3>*/}
                 <H3
-                    fontWeight="600"
-                    fontSize="12px"
-                    color="grey.800"
-                    textAlign="center"
-                    mb={4.5}
-                    display="block"
+                    // fontWeight="600"
+                    // fontSize="12px"
+                    // color="grey.800"
+                    // textAlign="center"
+                    // mb={4.5}
+                    // display="block"
                 >
                   {localStrings.logEmailAndPassword}
                 </H3>
@@ -262,6 +262,7 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                     fullWidth
                     sx={{
                       height: 44,
+                      marginBottom: "20px"
                     }}
                 >
                   <Image src="/assets/images/icons/google-1.svg" alt="google" />
