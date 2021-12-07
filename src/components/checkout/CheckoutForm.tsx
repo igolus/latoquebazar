@@ -1320,33 +1320,33 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             }
                           </>
                           }
-                         <Box display="flex" flexDirection="row" mt={2}>
-                          <FormGroup>
-                            <Box>
-                              <FormControlLabel control={
-                                <Checkbox checked={cgvChecked}
-                                          onChange={event => setCgvChecked(event.target.checked)} />
-                              }
-                                label={
-                                  <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
-                                    {/*{localStrings.bySigningTermsAndConditions}*/}
-                                    <a href="/cgv" target="_blank">
-                                      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                                        {localStrings.cgvAccept}
-                                      </H6>
-                                    </a>
-                                  </FlexBox>
-                              } />
-                            </Box>
+                          <Box display="flex" flexDirection="row" mt={2}>
+                            <FormGroup>
+                              <Box>
+                                <FormControlLabel control={
+                                  <Checkbox checked={cgvChecked}
+                                            onChange={event => setCgvChecked(event.target.checked)} />
+                                }
+                                                  label={
+                                                    <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                                                      {/*{localStrings.bySigningTermsAndConditions}*/}
+                                                      <a href="/cgv" target="_blank">
+                                                        <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                                                          {localStrings.cgvAccept}
+                                                        </H6>
+                                                      </a>
+                                                    </FlexBox>
+                                                  } />
+                              </Box>
 
 
-                            {/*<Checkbox defaultChecked />*/}
-                            {/*<Box>*/}
-                            {/*  <a href={"/cgv"} target="new">*/}
-                            {/*      {localStrings.seeCgvAccept}*/}
-                            {/*  </a>*/}
-                            {/*</Box>*/}
-                          </FormGroup>
+                              {/*<Checkbox defaultChecked />*/}
+                              {/*<Box>*/}
+                              {/*  <a href={"/cgv"} target="new">*/}
+                              {/*      {localStrings.seeCgvAccept}*/}
+                              {/*  </a>*/}
+                              {/*</Box>*/}
+                            </FormGroup>
                           </Box>
 
                         </Card1>
