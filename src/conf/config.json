@@ -9,5 +9,6 @@
   "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
   "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment/stripe/charge2",
   "systemPayTokenUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayToken",
-  "systemPayValidatePaymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayValidatePayment"
+  "systemPayValidatePaymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayValidatePayment",
+  "siteBaseUrl": "https://commandes.by-bhappy.com"
 }
