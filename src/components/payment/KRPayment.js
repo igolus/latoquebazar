@@ -8,7 +8,7 @@ import {uuid} from "uuidv4";
 const config = require('../../conf/config.json');
 
 const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email, amount, currency,
-                       publicKey, endPoint}) => {
+                       publicKey, endPoint, checkingPayCallBack}) => {
     //const [message, setMessage] = useState(null);
     const [loading, setLoading] = useState(true);
     const {getOrderInCreation} = useAuth();
@@ -79,7 +79,11 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
                 }
             )
             .then(({ KR }) =>
+
                 KR.onSubmit(paymentData => {
+                    if (checkingPayCallBack) {
+                        checkingPayCallBack();
+                    }
                     axios
                         .post(config.systemPayValidatePaymentUrl + "/" + brandId, paymentData)
                         .then(response => {

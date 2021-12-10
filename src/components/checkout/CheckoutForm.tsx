@@ -100,6 +100,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
+  const [payLoading, setPayLoading] = useState(false);
 
   const [bookWithoutAccount, setBookWithoutAccount] = useState(false);
   const [paymentCardValid, setPaymentCardValid] = useState(false);
@@ -696,14 +697,16 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
-        {getCartItems(getOrderInCreation).length == 0 && (
+        {!payLoading && getCartItems(getOrderInCreation).length == 0 && (
             <EmptyBasket/>
         )}
 
-
+        {payLoading &&
+          <ClipLoaderComponent/>
+        }
 
         {/*<p>{firstOrCurrentEstablishment().id}</p>*/}
-        {getCartItems(getOrderInCreation).length > 0 &&
+        {!payLoading && getCartItems(getOrderInCreation).length > 0 &&
         <>
           {(!firstOrCurrentEstablishment() || !orderInCreation) ?
               // {false ?
@@ -1259,6 +1262,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   disabled={
                                     isPaymentDisabled(values)
                                   }
+                                  checkingPayCallBack={() => setPayLoading(true)}
                               />
                               }
 
