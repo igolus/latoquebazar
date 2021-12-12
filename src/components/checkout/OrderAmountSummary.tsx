@@ -1,10 +1,10 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import { Button, Divider, TextField, Typography } from '@material-ui/core'
+import {Box, Button, Divider, TextField, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {
-    computePriceDetail,
+    computePriceDetail, firstOrCurrentEstablishment,
     formatOrderConsumingMode,
     getBrandCurrency,
     getRemainingToPay
@@ -15,20 +15,29 @@ import moment from "moment";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
 import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
+import {isMobile} from "react-device-detect";
+import OpenStreetMap from "@component/map/OpenStreetMap";
+
+const config = require("../../conf/config.json");
 
 export interface OrderAmountSummaryProps {
     currency: string
     hideDetail: boolean
     modeOrdered: boolean
     orderSource: any
+    contextData: any
 }
 
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
-                                                                  modeOrdered,orderSource}) => {
+                                                                  modeOrdered,orderSource, contextData}) => {
 
-    const {getOrderInCreation, currentBrand} = useAuth();
+    const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
+
+    function getEsta() {
+        return firstOrCurrentEstablishment(currentEstablishment, contextData)
+    }
 
     const getOrder = () => {
         return orderSource || getOrderInCreation();
@@ -199,6 +208,46 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     </Typography>
                 }
 
+                <Divider sx={{mb: '1rem'}}/>
+                <Typography fontWeight="600" mb={1} mt={2}>
+                    {localStrings.selectedEsta}
+                </Typography>
+
+                <Typography color="grey.600" fontSize="16px">
+                    {/*{orderInCreation().deliveryMode}*/}
+                    {getEsta().establishmentName}
+                </Typography>
+
+                {/*<Box mt={1}>*/}
+                {/*    <OpenStreetMap*/}
+                {/*        styleDiv={{*/}
+                {/*            width: "100%",*/}
+                {/*            height: "200px"*/}
+                {/*        }}*/}
+                {/*        selectedId={getEsta().id}*/}
+                {/*        lat={config.defaultMapLat || getEsta().lat}*/}
+                {/*        lng={config.defaultMapLng || getEsta().lng}*/}
+                {/*        zoom={config.defaultMapZoom || 17}*/}
+                {/*        divName={"checkoutMap"}*/}
+                {/*        markers={[*/}
+                {/*            {*/}
+                {/*                lat: getEsta().lat,*/}
+                {/*                lng: getEsta().lng,*/}
+                {/*                name: getEsta().establishmentName,*/}
+                {/*                id: getEsta().id*/}
+                {/*            }*/}
+                {/*        ]}*/}
+                {/*    />*/}
+                {/*</Box>*/}
+
+                {contextData.establishments && contextData.establishments.length > 1 &&
+                <Button variant="contained" color="primary" type="button" fullWidth
+                        onClick={() => setEstanavOpen(true)}
+                        style={{marginTop: "5px"}}
+                >
+                    {localStrings.changeEsta}
+                </Button>
+                }
             </>
             }
         </Card1>

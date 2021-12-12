@@ -50,7 +50,7 @@ import {
   updateOrderMutation
 } from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {getCartItems} from "../../util/cartUtil";
+import {getCartItems, getItemNumberInCart} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -594,6 +594,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function getSubmitText(values) {
+    // if (!paymentMethod) {
+    //   return localStrings.check.noSelectPaymentMethod;
+    // }
     if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
       return localStrings.check.noSelectPaymentMethod;
     }
@@ -697,8 +700,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
-        {!payLoading && getCartItems(getOrderInCreation).length == 0 && (
-            <EmptyBasket/>
+        {!payLoading && getCartItems(getOrderInCreation, true).length === 0 && (
+            <>
+              <EmptyBasket/>
+            </>
         )}
 
         {payLoading &&
@@ -706,7 +711,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         }
 
         {/*<p>{firstOrCurrentEstablishment().id}</p>*/}
-        {!payLoading && getCartItems(getOrderInCreation).length > 0 &&
+        {!payLoading && getCartItems(getOrderInCreation, true).length > 0 &&
         <>
           {(!firstOrCurrentEstablishment() || !orderInCreation) ?
               // {false ?

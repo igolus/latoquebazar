@@ -4,6 +4,10 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        setClosestEsta: "Selectionner l'etablissement le plus proche",
+        selectEsta: "Selectionner votre etablissement",
+        changeEsta: "Changer d'etablissement",
+        selectedEsta: "Etablissement selectioné",
         cgvAccept: "J'accepte le termes et conditions",
         commercialAgreementAccept: "J'accepte de recevoir des proposition commerciales par email",
         seeCgvAccept: "Voir les termes et conditions",

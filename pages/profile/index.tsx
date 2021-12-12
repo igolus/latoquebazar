@@ -86,6 +86,10 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
         ]
     }
 
+    function getLoginImg() {
+        return getContextData()?.brand?.config?.loginImg || "/assets/images/login.jpg";
+    }
+
     return (
         <>
             {isMobile && !dbUser &&
@@ -277,7 +281,7 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
                         sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}
                     >
                         <Box m={4}>
-                            <img style={{width:"100%", height:"100%"}} src="/assets/images/login.jpg"/>
+                            <img style={{width:"100%", height:"100%"}} src= {getLoginImg()}/>
                         </Box>
                     </Grid>
                 </Grid>

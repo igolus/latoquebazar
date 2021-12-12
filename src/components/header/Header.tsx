@@ -11,11 +11,13 @@ import {
     Container,
     Dialog,
     Drawer,
-    IconButton,
+    IconButton, Tooltip,
     useMediaQuery,
 } from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown'
+import LocationOn from '@material-ui/icons/LocationOn'
+
 import PersonOutline from '@material-ui/icons/PersonOutline'
 import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
@@ -30,6 +32,9 @@ import {getItemNumberInCart} from "../../util/cartUtil";
 import {layoutConstant} from "../../util/constants";
 import {isMobile} from "react-device-detect";
 import {useRouter} from "next/router";
+import localStrings from "../../localStrings";
+import {firstOrCurrentEstablishment} from "../../util/displayUtil";
+import SelectEsta from '../SelectEsta';
 
 type HeaderProps = {
     className?: string
@@ -57,16 +62,19 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
 
 const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     const [sidenavOpen, setSidenavOpen] = useState(false)
+    // const [estanavOpen, setEstanavOpen] = useState(false)
     //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
     const router = useRouter()
     //alert("contextData brand " + contextData.brand)
-    const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen, user, dbUser} = useAuth();
+    const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen,
+        dbUser, currentEstablishment, setEstanavOpen, estanavOpen} = useAuth();
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
     const logoUrl = contextData ? contextData.brand.logoUrl : null;
     const brandName = contextData ? contextData.brand.brandName : null;
 
     const toggleSidenav = () => setSidenavOpen(!sidenavOpen)
+    const toggleEstanav = () => setEstanavOpen(!estanavOpen)
     const toggleDialog = () => setLoginDialogOpen(!loginDialogOpen)
 
 
@@ -105,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     <Link href="/">
                         <a>
                             {logoUrl &&
-                                <Image mb={0.5} src={logoUrl} alt={brandName || "logo"}/>
+                            <Image mb={0.5} src={logoUrl} alt={brandName || "logo"}/>
                             }
                         </a>
                     </Link>
@@ -148,8 +156,29 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                             <PersonOutline />
                         }
                     </Box>
+
+                    {contextData.establishments && contextData.establishments.length > 1 &&
+                    <Tooltip title={firstOrCurrentEstablishment(currentEstablishment, contextData).establishmentName}>
+                        <Box
+                            component={IconButton}
+                            ml={2.5}
+                            bgcolor="grey.200"
+                            p={1.25}
+                            onClick={() => {
+                                //alert("setEstanavOpen")
+                                setEstanavOpen(true);
+                            }}
+                        >
+                            <LocationOn/>
+                        </Box>
+                    </Tooltip>
+                    }
                     {cartHandle}
+
                 </FlexBox>
+
+                {/*<p>{estanavOpen ? "open" : "close"}</p>*/}
+
                 <Dialog
                     BackdropProps={{
                         classes: {
@@ -174,7 +203,43 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     open={sidenavOpen} anchor="right" onClose={toggleSidenav}>
                     <MiniCart contextData={contextData}/>
                 </Drawer>
+
+                {contextData.establishments && contextData.establishments.length > 1 &&
+                <Drawer
+                    BackdropProps={{
+                        classes: {
+                            root: classes.backDrop,
+                        },
+                    }}
+                    open={estanavOpen} anchor="top" onClose={() => setEstanavOpen(false)}>
+                    {/*<h1>HEADER</h1>*/}
+                    <SelectEsta contextData={contextData} closeCallBack={() => setEstanavOpen(false)}/>
+                </Drawer>
+                }
             </Container>
+
+            {/*<Container*/}
+            {/*    sx={{*/}
+            {/*        display: 'flex',*/}
+            {/*        alignItems: 'center',*/}
+            {/*        justifyContent: 'space-between',*/}
+            {/*        height: '100%',*/}
+            {/*    }}*/}
+            {/*>*/}
+
+            {/*    <Drawer*/}
+            {/*        BackdropProps={{*/}
+            {/*            classes: {*/}
+            {/*                root: classes.backDrop,*/}
+            {/*            },*/}
+            {/*        }}*/}
+            {/*        open={estanavOpen} anchor="top" onClose={toggleEstanav}>*/}
+            {/*        /!*<h1>HEADER</h1>*!/*/}
+            {/*        <SelectEsta contextData={contextData} closeCallBack={() => setEstanavOpen(false)}/>*/}
+            {/*    </Drawer>*/}
+
+            {/*    /!*<h1>select esta</h1>*!/*/}
+            {/*</Container>*/}
         </div>
     )
 }
