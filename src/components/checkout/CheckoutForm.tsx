@@ -50,7 +50,7 @@ import {
   updateOrderMutation
 } from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {getCartItems} from "../../util/cartUtil";
+import {getCartItems, getItemNumberInCart} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -100,6 +100,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
+  const [payLoading, setPayLoading] = useState(false);
 
   const [bookWithoutAccount, setBookWithoutAccount] = useState(false);
   const [paymentCardValid, setPaymentCardValid] = useState(false);
@@ -593,6 +594,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function getSubmitText(values) {
+    // if (!paymentMethod) {
+    //   return localStrings.check.noSelectPaymentMethod;
+    // }
     if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
       return localStrings.check.noSelectPaymentMethod;
     }
@@ -696,14 +700,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
-        {getCartItems(getOrderInCreation).length == 0 && (
-            <EmptyBasket/>
+        {!payLoading && getCartItems(getOrderInCreation, true).length === 0 && (
+            <>
+              <EmptyBasket/>
+            </>
         )}
 
-
+        {payLoading &&
+          <ClipLoaderComponent/>
+        }
 
         {/*<p>{firstOrCurrentEstablishment().id}</p>*/}
-        {getCartItems(getOrderInCreation).length > 0 &&
+        {!payLoading && getCartItems(getOrderInCreation, true).length > 0 &&
         <>
           {(!firstOrCurrentEstablishment() || !orderInCreation) ?
               // {false ?
@@ -1259,6 +1267,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   disabled={
                                     isPaymentDisabled(values)
                                   }
+                                  checkingPayCallBack={() => setPayLoading(true)}
                               />
                               }
 
