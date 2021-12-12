@@ -85,121 +85,128 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
       if (isRoot) {
         if (nav.url && nav.extLink)
           return (
-            <NavLink
-              className={classes.navLink}
-              regExpMatch={nav.regExpMatch}
-              href={nav.url}
-              key={nav.title}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {nav.title}
-            </NavLink>
+              <>
+                <p>LINk</p>
+                <NavLink
+                    className={classes.navLink}
+                    regExpMatch={nav.regExpMatch}
+                    href={nav.url}
+                    key={nav.title}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                  {nav.title}
+                </NavLink>
+              </>
           )
         else if (nav.url)
           return (
-            <NavLink className={classes.navLink} href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
-              {nav.title}
-            </NavLink>
+              <>
+                {/*<p>LINK2</p>*/}
+                {/*  <p>{nav.url}</p>*/}
+              <NavLink className={classes.navLink} href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
+                {nav.title}
+              </NavLink>
+              </>
           )
         if (nav.child)
           return (
-            <FlexBox
-              className={classes.root}
-              position="relative"
-              flexDirection="column"
-              alignItems="center"
-              key={nav.title}
-            >
-              <Box className={classes.navLink}>{nav.title}</Box>
-              <Box className={classes.rootChild}>
-                <BazarCard
-                  sx={{
-                    mt: '1.25rem',
-                    py: '0.5rem',
-                    minWidth: '230px',
-                  }}
-                  elevation={3}
-                >
-                  {renderNestedNav(nav.child)}
-                </BazarCard>
-              </Box>
-            </FlexBox>
+              <FlexBox
+                  className={classes.root}
+                  position="relative"
+                  flexDirection="column"
+                  alignItems="center"
+                  key={nav.title}
+              >
+                <Box className={classes.navLink}>{nav.title}</Box>
+                <Box className={classes.rootChild}>
+                  <BazarCard
+                      sx={{
+                        mt: '1.25rem',
+                        py: '0.5rem',
+                        minWidth: '230px',
+                      }}
+                      elevation={3}
+                  >
+                    {renderNestedNav(nav.child)}
+                  </BazarCard>
+                </Box>
+              </FlexBox>
           )
       } else {
         if (nav.url)
           return (
-            <NavLink href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
-              <MenuItem>{nav.title}</MenuItem>
-            </NavLink>
+              <NavLink href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
+                <MenuItem>{nav.title}</MenuItem>
+              </NavLink>
           )
 
         if (nav.child)
           return (
-            <Box
-              className={classes.parent}
-              position="relative"
-              minWidth="230px"
-              key={nav.title}
-            >
-              <MenuItem color="grey.700">
-                <Box flex="1 1 0" component="span">
-                  {nav.title}
+              <Box
+                  className={classes.parent}
+                  position="relative"
+                  minWidth="230px"
+                  key={nav.title}
+              >
+                <MenuItem color="grey.700">
+                  <Box flex="1 1 0" component="span">
+                    {nav.title}
+                  </Box>
+                  <ArrowRight fontSize="small" />
+                </MenuItem>
+                <Box className={classes.parentChild} pl={1}>
+                  <BazarCard sx={{ py: '0.5rem', minWidth: '230px' }} elevation={3}>
+                    {renderNestedNav(nav.child)}
+                  </BazarCard>
                 </Box>
-                <ArrowRight fontSize="small" />
-              </MenuItem>
-              <Box className={classes.parentChild} pl={1}>
-                <BazarCard sx={{ py: '0.5rem', minWidth: '230px' }} elevation={3}>
-                  {renderNestedNav(nav.child)}
-                </BazarCard>
               </Box>
-            </Box>
           )
       }
     })
   }
 
   return (
-    <BazarCard
-      elevation={2}
-      sx={{
-        display: { xs: 'none', md: 'block' },
-        position: 'relative',
-        height: '60px',
-        borderRadius: '0px',
-      }}
-      hoverEffect={false}
-    >
-      {/*<p>{JSON.stringify(contextData)}</p>*/}
-      <Container
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          height: '100%',
-        }}
+      <BazarCard
+          elevation={2}
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            position: 'relative',
+            height: '60px',
+            borderRadius: '0px',
+          }}
+          hoverEffect={false}
       >
-        <CategoryMenu open={navListOpen} contextData={contextData}>
-          {/*<p>{JSON.stringify(contextData)}</p>*/}
-          <BazarButton className={classes.categoryMenuButton} variant="text">
-            <Category fontSize="small" />
-            <Box
-              fontWeight="600"
-              textAlign="left"
-              flex="1 1 0"
-              ml={1.25}
-              color="grey.600"
-            >
-              {localStrings.categories}
-              {/*Categories 2*/}
-            </Box>
-            <ChevronRight className="dropdown-icon" fontSize="small" />
-          </BazarButton>
-        </CategoryMenu>
+        {/*<p>{JSON.stringify(contextData)}</p>*/}
+        <Container
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              height: '100%',
+            }}
+        >
+          <CategoryMenu open={navListOpen} contextData={contextData}>
+            {/*<p>{JSON.stringify(contextData)}</p>*/}
+            <BazarButton className={classes.categoryMenuButton} variant="text">
+              <Category fontSize="small" />
+              <Box
+                  fontWeight="600"
+                  textAlign="left"
+                  flex="1 1 0"
+                  ml={1.25}
+                  color="grey.600"
+              >
+                {localStrings.categories}
+                {/*Categories 2*/}
+              </Box>
+              <ChevronRight className="dropdown-icon" fontSize="small" />
+            </BazarButton>
+          </CategoryMenu>
 
-        <FlexBox>{renderNestedNav(navbarNavigations(dbUser, contextData?.extraPages || []), true)}</FlexBox>
-      </Container>
-    </BazarCard>
+          <FlexBox>{renderNestedNav(navbarNavigations(dbUser, contextData?.extraPages || []), true)}</FlexBox>
+        </Container>
+      </BazarCard>
   )
 }
 

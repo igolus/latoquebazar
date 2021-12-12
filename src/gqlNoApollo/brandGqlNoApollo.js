@@ -20,6 +20,7 @@ const common = `
     siteUrl
     googleKey
     starWebProducts
+    loginImg
     notifEmailConfig {
       contentOne
       footer

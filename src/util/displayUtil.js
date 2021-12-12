@@ -306,6 +306,25 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
     return null;
 }
 
+export const getDistanceWithFetch = async (lat1, lng1, lat2, lng2) => {
+    let origins =  lat1 + "," + lng1;
+    let destinations =  lat2 + "," + lng2;
+
+    let res = await axios.get(config.distanceUrl + '?origins='+
+        origins + '&destinations=' + destinations + '&key=' + config.googleKey);
+
+    if (res && res.data && res.data.rows && res.data.rows.length > 0) {
+        //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
+        let distanceInfo =
+            {
+                distance: res.data.rows[0].elements[0].distance.value,
+                duration: res.data.rows[0].elements[0].duration.value,
+            }
+        return distanceInfo;
+    }
+    return null;
+}
+
 export const getDeliveryDistance = async (establishment, lat, lng) => {
     // if (!window.google) {
     //     return null

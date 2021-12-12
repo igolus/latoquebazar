@@ -44,6 +44,7 @@ const JUST_CREATED_ORDER = 'JUST_CREATED_ORDER';
 const ORDER_COUNT = 'ORDER_COUNT';
 const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
 const CONTEXT_DATA = 'CONTEXT_DATA';
+const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
@@ -95,6 +96,7 @@ const initialAuthState = {
   brandId: 0,
   globalDialog: null,
   contextData: null,
+  estanavOpen: false,
 };
 
 const firebaseConfig = {
@@ -256,6 +258,14 @@ const reducer = (state, action) => {
       };
     }
 
+    case ESTA_NAV_OPEN: {
+      const { estanavOpen } = action.payload;
+      return {
+        ...state,
+        estanavOpen: estanavOpen,
+      };
+    }
+
 
     default: {
       return { ...state };
@@ -314,6 +324,8 @@ const AuthContext = createContext({
   getContextDataAuth: () => {},
 
   setRedirectPageGlobal: () => {},
+
+  setEstanavOpen: () => {},
 });
 
 const expireTimeSeconds = 1800;
@@ -329,6 +341,7 @@ const updateAction= "update";
 const deleteAction= "delete";
 const createAction= "create";
 
+const localStorageEstaKey = "defaultEstaId";
 export const AuthProvider = ({ children }) => {
   const [contextDataState, setContextDataState] = useState(null)
 
@@ -803,6 +816,15 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
+  const setEstanavOpen = (estanavOpen) => {
+    dispatch({
+      type: ESTA_NAV_OPEN,
+      payload: {
+        estanavOpen: estanavOpen,
+      }
+    });
+  }
+
   const setContextDataAuth = (contextData) => {
     dispatch({
       type: CONTEXT_DATA,
@@ -912,7 +934,12 @@ export const AuthProvider = ({ children }) => {
         }
       });
       console.log("setEstablishment " + estas[0].id);
-      await setEstablishment(estas[0]);
+      let estaToSet = estas[0];
+      let localEstId = localStorage.getItem(localStorageEstaKey);
+      if (localEstId) {
+        estaToSet = estas.find(esta => esta.id === localEstId);
+      }
+      await setEstablishment(estaToSet || estas[0]);
     }
     //alert("dispatch brand " + JSON.stringify(brand))
     dispatch({
@@ -928,12 +955,21 @@ export const AuthProvider = ({ children }) => {
   }
 
   const setEstablishment = async (establishment) => {
+
     dispatch({
       type: ESTABLISHMENT,
       payload: {
         establishment: establishment,
       }
     });
+    if (getOrderInCreation()) {
+      let orderInCreationCopy = cloneDeep(getOrderInCreation())
+      orderInCreationCopy.bookingSlot = null;
+      setOrderInCreation(orderInCreationCopy, false, () => establishment);
+    }
+
+    localStorage.setItem(localStorageEstaKey , establishment.id);
+
   }
 
   const setEstablishmentList = async (establishmentList) => {
@@ -965,13 +1001,15 @@ export const AuthProvider = ({ children }) => {
     return state.orderInCreation;
   }
 
-  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage) => {
+  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc) => {
     //currentEstablishment, currentService, orderInCreation
+    const getEstaFun = getEstaFunc || currentEstablishment
 
-    const currentService = getCurrentService(currentEstablishment(), state.bookingSlotStartDate)
-    processOrderInCreation(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+    const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate)
+    //setEstanavOpen(false);
+    processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
       getBrandCurrency(currentBrand()));
-    await processOrderCharge(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+    await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
     dispatch({
@@ -1178,6 +1216,7 @@ export const AuthProvider = ({ children }) => {
 
             setContextDataAuth,
             getContextDataAuth,
+            setEstanavOpen,
           }}
       >
 
