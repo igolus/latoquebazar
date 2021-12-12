@@ -157,7 +157,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                         }
                     </Box>
 
-                    {contextData.establishments && contextData.establishments.length > 1 &&
+                    {contextData && contextData.establishments && contextData.establishments.length > 1 &&
                     <Tooltip title={firstOrCurrentEstablishment(currentEstablishment, contextData).establishmentName}>
                         <Box
                             component={IconButton}
@@ -204,7 +204,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     <MiniCart contextData={contextData}/>
                 </Drawer>
 
-                {contextData.establishments && contextData.establishments.length > 1 &&
+                {contextData && contextData.establishments && contextData.establishments.length > 1 &&
                 <Drawer
                     BackdropProps={{
                         classes: {
