@@ -62,19 +62,21 @@ const OpeningHourRow = ({index, daySetting}) => {
 }
 
 const OpeningHours = ({firstEsta}) => {
-    const {currentEstablishment} = useAuth();
-
-    function firstOrCurrentEstablishment() {
-        if (currentEstablishment()) {
-            return currentEstablishment();
-        }
-        return firstEsta;
-    }
+    // const {currentEstablishment} = useAuth();
+    //
+    // function firstOrCurrentEstablishment() {
+    //     // if (currentEstablishment()) {
+    //     //     return currentEstablishment();
+    //     // }
+    //     return firstEsta;
+    // }
 
     //const { height, width } = useWindowDimensions();
-    const daySetting = firstOrCurrentEstablishment()?.serviceSetting?.daySetting;
+    const daySetting = firstEsta?.serviceSetting?.daySetting;
 
     return (<>
+        {/*<p>{JSON.stringify(daySetting)}</p>*/}
+        {/*<h1>{firstEsta.establishmentName}</h1>*/}
         <TableRow
             sx={{
                 display: { xs: 'none', md: 'flex' },

@@ -30,9 +30,9 @@ const ClosingDays = ({firstEsta}) => {
     const {currentEstablishment} = useAuth();
 
     function firstOrCurrentEstablishment() {
-        if (currentEstablishment()) {
-            return currentEstablishment();
-        }
+        // if (currentEstablishment()) {
+        //     return currentEstablishment();
+        // }
         return firstEsta;
     }
 
