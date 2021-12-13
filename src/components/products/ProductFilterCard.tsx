@@ -46,7 +46,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
             {(filteredCat || []).map((item) => {
                     //alert(asPath)
                     return ( <StyledDashboardNav
-                            isCurrentPath={convertCatName(asPath.split("/").slice(-1)[0]) === convertCatName(item.category)}
+                            isCurrentPath={decodeURI(convertCatName(asPath.split("/").slice(-1)[0])) === convertCatName(item.category)}
                             // isCurrentPath={asPath === convertCatName(item.category)}
                             href={"/product/shop/" + convertCatName(item.category)}
                             key={item.category}
