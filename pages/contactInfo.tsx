@@ -1,24 +1,18 @@
 import AppLayout from '@component/layout/AppLayout'
-import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import React, {useRef} from "react";
+import React, {useState} from "react";
 import Navbar from "@component/navbar/Navbar";
-import {Container, Typography} from "@material-ui/core";
-import MyMap from "@component/GoogleMap";
-import OpeningHours from "@component/OpeningHours";
-import ClosingDays from "@component/ClosingDays";
+import {Tab, Tabs} from "@material-ui/core";
 import useAuth from "@hook/useAuth";
-import Card1 from "@component/Card1";
-import localStrings from "../src/localStrings";
+import EstaInfo from "../src/components/EstaInfo"
+import {GetStaticProps} from "next";
+import OpenStreetMap from "@component/map/OpenStreetMap";
 
-//const config = require("../src/existingconfs/config.json")
-//const config = require("../src/existingconfs/config.json")
 export interface IndexPageProps {
     contextData?: any
 }
 
 const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
-
     const {currentEstablishment, getContextDataAuth} = useAuth();
 
     function getContextData() {
@@ -36,64 +30,63 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
         return getContextData().establishments[0];
     }
 
+    const [selectedEsta, setSelectedEsta] = useState(firstOrCurrentEstablishment());
 
-    const config = require("../src/conf/config.json")
-    const refDiv = useRef();
+    //const [currentTab, setCurrentTab] = useState(selectedEsta.id);
+
+    const handleTabsChange = (event, value) => {
+        let selected = (contextData.establishments || []).find(esta => esta.id === value);
+        setSelectedEsta(selected)
+    };
+
+    const buildMap = () => {
+        return (<OpenStreetMap
+            styleDiv={{
+                width: "100%",
+                height: "300px"
+            }}
+            divName={"estaMap"}
+            selectedId={selectedEsta.id}
+            lat={selectedEsta.lat}
+            lng={selectedEsta.lng}
+            zoom={config.defaultMapZoom || 17}
+            markers={[
+                {
+                    lat: selectedEsta.lat,
+                    lng: selectedEsta.lng,
+                    name: selectedEsta.establishmentName,
+                    id: selectedEsta.id
+                }
+            ]}
+        />)
+    }
+
+    // const config = require("../src/conf/config.json")
+    //
+    // function getSelectedEsta() {
+    //     let (contextData.establishments || []).find(esta => esta.id === sel)
+    // }
+
+    // const refDiv = useRef();
     return (
         <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
+            {(getContextData().establishments || []).length > 1 &&
+            <Tabs
+                onChange={handleTabsChange}
+                scrollButtons="auto"
+                value={selectedEsta.id}
+                textColor="secondary"
+                variant="scrollable"
+            >
+                {(contextData.establishments || []).map((esta, key) =>
+                    <Tab key={key}
+                         label={esta.establishmentName} value={esta.id} />
+                )}
+            </Tabs>
+            }
 
-            {/*<div style={{width: '100%', height:'600px'}} ref={refDiv}>*/}
-                <Container sx={{ mb: '70px' }}>
-                    {/*<h1>CONTACT INFO TODO</h1>*/}
-                    {firstOrCurrentEstablishment() &&
-                    <Card1 sx={{mb: '2rem', mt: '2rem'}}>
-                        <Typography variant="h4" fontWeight="600" mb={4}>
-                            {firstOrCurrentEstablishment().establishmentName}
-                        </Typography>
+            <EstaInfo selectedEsta={selectedEsta} contextData={contextData}/>
 
-                        <Typography variant="h6" fontWeight="600" mb={4}>
-                            {firstOrCurrentEstablishment().address}
-                        </Typography>
-                    </Card1>
-                    }
-
-
-                    <Card1 sx={{mb: '2rem', mt:'2rem' }}>
-                        <Typography  variant="h6" fontWeight="600" mb={4}>
-                            {localStrings.place}
-                        </Typography>
-                        <MyMap
-                            lat={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lat : null}
-                            lng={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lng : null}
-                            name={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().establishmentName : null}
-                            googleMapURL={"https://maps.googleapis.com/maps/api/js?key=" + config.googleKey + "&libraries=geometry,drawing,places"}
-                            loadingElement={<div style={{ height: `100%` }} />}
-                            containerElement={<div style={{ height: `400px` }} />}
-                            mapElement={<div style={{ height: `100%` }} />}
-                        />
-
-                    </Card1>
-
-                    <Card1 sx={{mb: '2rem'}}>
-                        <Typography variant="h6" fontWeight="600" mb={4}>
-                            {localStrings.openingHours}
-                        </Typography>
-                        <OpeningHours firstEsta={getContextData().establishments[0]}/>
-                    </Card1>
-
-                    <Card1 sx={{mb: '2rem'}}>
-                        <ClosingDays firstEsta={getContextData().establishments[0]}/>
-                    </Card1>
-
-                    {/*<GoogleMap widthp={refDiv.current.width}/>*/}
-                </Container>
-            {/*</div>*/}
-            {/*/!*<CarouselCompo contextData={contextData}/>*!/*/}
-            {/*<SectionCategories categories={contextData.categories}/>*/}
-            {/*<h1>CONTACT INFO TODO</h1>*/}
-            {/*<Container sx={{ mt: '2rem' }}>*/}
-            {/*    <div>About</div>*/}
-            {/*</Container>*/}
         </AppLayout>
 
     )

@@ -23,6 +23,19 @@ const style = {
     height: "300px",
 };
 
+export function getMarkers(contextData) {
+    return (contextData.establishments || []).map(esta => {
+        return (
+            {
+                lat: esta.lat,
+                lng: esta.lng,
+                name: esta.establishmentName,
+                id: esta.id
+            }
+        )
+    })
+}
+
 const SelectEsta = ({contextData, closeCallBack}) => {
 
     function getEsta() {
@@ -35,19 +48,7 @@ const SelectEsta = ({contextData, closeCallBack}) => {
     //firstOrCurrentEstablishment
 
 
-    function getMarkers() {
 
-        return (contextData.establishments || []).map(esta => {
-            return (
-                {
-                    lat: esta.lat,
-                    lng: esta.lng,
-                    name: esta.establishmentName,
-                    id: esta.id
-                }
-            )
-        })
-    }
 
 
     async function setClosest() {
@@ -158,7 +159,7 @@ const SelectEsta = ({contextData, closeCallBack}) => {
                         lat={config.defaultMapLat || getEsta().lat}
                         lng={config.defaultMapLng || getEsta().lng}
                         zoom={config.defaultMapZoom || 17}
-                        markers={getMarkers()}
+                        markers={getMarkers(contextData)}
                     />
                 </Grid>
                 {/*<Grid item xs={4}>*/}
@@ -173,39 +174,6 @@ const SelectEsta = ({contextData, closeCallBack}) => {
             </Grid>
         </>
     )
-
-
-    //     <Box mb={4}>
-    //         <Grid container spacing={4} >
-    //             <Grid item lg={6} sm={6} xs={12} style={{margin:"10px"}}>
-    //
-    //                 {(contextData.establishments || []).map((esta, key) =>
-    //                     <Button>teset</Button>
-    //
-    //                     // <Button
-    //                     //     //key={key}
-    //                     //     variant="contained" color={selectedId === esta.id ? "primary" : null} fullWidth
-    //                     //         style={{textTransform: "none", margin:"4px"}}
-    //                     //         //onClick={() => setSelectedId(esta.id)}
-    //                     // >
-    //                     //     {esta.id}
-    //                     // </Button>
-    //                 )}
-    //
-    //             </Grid>
-    //
-    //             <Grid item lg={6} sm={6} xs={12} style={{margin:"10px"}}>
-    //                 <OpenStreetMap
-    //                     selectedId={selectedId}
-    //                     lat={getEsta().lat}
-    //                     lng={getEsta().lng}
-    //                     zoom={17}
-    //                     markers={getMarkers()}
-    //                 />
-    //             </Grid>
-    //         </Grid>
-    //     </Box>
-    // );
 }
 
 export default SelectEsta;
