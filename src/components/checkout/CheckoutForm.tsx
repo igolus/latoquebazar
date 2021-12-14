@@ -466,7 +466,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         dataOrder.tempOrder = true;
       }
 
-      if (isPaymentSystemPay()) {
+      if (isPaymentSystemPay() && isPaymentSystemPayAndCCSelected()) {
 
         dataOrder.payments = [{
           uuid: uuid(),
