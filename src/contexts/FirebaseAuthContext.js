@@ -1005,7 +1005,7 @@ export const AuthProvider = ({ children }) => {
     //currentEstablishment, currentService, orderInCreation
     const getEstaFun = getEstaFunc || currentEstablishment
 
-    const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate)
+    const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, getOrderInCreation()?.deliveryMode)
     //setEstanavOpen(false);
     processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
       getBrandCurrency(currentBrand()));

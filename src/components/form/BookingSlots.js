@@ -118,8 +118,8 @@ function getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy) 
 export const LUNCH_PERIOD = "lunch";
 export const DINNER_PERIOD = "dinner";
 
-export const getCurrentService = (establishment, startDate) => {
-  let daySettings = getWeekDaySettingsFromDate(startDate, establishment);
+export const getCurrentService = (establishment, startDate, deliveryMode) => {
+  let daySettings = getWeekDaySettingsFromDate(startDate, establishment, null, deliveryMode );
   if (daySettings && daySettings.length > 0) {
     let firstDaySetting = daySettings[0];
     let service = buildServiceFromDaySetting(firstDaySetting);
