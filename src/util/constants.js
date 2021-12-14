@@ -4,12 +4,21 @@ export const MODE_EDIT = 1;
 export const MODE_CREATE = 2;
 
 export const SEP = "-";
-export const ORDER_STATUS_NEW = "ltnew";
-export const ORDER_STATUS_COMPLETE = "ltcomplete";
-export const ORDER_STATUS_FINISHED = "ltfinished";
-export const ORDER_STATUS_DELIVERING = "ltdelivering";
-export const ORDER_STATUS_PREPARATION = "ltpreparation";
-export const ORDER_STATUS_READY = "ltready";
+// export const ORDER_STATUS_NEW = "ltnew";
+// export const ORDER_STATUS_COMPLETE = "ltcomplete";
+// export const ORDER_STATUS_NEW = "ltnew";
+// export const ORDER_STATUS_COMPLETE = "ltcomplete";
+// export const ORDER_STATUS_FINISHED = "ltfinished";
+// export const ORDER_STATUS_DELIVERING = "ltdelivering";
+// export const ORDER_STATUS_PREPARATION = "ltpreparation";
+// export const ORDER_STATUS_READY = "ltready";
+
+export const ORDER_STATUS_NEW = "new";
+export const ORDER_STATUS_COMPLETE = "completed";
+export const ORDER_STATUS_FINISHED = "finished";
+export const ORDER_STATUS_DELIVERING = "in_delivery";
+export const ORDER_STATUS_PREPARATION = "in_preparation";
+export const ORDER_STATUS_READY = "awaiting_shipment";
 
 export const HUBRISE_ORDER_STATUS_NEW = "new";
 export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
@@ -104,7 +113,7 @@ export const getOrderStatus = (localStrings) => {
     },
     {
       name: localStrings.hrorderStatusCompleted,
-      value: ORDER_STATUS_FINISHED,
+      value: ORDER_STATUS_COMPLETE,
     },
 
 
@@ -170,6 +179,7 @@ export const getOrderStatus = (localStrings) => {
 // export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
 // export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
 export const PAYMENT_METHOD_STRIPE = "PAYMENT_METHOD_STRIPE";
+export const PAYMENT_METHOD_SYSTEMPAY = "PAYMENT_METHOD_SYSTEMPAY";
 
 export const getPaymentMethods = (localStrings) => {
   return  [

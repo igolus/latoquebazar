@@ -15,6 +15,7 @@ import {
 } from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import {
+  ORDER_STATUS_COMPLETE,
   ORDER_STATUS_DELIVERING, ORDER_STATUS_FINISHED,
   ORDER_STATUS_NEW,
   ORDER_STATUS_PREPARATION,
@@ -44,6 +45,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
       case ORDER_STATUS_PREPARATION:
         return 'secondary'
       case ORDER_STATUS_FINISHED:
+        return 'success'
+      case ORDER_STATUS_COMPLETE:
         return 'success'
       // case 'Cancelled':
       //   return 'error'

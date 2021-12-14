@@ -30,7 +30,7 @@ import {
     HUBRISE_ORDER_STATUS_NEW,
     HUBRISE_ORDER_STATUS_RECEIVED,
     HUBRISE_ORDER_STATUS_REJECTED,
-    ORDER_DELIVERY_MODE_DELIVERY,
+    ORDER_DELIVERY_MODE_DELIVERY, ORDER_STATUS_COMPLETE,
     ORDER_STATUS_DELIVERING,
     ORDER_STATUS_FINISHED
 } from "../../util/constants";
@@ -288,7 +288,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                         </Paragraph>
 
                         {order &&
-                        order.status !== ORDER_STATUS_FINISHED &&
+                        order.status !== ORDER_STATUS_COMPLETE &&
                         <>
                             <H5 mt={0} mb={2} mt={2}>
                                 {order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? localStrings.deliveryHour
