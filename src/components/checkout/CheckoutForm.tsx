@@ -21,7 +21,7 @@ import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW, PAYMENT_MODE_STRIPE, PAYMENT_MODE_SYSTEM_PAY
+  ORDER_STATUS_NEW, PAYMENT_METHOD_SYSTEMPAY, PAYMENT_MODE_STRIPE, PAYMENT_MODE_SYSTEM_PAY
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -464,6 +464,16 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       dataOrder.expectedPayments = expectedPaymentMethods;
       if (paymentMethod === "cc" && !isPaymentSystemPay()) {
         dataOrder.tempOrder = true;
+      }
+
+      if (isPaymentSystemPay()) {
+
+        dataOrder.payments = [{
+          uuid: uuid(),
+          valuePayment: PAYMENT_METHOD_SYSTEMPAY,
+          amount: detailPrice.total.toFixed(2)
+        }]
+
       }
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
