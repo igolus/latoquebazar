@@ -43,7 +43,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     const { id } = router.query
     let productId = id;
 
-    const {currentEstablishment, bookingSlotStartDate, getContextDataAuth} = useAuth();
+    const {currentEstablishment, bookingSlotStartDate, getContextDataAuth, getOrderInCreation} = useAuth();
 
 
     // const [selectedProduct, setSelectedProduct] = useState(null);
@@ -139,7 +139,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             <ProductIntro product={selectedProduct}
                           firstEsta={getContextData().establishments[0]}
                           brand={getContextData().brand}
-                          currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate)}
+                          currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate, getOrderInCreation()?.deliveryMode)}
                           faceBookShare={getContextData().brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                           routeToCart={true}
                           skuIndex={skuIndex}

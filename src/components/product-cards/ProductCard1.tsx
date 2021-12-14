@@ -138,6 +138,9 @@ export function isProductUnavailableInDelivery(selectedProductAndSku: any) {
     return false;
   }
   let firstRestriction = selectedProductAndSku?.sku?.restrictionsList[0];
+  if ((firstRestriction?.serviceTypes || []).length === 0) {
+    return false;
+  }
   return !(firstRestriction?.serviceTypes || []).includes(ORDER_DELIVERY_MODE_DELIVERY)
 }
 

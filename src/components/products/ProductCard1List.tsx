@@ -62,7 +62,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     const [productDisplay, setProductDisplay] = useState([]);
     const [maxPage, setMaxPage] = useState(0);
     const [page, setPage] = useState(1);
-    const {currentBrand, currentEstablishment, bookingSlotStartDate} = useAuth()
+    const {currentBrand, currentEstablishment, bookingSlotStartDate, getOrderInCreation} = useAuth()
     const [currentService, setCurrentService] = useState({});
 
     function findIdOfCategory(categoryName) {
@@ -74,7 +74,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     useEffect(() => {
         if (currentEstablishment) {
-            setCurrentService(getCurrentService(currentEstablishment(), bookingSlotStartDate));
+            setCurrentService(getCurrentService(currentEstablishment(), bookingSlotStartDate, getOrderInCreation()?.deliveryMode));
         }
 
     }, [bookingSlotStartDate, currentEstablishment])
