@@ -10,5 +10,6 @@
   "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment/stripe/charge2",
   "systemPayTokenUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayToken",
   "systemPayValidatePaymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayValidatePayment",
-  "siteBaseUrl": "https://commandes.by-bhappy.com"
+  "siteBaseUrl": "https://commandes.by-bhappy.com",
+  "alertOnSelectPickup": "Attention, le click and collect est pour le moment disponible uniquement a biot (1030 Route de la Mer 06410 Biot)"
 }
