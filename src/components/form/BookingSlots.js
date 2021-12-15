@@ -155,8 +155,8 @@ export const getCurrentService = (establishment, startDate, deliveryMode) => {
 export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
   if (startDate) {
     let slotDuration = establishment.serviceSetting.slotDuration || 20;
-
-    let daySettings = getWeekDaySettingsFromDate(startDate, establishment, null, orderInCreation().deliveryMode).filter(item => {
+    let offset = getOffset(deliveryMode, establishment);
+    let daySettings = getWeekDaySettingsFromDate(moment(startDate).add(offset, 'minutes'), establishment, null, orderInCreation().deliveryMode).filter(item => {
       return !item.deliveryMode || item.deliveryMode === deliveryMode
     });
 
