@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        IUnderstand: "J'ai compris",
         setClosestEsta: "Selectionner l'etablissement le plus proche",
         selectEsta: "Selectionner votre etablissement",
         changeEsta: "Changer d'etablissement",

@@ -3,7 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
-  CircularProgress,
+  CircularProgress, Dialog, DialogActions, DialogContent,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -79,6 +79,9 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: green[500],
   },
+  dialogContent: {
+    paddingBottom: '1.25rem',
+  },
 }));
 
 export interface CheckoutFormProps {
@@ -97,6 +100,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const classes = useStyles();
   const autocomp = useRef(null);
   const [cgvChecked, setCgvChecked] = React.useState(false);
+  const [pickupAlert, setPickupAlert] = React.useState(false);
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
@@ -710,6 +714,25 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
+        <Dialog open={pickupAlert} maxWidth="sm"
+        >
+          <DialogContent className={classes.dialogContent}>
+            <AlertHtmlLocal
+                title={localStrings.warning}
+                content={config.alertOnSelectPickup}
+            >
+            </AlertHtmlLocal>
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setPickupAlert(false)} color="primary">
+              {localStrings.IUnderstand}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+
+
         {!payLoading && getCartItems(getOrderInCreation, true).length === 0 && (
             <>
               <EmptyBasket/>
@@ -854,6 +877,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 onCLickCallBack={() => {
                                   //setSelectedBookingSlot({});
                                   setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                                  if (config.alertOnSelectPickup) {
+                                    setPickupAlert(true)
+                                  }
                                 }}
                             />
                           </>
