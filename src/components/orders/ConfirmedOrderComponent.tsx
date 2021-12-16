@@ -13,6 +13,7 @@ import {getOrderByIdQuery} from "../../gql/orderGql";
 import localStrings from "../../localStrings";
 import {getBrandCurrency} from "../../util/displayUtil";
 import {useRouter} from "next/router";
+import firebase from "firebase/app";
 
 export interface ConfirmedOrderComponentProps {
     contextData?: any
@@ -47,7 +48,8 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
 
     const registerMessaging = async () => {
         try {
-            if (currentBrand()) {
+            console.log("registerMessaging ");
+            if (currentBrand() && currentBrand().config?.notifPushConfig?.sendPushNotification) {
                 const messaging = firebase.messaging();
                 await messaging.requestPermission();
                 const token = await messaging.getToken();
@@ -73,13 +75,14 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
             //alert("res " + JSON.stringify(res))
             setOrder(res?.data?.getOrdersByOrderIdEstablishmentIdAndOrderId);
             setLoading(false);
+            await registerMessaging();
         }
 
     }, [currentBrand(), currentEstablishment(), id])
 
-    useEffect(async () => {
-        registerMessaging();
-    }, [])
+    // useEffect(async () => {
+    //     registerMessaging();
+    // }, [])
 
     useEffect(() => {
         // Remove the server-side injected CSS.
