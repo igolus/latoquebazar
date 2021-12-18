@@ -15,7 +15,7 @@ const OpeningHourRow = ({index, daySetting}) => {
     if (!daySetting) {
         return (<></>);
     }
-    let day = localStrings.getString("day_" + index);
+    let day = localStrings.getString("day_" + (index - 1));
     let englishDay = null;
     switch (index) {
         case 1:

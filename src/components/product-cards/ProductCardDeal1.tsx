@@ -27,6 +27,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import ProductIntro from "@component/products/ProductIntro";
 import {Close} from "@material-ui/icons";
+import BazarButton from "@component/BazarButton";
 
 export interface ProductCardDeal1Props {
   className?: string
@@ -137,21 +138,21 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
 }))
 
 const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
-                                                     id,
-                                                     imgUrl,
-                                                     title,
-                                                     price= 200,
-                                                     off = 0,
-                                                     rating,
-                                                     hoverEffect,
-                                                     faceBookShare,
-                                                     product,
-                                                     options,
-                                                     currency,
-                                                     lineNumber,
-                                                     deal,
-                                                     contextData,
-                                                   }) => {
+                                                             id,
+                                                             imgUrl,
+                                                             title,
+                                                             price= 200,
+                                                             off = 0,
+                                                             rating,
+                                                             hoverEffect,
+                                                             faceBookShare,
+                                                             product,
+                                                             options,
+                                                             currency,
+                                                             lineNumber,
+                                                             deal,
+                                                             contextData,
+                                                           }) => {
 
   if (!product) {
     product = {
@@ -193,8 +194,10 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     url = imgUrl;
   }
   function isProductSelected() {
-    return selectedProductAndSku && dealEdit && dealEdit.productAndSkusLines &&
-      dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.extRef == selectedProductAndSku.sku.extRef)
+    return selectedProductAndSku && dealEdit && dealEdit?.productAndSkusLines &&
+        dealEdit?.productAndSkusLines[lineNumber]?.productId === selectedProductAndSku?.product?.id
+    // return selectedProductAndSku && dealEdit && dealEdit.productAndSkusLines &&
+    //     dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.extRef == selectedProductAndSku.sku.extRef)
   }
 
   function addToDeal (productAndSku) {
@@ -214,6 +217,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     }
 
     selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
+    setSelectedProductSku(productAndSku)
     //alert()
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
     setOpen(false)
@@ -230,140 +234,230 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
       <Box {...defaultProps}>
         {/*<p>{JSON.stringify(options)}</p>*/}
         <BazarCard  className={classes.root} hoverEffect={hoverEffect}>
-        <div className={classes.imageHolder}>
+          <div className={classes.imageHolder}>
 
-          <Box
-              display="flex"
-              flexWrap="wrap"
-              sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
-          >
-            {product.tags && product.tags.map((tag, key) =>
-                <Box key={key} ml='3px' mt='6px' mr='3px'>
-                  <Chip
-                      className={classes.offerChip}
-                      color="primary"
-                      size="small"
-                      label={tag.tag}
-                  />
-                </Box>
-            )}
-          </Box>
-
-          <div className="extra-icons">
-            <IconButton sx={{ p: '6px' }} onClick={toggleDialog}>
-              <RemoveRedEye color="secondary" fontSize="small" />
-            </IconButton>
-          </div>
-
-          {/*<Link href={buildProductDetailRef()} >*/}
-          {/*  <a>*/}
-
-
-              <LazyImage
-                  onClick={() => {
-                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                      selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                    }
-                    else {
-                      setOpen(true);
-                    }
-                  }}
-                  src={url}
-                  width="100%"
-                  height="auto"
-                  layout="responsive"
-                  alt={product.name}
-
-
-              />
-          {/*  </a>*/}
-          {/*</Link>*/}
-        </div>
-
-        <div className={classes.details}>
-          <FlexBox>
-            <Box flex="1 1 0" minWidth="0px" mr={1}>
-              {/*<Link href={`/product/${id}`}>*/}
-              {/*  <a>*/}
-                  <H3
-                      className="title"
-                      fontSize="14px"
-                      textAlign="left"
-                      fontWeight="600"
-                      color="text.secondary"
-                      mb={1}
-                      title={product.name}
-                  >
-                    {product.name}
-                  </H3>
-
+            <Box
+                display="flex"
+                flexWrap="wrap"
+                sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
+            >
+              {product.tags && product.tags.map((tag, key) =>
+                  <Box key={key} ml='3px' mt='6px' mr='3px'>
+                    <Chip
+                        className={classes.offerChip}
+                        color="primary"
+                        size="small"
+                        label={tag.tag}
+                    />
+                  </Box>
+              )}
             </Box>
 
-            <FlexBox
-                className="add-cart"
-                flexDirection="row"
-                alignItems="center"
-                justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
-                //width="65px"
-            >
-              <Button
-                  //variant="outlined"
-                  disabled={!isProductAndSkuGetOption(selectedProductAndSku) && isProductSelected()}
-                  color="primary"
-                  sx={{ padding: '3px', ml:'5px', mr:'5px'}}
-                  onClick={() => {
-                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                      selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                    }
-                    else {
-                      setOpen(true);
-                    }
-                  }}
-              >
-                {isProductAndSkuGetOption(selectedProductAndSku) &&
-                  localStrings.selectOptions
-                }
-                {!isProductAndSkuGetOption(selectedProductAndSku) && isProductSelected() &&
-                  <CheckBoxIcon />
-                }
-                {!isProductAndSkuGetOption(selectedProductAndSku) && !isProductSelected() &&
-                  <CheckBoxOutlineBlankIcon />
-                }
+            <div className="extra-icons">
+              <IconButton sx={{ p: '6px' }} onClick={toggleDialog}>
+                <RemoveRedEye color="secondary" fontSize="small" />
+              </IconButton>
+            </div>
 
-              </Button>
+            {/*<Link href={buildProductDetailRef()} >*/}
+            {/*  <a>*/}
 
-            </FlexBox>
-          </FlexBox>
-        </div>
 
-        <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
-          <DialogContent className={classes.dialogContent}>
+            <LazyImage
+                onClick={() => {
+                  if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                    selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                  }
+                  else {
+                    setOpen(true);
+                  }
+                }}
+                src={url}
+                width="100%"
+                height="auto"
+                layout="responsive"
+                alt={product.name}
 
-            {/*<p>{JSON.stringify(product)}</p>*/}
-            <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
-                          disableFacebook={true}
-                          faceBookShare={faceBookShare}
-                          skuIndex={selectedSkuIndex}
-                          product={product}
-                          firstEsta={contextData.establishments[0]}
-                          brand={contextData.brand}
-                          options={options}
-                          currency={currency}
-                          disableAdd={!isProductAndSkuGetOption(selectedProductAndSku)}
-                          //addCallBack={() => setOpen(false)}
-                          addToCartOrderCallBack={addToDeal}
-                          addButtonText={localStrings.select}
-                          lineNumber={lineNumber}
+
             />
-            <IconButton
-                sx={{ position: 'absolute', top: '0', right: '0' }}
-                onClick={toggleDialog}
-            >
-              <Close className="close" fontSize="small" color="primary" />
-            </IconButton>
-          </DialogContent>
-        </Dialog>
-      </BazarCard>
+            {/*  </a>*/}
+            {/*</Link>*/}
+          </div>
+
+          <div className={classes.details}>
+            <FlexBox>
+              {productAndSkus && productAndSkus.length == 1 &&
+
+              <Box flex="1 1 0" minWidth="0px" mr={1}>
+                {/*<Link href={`/product/${id}`}>*/}
+                {/*  <a>*/}
+                <H3
+                    className="title"
+                    fontSize="14px"
+                    textAlign="left"
+                    fontWeight="600"
+                    color="text.secondary"
+                    mb={1}
+                    title={product.name}
+                >
+                  {product.name}
+                </H3>
+
+              </Box>
+              }
+
+              <FlexBox
+                  className="add-cart"
+                  flexDirection="row"
+                  alignItems="center"
+                  justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
+                  //width="65px"
+              >
+                <Button
+                    //variant="outlined"
+                    disabled={!isProductAndSkuGetOption(selectedProductAndSku) &&
+                    isProductSelected() && productAndSkus && productAndSkus.length === 1}
+                    color="primary"
+                    sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                    onClick={() => {
+                      if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                      }
+                      else {
+                        setOpen(true);
+                      }
+                    }}
+                >
+                  {isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 &&
+                  localStrings.selectOptions
+                  }
+                  {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
+                  <>
+                    {productAndSkus && productAndSkus.length > 1 ?
+                        <div style={{ width: '100%' }}>
+                          <Box display="flex" justifyContent="center" m={1}>
+                            {productAndSkus.map((productAndSkuItem, key) =>
+                                <Box key={key}>
+                                  {/*<BazarButton>grande</BazarButton>*/}
+                                  <BazarButton
+                                      onClick={() => {
+
+                                        if (isProductAndSkuGetOption(productAndSkuItem)) {
+                                          setSelectedSkuIndex(key)
+                                          setOpen(true);
+                                        }
+                                        else {
+                                          setSelectedProductSku(productAndSkuItem)
+                                          selectToDealEditOrder(productAndSkuItem, dealEdit, setDealEdit, lineNumber)
+                                          setSelectedSkuIndex(key)
+                                        }
+
+                                      }}
+                                      variant="contained"
+                                      color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
+                                      sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
+                                    {productAndSkuItem.sku.name}
+                                  </BazarButton>
+                                </Box>
+                            )}
+                          </Box>
+                        </div>
+                        :
+
+                        <CheckBoxIcon />
+                    }
+                  </>
+                  }
+                  {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
+                  <>
+                    {productAndSkus && productAndSkus.length > 1 ?
+                        // <p>sel</p>
+                        <div style={{ width: '100%'}}>
+                          <H3
+                              className="title"
+                              fontSize="14px"
+                              textAlign="left"
+                              fontWeight="600"
+                              color="text.secondary"
+                              mb={1}
+                              title={product.name}
+                          >
+                            {product.name}
+                          </H3>
+                          <Box display="flex" justifyContent="center" m={1}>
+                            {productAndSkus.map((productAndSkuItem, key) =>
+                                <Box key={key}>
+                                  {/*<BazarButton>grande</BazarButton>*/}
+                                  <BazarButton
+                                      onClick={() => {
+                                        // setSelectedProductSku(productAndSkuItem)
+                                        // selectToDealEditOrder(productAndSkuItem, dealEdit, setDealEdit, lineNumber)
+
+
+                                        if (isProductAndSkuGetOption(productAndSkuItem)) {
+                                          setSelectedSkuIndex(key)
+                                          setOpen(true);
+                                        }
+                                        else {
+                                          setSelectedProductSku(productAndSkuItem)
+                                          selectToDealEditOrder(productAndSkuItem, dealEdit, setDealEdit, lineNumber)
+                                          setSelectedSkuIndex(key)
+                                        }
+                                      }}
+                                      variant="contained"
+                                      color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
+                                      sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
+                                    {productAndSkuItem.sku.name}
+                                  </BazarButton>
+                                </Box>
+                            )}
+                          </Box>
+                        </div>
+                        :
+
+                        <CheckBoxOutlineBlankIcon />
+                    }
+                  </>
+
+                  }
+
+                </Button>
+
+
+
+              </FlexBox>
+            </FlexBox>
+          </div>
+
+          <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
+            <DialogContent className={classes.dialogContent}>
+              <p>ProductIntro</p>
+              {/*<p>{JSON.stringify(product)}</p>*/}
+              <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
+                            disableFacebook={true}
+                            faceBookShare={faceBookShare}
+                            skuIndex={selectedSkuIndex}
+                            product={product}
+                            firstEsta={contextData.establishments[0]}
+                            brand={contextData.brand}
+                            options={options}
+                            currency={currency}
+                            disableAdd={!isProductAndSkuGetOption(selectedProductAndSku)
+                            && productAndSkus && productAndSkus.length === 1}
+                  //addCallBack={() => setOpen(false)}
+                            addToCartOrderCallBack={addToDeal}
+                            addButtonText={localStrings.select}
+                            lineNumber={lineNumber}
+              />
+              <IconButton
+                  sx={{ position: 'absolute', top: '0', right: '0' }}
+                  onClick={toggleDialog}
+              >
+                <Close className="close" fontSize="small" color="primary" />
+              </IconButton>
+            </DialogContent>
+          </Dialog>
+        </BazarCard>
       </Box>
   )
 }
