@@ -320,10 +320,10 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                     color="primary"
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                     onClick={() => {
-                      if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                      if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 ) {
                         selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
                       }
-                      else {
+                      else if (productAndSkus && productAndSkus.length == 1){
                         setOpen(true);
                       }
                     }}

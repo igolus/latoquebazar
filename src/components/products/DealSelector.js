@@ -85,6 +85,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function cancelDeal() {
+        setDealEdit(null);
         resetOrderInCreation();
         router.push("/product/shop/all")
     }
