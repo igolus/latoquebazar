@@ -86,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
         if (nav.url && nav.extLink)
           return (
               <>
-                <p>LINk</p>
+                {/*<p>LINk</p>*/}
                 <NavLink
                     className={classes.navLink}
                     regExpMatch={nav.regExpMatch}
