@@ -22,6 +22,7 @@ import {getCustomerOrdersQuery} from "../../src/gql/orderGql";
 import {ORDER_STATUS_FINISHED} from "../../src/util/constants";
 import {useRouter} from "next/router";
 import AppLayout from "@component/layout/AppLayout";
+import Navbar from "@component/navbar/Navbar";
 
 export interface ProfileProps {
     contextData?: any
@@ -102,7 +103,7 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
             }
 
             {dbUser &&
-            <CustomerDashboardLayout contextData={getContextData()}>
+            <CustomerDashboardLayout contextData={getContextData()} >
 
                 {isMobile && !dbUser ?
                     <>
@@ -257,7 +258,7 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
             }
 
             {!dbUser && !isMobile &&
-            <AppLayout contextData={contextData}>
+            <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
 
                 <Grid container spacing={3}>
                     <Grid
