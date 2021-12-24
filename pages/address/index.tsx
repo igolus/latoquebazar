@@ -18,7 +18,7 @@ import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
 import Place from '@material-ui/icons/Place'
 import Link from 'next/link'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../src/localStrings";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
@@ -28,13 +28,15 @@ import {updateSiteUserQuery} from "../../src/gql/siteUserGql";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import {styled} from "@material-ui/styles";
+import {router} from "next/client";
+import {useRouter} from "next/router";
 
 // function TableContainer(props: { component: OverridableComponent<PaperTypeMap>, children: ReactNode }) {
 //   return null;
 // }
 
 const AddressList = ({contextData}) => {
-
+  const router = useRouter();
   function getContextData() {
     return contextData;
   }
@@ -75,6 +77,14 @@ const AddressList = ({contextData}) => {
     //   }
     // }
   }));
+
+  useEffect(() => {
+        if (!dbUser) {
+          router.push("/profile")
+        }
+
+      },
+      [dbUser])
 
   return (
       <DashboardLayout contextData={getContextData()}>

@@ -42,14 +42,14 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
     const [awaitingOrdersCount, setAwaitingOrdersCount] = useState(0);
     const {dbUser, logout, currentUser, orderCount, brand} = useAuth()
 
-    // useEffect(() => {
-    //         if (!dbUser && !isMobile) {
-    //             //alert("push user")
-    //             router.push("/")
-    //         }
-    //     },
-    //     [dbUser]
-    // )
+    useEffect(() => {
+            if (!dbUser && !isMobile) {
+                //alert("push user")
+                router.push("/profile")
+            }
+        },
+        [dbUser]
+    )
 
     useEffect(async () => {
 
@@ -294,25 +294,6 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
         </>
     )
 }
-
-const infoList = [
-{
-    title: '16',
-        subtitle: 'All Orders',
-},
-{
-    title: '02',
-        subtitle: 'Awaiting Payments',
-},
-{
-    title: '00',
-        subtitle: 'Awaiting Shipment',
-},
-{
-    title: '01',
-        subtitle: 'Awaiting Delivery',
-},
-]
 
 export const getStaticProps: GetStaticProps = async (context) => {
     return await getStaticPropsUtil();
