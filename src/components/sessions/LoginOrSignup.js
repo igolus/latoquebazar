@@ -25,7 +25,7 @@ const LoginOrSignup = ({closeCallBack, contextData}) => {
         //return (<h1>RESET</h1>)
     }
 
-    if (!user || !currentUser().emailVerified) {
+    if (!user || !currentUser()?.emailVerified) {
         return (<Login contextData={contextData} closeCallBack={closeCallBack} callBackBackToLostPassword={() => setLostPassword(true)}/>);
     }
     if (!dbUser && !loginOnGoing) {

@@ -257,7 +257,7 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
             </CustomerDashboardLayout>
             }
 
-            {!dbUser && !isMobile &&
+            {!dbUser && !isMobile && contextData &&
             <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
 
                 <Grid container spacing={3}>
