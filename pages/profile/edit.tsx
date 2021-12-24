@@ -33,7 +33,7 @@ const ProfileEditor = ({contextData}) => {
     useEffect(() => {
             if (!dbUser) {
                 //alert("push user")
-                router.push("/")
+                router.push("/profile")
             }
         },
         [dbUser]

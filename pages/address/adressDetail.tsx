@@ -1,17 +1,25 @@
 import AddressEditor from '@component/address/AddressEditor'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useRouter} from "next/router";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import {GetStaticPaths, GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import {GetStaticProps} from "next";
+import useAuth from "@hook/useAuth";
 
 const AddressUpdater = ({contextData}) => {
-
+    const router = useRouter();
+    const {dbUser} = useAuth()
     function getContextData() {
         return contextData;
     }
 
-    const router = useRouter();
+    useEffect(() => {
+            if (!dbUser) {
+                router.push("/profile")
+            }
+
+        },
+        [dbUser])
     // const { id } = router.query;
     const { back } = router.query;
 
