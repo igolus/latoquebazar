@@ -318,7 +318,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   delete productAndSkusLine.restrictionsApplied;
                   delete productAndSkusLine.restrictionsList;
                   (productAndSkusLine.options || []).forEach(opt => {
-                    delete opt.defaultSelected
+                        delete opt.defaultSelected
                   })
                   // (productAndSkusLine.options || []).forEach(option =>
                   //   delete option.defaultSelected;

@@ -135,13 +135,13 @@ const SelectEsta = ({contextData, closeCallBack}) => {
                     </FormControl>
 
 
-                    <Button
+                    <BazarButton
                         style={{marginBottom: '3px'}}
                         variant="contained" color="primary" fullWidth
                         onClick={() => setClosest()}
                     >
                         {localStrings.setClosestEsta}
-                    </Button>
+                    </BazarButton>
                     {/*</Box>*/}
                 </Grid>
                 <Grid item lg={6} xs={12} padding="15px"

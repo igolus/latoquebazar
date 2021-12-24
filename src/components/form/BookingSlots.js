@@ -18,7 +18,8 @@ import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 const setHourFromString = (momentDate, hourSt) => {
   let hourSplit = hourSt.split(':');
-  return moment(momentDate.set({hour:hourSplit[0],minute:hourSplit[1], second:0,millisecond:0}));
+  let dateClone = moment(momentDate);
+  return moment(dateClone.set({hour:hourSplit[0],minute:hourSplit[1], second:0,millisecond:0}));
 }
 
 function getDaySettings(establishment, dowString, inverseOrder) {
