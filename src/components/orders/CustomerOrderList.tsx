@@ -144,14 +144,14 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                       <TableBody>
 
                         {ordersDisplay.map((item, ind) => (
-                            <Link href={"/orders?orderId=" + item.id}>
+                            <Link href={"/orders/orderDetail?orderId=" + item.id + "&establishmentId=" + item.establishmentId}>
                             <TableRow
                                 key={ind}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                               {isMobile &&
                               <StyledTableCell align="right">
-                                <Link href={"/orders/orderDetail?orderId=" + item.id}>
+                                <Link href={"/orders/orderDetail?orderId=" + item.id + "&establishmentId=" + item.establishmentId}>
                                   <IconButton>
                                     <East fontSize="small" color="inherit"/>
                                   </IconButton>
@@ -164,7 +164,7 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                               <StyledTableCell align="left">{(item.totalPrice || 0).toFixed(2)} {currency}</StyledTableCell>
                               {!isMobile &&
                               <StyledTableCell align="right">
-                                <Link href={"orders/orderDetail?orderId=" + item.id}>
+                                <Link href={"/orders/orderDetail?orderId=" + item.id + "&establishmentId=" + item.establishmentId}>
                                   <IconButton>
                                     <East fontSize="small" color="inherit"/>
                                   </IconButton>
