@@ -79,16 +79,17 @@ export interface OrderDetailsProps {
 const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     //let params = {};
     let id;
+    let establishmentIdParam;
     let params = {};
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
+        establishmentIdParam = params?.get("establishmentId");
         //alert("orderId " + id);
     }
     catch (err) {
 
     }
-
 
     function getContextData() {
         return contextData;
@@ -125,8 +126,9 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
         try {
             setRefreshing(true)
             //alert("refresh")
-            if (getContextData() && getContextData().brand && currentEstablishment() && id) {
-                let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id, currentEstablishment().id, id));
+            if (getContextData() && getContextData().brand && (establishmentIdParam || currentEstablishment()) && id) {
+                let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id,
+                    establishmentIdParam || currentEstablishment().id, id));
                 let orderSet = null;
                 if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
                     //alert( "result.data " + result.data)

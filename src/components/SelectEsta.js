@@ -15,6 +15,7 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import {cloneDeep} from "@apollo/client/utilities";
 import {isMobile} from "react-device-detect";
+import BazarButton from "@component/BazarButton";
 
 const config = require("../conf/config.json");
 
