@@ -39,16 +39,16 @@ const AddressEditor = ({back}) => {
     const {currentEstablishment, dbUser, currentBrand, setDbUser, getOrderInCreation, setOrderInCreation} = useAuth()
 
     const [adressValue, setAdressValue] = useState("");
-    const [loading, setLoading] = useState("");
+    const [loading, setLoading] = useState(false);
     const [adressEditLock, setAdressEditLock] = useState(false);
     const [distanceInfo, setDistanceInfo] = useState(null);
     const [maxDistanceReached, setMaxDistanceReached] = useState(false);
     const [adressInfo, setAdressInfo] = useState(null);
 
     const handleFormSubmit = async (values: any) => {
-        //alert("handleFormSubmit" + values.additionalInformation);
+        //alert("handleFormSubmit" + adressInfo.address);
 
-        setLoading(true)
+        //setLoading(true)
         const dbUserCopy = cloneDeep(dbUser);
         if (id === "main") {
             dbUserCopy.userProfileInfo = {
@@ -99,7 +99,7 @@ const AddressEditor = ({back}) => {
                 otherAddresses: filterData
             }
         }
-
+        //alert("updateSiteUserQuery")
         let res = await executeMutationUtil(updateSiteUserQuery(currentBrand().id, dbUserCopy))
         let user = res?.data?.updateSiteUser;
         if (user) {
@@ -110,11 +110,14 @@ const AddressEditor = ({back}) => {
             router.push(decodeURI(back))
         }
         else {
+            //alert("push adress")
             router.push("/address")
         }
     }
 
     function updateDeliveryAdress(address, lat, lng, placeId) {
+        // alert("updateDeliveryAdress " + address);
+        // alert("updateDeliveryAdress " + placeId);
         setAdressInfo({
                 address: address,
                 lat: lat,
@@ -190,12 +193,6 @@ const AddressEditor = ({back}) => {
                     <Card1>
                         <Formik
                             initialValues={initialValues(id, dbUser, adressInfo)}
-
-                            // initialValues={{
-                            //     name: "INITIAL",
-                            //     //address: '',
-                            //     additionalInformation: "ADD INFO"
-                            // }}
                             validationSchema={checkoutSchema(id)}
                             onSubmit={handleFormSubmit}
                         >
