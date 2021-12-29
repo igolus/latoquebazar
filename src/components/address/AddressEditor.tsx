@@ -84,7 +84,7 @@ const AddressEditor = ({back}) => {
                 //.filter(other => id !== other.id);
 
             let otherAddUpdate = {
-                id: adressInfo.id,
+                id: id,
                 name: values.name,
                 address: adressInfo.address,
                 lat: adressInfo.lat,
@@ -120,6 +120,7 @@ const AddressEditor = ({back}) => {
                 lat: lat,
                 lng: lng,
                 placeId: placeId,
+                id: id
             }
         )
     }
