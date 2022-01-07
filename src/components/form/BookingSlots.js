@@ -372,7 +372,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
         //alert("res " + JSON.stringify(res))
         setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
       }
-    }, 10000);
+    }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 120000);
     return () => clearInterval(interval);
   }, [currentEstablishment, orderInCreation]);
 
@@ -385,7 +385,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     let interval = setInterval(() => {
       setReload(false);
       setReload(true);
-    }, 10000);
+    }, parseInt(process.env.REFRESH_SLOTS_TIMEFRAME) || 120000);
 
     // returned function will be called on component unmount
     return () => {
