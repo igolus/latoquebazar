@@ -2,6 +2,8 @@
   "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
   "brandId": "KSfP69svg0MVJWLFqljM",
   "appName": "B.Happy",
+  "siteUrl": "https://commandes.by-bhappy.com",
+  "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
   "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",
@@ -10,5 +12,8 @@
   "systemPayTokenUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayToken",
   "systemPayValidatePaymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayValidatePayment",
   "siteBaseUrl": "https://commandes.by-bhappy.com",
-  "alertOnSelectPickup": "Attention, le click and collect est pour le moment disponible uniquement a biot (1030 Route de la Mer 06410 Biot)"
+  "alertOnSelectPickup": "Attention, le click and collect est pour le moment disponible uniquement a biot (1030 Route de la Mer 06410 Biot)",
+  "defaultMapZoom": 16,
+  "defaultMapLng": 7.107135,
+  "defaultMapLat": 43.622040
 }
