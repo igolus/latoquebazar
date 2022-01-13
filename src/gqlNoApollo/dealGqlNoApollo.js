@@ -86,7 +86,7 @@ export const getDealsQueryNoApollo = async (brandId) => {
         }
       }
   `
-  //console.log(debug);
+  console.log(debug);
 
   const query = gql`
     {
@@ -98,6 +98,6 @@ export const getDealsQueryNoApollo = async (brandId) => {
 
   let deals = await request(config.graphQlUrl, query);
     deals.getDealsByBrandId.forEach(deal => deal.type = TYPE_DEAL)
-
+    
   return deals;
 }
