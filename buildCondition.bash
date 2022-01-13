@@ -1,5 +1,5 @@
 #!/bin/bash
-buildBranch="master"
+buildBranch="hubrise"
 #echo "VERCEL_GIT_COMMIT_REF: $VERCEL_GIT_COMMIT_REF"
 
 branch=`git rev-parse --abbrev-ref HEAD`
