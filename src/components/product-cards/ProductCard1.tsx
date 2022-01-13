@@ -321,6 +321,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
           <Link href={buildProductDetailRef()} >
             <a>
               <LazyImage
+                  objectFit="cover"
                   src={url}
                   width="100%"
                   height="auto"
