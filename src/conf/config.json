@@ -1,7 +1,7 @@
 {
   "graphQlUrl": "http://localhost:5001/latoque-b23f1/us-central1/graphQlApi",
-  "brandId": "0S93n0HvHamy7TP5vEYF",
-  "appName": "Le brunch club",
+  "brandId": "eKIrxi0IdSI90Efg0PDb",
+  "appName": "Hub rise",
   "siteUrl": "https://demo-brunchclub.latoquemagique.com",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
