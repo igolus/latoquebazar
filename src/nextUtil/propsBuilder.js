@@ -27,12 +27,12 @@ export async function getContextDataApollo() {
         products = sortChainList(resProducts.getProductsByBrandId);
     }
 
-    const resDeals = await getDealsQueryNoApollo(config.brandId);
+    // const resDeals = await getDealsQueryNoApollo(config.brandId);
     let deals = [];
-
-    if (resDeals && resDeals.getDealsByBrandId) {
-        deals = sortChainList(resDeals.getDealsByBrandId);
-    }
+    //
+    // if (resDeals && resDeals.getDealsByBrandId) {
+    //     deals = sortChainList(resDeals.getDealsByBrandId);
+    // }
 
     let categories = [];
     const resCats = await getCategoriesQueryNoApollo(config.brandId)
