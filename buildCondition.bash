@@ -1,9 +1,9 @@
 #!/bin/bash
-buildBranch="master"
+buildBranch="customer/bhappy"
 #echo "VERCEL_GIT_COMMIT_REF: $VERCEL_GIT_COMMIT_REF"
 
 branch=`git rev-parse --abbrev-ref HEAD`
-#echo $branch
+echo $branch
 #echo $buildBranch
 
 if [[ $branch == $buildBranch ]]; then
