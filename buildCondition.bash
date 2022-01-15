@@ -1,15 +1,10 @@
-#!/bin/bash
-buildBranch="hubrise"
-#echo "VERCEL_GIT_COMMIT_REF: $VERCEL_GIT_COMMIT_REF"
-
-branch=`git rev-parse --abbrev-ref HEAD`
-#echo $branch
-#echo $buildBranch
-
-if [[ $branch == $buildBranch ]]; then
-  echo "✅ - Build can proceed"
+echo $VERCEL_GIT_COMMIT_REF
+if [[ "$VERCEL_GIT_COMMIT_REF" == "$BRANCH_TO_BUILD" ]] ; then
+  # Proceed with the build
+    echo "✅ - Build can proceed"
   exit 1;
 else
-  echo "🛑 - Build cancelled"
+  # Don't build
+  echo "🛑 - Build canceled"
   exit 0;
 fi
