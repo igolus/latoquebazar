@@ -3,6 +3,7 @@ import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
     id
+    hubriseId
     defaultEstablishmentId
     establishmentIds
     brandId

@@ -8,6 +8,7 @@ import EstaInfo from "../src/components/EstaInfo"
 import {GetStaticProps} from "next";
 import OpenStreetMap from "@component/map/OpenStreetMap";
 
+// const config = require('../src/conf/config.json')
 export interface IndexPageProps {
     contextData?: any
 }
@@ -39,27 +40,27 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
         setSelectedEsta(selected)
     };
 
-    const buildMap = () => {
-        return (<OpenStreetMap
-            styleDiv={{
-                width: "100%",
-                height: "300px"
-            }}
-            divName={"estaMap"}
-            selectedId={selectedEsta.id}
-            lat={selectedEsta.lat}
-            lng={selectedEsta.lng}
-            zoom={config.defaultMapZoom || 17}
-            markers={[
-                {
-                    lat: selectedEsta.lat,
-                    lng: selectedEsta.lng,
-                    name: selectedEsta.establishmentName,
-                    id: selectedEsta.id
-                }
-            ]}
-        />)
-    }
+    // const buildMap = () => {
+    //     return (<OpenStreetMap
+    //         styleDiv={{
+    //             width: "100%",
+    //             height: "300px"
+    //         }}
+    //         divName={"estaMap"}
+    //         selectedId={selectedEsta.id}
+    //         lat={selectedEsta.lat}
+    //         lng={selectedEsta.lng}
+    //         zoom={config.defaultMapZoom || 17}
+    //         markers={[
+    //             {
+    //                 lat: selectedEsta.lat,
+    //                 lng: selectedEsta.lng,
+    //                 name: selectedEsta.establishmentName,
+    //                 id: selectedEsta.id
+    //             }
+    //         ]}
+    //     />)
+    // }
 
     // const config = require("../src/conf/config.json")
     //
@@ -70,7 +71,7 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
     // const refDiv = useRef();
     return (
         <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
-            {(getContextData().establishments || []).length > 1 &&
+            {(contextData.establishments || []).length > 1 &&
             <Tabs
                 onChange={handleTabsChange}
                 scrollButtons="auto"
