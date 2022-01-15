@@ -4,6 +4,7 @@ import filterDataGql from "../apolloClient/gqlUtil";
 const common = `
     id
     commercialAgreement
+    hubriseId
     defaultEstablishmentId
     establishmentIds
     brandId
