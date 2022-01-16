@@ -439,6 +439,9 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   }
 
   function allClosed() {
+    if (!timeSlots.allSlots || timeSlots.allSlots.length == 0) {
+      return false;
+    }
     let allClosed = true;
     for (let i = 0; i < timeSlots.allSlots.length; i++) {
       const timeSlot = timeSlots.allSlots[i];
@@ -586,7 +589,9 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           {/*</div>*/}
 
 
-          {timeSlots && !timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) &&
+          {timeSlots && (!timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) || timeSlots.allSlots.length === 0 ||
+              timeSlots.allSlots.filter(value => slotInTime(value) && slotAlavailableInMode(value)).length == 0
+          ) &&
 
           <Box
               display="flex"
