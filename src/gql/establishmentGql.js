@@ -36,6 +36,7 @@ const common = `
     slotDuration
     lunchDinnerSeparator
     minimalSlotNumberBooking
+    maximumBookingHours
     minimalSlotNumberBookingNoDelivery
     maxDistanceDelivery
     minimalDeliveryOrderPrice

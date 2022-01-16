@@ -50,7 +50,7 @@ let localStrings = new LocalizedStrings({
         maxItems: "Nombre d'elements maximum atteind",
 
         restrictionApplies: "Ce produit n'est pas toujours disponible",
-        noAvail: "Desolé il n'y a plus de creneaux disponible",
+        noAvail: "Desolé il n'y a plus de creneaux disponible, essayer à un autre moment",
         shareOnFacebook: "Partager ce produit sur facebook",
         back: "Retour",
         poweredBy: "Site construit avec La toque magique",
