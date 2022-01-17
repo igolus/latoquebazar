@@ -119,6 +119,17 @@ export const computeTotalPriceValue = (itemSkuBooking, mul = 1) => {
     return (sum  * itemSkuBooking.quantity * mul);
 }
 
+export const computeNonDiscountedTotalPriceValue = (itemSkuBooking, mul = 1) => {
+    if (itemHaveRestriction(itemSkuBooking)) {
+        return 0;
+    }
+    let sum = parseFloat(itemSkuBooking.nonDiscountedPrice || itemSkuBooking.price);
+    if (itemSkuBooking.options) {
+        itemSkuBooking.options.forEach(option => sum+= parseFloat(option.price))
+    }
+    return (sum  * itemSkuBooking.quantity * mul);
+}
+
 export const formatProductAndSkuName = (sku) => {
 
     if (sku.productName === sku.name) {
@@ -156,7 +167,7 @@ export const computePriceDetail = (orderInCreation) => {
             totalNoCharge: 0,
             totalPreparationTime: 0,
             taxDetail: 0,
-            totalCharge: 0
+            totalCharge: 0,
         };
     }
 
@@ -164,6 +175,7 @@ export const computePriceDetail = (orderInCreation) => {
     let totalNoCharge = 0;
     let totalCharge = 0;
     let total = 0;
+    let nonDiscountedTotal = 0;
     let totalPreparationTime= 0;
     let taxDetail = {};
     (orderInCreation?.charges || []).forEach(charge => {
@@ -172,7 +184,10 @@ export const computePriceDetail = (orderInCreation) => {
 
     orderInCreation?.order?.items.forEach(item => {
         let price = computeTotalPriceValue(item)
+        let nonDiscountedPrice = computeNonDiscountedTotalPriceValue(item)
         totalNoCharge += price;
+        nonDiscountedTotal += nonDiscountedPrice;
+
         let priceNoTax = 0;
         let taxPrice = 0;
 
@@ -186,6 +201,7 @@ export const computePriceDetail = (orderInCreation) => {
                 priceNoTax = price / (1 + (item.vat / 100));
                 totalNoTax += priceNoTax;
                 taxPrice = price - priceNoTax;
+                //nonDiscountedTaxPriceTaxPrice = nonDiscountedPrice - nonDiscountedPriceNoTax;
                 if (taxDetail[item.vat.toString()]) {
                     taxDetail[item.vat.toString()] = taxDetail[item.vat.toString()] + taxPrice;
                 } else {
@@ -202,6 +218,9 @@ export const computePriceDetail = (orderInCreation) => {
             deal.productAndSkusLines.forEach(line => {
 
                 let price = computeTotalPriceValue(line, deal.quantity);
+                let nonDiscountedPrice = computeNonDiscountedTotalPriceValue(line, deal.quantity);
+                nonDiscountedTotal += nonDiscountedPrice;
+
                 totalNoCharge += price;
                 let priceNoTax = 0;
                 let taxPrice = 0;
@@ -233,6 +252,7 @@ export const computePriceDetail = (orderInCreation) => {
     return {
         totalNoTax: Math.round(totalNoTax * 100) / 100,
         total: Math.round((totalNoCharge + totalCharge) * 100) / 100,
+        totalNonDiscounted: Math.round((nonDiscountedTotal) * 100) / 100,
         totalNoCharge: Math.round(totalNoCharge * 100) / 100,
         totalPreparationTime: totalPreparationTime,
         taxDetail: taxDetail,

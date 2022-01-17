@@ -146,6 +146,21 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 {parseFloat(priceDetails.total).toFixed(2)} {currency}
             </Typography>
 
+            {priceDetails.totalNonDiscounted !== priceDetails.total &&
+                <Typography
+                    fontSize="20px"
+                    fontWeight="400"
+                    lineHeight="1"
+                    textAlign="right"
+                    mb={3}
+                    style={{textDecoration: 'line-through'}}
+                >
+                    {parseFloat(priceDetails.totalNonDiscounted).toFixed(2)} {currency}
+                </Typography>
+            }
+
+
+
             {!hideDetail &&
             <>
 
@@ -218,27 +233,10 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     {getEsta().establishmentName}
                 </Typography>
 
-                {/*<Box mt={1}>*/}
-                {/*    <OpenStreetMap*/}
-                {/*        styleDiv={{*/}
-                {/*            width: "100%",*/}
-                {/*            height: "200px"*/}
-                {/*        }}*/}
-                {/*        selectedId={getEsta().id}*/}
-                {/*        lat={config.defaultMapLat || getEsta().lat}*/}
-                {/*        lng={config.defaultMapLng || getEsta().lng}*/}
-                {/*        zoom={config.defaultMapZoom || 17}*/}
-                {/*        divName={"checkoutMap"}*/}
-                {/*        markers={[*/}
-                {/*            {*/}
-                {/*                lat: getEsta().lat,*/}
-                {/*                lng: getEsta().lng,*/}
-                {/*                name: getEsta().establishmentName,*/}
-                {/*                id: getEsta().id*/}
-                {/*            }*/}
-                {/*        ]}*/}
-                {/*    />*/}
-                {/*</Box>*/}
+                <Typography color="grey.600" fontSize="16px">
+                    {/*{orderInCreation().deliveryMode}*/}
+                    {getEsta().address}
+                </Typography>
 
                 {contextData.establishments && contextData.establishments.length > 1 &&
                 <Button variant="contained" color="primary" type="button" fullWidth

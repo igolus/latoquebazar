@@ -17,6 +17,7 @@ import {isMobile} from "react-device-detect";
 import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
 import ChargeCard7 from "@component/product-cards/ChargeCard7";
 import EmptyBasket from "../src/components/shop/EmptyBasket";
+import DiscountCard7 from "@component/product-cards/DiscountCard7";
 
 export interface CartProps {
   contextData?: any
@@ -41,6 +42,10 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
       {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
       <Grid container spacing={3}>
         <Grid item lg={8} md={8} xs={12}>
+
+          {(getOrderInCreation()?.discounts || []).map((discountItem, key) =>
+              <DiscountCard7 item={discountItem}/>
+          )}
 
           {(getOrderInCreation()?.charges || []).map((chargeItem, key) =>
               <ChargeCard7 item={chargeItem} currency={currency}/>

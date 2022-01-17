@@ -316,6 +316,7 @@ export const TYPE_PRODUCT = "product"
 export const STRIPE_SUB_STATUS_ACTIVE= "active";
 export const STRIPE_SUB_STATUS_TRIALING= "trialing";
 
+export const ALREADY_CONSUMED = "alreadyConsumed";
 
 export const deviceSize = {
   xs: 425,
