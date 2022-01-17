@@ -14,7 +14,7 @@ import {makeStyles} from "@material-ui/styles";
 import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
-import {processOrderCharge, processOrderInCreation} from "../util/cartUtil";
+import {processOrderCharge, processOrderDiscount, processOrderInCreation} from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
@@ -1011,6 +1011,8 @@ export const AuthProvider = ({ children }) => {
       getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
+
+    processOrderDiscount(orderInCreation);
 
     dispatch({
       type: ORDER_IN_CREATION,

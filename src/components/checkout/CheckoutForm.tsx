@@ -62,7 +62,8 @@ import parsePhoneNumber from 'libphonenumber-js'
 import KRPayment from "../../components/payment/KRPayment";
 import EmptyBasket from "@component/shop/EmptyBasket";
 import FlexBox from "@component/FlexBox";
-import {H6} from "@component/Typography";
+import {H6, Tiny2} from "@component/Typography";
+import ReactMarkdown from "react-markdown";
 
 const config = require('../../conf/config.json')
 
@@ -101,6 +102,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const autocomp = useRef(null);
   const [cgvChecked, setCgvChecked] = React.useState(false);
   const [pickupAlert, setPickupAlert] = React.useState(false);
+
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
   const [selectedAddId, setSelectedAddId] = useState(true);
@@ -398,6 +400,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         dataOrder.order.deals.forEach(deal => {
               delete deal.selectId;
               delete deal.creation;
+            }
+        )
+      }
+
+      if (dataOrder.order.discounts) {
+        dataOrder.order.discounts.forEach(discount => {
+              delete discount.uuid;
             }
         )
       }
@@ -730,7 +739,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
             </Button>
           </DialogActions>
         </Dialog>
-
 
 
         {!payLoading && getCartItems(getOrderInCreation, true).length === 0 && (

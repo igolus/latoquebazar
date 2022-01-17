@@ -37,7 +37,7 @@ const ChargeCard7: React.FC<ProductCard7Props> = ({
 
     //const {getOrderInCreation, setOrderInCreation} = useAuth();
     //let product = products.find(p => p.id === item.productId);
-    let imgUrl = "/assets/images/Icon Color_13.png";
+    let imgUrl = "/assets/images/Icon_Color_13.png";
     //alert("product " + product)
     // if (!product) {
     //   //try to find with extRef in skus

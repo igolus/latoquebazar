@@ -4,6 +4,13 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        invalidCouponConsumed: "Vous avez deja consomé ce coupon !",
+        couponAlreadyInUse: "Un coupon est déja en cours d'utilisation",
+        wrongCouponCode: "Le {0} code n'est pas valide",
+        codeApplied: "Code {0} appliqué",
+        applyCouponCode: "Appliquer mon code",
+        connectApplyCouponCode: "Connectez-vous pour appliquer votre code",
+        IHaveACouponCode: "J'ai un code promo",
         IUnderstand: "J'ai compris",
         setClosestEsta: "Selectionner l'etablissement le plus proche",
         selectEsta: "Selectionner votre etablissement",

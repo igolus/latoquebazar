@@ -2,7 +2,7 @@ import {gql} from "@apollo/client";
 import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
-    id
+  id
   tempOrder
   creationDate
   orderNumber
@@ -33,6 +33,7 @@ const common = `
       quantity
       price
       nonDiscountedPrice
+      discountApplied
       percentDiscount
       valueDiscount
       vat
@@ -180,6 +181,19 @@ const common = `
     pricingEffect
     pricingValue
     price
+  }
+  
+  discounts {
+    id
+    external
+    extName
+    name
+    extRef
+    description
+    couponCodes
+    pricingEffect
+    pricingValue
+    pricingOff
   }
   
   confirmedTime
