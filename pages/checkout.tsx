@@ -9,6 +9,7 @@ import {getBrandCurrency} from "../src/util/displayUtil";
 import {Elements} from "@stripe/react-stripe-js";
 import {loadStripe} from "@stripe/stripe-js";
 import useAuth from "@hook/useAuth";
+import CouponCode from "@component/checkout/CouponCode";
 
 
 export interface CheckoutProps {
@@ -54,7 +55,10 @@ const Checkout:React.FC<Checkout> = ({contextData}) => {
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
           <OrderAmountSummary currency={getBrandCurrency(getContextData()?.brand)} contextData={getContextData()}/>
+          <CouponCode contextData={getContextData()}/>
         </Grid>
+
+
       </Grid>
     </CheckoutNavLayout>
   )

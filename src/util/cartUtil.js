@@ -173,6 +173,8 @@ function checkOrderInCreation (orderInCreation) {
     return orderInCreation() && orderInCreation().order
 }
 
+
+
 export function deleteItemInCart(orderInCreation, setOrderInCreation, uuid) {
     if (!orderInCreation || !orderInCreation().order) {
         return
@@ -211,6 +213,21 @@ export function deleteDealInCart(orderInCreation, setOrderInCreation, uuid) {
             items: items,
             deals: [...others]
         }
+    });
+}
+
+
+export function deleteDiscountInCart(orderInCreation, setOrderInCreation, id) {
+    //alert("uuid " + uuid);
+    if (!orderInCreation || !orderInCreation().order) {
+        return
+    }
+
+    let discounts = orderInCreation().discounts || [];
+    let others = discounts.filter(discount => discount.id !== id);
+    setOrderInCreation({
+        ...orderInCreation(),
+        discounts: [...others]
     });
 }
 
@@ -345,13 +362,23 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToas
     //alert("addMenuToCart ")
 }
 
+
+export function addDiscountToCart(discount, orderInCreation, setOrderInCreation) {
+    if (!orderInCreation || !orderInCreation()) {
+        return;
+    }
+
+    let existingOrder = orderInCreation();
+    setOrderInCreation({
+        ...orderInCreation(),
+        discounts: [...existingOrder.discounts || [], {...discount}]
+    })
+}
+
 export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast) {
     if (!orderInCreation || !orderInCreation()) {
         return;
     }
-    // if (!checkOrderInCreation()) {
-    //     return;
-    // }
 
     let itemToAdd = { ...productAndSku.sku}
     itemToAdd.quantity = 1
@@ -363,10 +390,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
     let optionsInit = (itemToAdd.options  || []).map(option => option.ref)
         .sort((o1, o2) => o2 < o1 ? 1:0)
 
-    //check existing
     let existing;
-    // alert("orderInCreation" + orderInCreation())
-    // alert("orderInCreation" + orderInCreation())
 
     if (orderInCreation() && orderInCreation()?.order && orderInCreation().order.items) {
         existing = orderInCreation().order.items.find(item => {
@@ -523,6 +547,69 @@ function builAlertRestrictionComponent(setRedirectPageGlobal) {
                 action: () => setRedirectPageGlobal("/cart"),
             }
         ]
+    }
+}
+
+function applyDiscountOnItem(item, discount) {
+    if (!item.nonDiscountedPrice) {
+        item.nonDiscountedPrice = item.price;
+    }
+    if (!item.discountApplied) {
+        item.discountApplied = [];
+    }
+
+    if (
+        discount.pricingEffect === PRICING_EFFECT_PERCENTAGE && discount.pricingValue) {
+        item.price = (parseFloat(item.price) - parseFloat(item.price) * (discount.pricingValue / 100)).toFixed(2);
+        item.discountApplied.push(discount.id);
+    }
+}
+
+export function processOrderDiscount(orderInCreation) {
+    if (!orderInCreation) {
+        return;
+    }
+
+    let items = orderInCreation.order?.items || [];
+    let deals = orderInCreation.order?.deals || [];
+    for (let j = 0; j < items.length; j++) {
+        const item = items[j];
+        item.discountApplied = [];
+        if (item.nonDiscountedPrice) {
+            item.price = parseFloat(item.nonDiscountedPrice).toFixed(2)
+        }
+
+    }
+
+    for (let j = 0; j < deals.length; j++) {
+        const deal = deals[j];
+        const productAndSkusLines = deal.productAndSkusLines;
+        for (let k = 0; k < productAndSkusLines.length; k++) {
+            const productAndSkusLine = productAndSkusLines[k];
+            if (productAndSkusLine.nonDiscountedPrice) {
+                productAndSkusLine.price = parseFloat(productAndSkusLine.nonDiscountedPrice).toFixed(2)
+            }
+        }
+    }
+
+    let discounts = orderInCreation.discounts || [];
+
+    for (let i = 0; i < discounts.length; i++) {
+        const discount = discounts[i];
+
+        for (let j = 0; j < items.length; j++) {
+            const item = items[j];
+            applyDiscountOnItem(item, discount);
+        }
+
+        for (let j = 0; j < deals.length; j++) {
+            const deal = deals[j];
+            const productAndSkusLines = deal.productAndSkusLines;
+            for (let k = 0; k < productAndSkusLines.length; k++) {
+                const productAndSkusLine = productAndSkusLines[k];
+                applyDiscountOnItem(productAndSkusLine, discount);
+            }
+        }
     }
 }
 
