@@ -4,7 +4,7 @@ import BazarIconButton from '@component/BazarIconButton'
 import FlexBox from '@component/FlexBox'
 import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import LazyImage from '@component/LazyImage'
-import {H5, Span, Tiny, Tiny2} from '@component/Typography'
+import {H5, H6, Span, Tiny, Tiny2} from '@component/Typography'
 import { useAppContext } from '@context/app/AppContext'
 import {Box, Divider, Typography} from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
@@ -21,7 +21,7 @@ import {
   deleteItemInCart,
   getCartItems,
   getPriceWithOptions,
-  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart, RESTRICTION_MAX_ITEM
+  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart, RESTRICTION_MAX_ITEM, deleteDiscountInCart
 } from "../../util/cartUtil";
 import {
   computePriceDetail, formatProductAndSkuName,
@@ -159,7 +159,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 key={key}
             >
               <BazarAvatar
-                  src={"/assets/images/Icon Color_13.png"}
+                  src={"/assets/images/Icon_Color_13.png"}
                   mx={2}
                   height={76}
                   width={76}
@@ -184,18 +184,46 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               </Box>
 
             </FlexBox>
-            // <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
-            //   <Typography color="grey.600">{chargeItem.name}</Typography>
-            //   <FlexBox alignItems="flex-end">
-            //     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
-            //       {chargeItem.price.toFixed(2)} {currency}
-            //     </Typography>
-            //   </FlexBox>
-            //
-            //   <Tiny2 color="grey.600" key={key}>
-            //     {JSON.stringify(chargeItem)}
-            //   </Tiny2>
-            // </FlexBox>
+        )}
+
+        {(getOrderInCreation()?.discounts || []).map((discountItem, key) =>
+
+            <FlexBox
+                alignItems="center"
+                py={2}
+                px={2.5}
+                borderBottom={`1px solid ${palette.divider}`}
+                key={key}
+            >
+              <BazarAvatar
+                  src={"/assets/images/discount.png"}
+                  mx={2}
+                  height={76}
+                  width={76}
+              />
+
+              <Box flex="1 1 0">
+                <H5 className="title" fontSize="14px">
+                  {discountItem.name}
+                </H5>
+                {discountItem.couponCodeValues && discountItem.couponCodeValues.length == 1 &&
+                <H6 className="title" fontSize="12px">
+                  {localStrings.formatString(localStrings.codeApplied, discountItem.couponCodeValues[0])}
+                </H6>
+                }
+              </Box>
+
+              <BazarIconButton
+                  ml={2.5}
+                  size="small"
+                  onClick={() => {
+                    deleteDiscountInCart(getOrderInCreation, setOrderInCreation, discountItem.id)
+                  }}
+              >
+                <Close fontSize="small" />
+              </BazarIconButton>
+
+            </FlexBox>
         )}
 
 
