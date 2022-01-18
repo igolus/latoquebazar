@@ -30,6 +30,7 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
             {/*{asPath.split("/").slice(-1)}*/}
             {/*<p>{JSON.stringify(categories || {})}</p>*/}
+            {/*<p>{JSON.stringify(filteredCat || {})}</p>*/}
             <H6 mb={1.25}>{localStrings.categories}</H6>
             {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
             <StyledDashboardNav
