@@ -60,7 +60,8 @@ const CategoryMenuCard: React.FC<CategoryMenuCardProps> = (props) => {
 
 
 
-
+      {/*<p>{props.contextData.categories.map(cat => cat.category)}</p>*/}
+      {/*<p>{JSON.stringify(filterCat(props.contextData.categories, props.contextData.products, props.contextData.deals))}</p>*/}
 
       {props.contextData && filterCat(props.contextData.categories, props.contextData.products, props.contextData.deals).map((item) => {
         //let MegaMenu = megaMenu[item.menuComponent]
