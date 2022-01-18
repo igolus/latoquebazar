@@ -54,6 +54,9 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     }
 
     const getProductsAndDeals = () => {
+        // if (contextData.deals.length === 0) {
+        //     alert("empty deals")
+        // }
         return contextData.products.concat(contextData.deals)
     }
 
@@ -66,9 +69,9 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     const [currentService, setCurrentService] = useState({});
 
     function findIdOfCategory(categoryName) {
-        //alert("categoryName " + categoryName)
+        //console.log("categoryName " + categoryName)
         let cat = (contextData?.categories || []).find(cat => convertCatName(cat.category) === categoryName );
-        //console.log("findIdOfCategory " + id);
+        //console.log("findIdOfCategory " + cat?.id);
         return cat?.id
     }
 
@@ -83,6 +86,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         let filteredProduct = [];
         let productsLoaded = contextData ? (getProductsAndDeals() || []) : []
         //alert("productsLoaded " + productsLoaded.length)
+        console.log("productsLoaded " + JSON.stringify(productsLoaded, null, 2));
         if (query) {
             var index = elasticlunr();
             index.addField('category');
@@ -108,6 +112,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             else {
                 filteredProduct = productsLoaded.filter(product =>
                     product.category && product.category.id === findIdOfCategory(category));
+                console.log("filteredProduct1" + filteredProduct)
             }
         }
 
@@ -141,7 +146,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         setAllProducts(
             filteredProduct);
 
-       //console.log("filteredProduct " + JSON.stringify(filteredProduct, null, 2))
+        //console.log("filteredProduct " + JSON.stringify(filteredProduct, null, 2))
         setPage(0);
         // alert("MaxPag " + Math.floor(filteredProduct ? filteredProduct.length : 0 / itemPerPage) + 1)
         // alert("filteredProduct.length " + filteredProduct.length);
@@ -159,7 +164,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         setProductDisplay(filteredProduct.slice(0,
             Math.min(filteredProduct.length + 1, itemPerPage)))
 
-    }, [category, filter, contextData, restrictedskuRefs, tagsSelected, sortOption, query])
+    }, [category, filter, contextData, restrictedskuRefs, tagsSelected, sortOption, query, currentBrand])
 
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         if (!allProducts) {

@@ -418,6 +418,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
       dataOrder.totalPreparationTime = detailPrice.totalPreparationTime;
       dataOrder.totalPrice = parseFloat(detailPrice.total);
+      dataOrder.totalNonDiscounted = parseFloat(detailPrice.totalNonDiscounted);
       dataOrder.totalPriceNoTax = parseFloat(detailPrice.totalNoTax);
       let taxDetailForOrder = [];
 

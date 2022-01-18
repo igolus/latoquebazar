@@ -272,6 +272,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                     setOpen(true);
                   }
                 }}
+                objectFit="cover"
                 src={url}
                 width="100%"
                 height="auto"

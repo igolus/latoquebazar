@@ -36,7 +36,8 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
 
     //const query = params?.get("query");
     function getContextData() {
-        if (getContextDataAuth() && getContextDataAuth().products) {
+        if (getContextDataAuth() && getContextDataAuth().products && getContextDataAuth().deals
+            && getContextDataAuth().categories) {
             return getContextDataAuth()
         }
         return contextData;
