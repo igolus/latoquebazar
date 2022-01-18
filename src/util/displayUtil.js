@@ -559,8 +559,8 @@ export function filterCat(categories, products, deals) {
     })
 
 
-    return (categories || []).filter(cat => allCatProductIds.includes(cat.id));
-    //return categories;
+    //return (categories || []).filter(cat => allCatProductIds.includes(cat.id));
+    return categories;
 }
 
 

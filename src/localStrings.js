@@ -6,7 +6,7 @@ let localStrings = new LocalizedStrings({
     fr: {
         invalidCouponConsumed: "Vous avez deja consomé ce coupon !",
         couponAlreadyInUse: "Un coupon est déja en cours d'utilisation",
-        wrongCouponCode: "Le {0} code n'est pas valide",
+        wrongCouponCode: "Le code {0} n'est pas valide",
         codeApplied: "Code {0} appliqué",
         applyCouponCode: "Appliquer mon code",
         connectApplyCouponCode: "Connectez-vous pour appliquer votre code",
