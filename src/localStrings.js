@@ -4,6 +4,8 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        fillAddress: "Saisir ici votre adresse",
+        fillAddressName: "Saisir ici le nom de votre adresse",
         invalidCouponConsumed: "Vous avez deja consomé ce coupon !",
         couponAlreadyInUse: "Un coupon est déja en cours d'utilisation",
         wrongCouponCode: "Le code {0} n'est pas valide",
