@@ -14,6 +14,7 @@ import {makeStyles, withStyles} from "@material-ui/styles";
 import BazarTextField from "@component/BazarTextField";
 import {MuiThemeProps} from "@theme/theme";
 import {layoutConstant} from "../../util/constants";
+import placeholder from "lodash/fp/placeholder";
 
 const config = require("../../conf/config.json")
 
@@ -61,6 +62,7 @@ const useStyles = makeStyles(() => ({
 
 export default function GoogleMapsAutocomplete({title, setValueCallback, initialValue, lockmode,
                                                    valueSource, setterValueSource, noKeyKnown,
+                                                   placeholderArg,
                                                    required, error, helperText, disabled, useTextField}) {
     const classes = useStyles();
     const [googleKey, setGoogleKey] = useState('');
@@ -175,6 +177,7 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                     disabled={locked || disabled}
                     id="google-map-demo"
                     fullWidth
+                    placeholder={placeholderArg || localStrings.fillAddress}
                     //style={{ marginBottom: '1rem' }}
                     getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
                     filterOptions={(x) => x}

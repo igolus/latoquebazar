@@ -12,6 +12,7 @@ import ProductDealCard1List from "@component/products/ProductDealCard1List";
 import {useToasts} from "react-toast-notifications";
 import {makeStyles} from "@material-ui/styles";
 import MiniCartDeal from "@component/mini-cart/MiniCartDeal";
+import BazarButton from "@component/BazarButton";
 
 
 const useStyles = makeStyles(() => ({
@@ -174,7 +175,16 @@ function DealSelector({ deal, contextData }) {
                             //filter={filter} query={query}
                             category={ALL_CAT} contextData={contextData}/>
                     </Grid>
-                    <div style={{ width: '100%' }}>
+                    <div style={{ width: '100%' }} >
+
+                    {/*<div style={{ width: '100%',*/}
+                    {/*    //Position: "-webkit-sticky",*/}
+                    {/*    position: "sticky",*/}
+                    {/*    top: "180px",*/}
+                    {/*    //top: "calc(100vh - 50px)",*/}
+                    {/*    backgroundColor: "yellow",*/}
+
+                    {/*}} >    */}
                         <Box display="flex" justifyContent="flex-end" m={1} p={1} >
                             <Box p={1} >
                                 <Button variant="contained" color="primary" onClick={cancelDeal}>
@@ -190,9 +200,9 @@ function DealSelector({ deal, contextData }) {
                                 }
                                 {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length !== deal.lines.length &&
                                 isProductSelectedInLine() &&
-                                <Button variant="contained" color="primary" onClick={() => setCurrentLine(currentLine + 1)}>
+                                <BazarButton variant="contained" color="primary" onClick={() => setCurrentLine(currentLine + 1)}>
                                     {localStrings.next}
-                                </Button>
+                                </BazarButton>
                                 }
                             </Box>
                         </Box>

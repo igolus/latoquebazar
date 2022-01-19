@@ -133,26 +133,26 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return contextData.establishments[0];
   }
 
-  useEffect(() => {
-    //resetDeliveryAdress();
-    if (typeof window !== 'undefined' && !loaded.current) {
-      let element = document.querySelector('#google-maps');
-      if (element) {
-        element.setAttribute("src",
-            'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
-      }
-      else {
-        loadScript(
-            'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
-            document.querySelector('head'),
-            'google-maps',
-        );
-      }
-      resetDeliveryAdress();
-      loaded.current = true;
-    }
-
-  },  [])
+  // useEffect(() => {
+  //   //resetDeliveryAdress();
+  //   if (typeof window !== 'undefined' && !loaded.current) {
+  //     let element = document.querySelector('#google-maps');
+  //     if (element) {
+  //       element.setAttribute("src",
+  //           'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
+  //     }
+  //     else {
+  //       loadScript(
+  //           'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
+  //           document.querySelector('head'),
+  //           'google-maps',
+  //       );
+  //     }
+  //     resetDeliveryAdress();
+  //     loaded.current = true;
+  //   }
+  //
+  // },  [])
 
   useEffect(() => {
     if (currentEstablishment() &&
