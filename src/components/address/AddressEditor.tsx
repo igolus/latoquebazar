@@ -211,6 +211,7 @@ const AddressEditor = ({back}) => {
                                                     name="name"
                                                     variant="outlined"
                                                     label={localStrings.nameAddress}
+                                                    placeholder={localStrings.fillAddressName}
                                                     fullWidth
                                                     onBlur={handleBlur}
                                                     onChange={handleChange}
