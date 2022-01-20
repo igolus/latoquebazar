@@ -128,7 +128,7 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
                 errorCallBack(err.message);
 
                 // setMessage(err.message)
-                alert(err);
+                //alert(err);
                 console.log(err)
             })
         /* show the payment form */
