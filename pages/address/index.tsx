@@ -78,19 +78,21 @@ const AddressList = ({contextData}) => {
     // }
   }));
 
-  useEffect(() => {
-        if (!dbUser) {
-          router.push("/profile")
-        }
-
-      },
-      [dbUser])
+  // useEffect(() => {
+  //       if (!dbUser) {
+  //         router.push("/profile")
+  //       }
+  //
+  //     },
+  //     [dbUser])
 
   return (
       <DashboardLayout contextData={getContextData()}>
         {loading ?
             <ClipLoaderComponent/>
             :
+            <>
+            {dbUser &&
             <>
               <Dialog
                   open={confirmDelete}
@@ -114,7 +116,7 @@ const AddressList = ({contextData}) => {
                   icon={Place}
                   button={
                     <Link href={"/address/adressDetail?addId=new"}>
-                      <Button color="primary"  variant={"contained"} sx={{ px: '2rem', textTransform: "none" }}>
+                      <Button color="primary" variant={"contained"} sx={{px: '2rem', textTransform: "none"}}>
                         {localStrings.addNewAddress}
                       </Button>
                     </Link>
@@ -124,15 +126,15 @@ const AddressList = ({contextData}) => {
                 <Table>
                   <TableBody>
                     <TableRow
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        sx={{'&:last-child td, &:last-child th': {border: 0}}}
                     >
                       <StyledTableCell align="left">{localStrings.mainAddress}</StyledTableCell>
-                      <StyledTableCell align="left" >{dbUser?.userProfileInfo?.address}</StyledTableCell>
+                      <StyledTableCell align="left">{dbUser?.userProfileInfo?.address}</StyledTableCell>
                       <StyledTableCell align="left">{dbUser?.userProfileInfo?.additionalInformation}</StyledTableCell>
                       <StyledTableCell align="right">
                         <Link href="/address/adressDetail?addId=main">
                           <IconButton>
-                            <Edit fontSize="small" color="inherit" />
+                            <Edit fontSize="small" color="inherit"/>
                           </IconButton>
                         </Link>
                       </StyledTableCell>
@@ -143,7 +145,7 @@ const AddressList = ({contextData}) => {
                 </Table>
               </TableContainer>
 
-              <Divider sx={{ mb: '2rem', borderColor: 'grey.300' }} />
+              <Divider sx={{mb: '2rem', borderColor: 'grey.300'}}/>
 
 
               <TableContainer component={Paper}>
@@ -159,21 +161,20 @@ const AddressList = ({contextData}) => {
                   {/*</TableHead>*/}
 
 
-
                   <TableBody>
 
                     {(dbUser?.userProfileInfo?.otherAddresses || []).map((item, ind) => (
                         <TableRow
                             key={ind}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            sx={{'&:last-child td, &:last-child th': {border: 0}}}
                         >
                           <StyledTableCell align="left">{item.name}</StyledTableCell>
-                          <StyledTableCell align="left" >{item.address}</StyledTableCell>
+                          <StyledTableCell align="left">{item.address}</StyledTableCell>
                           <StyledTableCell align="left">{item.additionalInformation}</StyledTableCell>
                           <StyledTableCell align="right">
                             <Link href={"/address/adressDetail?addId=" + item.id}>
                               <IconButton>
-                                <Edit fontSize="small" color="inherit" />
+                                <Edit fontSize="small" color="inherit"/>
                               </IconButton>
                             </Link>
                             <IconButton onClick={() => {
@@ -189,6 +190,8 @@ const AddressList = ({contextData}) => {
                 </Table>
               </TableContainer>
 
+            </>
+            }
             </>
         }
       </DashboardLayout>

@@ -57,7 +57,7 @@ const AddressEditor = ({back}) => {
                 lat: adressInfo.lat,
                 lng: adressInfo.lng,
                 placeId: adressInfo.placeId,
-                additionalInformation: values.additionalInformation,
+                customerDeliveryInformation: values.customerDeliveryInformation,
             }
 
         }
@@ -72,7 +72,7 @@ const AddressEditor = ({back}) => {
                         lat: adressInfo.lat,
                         lng: adressInfo.lng,
                         placeId: adressInfo.placeId,
-                        additionalInformation: values.additionalInformation,
+                        customerDeliveryInformation: values.customerDeliveryInformation,
                     }
                 ]
             }
@@ -90,7 +90,7 @@ const AddressEditor = ({back}) => {
                 lat: adressInfo.lat,
                 lng: adressInfo.lng,
                 placeId: adressInfo.placeId,
-                additionalInformation: values.additionalInformation,
+                customerDeliveryInformation: values.customerDeliveryInformation,
             }
             filterData.splice(oldIndex, 1, otherAddUpdate);
 
@@ -224,9 +224,10 @@ const AddressEditor = ({back}) => {
                                                     noKeyKnown
                                                     required
                                                     setterValueSource={setAdressValue}
+                                                    placeholderArg={localStrings.fillAddress}
                                                     //initialValue={adressInfo?.address}
                                                     valueSource={adressValue}
-                                                    disabled={adressEditLock}
+                                                    //disabled={adressEditLock}
                                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
                                                         if (currentEstablishment()) {
                                                             let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
@@ -247,24 +248,21 @@ const AddressEditor = ({back}) => {
                                             <Grid item md={12} xs={12}>
 
                                                 <Typography fontWeight="600" mb={2}>
-                                                    {localStrings.bookingadditionalInformation}
-                                                </Typography>
-
-                                                <Typography variant="body2" fontWeight="400" mb={2}>
-                                                    {localStrings.bookingadditionalInformationExample}
+                                                    {localStrings.bookingadditionalInformationNotes}
                                                 </Typography>
 
                                                 <TextField
-                                                    name="additionalInformation"
+                                                    name="customerDeliveryInformation"
+                                                    placeholder={localStrings.customerDeliveryInformationPlaceHolder}
                                                     multiline
                                                     rows={4}
-                                                    label={localStrings.additionalInformation}
+                                                    label={localStrings.customerDeliveryInformationPlaceHolder}
                                                     fullWidth
                                                     onBlur={handleBlur}
                                                     onChange={handleChange}
-                                                    value={values.additionalInformation}
-                                                    error={!!touched.additionalInformation && !!errors.additionalInformation}
-                                                    helperText={touched.additionalInformation && errors.additionalInformation}
+                                                    value={values.customerDeliveryInformation}
+                                                    error={!!touched.customerDeliveryInformation && !!errors.customerDeliveryInformation}
+                                                    helperText={touched.customerDeliveryInformation && errors.customerDeliveryInformation}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -286,13 +284,12 @@ const AddressEditor = ({back}) => {
     )
 }
 
-function getInitialAdditionalInformation(id, dbUser, adressInfo) {
+function getInitialCustomerDeliveryInformation(id, dbUser, adressInfo) {
     if (id === "main") {
-        //alert("dbUser?.userProfileInfo?.additionalInformation " + JSON.stringify(dbUser?.userProfileInfo))
-        return dbUser?.userProfileInfo?.additionalInformation;
+        return dbUser?.userProfileInfo?.customerDeliveryInformation;
     }
     if (id !== "new") {
-        return adressInfo?.additionalInformation
+        return adressInfo?.customerDeliveryInformation
     }
     return "";
 }
@@ -311,7 +308,7 @@ const initialValues = (id, dbUser, adressInfo) => {
     return {
         name: getInitialName(id, adressInfo),
         //address: '',
-        additionalInformation: getInitialAdditionalInformation(id, dbUser, adressInfo)
+        customerDeliveryInformation: getInitialCustomerDeliveryInformation(id, dbUser, adressInfo)
     }
 }
 

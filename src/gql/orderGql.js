@@ -201,6 +201,7 @@ const common = `
       address
       lat
       lng
+      customerDeliveryInformation
   }
   additionalInfo
   customer {

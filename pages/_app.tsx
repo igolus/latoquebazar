@@ -10,6 +10,7 @@ import React, {Fragment, useEffect} from 'react'
 import {ToastProvider} from "react-toast-notifications";
 import * as ga from '../lib/ga'
 import "../global.css";
+
 export const cache = createCache({ key: 'css', prepend: true })
 
 //Binding events.
@@ -93,10 +94,12 @@ const App = ({ Component, pageProps}: any) => {
                 <ToastProvider placement="bottom-left">
                     <AuthProvider>
                         <MuiTheme>
+
                             <Layout>
                                 <Component {...pageProps} />
                             </Layout>
                         </MuiTheme>
+
                     </AuthProvider>
                 </ToastProvider>
             {/*</AppProvider>*/}
