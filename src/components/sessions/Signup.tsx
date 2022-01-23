@@ -2,7 +2,7 @@ import BazarButton from '@component/BazarButton'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
 import {H3} from '@component/Typography'
-import {Box, Button, Card, CardProps, IconButton,} from '@material-ui/core'
+import {Box, Button, Card, CardProps, CircularProgress, IconButton,} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -13,6 +13,7 @@ import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import {green} from "@material-ui/core/colors";
 
 const fbStyle = {
   background: '#3B5998',
@@ -62,7 +63,7 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
 const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) => {
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const [errorSubmit, setErrorSubmit] = useState(null)
-
+  const [submitOnGoing, setSubmitOnGoing] = useState(false)
   const router = useRouter()
   const {createUserWithEmailAndPassword, sendEmailVerification, currentEstablishment} = useAuth();
   const togglePasswordVisibility = useCallback(() => {
@@ -70,6 +71,7 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
   }, [])
 
   const handleFormSubmit = async (values: any) => {
+    setSubmitOnGoing(true);
     //alert("existingconfs Email sent " + values.email + values.password)
     try {
       setErrorSubmit(null);
@@ -90,6 +92,9 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
         setErrorSubmit(err.message);
       }
       //setErrors({submit: err.message});
+    }
+    finally {
+      setSubmitOnGoing(false);
     }
     console.log(values)
   }
@@ -124,35 +129,6 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
         />
         }
 
-        {/*</Box>*/}
-        {/*<Small*/}
-        {/*  fontWeight="600"*/}
-        {/*  fontSize="12px"*/}
-        {/*  color="grey.800"*/}
-        {/*  textAlign="center"*/}
-        {/*  mb={4.5}*/}
-        {/*  display="block"*/}
-        {/*>*/}
-        {/*  Please fill all fields to continue*/}
-        {/*</Small>*/}
-
-        {/*<GoogleMapsAutocomplete noKeyKnown*/}
-        {/*                        required*/}
-        {/*                        initialValue={JSON.parse(localStorage.getItem(DIST_INFO)).address}*/}
-        {/*                        title={localStrings.address}*/}
-        {/*                        error={!!touched.address && !!errors.address}*/}
-        {/*                        helperText={touched.address && errors.address}*/}
-        {/*                        setValueCallback={(label, placeId, city, postcode, citycode, lat, lng) => {*/}
-        {/*                          setFieldValue("address", label);*/}
-        {/*                          setFieldValue("placeId", placeId);*/}
-        {/*                          setFieldValue("lat", lat);*/}
-        {/*                          setFieldValue("lng", lng);*/}
-        {/*                        }}/>*/}
-
-        {/*adress: "Adresse",*/}
-        {/*email: "Email",*/}
-        {/*firstName: "Prenom",*/}
-        {/*lastName: "Nom"*/}
 
         <BazarTextField
             mb={1.5}
@@ -169,51 +145,6 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
             value={values.email}
         />
 
-        {/*<BazarTextField*/}
-        {/*    mb={1.5}*/}
-        {/*    name="firstName"*/}
-        {/*    label={localStrings.firstName}*/}
-        {/*    placeholder={localStrings.firstName}*/}
-        {/*    variant="outlined"*/}
-        {/*    size="small"*/}
-        {/*    fullWidth*/}
-        {/*    onBlur={handleBlur}*/}
-        {/*    onChange={handleChange}*/}
-        {/*    value={values.firstName}*/}
-        {/*    error={!!touched.firstName && !!errors.firstName}*/}
-        {/*    helperText={touched.firstName && errors.firstName}*/}
-        {/*/>*/}
-
-        {/*<BazarTextField*/}
-        {/*    mb={1.5}*/}
-        {/*    name="lastName"*/}
-        {/*    label={localStrings.lastName}*/}
-        {/*    placeholder={localStrings.lastName}*/}
-        {/*    variant="outlined"*/}
-        {/*    size="small"*/}
-        {/*    fullWidth*/}
-        {/*    onBlur={handleBlur}*/}
-        {/*    onChange={handleChange}*/}
-        {/*    value={values.lastName}*/}
-        {/*    error={!!touched.lastName && !!errors.lastName}*/}
-        {/*    helperText={touched.lastName && errors.lastName}*/}
-        {/*/>*/}
-
-        {/*<BazarTextField*/}
-        {/*    mb={1.5}*/}
-        {/*    name="phoneNumber"*/}
-        {/*    label={localStrings.phone}*/}
-        {/*    placeholder={localStrings.phone}*/}
-        {/*    variant="outlined"*/}
-        {/*    size="small"*/}
-        {/*    fullWidth*/}
-        {/*    onBlur={handleBlur}*/}
-        {/*    onChange={handleChange}*/}
-        {/*    defaultValue={''}*/}
-        {/*    value={values.phoneNumber}*/}
-        {/*    error={!!touched.phoneNumber && !!errors.phoneNumber}*/}
-        {/*    helperText={touched.phoneNumber && errors.phoneNumber}*/}
-        {/*/>*/}
 
         <BazarTextField
           mb={1.5}
@@ -279,29 +210,6 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
           helperText={touched.re_password && errors.re_password}
         />
 
-        {/*<FormControlLabel*/}
-        {/*    className="agreement"*/}
-        {/*    name="agreement"*/}
-        {/*    onChange={handleChange}*/}
-        {/*    control={*/}
-        {/*      <Checkbox*/}
-        {/*          size="small"*/}
-        {/*          color="secondary"*/}
-        {/*          checked={values.agreement || false}*/}
-        {/*      />*/}
-        {/*    }*/}
-        {/*    label={*/}
-        {/*      <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">*/}
-        {/*        {localStrings.bySigningTermsAndConditions}*/}
-        {/*        <a href="/" target="_blank" rel="noreferrer noopener">*/}
-        {/*          <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
-        {/*            {localStrings.termsAndConditions}*/}
-        {/*          </H6>*/}
-        {/*        </a>*/}
-        {/*      </FlexBox>*/}
-        {/*    }*/}
-        {/*/>*/}
-
         <BazarButton
           variant="contained"
           color="primary"
@@ -310,6 +218,9 @@ const Signup = ({callBackBackToLogin, callBackBackToLostPassword, contextData}) 
           sx={{
             height: 44,
           }}
+          disabled={submitOnGoing}
+          endIcon={submitOnGoing ?
+              <CircularProgress size={30} style={{color: green[500]}}/> : <></>}
         >
           {localStrings.createYourAccount}
         </BazarButton>

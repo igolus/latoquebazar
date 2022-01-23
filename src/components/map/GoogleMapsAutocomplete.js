@@ -63,31 +63,50 @@ const useStyles = makeStyles(() => ({
 export default function GoogleMapsAutocomplete({title, setValueCallback, initialValue, lockmode,
                                                    valueSource, setterValueSource, noKeyKnown,
                                                    placeholderArg,
-                                                   required, error, helperText, disabled, useTextField}) {
+                                                   required, error, helperText, disabled, useTextField,
+                                                   borderColor, border, borderRadius}) {
     const classes = useStyles();
-    const [googleKey, setGoogleKey] = useState('');
-    const {getGoogleKey, brand} = useAuth();
+
+
+    useEffect(() => {
+        // async function loadMaps() {
+            let timer1 = setTimeout(() => {
+                if (typeof window !== 'undefined' && !loaded.current) {
+                    console.log("load maps !")
+                    let element = document.querySelector('#google-maps');
+                    if (element) {
+                        console.log(("load element !");
+                        element.setAttribute("src",
+                            'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
+                    }
+                    else {
+                        console.log(("load loadScript !");
+                        loadScript(
+                            'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
+                            document.querySelector('head'),
+                            'google-maps',
+                        );
+                    }
+                    loaded.current = true;
+                }
+            }, 500);
+
+            return () => {
+                clearTimeout(timer1);
+            };
+
+        // }    // Execute the created function directly
+        // loadMaps();
+    }, []);
 
     useEffect(() => {
         //setGoogleKey(getGoogleKey());
 
-        if (typeof window !== 'undefined' && !loaded.current) {
-            let element = document.querySelector('#google-maps');
-            if (element) {
-                element.setAttribute("src",
-                    'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
-            }
-            else {
-                loadScript(
-                    'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
-                    document.querySelector('head'),
-                    'google-maps',
-                );
-            }
-            loaded.current = true;
-        }
 
-    },  [brand])
+    },  [])
+
+
+
     let [value, setValue] = React.useState(initialValue || '');
     //let [value, setValue] = React.useState('TOTO');
 
@@ -148,7 +167,7 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                         console.log(JSON.stringify(results, null, 2))
                         newOptions = [...newOptions, ...results];
                     }
-                    console.log("options ",  JSON.stringify(options, null, 2))
+                    //console.log("options ",  JSON.stringify(options, null, 2))
                     setOptions(newOptions);
                 }
             });
@@ -168,16 +187,20 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                 item
                 md={lockmode ? 11 : 12}
                 xs={lockmode ? 11 : 12}
+                border={border}
+                borderColor={borderColor}
+                borderRadius={borderRadius}
             >
                 {/*<p>{JSON.stringify(options)}</p>*/}
 
 
                 <Autocomplete
                     className={classes.autocomplete}
+                    noOptionsText={localStrings.noAdresseFound}
                     disabled={locked || disabled}
                     id="google-map-demo"
                     fullWidth
-                    placeholder={placeholderArg || localStrings.fillAddress}
+
                     //style={{ marginBottom: '1rem' }}
                     getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
                     filterOptions={(x) => x}
@@ -190,7 +213,7 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                     onChange={(event, newValue) => {
                         setOptions(newValue ? [newValue, ...options] : options);
                         setValue(newValue);
-                        console.log("NEW value " + JSON.stringify(newValue, null, 2));
+                        //console.log("NEW value " + JSON.stringify(newValue, null, 2));
                         if (newValue && newValue.place_id) {
                             geocoder.current.geocode({
                                 'placeId': newValue.place_id
@@ -240,6 +263,7 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                                 <TextField {...params}
                                     //style={{height: "44px"}}
                                     //className={classes.autocomplete}
+                                           placeholder={placeholderArg || localStrings.fillAddress}
                                            error={error}
                                            helperText={helperText}
                                            required={required}
@@ -251,13 +275,15 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                                 <BazarTextField {...params}
                                     //style={{height: "44px"}}
                                     //className={classes.autocomplete}
-                                           error={error}
-                                           helperText={helperText}
-                                           required={required}
-                                           autoComplete='off'
-                                           label={title}
-                                           variant="outlined"
-                                           fullWidth/>
+
+                                                error={error}
+                                                placeholder={placeholderArg || localStrings.fillAddress}
+                                                helperText={helperText}
+                                                required={required}
+                                                autoComplete='off'
+                                                label={title}
+                                                variant="outlined"
+                                                fullWidth/>
 
                             }
 

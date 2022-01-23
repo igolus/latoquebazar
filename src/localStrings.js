@@ -4,8 +4,12 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        noAdresseFound: "Continuer a saisir du texte pour trouver votre adresse...",
+        fillAddressDelivery: "Saisir ici une adresse de livraison",
+        fillAddressDeliveryConnected: "Saisir ici une adresse de livraison presonalisée",
+
         fillAddress: "Saisir ici votre adresse",
-        fillAddressName: "Saisir ici le nom de votre adresse",
+        fillAddressName: "Saisir ici le nom de votre adresse (Travail, Maison, ...)",
         invalidCouponConsumed: "Vous avez deja consomé ce coupon !",
         couponAlreadyInUse: "Un coupon est déja en cours d'utilisation",
         wrongCouponCode: "Le code {0} n'est pas valide",
@@ -67,6 +71,7 @@ let localStrings = new LocalizedStrings({
         demoDisclaim: "Ceci est un site de démonstration aucune commande ne sera honorée",
         manageMyAdresses: "Gerer mes adresses",
         updateAddtionalInformation: "Mettre a jour les informations additionnelles",
+        updateCustomerDeliveryInformation: "Mettre a jour les informations de livraison de cette adresse",
         defineMainAdress: "Definir mon adresse principale",
         useMyAdresses: "Utiliser mes adresses",
         useCustomAdresses: "Utiliser une autre adresse",
@@ -76,7 +81,10 @@ let localStrings = new LocalizedStrings({
 
         personalInformation: "Saisir vos informations de profil",
         seeInfo: "Voir les infos utiles",
+        bookingadditionalInformationNotes: "Note pour la commande",
+        bookingadditionalInformationNotesPlaceHolder: 'Indiquer par example "Viande bien cuite" ou "Sans mayonnaise", ...',
         bookingadditionalInformation: "Information pour la livraison ou demande specifique pour la commande",
+
         bookingadditionalInformationExample: "Code immeuble, étage, interphone,…",
         closed: "Etablissement exceptionellement fermé",
         new: "Nouveau",
@@ -135,7 +143,7 @@ let localStrings = new LocalizedStrings({
         sendLinkAgain: "Ré-envoyer le lien d'activation",
         backToLoginPage: "Revenir a la page de connection",
         resetPassword: "Reininialiser mon mot de passe",
-        createYourAccount: "Creer votre compte",
+        createYourAccount: "Creer mon compte",
         havingAnAccount : "J'ai deja un compte ?",
         orderAgain: "Commander a nouveau",
         contentDeal: "Contenu du menu",
@@ -177,6 +185,7 @@ let localStrings = new LocalizedStrings({
         totalNoTax: "Total hors taxes",
         totalCharge: "Total frais",
         totalTax: "Total TVA",
+        savedCode: "Economie avec le code {0}",
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",
         totalFee: "Total frais",
@@ -262,6 +271,8 @@ let localStrings = new LocalizedStrings({
         addToCart: "Ajouter au panier",
         description: "Description",
         additionalInformation: "Information additionelle",
+        customerDeliveryInformation: "Information additionelle pour la livraison",
+        customerDeliveryInformationPlaceHolder: 'Indiquer ici par exemple votre code porte, ou d\'autres indiquations pour le livreur',
         priceAsc: "Prix croissant",
         priceDesc: "Prix décroissant",
 
@@ -339,8 +350,8 @@ let localStrings = new LocalizedStrings({
 
         warningMessage: {
             noMainAddDefined: "Votre adresse principale n'est pas definie",
-            maxDistanceDelivery: "L'adresse est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
-            maxDistanceDeliveryOk: "L'adresse est dans de la zone de livraison",
+            maxDistanceDelivery: "L'adresse selectionée est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
+            maxDistanceDeliveryOk: "L'adresse selectionée est dans de la zone de livraison",
             selectValidDeliveryAddressAndSchedule: "Selectionner une addresse de livraison valide et un creaneau de reservation",
             optionMandatory: "Merci de choisir les options requises",
             minimalPriceForDeliveryNoReached: "La livraison n'est disponible que pour un montant minimum de {0} €",

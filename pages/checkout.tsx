@@ -25,7 +25,7 @@ const Checkout:React.FC<Checkout> = ({contextData}) => {
   const {currentBrand} = useAuth();
 
   let publicKey = currentBrand()?.config?.paymentWebConfig?.stripePublicKey;
-  console.log("publicKey" + publicKey)
+  //console.log("publicKey" + publicKey)
   //console.log("publicKey" + JSON.stringify(currentBrand()?.config?.paymentWebConfig || {}));
   //const stripePromise = loadStripe("pk_test_51HcnJ8CbzAqh3BSlQjObyHGav4oJaZVP9JfH0VnVDS8sAu9qGi57PV5BQ3NTJGNz9V5WLPXQrBhe3yTW9vCy9tOT009bLe7Kl8");
   let stripePromise;

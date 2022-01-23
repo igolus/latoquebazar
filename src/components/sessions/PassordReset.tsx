@@ -160,6 +160,7 @@ const PassWordReset = ({backCallBack, contextData}) => {
               color="primary"
               type="submit"
               fullWidth
+              disabled={loading}
               endIcon={loading ? <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
               sx={{
                 mb: '1.65rem',
