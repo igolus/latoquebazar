@@ -13,13 +13,13 @@ const AddressUpdater = ({contextData}) => {
         return contextData;
     }
 
-    useEffect(() => {
-            if (!dbUser) {
-                router.push("/profile")
-            }
-
-        },
-        [dbUser])
+    // useEffect(() => {
+    //         if (!dbUser) {
+    //             router.push("/profile")
+    //         }
+    //
+    //     },
+    //     [dbUser])
     // const { id } = router.query;
     const { back } = router.query;
 

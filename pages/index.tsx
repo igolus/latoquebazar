@@ -157,21 +157,21 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                     {/*</Box>*/}
 
 
-                    <Card1 sx={{mb: '2rem', mt:'2rem' }}>
-                        <Typography  variant="h6" fontWeight="600" mb={4}>
-                            {localStrings.place}
-                        </Typography>
-                        <MyMap
-                            lat={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lat : null}
-                            lng={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lng : null}
-                            name={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().establishmentName : null}
-                            googleMapURL={"https://maps.googleapis.com/maps/api/js?key=" + config.googleKey + "&libraries=geometry,drawing,places"}
-                            loadingElement={<div style={{ height: `100%` }} />}
-                            containerElement={<div style={{ height: `400px` }} />}
-                            mapElement={<div style={{ height: `100%` }} />}
-                        />
+                    {/*<Card1 sx={{mb: '2rem', mt:'2rem' }}>*/}
+                    {/*    <Typography  variant="h6" fontWeight="600" mb={4}>*/}
+                    {/*        {localStrings.place}*/}
+                    {/*    </Typography>*/}
+                    {/*    <MyMap*/}
+                    {/*        lat={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lat : null}*/}
+                    {/*        lng={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lng : null}*/}
+                    {/*        name={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().establishmentName : null}*/}
+                    {/*        googleMapURL={"https://maps.googleapis.com/maps/api/js?key=" + config.googleKey + "&libraries=geometry,drawing,places"}*/}
+                    {/*        loadingElement={<div style={{ height: `100%` }} />}*/}
+                    {/*        containerElement={<div style={{ height: `400px` }} />}*/}
+                    {/*        mapElement={<div style={{ height: `100%` }} />}*/}
+                    {/*    />*/}
 
-                    </Card1>
+                    {/*</Card1>*/}
 
                     <Card1 sx={{mb: '2rem'}}>
                         <Typography variant="h6" fontWeight="600" mb={4}>

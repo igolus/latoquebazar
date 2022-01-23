@@ -13,20 +13,41 @@ import {useToasts} from "react-toast-notifications";
 import {makeStyles} from "@material-ui/styles";
 import MiniCartDeal from "@component/mini-cart/MiniCartDeal";
 import BazarButton from "@component/BazarButton";
+import theme from '@theme/theme'
+import { StickyContainer, Sticky } from 'react-sticky';
+import useWindowSize from "@hook/useWindowSize";
+import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
+
+// const useStyles = makeStyles((palette) => ({
+//     root: {
+//         // alignItems: 'center',
+//         // backgroundColor: palette.background.default,
+//         // display: 'flex',
+//         // flexDirection: 'column',
+//         // height: '100%',
+//         // justifyContent: 'center',
+//         // left: 0,
+//         // padding: 3,
+//         // position: 'fixed',
+//         // top: 0,
+//         // width: '100%',
+//         // zIndex: 2000
+//     }
+// }));
 
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((palette) => ({
     backDrop: {
         backdropFilter: "blur(5px)",
         backgroundColor:'rgba(0,0,30,0.4)'
     },
     dialogContent: {
         paddingBottom: '1.25rem',
-    },
+    }
 }))
 
 function DealSelector({ deal, contextData }) {
-
+    const width = useWindowSize()
     const classes = useStyles();
     const router = useRouter()
     const {addToast} = useToasts()
@@ -112,19 +133,6 @@ function DealSelector({ deal, contextData }) {
                     <MiniCartDeal contextData={contextData}
                                   setterLine={setCurrentLine}
                                   closeCallBack={() => setConfirmDealDialogOpen(false)}/>
-                    {/*<ProductIntro imgUrl={[imgUrl]} title={title} price={price}*/}
-                    {/*              skuIndex={selectedSkuIndex}*/}
-                    {/*              product={product}*/}
-                    {/*              options={options}*/}
-                    {/*              currency={currency}*/}
-                    {/*              addCallBack={() => setOpen(false)}*/}
-                    {/*/>*/}
-                    {/*<IconButton*/}
-                    {/*    sx={{ position: 'absolute', top: '0', right: '0' }}*/}
-                    {/*    onClick={toggleDialog}*/}
-                    {/*>*/}
-                    {/*    <Close className="close" fontSize="small" color="primary" />*/}
-                    {/*</IconButton>*/}
                 </DialogContent>
 
                 <DialogActions>
@@ -175,16 +183,13 @@ function DealSelector({ deal, contextData }) {
                             //filter={filter} query={query}
                             category={ALL_CAT} contextData={contextData}/>
                     </Grid>
-                    <div style={{ width: '100%' }} >
-
-                    {/*<div style={{ width: '100%',*/}
-                    {/*    //Position: "-webkit-sticky",*/}
-                    {/*    position: "sticky",*/}
-                    {/*    top: "180px",*/}
-                    {/*    //top: "calc(100vh - 50px)",*/}
-                    {/*    backgroundColor: "yellow",*/}
-
-                    {/*}} >    */}
+                    <div style={{
+                        width: '100%',
+                        position: 'sticky',
+                        bottom: width <= WIDTH_DISPLAY_MOBILE ? '60px' : '0px',
+                        backgroundColor: theme.palette.background.default
+                        //backgroundColor: "blue"
+                    }} >
                         <Box display="flex" justifyContent="flex-end" m={1} p={1} >
                             <Box p={1} >
                                 <Button variant="contained" color="primary" onClick={cancelDeal}>

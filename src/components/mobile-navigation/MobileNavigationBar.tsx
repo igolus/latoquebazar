@@ -8,7 +8,7 @@ import useWindowSize from '@hook/useWindowSize'
 import { Badge, Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { MuiThemeProps } from '@theme/theme'
-import { layoutConstant } from '../../util/constants'
+import {layoutConstant, WIDTH_DISPLAY_MOBILE} from '../../util/constants'
 import React from 'react'
 import {getItemNumberInCart} from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
@@ -57,7 +57,7 @@ const MobileNavigationBar = () => {
   const { state } = useAppContext();
   const { getOrderInCreation} = useAuth()
 
-  return width <= 900 ? (
+  return width <= WIDTH_DISPLAY_MOBILE ? (
     <Box className={classes.root}>
       {list.map((item) => (
         <NavLink className={classes.link} href={item.href} key={item.title}>

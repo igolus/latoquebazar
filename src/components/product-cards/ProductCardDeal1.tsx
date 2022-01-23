@@ -432,7 +432,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
           <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
             <DialogContent className={classes.dialogContent}>
-              <p>ProductIntro</p>
+              {/*<p>ProductIntro</p>*/}
               {/*<p>{JSON.stringify(product)}</p>*/}
               <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
                             disableFacebook={true}

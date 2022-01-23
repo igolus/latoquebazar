@@ -2,7 +2,7 @@ import BazarButton from '@component/BazarButton'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
 import {H3, H6, Small} from '@component/Typography'
-import {Card, CardProps, Checkbox, FormControlLabel,} from '@material-ui/core'
+import {Card, CardProps, Checkbox, CircularProgress, FormControlLabel,} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useFormik} from 'formik'
 import {useRouter} from 'next/router'
@@ -15,6 +15,8 @@ import {createSiteUserMutation} from "../../gql/siteUserGql";
 import {DIST_INFO} from "@component/address/AdressCheck";
 import {useToasts} from "react-toast-notifications";
 import parsePhoneNumber from "libphonenumber-js";
+import {makeStyles} from "@material-ui/styles";
+import {green} from "@material-ui/core/colors";
 
 const fbStyle = {
   background: '#3B5998',
@@ -61,9 +63,17 @@ const StyledCard = styled<React.FC<StyledCardProps & CardProps>>(
   },
 }))
 
+const useStyles = makeStyles((theme) => ({
+  buttonProgress: {
+    color: green[500],
+  },
+}));
+
 const CompleteProfile = ({closeCallBack}) => {
+  const classes = useStyles();
   const {addToast} = useToasts();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
+  const [submitOnGoing, setSubmitOnGoing] = useState(false)
   const { user, currentBrand, currentEstablishment, establishmentList, setDbUser } = useAuth();
   const router = useRouter();
 
@@ -89,18 +99,13 @@ const CompleteProfile = ({closeCallBack}) => {
   }, [])
 
   const handleFormSubmit = async (values: any) => {
-
+    setSubmitOnGoing(true);
     let data = {}
     data.establishmentIds = establishmentList ? establishmentList.map(item => item.id) : []
     data.defaultEstablishmentId = currentEstablishment().id
     data.brandId = currentBrand().id;
     data.id = user.id;
     let valueCopy = { ...values };
-
-    // if (values.placeId == "") {
-    //   let localStorageValue=JSON.parse(localStorage.getItem(DIST_INFO));
-    //   valueCopy = {...valueCopy, ...localStorageValue}
-    // }
 
     delete valueCopy.agreement;
     delete valueCopy.submit
@@ -125,6 +130,7 @@ const CompleteProfile = ({closeCallBack}) => {
       closeCallBack();
     }
     addToast(localStrings.notif.accountCreated, { appearance: 'success', autoDismiss: true });
+    setSubmitOnGoing(false);
   }
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } =
@@ -296,10 +302,13 @@ const CompleteProfile = ({closeCallBack}) => {
                 color="primary"
                 type="submit"
                 fullWidth
-                disabled={!values.agreement}
+                //disable={}
+                disabled={!values.agreement || submitOnGoing}
                 sx={{
                   height: 44,
                 }}
+                endIcon={submitOnGoing ?
+                    <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
             >
               {localStrings.completeAccount}
             </BazarButton>

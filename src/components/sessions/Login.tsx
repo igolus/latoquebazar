@@ -81,6 +81,7 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
 
   const classes = useStyles();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
+  const [submitOnGoing, setSubmitOnGoing] = useState(false)
   const [createAccountEnabled, setCreateAccountEnabled] = useState(false)
   const [errorSubmit, setErrorSubmit] = useState(null)
   const [sendingActivationLink, setSendingActivationLink] = useState(false)
@@ -117,6 +118,7 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
   const handleFormSubmit = async (values: any) => {
     //alert("handleFormSubmit" + JSON.stringify(values))
     setErrorSubmit(null);
+    setSubmitOnGoing(true);
     try {
       var user = await signInWithEmailAndPassword(values.email, values.password);
       let result = await executeQueryUtil(getSiteUserByIdQuery(config.brandId, user.user.uid));
@@ -141,6 +143,9 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
       }
       // if ("code":"auth/wrong-password")
       //alert("login error " + JSON.stringify(err))
+    }
+    finally {
+      setSubmitOnGoing(false);
     }
 
     // await signInWithEmailAndPassword()
@@ -329,6 +334,9 @@ const Login = ({closeCallBack, callBackBackToLostPassword, contextData}) => {
                       mb: '1.65rem',
                       height: 44,
                     }}
+                    disabled={submitOnGoing}
+                    endIcon={submitOnGoing ?
+                        <CircularProgress size={30} style={{color: green[500]}} /> : <></>}
                 >
                   {localStrings.login}
                 </BazarButton>

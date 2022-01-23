@@ -180,6 +180,7 @@ export const computePriceDetail = (orderInCreation) => {
     let taxDetail = {};
     (orderInCreation?.charges || []).forEach(charge => {
         totalCharge += charge.price;
+        nonDiscountedTotal += charge.price;
     });
 
     orderInCreation?.order?.items.forEach(item => {
