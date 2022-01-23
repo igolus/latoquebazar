@@ -125,6 +125,7 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   },
   dialogContent: {
     paddingBottom: '1.25rem',
+    backgroundColor: palette.background.default
     //maxWidth: "750px"
   },
   backDrop: {

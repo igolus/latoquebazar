@@ -63,6 +63,7 @@ export const USER_STATUS_DELIVERING = "delivering";
 export const PAYMENT_MODE_STRIPE = "stripe";
 export const PAYMENT_MODE_SYSTEM_PAY = "systemPay";
 
+export const WIDTH_DISPLAY_MOBILE = 900;
 // export const orderSource = [
 //   {
 //     name: localStrings.orderSourceOnline,

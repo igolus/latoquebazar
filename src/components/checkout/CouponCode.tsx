@@ -73,6 +73,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
         //alert("handleFormSubmit" );
         if (!dbUser) {
             setLoginDialogOpen(true);
+            return;
         }
 
         if ((getOrderInCreation().discounts || [])

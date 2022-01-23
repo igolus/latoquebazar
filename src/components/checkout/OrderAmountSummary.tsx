@@ -47,6 +47,13 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
         setPriceDetails(computePriceDetail(getOrder()))
     }, [getOrderInCreation, orderSource])
 
+    function getUsedCode() {
+        if (getOrderInCreation()?.discounts && getOrderInCreation()?.discounts.length > 0 && getOrderInCreation()?.discounts[0].couponCodeValues) {
+            return getOrderInCreation()?.discounts[0].couponCodeValues[0];
+        }
+        return "";
+    }
+
     return (
         <Card1>
             {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
@@ -124,6 +131,18 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     </Typography>
                 </FlexBox>
             </FlexBox>
+
+
+            {priceDetails.totalNonDiscounted !== priceDetails.total &&
+            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography color="grey.600">{localStrings.formatString(localStrings.savedCode, getUsedCode())}</Typography>
+                <FlexBox alignItems="flex-end">
+                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                        {parseFloat(priceDetails.totalNonDiscounted - priceDetails.total).toFixed(2)} {currency}
+                    </Typography>
+                </FlexBox>
+            </FlexBox>
+            }
             {/*<FlexBox justifyContent="space-between" alignItems="center" mb={2}>*/}
             {/*    <Typography color="grey.600">Discount:</Typography>*/}
             {/*    <FlexBox alignItems="flex-end">*/}
@@ -147,6 +166,9 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             </Typography>
 
             {priceDetails.totalNonDiscounted !== priceDetails.total &&
+            <>
+            {/*<p>{JSON.stringify(getOrderInCreation()?.discounts || {})}</p>*/}
+
                 <Typography
                     fontSize="20px"
                     fontWeight="400"
@@ -157,6 +179,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 >
                     {parseFloat(priceDetails.totalNonDiscounted).toFixed(2)} {currency}
                 </Typography>
+            </>
             }
 
 

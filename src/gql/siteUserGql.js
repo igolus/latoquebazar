@@ -19,7 +19,7 @@ const common = `
         photoURL
         city
         placeId
-        additionalInformation
+        customerDeliveryInformation
         lng
         lat
         otherAddresses {
@@ -30,7 +30,7 @@ const common = `
           postcode
           citycode
           searchAddress   
-          additionalInformation
+          customerDeliveryInformation
           placeId
           lat
           lng

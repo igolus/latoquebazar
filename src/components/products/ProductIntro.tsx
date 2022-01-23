@@ -17,6 +17,8 @@ import {getFirstRestrictionDescription, getFirstRestrictionItem} from "../../uti
 import {FacebookIcon, FacebookShareButton} from "react-share";
 import ProductSelector from './ProductSelector'
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
+import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
+import theme from "@theme/theme";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -97,7 +99,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
                         lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[0],
-                        setGlobalDialog, setRedirectPageGlobal
+                    setGlobalDialog, setRedirectPageGlobal
                 });
             }
             //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
@@ -148,12 +150,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
             {productAndSku &&
             <Grid container spacing={3} justifyContent="space-around">
-
-                {/*{!valid &&*/}
-
-                {/*}*/}
-
-
                 <Grid item md={6} xs={12} alignItems="center">
                     <Box>
                         <FlexBox justifyContent="center" mb={6}>
@@ -166,9 +162,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 }}
                                 alt={product.name}
                                 height="300px"
-                                width="auto"
+                                width="300px"
                                 loading="eager"
-                                objectFit="contain"
+                                objectFit="cover"
                             />
                             {isViewerOpen && (
                                 <ImageViewer
@@ -210,9 +206,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 </Grid>
 
                 <Grid item md={6} xs={12} alignItems="center">
-
-
-
                     <H1 mb={2}>{product.name}</H1>
                     {!valid && !getFirstRestriction() &&
                     <Box mb={2} sx={{maxWidth:"285px"}}>
@@ -220,20 +213,16 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         title={localStrings.warningMessage.optionMandatory}
                                         content={""}
                         />
-
                     </Box>
                     }
-
                     {/*<p>{getFirstRestrictionDescription(productAndSku?.sku)}</p>*/}
-
                     {getFirstRestrictionDescription(productAndSku?.sku) &&
-
-                        <AlertHtmlLocal severity="info"
-                                        title={localStrings.restrictionApplies}
-                                        // content={localStrings.info.connectToOrder}
-                        >
-                            <ReactMarkdown>{getFirstRestrictionDescription(productAndSku?.sku)}</ReactMarkdown>
-                        </AlertHtmlLocal>
+                    <AlertHtmlLocal severity="info"
+                                    title={localStrings.restrictionApplies}
+                        // content={localStrings.info.connectToOrder}
+                    >
+                        <ReactMarkdown>{getFirstRestrictionDescription(productAndSku?.sku)}</ReactMarkdown>
+                    </AlertHtmlLocal>
                     }
 
                     {product.skus && product.skus.length > 1 &&
@@ -298,56 +287,67 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                     {!disableAdd &&
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                        }}
-                    >
-                        <Box>
-                            <BazarButton
-                                disabled={!valid || getFirstRestriction() || itemRestrictionMax(productAndSku?.sku)}
-                                variant="contained"
-                                color="primary"
-                                sx={{
-                                    mt: '15px',
-                                    mb: '36px',
-                                    px: '1.75rem',
-                                    height: '40px',
-                                }}
-                                onClick={() => {
-                                    if (addToCartOrderCallBack) {
-                                        addToCartOrderCallBack(productAndSku);
-                                        if (routeToCart) {
-                                            router.push("/cart");
+                    <div style={{
+                        width: '100%',
+                        position: 'sticky',
+                        bottom: '-20px',
+                        backgroundColor: theme.palette.background.default
+                        // backgroundColor: "blue"
+                    }} >
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                            }}
+                        >
+                            <Box>
+                                <BazarButton
+                                    disabled={!valid || getFirstRestriction() || itemRestrictionMax(productAndSku?.sku)}
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{
+                                        mt: '15px',
+                                        mb: '36px',
+                                        px: '1.75rem',
+                                        height: '40px',
+                                    }}
+                                    onClick={() => {
+                                        if (addToCartOrderCallBack) {
+                                            addToCartOrderCallBack(productAndSku);
+                                            if (routeToCart) {
+                                                router.push("/cart");
+                                            }
+                                        } else {
+                                            addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                            if (addCallBack) {
+                                                addCallBack();
+                                            }
+                                            if (routeToCart) {
+                                                router.push("/cart");
+                                            }
                                         }
-                                    } else {
-                                        addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
-                                        if (addCallBack) {
-                                            addCallBack();
-                                        }
-                                        if (routeToCart) {
-                                            router.push("/cart");
-                                        }
-                                    }
-                                }}
-                            >
-                                {addButtonText || (getFirstRestriction() || localStrings.addToCart)}
-                            </BazarButton>
-                            {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
-                        </Box>
-                        {faceBookShare && !disableFacebook &&
-                        <Box ml={2} mt={"16px"}>
-                            <Tooltip title={localStrings.shareOnFacebook}>
-                                <FacebookShareButton url={window.location.href} >
-                                    <FacebookIcon size={38} round={false}/>
-                                </FacebookShareButton>
-                            </Tooltip>
-                        </Box>
-                        }
+                                    }}
+                                >
+                                    {addButtonText || (getFirstRestriction() || localStrings.addToCart)}
+                                </BazarButton>
+                                {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
+                            </Box>
+
+                            {faceBookShare && !disableFacebook &&
+                            <Box ml={2} mt={"16px"}>
+                                <Tooltip title={localStrings.shareOnFacebook}>
+                                    <FacebookShareButton url={window.location.href} >
+                                        <FacebookIcon size={38} round={false}/>
+                                    </FacebookShareButton>
+                                </Tooltip>
+                            </Box>
+
+                            }
 
 
-                    </Box>
+                        </Box>
+                    </div>
                     }
 
                 </Grid>
