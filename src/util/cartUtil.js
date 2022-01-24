@@ -383,6 +383,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
     let itemToAdd = { ...productAndSku.sku}
     itemToAdd.quantity = 1
     itemToAdd.productName = productAndSku.product.name;
+    itemToAdd.productExtName = productAndSku.product.extName;
     itemToAdd.productId = productAndSku.product.id;
     itemToAdd.creationTimestamp = moment().unix();
     itemToAdd.options =  productAndSku.options || []

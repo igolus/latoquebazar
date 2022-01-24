@@ -42,7 +42,7 @@ export const getSkusListsFromProducts = (products) => {
     products.forEach(product => {
         if (product.skus) {
             product.skus.forEach(sku => {
-                allSkus.push({ ...sku, productName: product.name, productId: product.id, id: sku.extRef })
+                allSkus.push({ ...sku, productName: product.name, productExtName: product.extName, productId: product.id, id: sku.extRef })
             })
         }
     })
