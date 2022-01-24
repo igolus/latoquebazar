@@ -139,7 +139,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
-    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setGlobalDialog, setRedirectPageGlobal, bookingSlotStartDate} = useAuth();
+    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic, setGlobalDialog, setRedirectPageGlobal, bookingSlotStartDate} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
 
@@ -593,7 +593,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function updateCustomerDeliveryInformation(customerDeliveryInformation) {
-    setOrderInCreation({
+    setOrderInCreationNoLogic({
       ...getOrderInCreation(),
       deliveryAddress: {
         ...getOrderInCreation().deliveryAddress,
