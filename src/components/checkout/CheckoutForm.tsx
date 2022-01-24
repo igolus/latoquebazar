@@ -473,6 +473,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       if (bookWithoutAccount) {
         dataOrder.customer = {
           brandId: currentBrand.id,
+          anonymous: true,
           defaultEstablishmentId: currentEstablishment().id,
           establishmentIds: [currentEstablishment().id],
           userProfileInfo: {
@@ -824,7 +825,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                     }) => (
                       <form onSubmit={handleSubmit}>
                         {/*<p>{JSON.stringify(dbUser || {})}</p>*/}
-                        <p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>
+                        {/*<p>{JSON.stringify(getOrderInCreation().deliveryAddress || {})}</p>*/}
                         {(!dbUser) &&
                         <Card1 sx={{mb: '2rem'}}>
                           <Box mb={2}>
@@ -1029,7 +1030,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             item.lng,
                                             item.id,
                                             item.name,
-                                            item.additionalInformation,
+                                            //item.additionalInformation,
+                                            item.customerDeliveryInformation,
                                             distInfo?.distance
                                         );
                                       }}
@@ -1246,219 +1248,220 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                         </Card1>
                         }
 
-                        {/*{(dbUser || bookWithoutAccount) && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&*/}
-                        <Card1 sx={{mb: '2rem'}}>
-
-                          <Typography fontWeight="600" mb={2}>
-                            {localStrings.bookingadditionalInformationNotes}
-                          </Typography>
-
-                          <TextField
-                              multiline
-                              rows={4}
-                              className={classes.textField}
-                              name="additionalInfo"
-                              placeholder={localStrings.bookingadditionalInformationNotesPlaceHolder}
-                              //label={!useMyAdress || localStrings.additionalInformation}
-                              fullWidth
-                              sx={{mb: '1rem'}}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              //disabled={getOrderInCreation()?.deliveryAddress?.id}
-                              value={
-                                values.additionalInfo
-                              }
-                              //error={!!touched.additionalInformation && !!errors.additionalInformation}
-                              helperText={touched.additionalInfo && errors.additionalInfo}
-                          />
-
-                        </Card1>
-
                         {(dbUser || bookWithoutAccount) &&
-                        <Card1 sx={{mb: '2rem'}}>
 
-                          {checkoutError &&
-                          <AlertHtmlLocal severity={"error"}
-                                          title={localStrings.warningMessage.paymentIssue}
-                                          content={checkoutError.toString()}
-                          />
-                          }
+                        <>
+                          <Card1 sx={{mb: '2rem'}}>
 
-                          <Typography fontWeight="600" mb={2}>
-                            {localStrings.paymentMethod}
-                          </Typography>
+                            <Typography fontWeight="600" mb={2}>
+                              {localStrings.bookingadditionalInformationNotes}
+                            </Typography>
 
-                          <FormControlLabel
-                              name="delivery"
-                              label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
-                              control={
-                                <Radio
-                                    checked={paymentMethod === 'delivery'}
-                                    color="secondary"
-                                    size="small"
-                                />
-                              }
-                              sx={{mb: '.5rem'}}
-                              onChange={handlePaymentMethodChange}
-                          />
+                            <TextField
+                                multiline
+                                rows={4}
+                                className={classes.textField}
+                                name="additionalInfo"
+                                placeholder={localStrings.bookingadditionalInformationNotesPlaceHolder}
+                                //label={!useMyAdress || localStrings.additionalInformation}
+                                fullWidth
+                                sx={{mb: '1rem'}}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                //disabled={getOrderInCreation()?.deliveryAddress?.id}
+                                value={
+                                  values.additionalInfo
+                                }
+                                //error={!!touched.additionalInformation && !!errors.additionalInformation}
+                                helperText={touched.additionalInfo && errors.additionalInfo}
+                            />
 
-                          {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
-                          <>
-                            <br/>
+                          </Card1>
+                          <Card1 sx={{mb: '2rem'}}>
+
+                            {checkoutError &&
+                            <AlertHtmlLocal severity={"error"}
+                                            title={localStrings.warningMessage.paymentIssue}
+                                            content={checkoutError.toString()}
+                            />
+                            }
+
+                            <Typography fontWeight="600" mb={2}>
+                              {localStrings.paymentMethod}
+                            </Typography>
+
                             <FormControlLabel
-                                name="cc"
-                                label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                name="delivery"
+                                label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
                                 control={
                                   <Radio
-                                      checked={paymentMethod === 'cc'}
+                                      checked={paymentMethod === 'delivery'}
                                       color="secondary"
                                       size="small"
                                   />
                                 }
-                                sx={{mb: '0.5rem'}}
+                                sx={{mb: '.5rem'}}
                                 onChange={handlePaymentMethodChange}
                             />
-                          </>
-                          }
 
-                          <Typography fontWeight="600" mb={2}>
-                            {localStrings.paymentMethodsForPickup}
-                          </Typography>
-
-
-                          {paymentMethod !== 'cc' &&
-                          <FormGroup>
-                            {getPaymentsOnline().map((item, key) =>
-                                <FormControlLabel key={key}
-                                                  control={
-                                                    <Checkbox
-                                                        checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
-                                                        onChange={(event) => {
-                                                          //alert("checked " + event.target.checked);
-                                                          if (event.target.checked) {
-                                                            setExpectedPaymentMethods([...expectedPaymentMethods, item])
-                                                          } else {
-                                                            let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
-                                                            setExpectedPaymentMethods(filter)
-                                                          }
-                                                        }}
-                                                    />
-                                                  }
-                                                  label={item.name}/>
-                            )}
-                          </FormGroup>
-                          }
-
-                          {paymentMethod === 'cc' &&
-                          <>
-                            {isPaymentSystemPay() &&
+                            {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
                             <>
-                              {!loading &&
-                              <KRPayment
-                                  paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
-                                  publicKey={getSystemPublicKey()}
-                                  endPoint={getSystemEndPoint()}
-                                  email={getEmailCustomer(values)}
-                                  amount={getOrderAmount()}
-                                  currency={contextData.brand.config.currency}
-                                  errorCallBack={message => setCheckoutError(message)}
-                                  brandId={contextData.brand.id}
-                                  text={getSubmitText(values)}
-                                  disabled={
-                                    isPaymentDisabled(values)
+                              <br/>
+                              <FormControlLabel
+                                  name="cc"
+                                  label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                  control={
+                                    <Radio
+                                        checked={paymentMethod === 'cc'}
+                                        color="secondary"
+                                        size="small"
+                                    />
                                   }
-                                  checkingPayCallBack={() => setPayLoading(true)}
+                                  sx={{mb: '0.5rem'}}
+                                  onChange={handlePaymentMethodChange}
                               />
-                              }
+                            </>
+                            }
 
-                              {isPaymentDisabled(values) && !loading &&
-                              <Button
-                                  style={{textTransform: "none"}}
-                                  variant="contained" color="primary" type="submit" fullWidth
-                                  disabled
+                            <Typography fontWeight="600" mb={2}>
+                              {localStrings.paymentMethodsForPickup}
+                            </Typography>
+
+
+                            {paymentMethod !== 'cc' &&
+                            <FormGroup>
+                              {getPaymentsOnline().map((item, key) =>
+                                  <FormControlLabel key={key}
+                                                    control={
+                                                      <Checkbox
+                                                          checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
+                                                          onChange={(event) => {
+                                                            //alert("checked " + event.target.checked);
+                                                            if (event.target.checked) {
+                                                              setExpectedPaymentMethods([...expectedPaymentMethods, item])
+                                                            } else {
+                                                              let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
+                                                              setExpectedPaymentMethods(filter)
+                                                            }
+                                                          }}
+                                                      />
+                                                    }
+                                                    label={item.name}/>
+                              )}
+                            </FormGroup>
+                            }
+
+                            {paymentMethod === 'cc' &&
+                            <>
+                              {isPaymentSystemPay() &&
+                              <>
+                                {!loading &&
+                                <KRPayment
+                                    paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
+                                    publicKey={getSystemPublicKey()}
+                                    endPoint={getSystemEndPoint()}
+                                    email={getEmailCustomer(values)}
+                                    amount={getOrderAmount()}
+                                    currency={contextData.brand.config.currency}
+                                    errorCallBack={message => setCheckoutError(message)}
+                                    brandId={contextData.brand.id}
+                                    text={getSubmitText(values)}
+                                    disabled={
+                                      isPaymentDisabled(values)
+                                    }
+                                    checkingPayCallBack={() => setPayLoading(true)}
+                                />
+                                }
+
+                                {isPaymentDisabled(values) && !loading &&
+                                <Button
+                                    style={{textTransform: "none"}}
+                                    variant="contained" color="primary" type="submit" fullWidth
+                                    disabled
+                                >
+                                  {getSubmitText(values)}
+                                </Button>
+                                }
+                              </>
+                              }
+                              {isPaymentStripe() &&
+                              <div
+                                  style={
+                                    {
+                                      border: '1px solid #C4CCD5',
+                                      borderRadius: "5px",
+                                      padding: '9px'
+                                    }
+                                  }
                               >
-                                {getSubmitText(values)}
-                              </Button>
+                                <CardElement
+                                    id="card-element"
+
+                                    //onComplete={}
+                                    onReady={() => {
+
+                                      //setPaymentCardValid(true);
+                                      console.log("Card ready")
+                                    }}
+
+                                    onChange={(event) => {
+
+                                      if (event.complete) {
+                                        setPaymentCardValid(true);
+                                      } else if (event.error) {
+                                        setPaymentCardValid(false);
+                                      }
+                                    }}
+
+                                    options={{
+                                      style: {
+                                        base: {
+                                          fontSize: '14px',
+                                          color: '#424770',
+                                          '::placeholder': {
+                                            color: '#aab7c4',
+                                          },
+                                        },
+                                        invalid: {
+                                          color: '#9e2146',
+                                        },
+                                      },
+                                    }}/>
+                              </div>
                               }
                             </>
                             }
-                            {isPaymentStripe() &&
-                            <div
-                                style={
-                                  {
-                                    border: '1px solid #C4CCD5',
-                                    borderRadius: "5px",
-                                    padding: '9px'
+                            <Box display="flex" flexDirection="row" mt={2}>
+                              <FormGroup>
+                                <Box>
+                                  <FormControlLabel control={
+                                    <Checkbox checked={cgvChecked}
+                                              onChange={event => setCgvChecked(event.target.checked)} />
                                   }
-                                }
-                            >
-                              <CardElement
-                                  id="card-element"
-
-                                  //onComplete={}
-                                  onReady={() => {
-
-                                    //setPaymentCardValid(true);
-                                    console.log("Card ready")
-                                  }}
-
-                                  onChange={(event) => {
-
-                                    if (event.complete) {
-                                      setPaymentCardValid(true);
-                                    } else if (event.error) {
-                                      setPaymentCardValid(false);
-                                    }
-                                  }}
-
-                                  options={{
-                                    style: {
-                                      base: {
-                                        fontSize: '14px',
-                                        color: '#424770',
-                                        '::placeholder': {
-                                          color: '#aab7c4',
-                                        },
-                                      },
-                                      invalid: {
-                                        color: '#9e2146',
-                                      },
-                                    },
-                                  }}/>
-                            </div>
-                            }
-                          </>
-                          }
-                          <Box display="flex" flexDirection="row" mt={2}>
-                            <FormGroup>
-                              <Box>
-                                <FormControlLabel control={
-                                  <Checkbox checked={cgvChecked}
-                                            onChange={event => setCgvChecked(event.target.checked)} />
-                                }
-                                                  label={
-                                                    <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
-                                                      {/*{localStrings.bySigningTermsAndConditions}*/}
-                                                      <a href="/cgv" target="_blank">
-                                                        <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
-                                                          {localStrings.cgvAccept}
-                                                        </H6>
-                                                      </a>
-                                                    </FlexBox>
-                                                  } />
-                              </Box>
+                                                    label={
+                                                      <FlexBox flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+                                                        {/*{localStrings.bySigningTermsAndConditions}*/}
+                                                        <a href="/cgv" target="_blank">
+                                                          <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">
+                                                            {localStrings.cgvAccept}
+                                                          </H6>
+                                                        </a>
+                                                      </FlexBox>
+                                                    } />
+                                </Box>
 
 
-                              {/*<Checkbox defaultChecked />*/}
-                              {/*<Box>*/}
-                              {/*  <a href={"/cgv"} target="new">*/}
-                              {/*      {localStrings.seeCgvAccept}*/}
-                              {/*  </a>*/}
-                              {/*</Box>*/}
-                            </FormGroup>
-                          </Box>
+                                {/*<Checkbox defaultChecked />*/}
+                                {/*<Box>*/}
+                                {/*  <a href={"/cgv"} target="new">*/}
+                                {/*      {localStrings.seeCgvAccept}*/}
+                                {/*  </a>*/}
+                                {/*</Box>*/}
+                              </FormGroup>
+                            </Box>
 
-                        </Card1>
+                          </Card1>
+                        </>
                         }
 
 
@@ -1554,5 +1557,5 @@ const checkoutSchema = (bookWithoutAccount) => {
 //
 // })
 
-export default CheckoutForm
+  export default CheckoutForm
 
