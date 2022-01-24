@@ -69,18 +69,18 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
 
 
     useEffect(() => {
-        // async function loadMaps() {
+        async function loadMaps() {
             let timer1 = setTimeout(() => {
                 if (typeof window !== 'undefined' && !loaded.current) {
                     console.log("load maps !")
                     let element = document.querySelector('#google-maps');
                     if (element) {
-                        console.log(("load element !");
+                        console.log("load element !");
                         element.setAttribute("src",
                             'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
                     }
                     else {
-                        console.log(("load loadScript !");
+                        console.log("load loadScript !");
                         loadScript(
                             'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
                             document.querySelector('head'),
@@ -95,8 +95,8 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                 clearTimeout(timer1);
             };
 
-        // }    // Execute the created function directly
-        // loadMaps();
+        }    // Execute the created function directly
+        loadMaps();
     }, []);
 
     useEffect(() => {
