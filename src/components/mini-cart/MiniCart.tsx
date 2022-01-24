@@ -132,7 +132,9 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             justifyContent="center"
             height="calc(100% - 90px)"
           >
+
             <LazyImage
+              objectFit="cover"
               src="/assets/images/logos/shopping-bag.svg"
               width="90px"
               height="100%"
@@ -295,6 +297,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               <Link href={`/product/detail/${item.productId}`}>
                 <a>
                   <BazarAvatar
+                      style={{ objectFit: "cover" }}
                       src={getImgUrlFromProducts(item, contextData?.products)}
                       mx={2}
                       alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
