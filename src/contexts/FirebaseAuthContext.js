@@ -303,6 +303,7 @@ const AuthContext = createContext({
   setEstablishment: () => {},
 
   setOrderInCreation: () => {},
+  setOrderInCreationNoLogic: () => {},
   getOrderInCreation: () => {},
   resetOrderInCreation: () => {},
 
@@ -1001,6 +1002,15 @@ export const AuthProvider = ({ children }) => {
     return state.orderInCreation;
   }
 
+  const setOrderInCreationNoLogic = async (orderInCreation) => {
+    dispatch({
+      type: ORDER_IN_CREATION,
+      payload: {
+        orderInCreation: orderInCreation,
+      }
+    })
+  }
+
   const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc) => {
     //currentEstablishment, currentService, orderInCreation
     const getEstaFun = getEstaFunc || currentEstablishment
@@ -1201,6 +1211,7 @@ export const AuthProvider = ({ children }) => {
             currentUser,
 
             setOrderInCreation,
+            setOrderInCreationNoLogic,
             getOrderInCreation,
             resetOrderInCreation,
             setDealEdit,
