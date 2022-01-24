@@ -16,6 +16,7 @@ import {formatProductAndSkuName, getImgUrlFromProductsWithExtRef} from "../../ut
 import localStrings from "../../localStrings";
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import LazyImage from "@component/LazyImage";
 
 export interface ProductCard7Props {
   id: string | number
@@ -66,7 +67,19 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
           />
           :
           <Link href={"/product/detail/" + product?.id}>
+
+            {/*<LazyImage*/}
+            {/*    objectFit="cover"*/}
+            {/*    src={imgUrl}*/}
+            {/*    width="100%"*/}
+            {/*    height="auto"*/}
+            {/*    layout="responsive"*/}
+            {/*    alt={product.name}*/}
+            {/*/>*/}
+
             <Image
+                style={{objectFit: "cover"}}
+
                 src={imgUrl}
                 height={140}
                 width={140}
