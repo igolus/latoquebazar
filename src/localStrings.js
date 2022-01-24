@@ -6,7 +6,8 @@ let localStrings = new LocalizedStrings({
     fr: {
         noAdresseFound: "Continuer a saisir du texte pour trouver votre adresse...",
         fillAddressDelivery: "Saisir ici une adresse de livraison",
-        fillAddressDeliveryConnected: "Saisir ici une adresse de livraison presonalisée",
+        //fillAddressDeliveryConnectedIf: "Ou saisir ici une adresse de livraison personalisée",
+        fillAddressDeliveryConnected: "Ou saisir ici votre adresse de livraison",
 
         fillAddress: "Saisir ici votre adresse",
         fillAddressName: "Saisir ici le nom de votre adresse (Travail, Maison, ...)",
