@@ -40,9 +40,9 @@ const AddressEditor = ({back}) => {
 
     const [adressValue, setAdressValue] = useState("");
     const [loading, setLoading] = useState(false);
-    const [adressEditLock, setAdressEditLock] = useState(false);
-    const [distanceInfo, setDistanceInfo] = useState(null);
-    const [maxDistanceReached, setMaxDistanceReached] = useState(false);
+    const [loadingAddress, setLoadingAddress] = useState(false);
+    // const [distanceInfo, setDistanceInfo] = useState(null);
+    // const [maxDistanceReached, setMaxDistanceReached] = useState(false);
     const [adressInfo, setAdressInfo] = useState(null);
 
     const handleFormSubmit = async (values: any) => {
@@ -229,17 +229,19 @@ const AddressEditor = ({back}) => {
                                                     valueSource={adressValue}
                                                     //disabled={adressEditLock}
                                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                                        if (currentEstablishment()) {
-                                                            let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                            setDistanceAndCheck(distInfo,
-                                                                (maxDistanceReached) => {
-                                                                    setMaxDistanceReached(maxDistanceReached);
-                                                                },
-                                                                setDistanceInfo, currentEstablishment);
-                                                        }
+                                                        setLoadingAddress(true);
+                                                        // if (currentEstablishment()) {
+                                                        //     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                        //     setDistanceAndCheck(distInfo,
+                                                        //         (maxDistanceReached) => {
+                                                        //             setMaxDistanceReached(maxDistanceReached);
+                                                        //         },
+                                                        //         setDistanceInfo, currentEstablishment);
+                                                        // }
                                                         //setAdressValue(label)
                                                         updateDeliveryAdress(label, lat, lng, placeId);
-                                                        setAdressEditLock(true);
+                                                        setLoadingAddress(false);
+                                                        //setAdressEditLock(true);
                                                     }}/>
                                             </Grid>
 
@@ -270,7 +272,7 @@ const AddressEditor = ({back}) => {
 
                                     <Button  variant="contained" color="primary"
                                              style={{textTransform: "none"}}
-                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values)}
+                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress}
                                              type="submit">
                                         {getSubmitText()}
                                     </Button>
