@@ -64,6 +64,7 @@ import EmptyBasket from "@component/shop/EmptyBasket";
 import FlexBox from "@component/FlexBox";
 import {H6, Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
+import MdRender from "@component/MdRender";
 
 const config = require('../../conf/config.json')
 
@@ -256,13 +257,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       //update order
       let resOrder = await executeQueryUtil(getOrderByIdQuery(currentBrand().id, currentEstablishment().id, orderId));
       let order = resOrder?.data?.getOrdersByOrderIdEstablishmentIdAndOrderId;
-      if (order) {
-        let dataUpdate = cloneDeep(order);
-        if (dataUpdate && dataUpdate.payments.length === 1) {
-          dataUpdate.payments[0] = {...order.payments[0], extId: resPay.paymentIntent.id}
-          await executeMutationUtil(updateOrderMutation(currentBrand().id, currentEstablishment().id, dataUpdate))
-        }
-      }
+      //if (order) {
+        //let dataUpdate = cloneDeep(order);
+        // if (dataUpdate && dataUpdate.payments.length === 1) {
+        //   dataUpdate.payments[0] = {...order.payments[0], extId: resPay.paymentIntent.id}
+        //   await executeMutationUtil(updateOrderMutation(currentBrand().id, currentEstablishment().id, dataUpdate))
+        // }
+      //}
 
       //alert("payment done " + JSON.stringify(resPay))
       return resPay;
@@ -1230,6 +1231,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                         {(dbUser || bookWithoutAccount) &&
                         <Card1 sx={{mb: '2rem'}}>
+                          {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && config.notesDelivery &&
+                          <Box mb={2}>
+                          <AlertHtmlLocal severity={"info"}
+                                          //title={localStrings.warningMessage.paymentIssue}
+                                          //content={getOrderInCreation().deliveryMode}
+                          >
+                            <MdRender content = {config.notesDelivery}/>
+                          </AlertHtmlLocal>
+                          </Box>
+                          }
+
                           <Typography fontWeight="600" mb={2} variant="h5">
                             {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ?
                                 localStrings.selectDeliveryTimeSlot : localStrings.selectPickupTimeSlot}
