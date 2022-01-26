@@ -191,6 +191,7 @@ const common = `
     extRef
     description
     couponCodes
+    couponCodeValues
     pricingEffect
     pricingValue
     pricingOff

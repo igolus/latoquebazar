@@ -552,6 +552,7 @@ function builAlertRestrictionComponent(setRedirectPageGlobal) {
 }
 
 function applyDiscountOnItem(item, discount) {
+    let discountAppliedAmount = 0;
     if (!item.nonDiscountedPrice) {
         item.nonDiscountedPrice = item.price;
     }
@@ -561,9 +562,12 @@ function applyDiscountOnItem(item, discount) {
 
     if (
         discount.pricingEffect === PRICING_EFFECT_PERCENTAGE && discount.pricingValue) {
-        item.price = (parseFloat(item.price) - parseFloat(item.price) * (discount.pricingValue / 100)).toFixed(2);
+        discountAppliedAmount = parseFloat(item.price) * (discount.pricingValue / 100);
+        item.price = (parseFloat(item.price) - discountAppliedAmount).toFixed(2);
         item.discountApplied.push(discount.id);
     }
+
+    return discountAppliedAmount;
 }
 
 export function processOrderDiscount(orderInCreation) {
@@ -597,10 +601,10 @@ export function processOrderDiscount(orderInCreation) {
 
     for (let i = 0; i < discounts.length; i++) {
         const discount = discounts[i];
-
+        let totalDisc = 0;
         for (let j = 0; j < items.length; j++) {
             const item = items[j];
-            applyDiscountOnItem(item, discount);
+            totalDisc += applyDiscountOnItem(item, discount);
         }
 
         for (let j = 0; j < deals.length; j++) {
@@ -608,9 +612,10 @@ export function processOrderDiscount(orderInCreation) {
             const productAndSkusLines = deal.productAndSkusLines;
             for (let k = 0; k < productAndSkusLines.length; k++) {
                 const productAndSkusLine = productAndSkusLines[k];
-                applyDiscountOnItem(productAndSkusLine, discount);
+                totalDisc += applyDiscountOnItem(productAndSkusLine, discount);
             }
         }
+        discount.pricingOff = totalDisc.toFixed(2);
     }
 }
 
