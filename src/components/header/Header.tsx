@@ -201,7 +201,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                         },
                     }}
                     open={sidenavOpen} anchor="right" onClose={toggleSidenav}>
-                    <MiniCart contextData={contextData}/>
+                    <MiniCart contextData={contextData} toggleSidenav={toggleSidenav}/>
                 </Drawer>
 
                 {contextData && contextData.establishments && contextData.establishments.length > 1 &&
