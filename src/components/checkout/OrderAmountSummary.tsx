@@ -48,15 +48,15 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
     }, [getOrderInCreation, orderSource])
 
     function getUsedCode() {
-        if (getOrderInCreation()?.discounts && getOrderInCreation()?.discounts.length > 0 && getOrderInCreation()?.discounts[0].couponCodeValues) {
-            return getOrderInCreation()?.discounts[0].couponCodeValues[0];
+        if (getOrder()?.discounts && getOrder()?.discounts.length > 0 && getOrder()?.discounts[0].couponCodeValues) {
+            return getOrder()?.discounts[0].couponCodeValues[0];
         }
         return "";
     }
 
     return (
         <Card1>
-            {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
+            {/*{JSON.stringify(getOrder())}*/}
             <Typography fontWeight="600" mb={1} mt={2}>
                 {modeOrdered ?
 
