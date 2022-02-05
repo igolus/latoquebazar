@@ -3,6 +3,7 @@ const withPWA = require('next-pwa')
 // const withFonts = require('next-fonts');
 
 module.exports = withPWA({
+  swcMinify: true,
   pwa: {
     dest: "public",
     register: true,
