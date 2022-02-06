@@ -23,6 +23,7 @@ import {ORDER_STATUS_FINISHED} from "../../src/util/constants";
 import {useRouter} from "next/router";
 import AppLayout from "@component/layout/AppLayout";
 import Navbar from "@component/navbar/Navbar";
+import SeoHead from "@component/seo/SeoHead";
 
 export interface ProfileProps {
     contextData?: any
@@ -93,6 +94,11 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
 
     return (
         <>
+            <SeoHead
+                metaDesc={localStrings.profile}
+                metaTitle={localStrings.profileDesc}
+            />
+
             {isMobile && !dbUser &&
             <Box mb={4}>
                 <Grid container spacing={3}>

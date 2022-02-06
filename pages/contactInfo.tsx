@@ -7,6 +7,8 @@ import useAuth from "@hook/useAuth";
 import EstaInfo from "../src/components/EstaInfo"
 import {GetStaticProps} from "next";
 import OpenStreetMap from "@component/map/OpenStreetMap";
+import SeoHead from "@component/seo/SeoHead";
+import localStrings from "../src/localStrings";
 
 // const config = require('../src/conf/config.json')
 export interface IndexPageProps {
@@ -70,26 +72,32 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     // const refDiv = useRef();
     return (
-        <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
-            {(contextData.establishments || []).length > 1 &&
-            <Tabs
-                onChange={handleTabsChange}
-                scrollButtons="auto"
-                value={selectedEsta.id}
-                textColor="secondary"
-                variant="scrollable"
-            >
-                {(contextData.establishments || []).map((esta, key) =>
-                    <Tab key={key}
-                         label={esta.establishmentName} value={esta.id} />
-                )}
-            </Tabs>
-            }
+        <>
+            <SeoHead
+                metaDesc={localStrings.deliveryHourAndPlace}
+                metaTitle={localStrings.deliveryHourAndPlaceDesc}
+            />
 
-            <EstaInfo selectedEsta={selectedEsta} contextData={contextData}/>
+            <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
+                {(contextData.establishments || []).length > 1 &&
+                <Tabs
+                    onChange={handleTabsChange}
+                    scrollButtons="auto"
+                    value={selectedEsta.id}
+                    textColor="secondary"
+                    variant="scrollable"
+                >
+                    {(contextData.establishments || []).map((esta, key) =>
+                        <Tab key={key}
+                             label={esta.establishmentName} value={esta.id} />
+                    )}
+                </Tabs>
+                }
 
-        </AppLayout>
+                <EstaInfo selectedEsta={selectedEsta} contextData={contextData}/>
 
+            </AppLayout>
+        </>
     )
 }
 
