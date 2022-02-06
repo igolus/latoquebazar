@@ -94,11 +94,6 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
 
     return (
         <>
-            <SeoHead
-                metaDesc={localStrings.profile}
-                metaTitle={localStrings.profileDesc}
-            />
-
             {isMobile && !dbUser &&
             <Box mb={4}>
                 <Grid container spacing={3}>
@@ -109,7 +104,8 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
             }
 
             {dbUser &&
-            <CustomerDashboardLayout contextData={getContextData()} >
+            <CustomerDashboardLayout title={localStrings.profile}
+                                     description={localStrings.profileDesc} contextData={getContextData()} >
 
                 {isMobile && !dbUser ?
                     <>

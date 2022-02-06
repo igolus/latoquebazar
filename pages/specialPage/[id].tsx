@@ -49,11 +49,11 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     return (
         <>
-            <SeoHead
-                metaTitle={extraPage.title}
-                metaDesc={extraPage.title}
-            />
-            <NavbarLayout contextData={getContextData()}
+            {/*<SeoHead*/}
+            {/*    metaTitle={extraPage.title}*/}
+            {/*    metaDesc={extraPage.title}*/}
+            {/*/>*/}
+            <NavbarLayout title={extraPage.title} contextData={getContextData()}
             >
                 {extraPage && extraPage.content &&
                 <MdRender content = {extraPage.content}/>

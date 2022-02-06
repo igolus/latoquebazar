@@ -73,12 +73,15 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
     // const refDiv = useRef();
     return (
         <>
-            <SeoHead
-                metaDesc={localStrings.deliveryHourAndPlace}
-                metaTitle={localStrings.deliveryHourAndPlaceDesc}
-            />
+            {/*<SeoHead*/}
+            {/*    metaDesc={localStrings.deliveryHourAndPlace}*/}
+            {/*    metaTitle={localStrings.deliveryHourAndPlaceDesc}*/}
+            {/*/>*/}
 
-            <AppLayout contextData={contextData} navbar={<Navbar contextData={contextData}/>}>
+            <AppLayout contextData={contextData}
+                       title={localStrings.deliveryHourAndPlaceDesc}
+                       description={localStrings.deliveryHourAndPlaceDesc}
+                       navbar={<Navbar contextData={contextData}/>}>
                 {(contextData.establishments || []).length > 1 &&
                 <Tabs
                     onChange={handleTabsChange}

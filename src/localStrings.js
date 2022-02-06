@@ -5,7 +5,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 let localStrings = new LocalizedStrings({
     fr: {
         deliveryHourAndPlace: "Horaires d'ouverture et emplacement",
-        deliveryHourAndPlaceDesc: "Cosultez nos horaires d'ouverture et notre emplacement",
+        deliveryHourAndPlaceDesc: "Consultez nos horaires d'ouverture et notre emplacement",
 
 
         mobileCategory: "Categories",

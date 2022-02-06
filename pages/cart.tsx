@@ -41,11 +41,10 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
   return (
 
       <>
-        <SeoHead
-            metaDesc={localStrings.cart}
-            metaTitle={localStrings.cartDesc}
-        />
-        <CheckoutNavLayout contextData={getContextData()}>
+        <CheckoutNavLayout
+            title={localStrings.cart}
+            description={localStrings.cartDesc}
+            contextData={getContextData()}>
           {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
           <Grid container spacing={3}>
             <Grid item lg={8} md={8} xs={12}>
