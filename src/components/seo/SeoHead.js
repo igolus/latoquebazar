@@ -54,4 +54,3 @@ function SeoHead({metaDesc, metaTitle, metaImg}) {
 }
 
 export default SeoHead;
-export default SeoHead;
