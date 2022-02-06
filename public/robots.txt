@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /_next
+
+# Host
+Host: undefined
+
+# Sitemaps
+Sitemap: https://demo-brunchclub.latoquemagique.com/sitemap.xml
