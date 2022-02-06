@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        mobileCategory: "Categories",
         noAdresseFound: "Continuer a saisir du texte pour trouver votre adresse...",
         fillAddressDelivery: "Saisir ici une adresse de livraison",
         //fillAddressDeliveryConnectedIf: "Ou saisir ici une adresse de livraison personalisée",

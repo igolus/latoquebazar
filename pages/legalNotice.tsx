@@ -5,6 +5,8 @@ import MdRender from "@component/MdRender";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import axios from "axios";
 import {Head} from "next/document";
+import SeoHead from "@component/seo/SeoHead";
+import localStrings from "../src/localStrings";
 
 export interface ProductDetailsProps {
     contextData?: any
@@ -24,6 +26,10 @@ const LegalNotice:React.FC<ProductDetailsProps> = ({contextData}) => {
     }, []);
     return (
         <>
+            <SeoHead
+                metaDesc={localStrings.legalNotice}
+                metaTitle={localStrings.legalNotice}
+            />
             {/*<Head>*/}
             {/*    <link rel="shortcut icon" id="favicon"*/}
             {/*          href={contextData?.brand?.iconUrl}/>*/}

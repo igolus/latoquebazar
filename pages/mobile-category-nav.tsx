@@ -1,19 +1,15 @@
-import Accordion from '@component/accordion/Accordion'
-import AccordionHeader from '@component/accordion/AccordionHeader'
 import Header from '@component/header/Header'
-import MobileCategoryImageBox from '@component/mobile-category-nav/MobileCategoryImageBox'
 import MobileCategoryNavStyle from '@component/mobile-category-nav/MobileCategoryNavStyle'
 import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBar'
-import navigations from '@data/navigations'
-import { Box, Divider, Grid, Typography } from '@material-ui/core'
+import {Box, Typography} from '@material-ui/core'
 import Link from 'next/link'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import {IndexPageProps} from "./index";
 import BazarImage from "@component/BazarImage";
 import localStrings from "../src/localStrings";
 import {convertCatName, filterCat} from "../src/util/displayUtil";
+import SeoHead from "@component/seo/SeoHead";
 
 export interface MobileCategoryNavProps {
   contextData?: any
@@ -37,6 +33,11 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
   }, [])
 
   return (
+    <>
+      <SeoHead
+          metaDesc={localStrings.mobileCategory}
+          metaTitle={localStrings.mobileCategory}/>
+
     <MobileCategoryNavStyle>
       <Header className="header" contextData={contextData}/>
 
@@ -154,6 +155,7 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
 
       <MobileNavigationBar />
     </MobileCategoryNavStyle>
+    </>
   )
 }
 

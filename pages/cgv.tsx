@@ -3,7 +3,8 @@ import {GetStaticProps} from "next";
 import useAuth from "@hook/useAuth";
 import MdRender from "@component/MdRender";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import {Head} from "next/document";
+import SeoHead from '../src/components/seo/SeoHead';
+import localStrings from "../src/localStrings";
 
 export interface ProductDetailsProps {
     contextData?: any
@@ -29,6 +30,11 @@ const Cgv:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     return (
         <>
+
+            <SeoHead
+                metaDesc={localStrings.cgv}
+                metaTitle={localStrings.cgv}
+            />
             {/*<Head>*/}
             {/*    <link rel="shortcut icon" id="favicon"*/}
             {/*          href={contextData?.brand?.iconUrl}/>*/}
