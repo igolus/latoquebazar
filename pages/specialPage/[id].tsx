@@ -7,6 +7,8 @@ import useAuth from "@hook/useAuth";
 import {useRouter} from "next/router";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import MdRender from "../../src/components/MdRender";
+import SeoHead from "@component/seo/SeoHead";
+import localStrings from "../../src/localStrings";
 
 export interface ProductDetailsProps {
     contextData?: any
@@ -46,12 +48,18 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     }
 
     return (
-        <NavbarLayout contextData={getContextData()}
-        >
-            {extraPage && extraPage.content &&
-            <MdRender content = {extraPage.content}/>
-            }
-        </NavbarLayout>
+        <>
+            {/*<SeoHead*/}
+            {/*    metaTitle={extraPage.title}*/}
+            {/*    metaDesc={extraPage.title}*/}
+            {/*/>*/}
+            <NavbarLayout title={extraPage.title} contextData={getContextData()}
+            >
+                {extraPage && extraPage.content &&
+                <MdRender content = {extraPage.content}/>
+                }
+            </NavbarLayout>
+        </>
     )
 }
 

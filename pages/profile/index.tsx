@@ -23,6 +23,7 @@ import {ORDER_STATUS_FINISHED} from "../../src/util/constants";
 import {useRouter} from "next/router";
 import AppLayout from "@component/layout/AppLayout";
 import Navbar from "@component/navbar/Navbar";
+import SeoHead from "@component/seo/SeoHead";
 
 export interface ProfileProps {
     contextData?: any
@@ -103,7 +104,8 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
             }
 
             {dbUser &&
-            <CustomerDashboardLayout contextData={getContextData()} >
+            <CustomerDashboardLayout title={localStrings.profile}
+                                     description={localStrings.profileDesc} contextData={getContextData()} >
 
                 {isMobile && !dbUser ?
                     <>

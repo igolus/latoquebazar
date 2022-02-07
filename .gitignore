@@ -36,7 +36,6 @@ yarn-error.log*
 /out
 .vercel
 
-/public/robots.txt
 /public/sitemap.xml
 /public/sw.js
 /public/sw.js.map
