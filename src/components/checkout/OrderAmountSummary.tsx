@@ -1,24 +1,23 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import {Box, Button, Divider, TextField, Typography} from '@material-ui/core'
+import {Button, Divider, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {
-    computePriceDetail, firstOrCurrentEstablishment,
+    computePriceDetail,
+    firstOrCurrentEstablishment,
     formatOrderConsumingMode,
     getBrandCurrency,
     getRemainingToPay
 } from "../../util/displayUtil";
-import {CSSProperties} from "@material-ui/styles";
 import localStrings from "../../localStrings";
 import moment from "moment";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
 import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
-import {isMobile} from "react-device-detect";
-import OpenStreetMap from "@component/map/OpenStreetMap";
 
-const config = require("../../conf/config.json");
+import 'moment/locale/fr'
+moment.locale('fr')
 
 export interface OrderAmountSummaryProps {
     currency: string
