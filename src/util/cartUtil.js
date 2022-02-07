@@ -1,5 +1,4 @@
 import moment from "moment";
-import {report} from "next/dist/telemetry/trace/report";
 import cloneDeep from "clone-deep";
 import {
     PRICING_EFFECT_FIXED_PRICE,
@@ -12,16 +11,16 @@ import localStrings from "../localStrings";
 import {
     computePriceDetail,
     displayDow,
-    displayService,
     formatOrderConsumingMode,
-    getBrandCurrency, getMinutesFromDate, getMinutesFromHour
+    getBrandCurrency,
+    getMinutesFromDate,
+    getMinutesFromHour
 } from "./displayUtil";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {itemRestrictionMax} from "@component/mini-cart/MiniCart";
-import {getChargeQueryNoApollo} from "../gqlNoApollo/chargeGqlNoApollo";
-import {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
+import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getChargesQuery} from "../gql/chargesGql";
-import {setGlobal} from "next/dist/telemetry/trace";
+
 const { uuid } = require('uuidv4');
 
 export function getCartItems(orderInCreation, excludeRestriction) {

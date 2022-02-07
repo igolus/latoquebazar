@@ -4,6 +4,11 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        deliveryHourAndPlace: "Horaires d'ouverture et emplacement",
+        deliveryHourAndPlaceDesc: "Consultez nos horaires d'ouverture et notre emplacement",
+
+
+        mobileCategory: "Categories",
         noAdresseFound: "Continuer a saisir du texte pour trouver votre adresse...",
         fillAddressDelivery: "Saisir ici une adresse de livraison",
         //fillAddressDeliveryConnectedIf: "Ou saisir ici une adresse de livraison personalisée",
@@ -99,6 +104,7 @@ let localStrings = new LocalizedStrings({
         place: "Notre emplacement",
         openingHours: "Horaires d'ouverture",
         contactUs: "Nous contacter",
+
         unavailable: "Indisponible",
         modifyMyAccount: "Modifier mon compte",
         homePageTitle: "Accueil",
@@ -200,6 +206,7 @@ let localStrings = new LocalizedStrings({
         deliveryMode: "Mode de livraison",
         selectDeliveryMode: "Choississez votre mode de livraison",
         cart: "Panier",
+        cartDesc: "Contenu de votre panier",
         confirm: "Confirmation",
         confirmAction: "Confirmer",
         order: "Commande",
@@ -231,6 +238,7 @@ let localStrings = new LocalizedStrings({
         continueWithGoogle: "Identification avec google",
         continueWithFaceook: "Continuer avec facebook",
         profile: "Profile",
+        profileDesc: "Information de votre Profile",
         myAccount: "Mon compte",
         myOrders: "Mes commandes",
 

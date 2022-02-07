@@ -18,6 +18,7 @@ import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
 import ChargeCard7 from "@component/product-cards/ChargeCard7";
 import EmptyBasket from "../src/components/shop/EmptyBasket";
 import DiscountCard7 from "@component/product-cards/DiscountCard7";
+import SeoHead from "@component/seo/SeoHead";
 
 export interface CartProps {
   contextData?: any
@@ -38,68 +39,74 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
   const currency = getBrandCurrency(getContextData() ? getContextData().brand : null)
 
   return (
-    <CheckoutNavLayout contextData={getContextData()}>
-      {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
-      <Grid container spacing={3}>
-        <Grid item lg={8} md={8} xs={12}>
 
-          {(getOrderInCreation()?.discounts || []).map((discountItem, key) =>
-              <DiscountCard7 item={discountItem}/>
-          )}
+      <>
+        <CheckoutNavLayout
+            title={localStrings.cart}
+            description={localStrings.cartDesc}
+            contextData={getContextData()}>
+          {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
+          <Grid container spacing={3}>
+            <Grid item lg={8} md={8} xs={12}>
 
-          {(getOrderInCreation()?.charges || []).map((chargeItem, key) =>
-              <ChargeCard7 item={chargeItem} currency={currency}/>
-          )}
+              {(getOrderInCreation()?.discounts || []).map((discountItem, key) =>
+                  <DiscountCard7 item={discountItem}/>
+              )}
 
-          {getCartItems(getOrderInCreation).map((item, key) => {
+              {(getOrderInCreation()?.charges || []).map((chargeItem, key) =>
+                  <ChargeCard7 item={chargeItem} currency={currency}/>
+              )}
 
-              //<p>{JSON.stringify(item)}</p>
-              if (item.type === TYPE_DEAL) {
-                return(<DealCard7 key={key} deal={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
+              {getCartItems(getOrderInCreation).map((item, key) => {
+
+                //<p>{JSON.stringify(item)}</p>
+                if (item.type === TYPE_DEAL) {
+                  return(<DealCard7 key={key} deal={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
+                }
+                else if (item.type === TYPE_PRODUCT) {
+                  return(<ProductCard7 key={key} item={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
+                }
+              })}
+
+              {/*<p>{JSON.stringify(getOrderInCreation()?.charges || {})}</p>*/}
+
+              {getCartItems(getOrderInCreation).length == 0 && (
+                  <EmptyBasket/>
+              )}
+
+              {getCartItems(getOrderInCreation).length > 0 &&
+              <Grid container spacing={6}>
+                <Grid item sm={6} xs={12}>
+                  <Link href="/product/shop/all">
+                    <Button variant="contained" color="primary" type="button" fullWidth
+                            style={{textTransform: "none"}}
+                    >
+                      {localStrings.continueShopping}
+                    </Button>
+                  </Link>
+                </Grid>
+
+                <Grid item sm={6} xs={12}>
+                  <Link href="/checkout">
+                    <Button variant="contained" color="primary" type="button" fullWidth>
+                      {localStrings.checkOutNow}
+                    </Button>
+                  </Link>
+                </Grid>
+
+              </Grid>
               }
-              else if (item.type === TYPE_PRODUCT) {
-                return(<ProductCard7 key={key} item={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
-              }
-          })}
 
-          {/*<p>{JSON.stringify(getOrderInCreation()?.charges || {})}</p>*/}
-
-          {getCartItems(getOrderInCreation).length == 0 && (
-              <EmptyBasket/>
-          )}
-
-          {getCartItems(getOrderInCreation).length > 0 &&
-          <Grid container spacing={6}>
-            <Grid item sm={6} xs={12}>
-              <Link href="/product/shop/all">
-                <Button variant="contained" color="primary" type="button" fullWidth
-                        style={{textTransform: "none"}}
-                >
-                  {localStrings.continueShopping}
-                </Button>
-              </Link>
             </Grid>
 
-            <Grid item sm={6} xs={12}>
-              <Link href="/checkout">
-                <Button variant="contained" color="primary" type="button" fullWidth>
-                  {localStrings.checkOutNow}
-                </Button>
-              </Link>
-            </Grid>
 
+
+            <Grid item lg={4} md={4} xs={12}>
+              <OrderAmountSummary currency={getBrandCurrency(getContextData()?.brand)} hideDetail contextData={getContextData()}/>
+            </Grid>
           </Grid>
-          }
-
-        </Grid>
-
-
-
-        <Grid item lg={4} md={4} xs={12}>
-          <OrderAmountSummary currency={getBrandCurrency(getContextData()?.brand)} hideDetail contextData={getContextData()}/>
-        </Grid>
-      </Grid>
-    </CheckoutNavLayout>
+        </CheckoutNavLayout>
+      </>
   )
 }
 

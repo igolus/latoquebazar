@@ -1,19 +1,15 @@
-import Accordion from '@component/accordion/Accordion'
-import AccordionHeader from '@component/accordion/AccordionHeader'
 import Header from '@component/header/Header'
-import MobileCategoryImageBox from '@component/mobile-category-nav/MobileCategoryImageBox'
 import MobileCategoryNavStyle from '@component/mobile-category-nav/MobileCategoryNavStyle'
 import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBar'
-import navigations from '@data/navigations'
-import { Box, Divider, Grid, Typography } from '@material-ui/core'
+import {Box, Typography} from '@material-ui/core'
 import Link from 'next/link'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import {IndexPageProps} from "./index";
 import BazarImage from "@component/BazarImage";
 import localStrings from "../src/localStrings";
 import {convertCatName, filterCat} from "../src/util/displayUtil";
+import SeoHead from "@component/seo/SeoHead";
 
 export interface MobileCategoryNavProps {
   contextData?: any
@@ -37,123 +33,65 @@ const MobileCategoryNav:React.FC<MobileCategoryNavProps> = ({contextData}) => {
   }, [])
 
   return (
-    <MobileCategoryNavStyle>
-      <Header className="header" contextData={contextData}/>
+      <>
+        <SeoHead
+            metaDesc={localStrings.mobileCategory}
+            metaTitle={localStrings.mobileCategory}/>
 
-      <div className="main-category-holder">
+        <MobileCategoryNavStyle>
+          <Header className="header" contextData={contextData}/>
 
-        <Link href={"/product/shop/all"}>
-          <Box
-              className="main-category-box"
-              borderLeft="3px solid"
-          >
-            <BazarImage width={55} height={55} src={"/assets/images/icons/icons8-four-squares-48.png"}/>
-            <Typography
-                className="ellipsis"
-                textAlign="center"
-                fontSize="15px"
-                lineHeight="1"
-            >
-              {localStrings.allCategories}
-            </Typography>
-          </Box>
-        </Link>
+          <div className="main-category-holder">
 
-
-        {/*<p>{JSON.stringify(contextData)}</p>*/}
-        {contextData && filterCat(contextData.categories, contextData.products, contextData.deals).map((item) => {
-
-          let icon = "";
-          if (item.files && item.files.length > 0) {
-            icon = item.files[0].url;
-          }
-
-          return (
-          <Link href={"/product/shop/" + convertCatName(item.category)}>
-          <Box
-            className="main-category-box"
-            borderLeft={`${category?.href === item.href ? '3' : '0'}px solid`}
-            key={item.category}
-          >
-            <BazarImage width={55} height={55} src={icon} />
-            <Typography
-              className="ellipsis"
-              textAlign="center"
-              fontSize="15px"
-              lineHeight="1"
-            >
-              {item.category}
-            </Typography>
-          </Box>
-          </Link>
-        )})}
-      </div>
-      {/*<Box className="container">*/}
+            <Link href={"/product/shop/all"}>
+              <Box
+                  className="main-category-box"
+                  borderLeft="3px solid"
+              >
+                <BazarImage width={55} height={55} src={"/assets/images/icons/icons8-four-squares-48.png"}/>
+                <Typography
+                    className="ellipsis"
+                    textAlign="center"
+                    fontSize="15px"
+                    lineHeight="1"
+                >
+                  {localStrings.allCategories}
+                </Typography>
+              </Box>
+            </Link>
 
 
+            {/*<p>{JSON.stringify(contextData)}</p>*/}
+            {contextData && filterCat(contextData.categories, contextData.products, contextData.deals).map((item) => {
 
-        {/*<Typography fontWeight="600" fontSize="15px" mb={2}>*/}
-        {/*  Recommended Categories*/}
-        {/*</Typography>*/}
-        {/*<Box mb={4}>*/}
-        {/*  <Grid container spacing={3}>*/}
-        {/*    {suggestedList.map((item: any, ind: number) => (*/}
-        {/*      <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>*/}
-        {/*        <Link href="/product/search/423423">*/}
-        {/*          <a>*/}
-        {/*            <MobileCategoryImageBox {...item} />*/}
-        {/*          </a>*/}
-        {/*        </Link>*/}
-        {/*      </Grid>*/}
-        {/*    ))}*/}
-        {/*  </Grid>*/}
-        {/*</Box>*/}
+              let icon = "";
+              if (item.files && item.files.length > 0) {
+                icon = item.files[0].url;
+              }
 
-        {/*{category?.menuComponent === 'MegaMenu1' ? (*/}
-        {/*  subCategoryList.map((item, ind) => (*/}
-        {/*    <Fragment key={ind}>*/}
-        {/*      <Divider />*/}
-        {/*      <Accordion>*/}
-        {/*        <AccordionHeader px={0} py={1.25}>*/}
-        {/*          <Typography fontWeight="600" fontSize="15px">*/}
-        {/*            {item.title}*/}
-        {/*          </Typography>*/}
-        {/*        </AccordionHeader>*/}
-        {/*        <Box mb={4} mt={1}>*/}
-        {/*          <Grid container spacing={3}>*/}
-        {/*            {item.subCategories?.map((item: any, ind: number) => (*/}
-        {/*              <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>*/}
-        {/*                <Link href="/product/search/423423">*/}
-        {/*                  <a>*/}
-        {/*                    <MobileCategoryImageBox {...item} />*/}
-        {/*                  </a>*/}
-        {/*                </Link>*/}
-        {/*              </Grid>*/}
-        {/*            ))}*/}
-        {/*          </Grid>*/}
-        {/*        </Box>*/}
-        {/*      </Accordion>*/}
-        {/*    </Fragment>*/}
-        {/*  ))*/}
-        {/*) : (*/}
-        {/*  <Box mb={4}>*/}
-        {/*    <Grid container spacing={3}>*/}
-        {/*      {subCategoryList.map((item, ind) => (*/}
-        {/*        <Grid item lg={1} md={2} sm={3} xs={4} key={ind}>*/}
-        {/*          <Link href="/product/search/423423">*/}
-        {/*            <a>*/}
-        {/*              <MobileCategoryImageBox {...item} />*/}
-        {/*            </a>*/}
-        {/*          </Link>*/}
-        {/*        </Grid>*/}
-        {/*      ))}*/}
-        {/*    </Grid>*/}
-        {/*  </Box>*/}
-        {/*)}*/}
-      {/*</Box>*/}
-
-      <MobileNavigationBar />
-    </MobileCategoryNavStyle>
+              return (
+                  <Link href={"/product/shop/" + convertCatName(item.category)}>
+                    <Box
+                        className="main-category-box"
+                        borderLeft={`${category?.href === item.href ? '3' : '0'}px solid`}
+                        key={item.category}
+                    >
+                      <BazarImage width={55} height={55} src={icon} />
+                      <Typography
+                          className="ellipsis"
+                          textAlign="center"
+                          fontSize="15px"
+                          lineHeight="1"
+                      >
+                        {item.category}
+                      </Typography>
+                    </Box>
+                  </Link>
+              )})}
+          </div>
+          <MobileNavigationBar />
+        </MobileCategoryNavStyle>
+      </>
   )
 }
 
