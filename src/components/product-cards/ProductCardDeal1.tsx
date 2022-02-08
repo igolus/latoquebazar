@@ -275,7 +275,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                 objectFit="cover"
                 src={url}
                 width="100%"
-                height="auto"
+                height="100%"
                 layout="responsive"
                 alt={product.name}
 
