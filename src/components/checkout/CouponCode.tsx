@@ -16,8 +16,6 @@ import ReactMarkdown from "react-markdown";
 import MdRender from "@component/MdRender";
 import {ALREADY_CONSUMED} from "../../util/constants";
 
-const config = require("../../conf/config.json");
-
 export interface OrderAmountSummaryProps {
     orderSource: any
     contextData: any
@@ -116,10 +114,9 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
     }
 
     return (
-        <div style={{marginTop:10}}>
+        <div style={{marginTop:0}}>
 
-            <Dialog open={couponApplied} maxWidth="sm"
-            >
+            <Dialog open={couponApplied} maxWidth="sm">
                 <DialogContent className={classes.dialogContent}>
                     <AlertHtmlLocal
                         severity="success"
@@ -218,12 +215,13 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                 {/*}*/}
 
                 {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
-                <Typography fontWeight="600" mb={1} mt={2}>
+                <Typography fontWeight="600" mb={0} mt={1}>
                     {localStrings.IHaveACouponCode}
                 </Typography>
 
-                <Divider sx={{mb: '1rem'}}/>
+                {/*<Divider sx={{mb: '1rem'}}/>*/}
                 <Formik
+                    style={{marginTop: 0}}
                     initialValues={getInitialValues()}
                     //validationSchema={checkoutSchema(bookWithoutAccount)}
                     onSubmit={(values) => handleFormSubmit(values, null, null)}
