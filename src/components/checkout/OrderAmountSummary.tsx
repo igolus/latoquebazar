@@ -1,24 +1,26 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import {Box, Button, Divider, TextField, Typography} from '@material-ui/core'
+import {Button, Divider, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {
-    computePriceDetail, firstOrCurrentEstablishment,
+    computePriceDetail,
+    firstOrCurrentEstablishment,
     formatOrderConsumingMode,
     getBrandCurrency,
     getRemainingToPay
 } from "../../util/displayUtil";
-import {CSSProperties} from "@material-ui/styles";
 import localStrings from "../../localStrings";
 import moment from "moment";
 import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
 import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
-import {isMobile} from "react-device-detect";
-import OpenStreetMap from "@component/map/OpenStreetMap";
+import CouponCode from "@component/checkout/CouponCode";
+import 'moment/locale/fr'
+// const config = require("../../conf/config.json");
 
-const config = require("../../conf/config.json");
+import 'moment/locale/fr'
+moment.locale('fr')
 
 export interface OrderAmountSummaryProps {
     currency: string
@@ -55,9 +57,9 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
     }
 
     return (
-        <Card1>
+        <Card1 style={{position: 'sticky', top: '90px'}}>
             {/*{JSON.stringify(getOrder())}*/}
-            <Typography fontWeight="600" mb={1} mt={2}>
+            <Typography fontWeight="600" mb={1} mt={1}>
                 {modeOrdered ?
 
                     (getRemainingToPay(getOrder()) === 0 ?
@@ -96,7 +98,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             )}
 
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.totalCharge}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
@@ -107,7 +109,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
 
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.totalNoTax}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
@@ -115,7 +117,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     </Typography>
                 </FlexBox>
             </FlexBox>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.totalFee}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
@@ -123,7 +125,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     </Typography>
                 </FlexBox>
             </FlexBox>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.totalTax}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
@@ -134,7 +136,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
 
             {priceDetails.totalNonDiscounted !== priceDetails.total &&
-            <FlexBox justifyContent="space-between" alignItems="center" mb={1}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.formatString(localStrings.savedCode, getUsedCode())}</Typography>
                 <FlexBox alignItems="flex-end">
                     <Typography fontSize="18px" fontWeight="600" lineHeight="1">
@@ -153,7 +155,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {/*</FlexBox>*/}
 
 
-            <Divider sx={{mb: '1rem'}}/>
+            {/*<Divider sx={{mb: '1rem'}}/>*/}
 
             <Typography
                 fontSize="25px"
@@ -202,8 +204,8 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
                 </>
                 }
-                <Divider sx={{mb: '1rem'}}/>
-                <Typography fontWeight="600" mb={1} mt={2}>
+                {/*<Divider sx={{mb: '1rem'}}/>*/}
+                <Typography fontWeight="600" mb={0} mt={1}>
                     {localStrings.deliveryMode}
                 </Typography>
                 {getOrder() && getOrder().deliveryMode &&
@@ -214,8 +216,8 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
                 }
 
-                <Divider sx={{mb: '1rem'}}/>
-                <Typography fontWeight="600" mb={1} mt={2}>
+                {/*<Divider sx={{mb: '1rem'}}/>*/}
+                <Typography fontWeight="600" mb={0} mt={1}>
                     {localStrings.timeSlot}
                 </Typography>
                 {getOrder() && getOrder().bookingSlot ?
@@ -247,7 +249,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 }
 
                 <Divider sx={{mb: '1rem'}}/>
-                <Typography fontWeight="600" mb={1} mt={2}>
+                <Typography fontWeight="600" mb={0} mt={1}>
                     {localStrings.selectedEsta}
                 </Typography>
 
@@ -271,6 +273,9 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 }
             </>
             }
+
+            {/*<Divider/>*/}
+            <CouponCode contextData={contextData}/>
         </Card1>
     )
 };

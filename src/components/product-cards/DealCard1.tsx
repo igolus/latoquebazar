@@ -182,7 +182,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
               <LazyImage
                   src={url}
                   width="100%"
-                  height="auto"
+                  height="100%"
                   layout="responsive"
                   alt={deal.name}
               />

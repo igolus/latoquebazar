@@ -191,7 +191,7 @@ const ProductCard10: React.FC<ProductCard10Props> = ({
             <LazyImage
               src={imgUrl}
               width="100%"
-              height="auto"
+              height="100%"
               layout="responsive"
               alt={title}
             />
