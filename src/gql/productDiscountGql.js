@@ -38,10 +38,10 @@ const common = `
 `
 
 
-export const getCouponCodeDiscount = (brandId, userId, couponCode) => {
+export const getCouponCodeDiscount = (brandId, userId, couponCode, amount) => {
   var debug = `
    query {
-    getCouponCodeDiscount(brandId : "${brandId}", userId: "${userId}", couponCode: "${couponCode}") {
+    getCouponCodeDiscount(brandId : "${brandId}", userId: "${userId}", couponCode: "${couponCode}", amount: "${amount}") {
       ${common}
     }
    }
@@ -50,7 +50,7 @@ export const getCouponCodeDiscount = (brandId, userId, couponCode) => {
 
   return gql`
     query {
-        getCouponCodeDiscount(brandId : "${brandId}", userId: "${userId}", couponCode: "${couponCode}") {
+        getCouponCodeDiscount(brandId : "${brandId}", userId: "${userId}", couponCode: "${couponCode}", amount: "${amount}") {
             ${common}
         }
    }

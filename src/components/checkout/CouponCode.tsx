@@ -1,8 +1,8 @@
 import Card1 from '@component/Card1'
-import {Button, Dialog, DialogActions, DialogContent, Divider, Grid, TextField, Typography} from '@material-ui/core'
+import {Button, Dialog, DialogActions, DialogContent, Grid, TextField, Typography} from '@material-ui/core'
 import React, {useState} from 'react'
 import useAuth from "@hook/useAuth";
-import {firstOrCurrentEstablishment} from "../../util/displayUtil";
+import {computePriceDetail} from "../../util/displayUtil";
 import {getCouponCodeDiscount} from "../../gql/productDiscountGql";
 import localStrings from "../../localStrings";
 import {Formik} from "formik";
@@ -11,10 +11,8 @@ import {makeStyles} from "@material-ui/styles";
 import {green} from "@material-ui/core/colors";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
 import {addDiscountToCart} from "../../util/cartUtil";
-import {Tiny2} from "@component/Typography";
-import ReactMarkdown from "react-markdown";
 import MdRender from "@component/MdRender";
-import {ALREADY_CONSUMED} from "../../util/constants";
+import {ALREADY_CONSUMED, PRICE_LOWER, TOO_LATE, TOO_SOON} from "../../util/constants";
 
 export interface OrderAmountSummaryProps {
     orderSource: any
@@ -84,7 +82,9 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
 
 
         try {
-            let res = await executeQueryUtil(getCouponCodeDiscount(currentBrand().id, dbUser?.id, values.couponCode))
+            let totalPrice = computePriceDetail(getOrderInCreation());
+
+            let res = await executeQueryUtil(getCouponCodeDiscount(currentBrand().id, dbUser?.id, values.couponCode, totalPrice.totalNonDiscounted || 0))
             let discount = res?.data?.getCouponCodeDiscount;
 
             if (!discount) {
@@ -96,6 +96,17 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
             if (!discount.valid) {
                 if (discount.invalidReason === ALREADY_CONSUMED) {
                     setInvalidReason(localStrings.invalidCouponConsumed)
+                }
+                else if (discount.invalidReason === TOO_SOON) {
+                    setInvalidReason(localStrings.invalidCouponTooSoon)
+                }
+                else if (discount.invalidReason === TOO_LATE) {
+                    setInvalidReason(localStrings.invalidCouponTooLate)
+                }
+                else if (discount.invalidReason.startsWith(PRICE_LOWER)) {
+                    let priceInfo = discount.invalidReason.split(",");
+                    setInvalidReason(
+                        localStrings.formatString(localStrings.invalidCouponPrice, priceInfo[1], currentBrand().config?.currency || "EUR"));
                 }
                 else {
                     setWrongCode(values.couponCode);
