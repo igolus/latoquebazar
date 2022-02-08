@@ -19,7 +19,7 @@ const conf=require('../src/conf/config.json')
 export default class Bazar extends Document {
     render() {
         return (
-            <Html>
+            <Html lang="fr">
                 <Head>
                     <link rel="manifest" href="/manifest.json" />
 

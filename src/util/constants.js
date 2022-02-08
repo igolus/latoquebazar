@@ -318,6 +318,9 @@ export const STRIPE_SUB_STATUS_ACTIVE= "active";
 export const STRIPE_SUB_STATUS_TRIALING= "trialing";
 
 export const ALREADY_CONSUMED = "alreadyConsumed";
+export const TOO_SOON = "codeTooSoon";
+export const TOO_LATE = "codeTooLate";
+export const PRICE_LOWER = "priceLower";
 
 export const deviceSize = {
   xs: 425,

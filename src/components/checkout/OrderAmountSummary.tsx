@@ -163,7 +163,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 fontWeight="600"
                 lineHeight="1"
                 textAlign="right"
-                mb={3}
+                mb={1}
             >
                 {parseFloat(priceDetails.total).toFixed(2)} {currency}
             </Typography>
@@ -177,7 +177,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     fontWeight="400"
                     lineHeight="1"
                     textAlign="right"
-                    mb={3}
+                    mb={0}
                     style={{textDecoration: 'line-through'}}
                 >
                     {parseFloat(priceDetails.totalNonDiscounted).toFixed(2)} {currency}
