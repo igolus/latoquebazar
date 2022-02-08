@@ -294,7 +294,7 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                   objectFit="cover"
                   src={url}
                   width="100%"
-                  height="auto"
+                  height="100%"
                   layout="responsive"
                   alt={product.name}
               />
