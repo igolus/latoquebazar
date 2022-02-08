@@ -19,7 +19,7 @@ const EstaInfo = ({selectedEsta, contextData}) => {
             {/*<h1>CONTACT INFO TODO</h1>*/}
             {selectedEsta &&
             <Card1 sx={{mb: '2rem', mt: '2rem'}}>
-                <Typography variant="h4" fontWeight="600" mb={4}>
+                <Typography variant="h1" fontWeight="600" mb={4}>
                     {selectedEsta.establishmentName}
                 </Typography>
 

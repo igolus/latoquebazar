@@ -100,7 +100,10 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
                             flexWrap: 'wrap',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            mb: '55px',
+                            mb: '25px',
+                            h1: {
+                              fontSize: "25px !important",
+                            },
                             p: {
                                 xs: '1.25rem 1.25rem 0.25rem',
                                 sm: '1rem 1.25rem',
@@ -111,49 +114,11 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
                     >
                         <div>
                             {query ?
-                                <H5>{localStrings.formatString(localStrings.searchResults, query)}</H5>
+                                <h4>{localStrings.formatString(localStrings.searchResults, query)}</h4>
                                 :
-                                <H5>{category === "all" ? localStrings.allCat : category}</H5>
+                                <h1>{category === "all" ? localStrings.allCat : category}</h1>
                             }
-                            {/*<Paragraph color="grey.600">48 results found</Paragraph>*/}
                         </div>
-                        {/*<FlexBox alignItems="center" flexWrap="wrap" my="0.5rem">*/}
-                        {/*    <FlexBox alignItems="center" flex="1 1 0">*/}
-                        {/*        <Paragraph color="grey.600" mr={2} whiteSpace="pre">*/}
-                        {/*            {localStrings.sortBy}*/}
-                        {/*        </Paragraph>*/}
-                        {/*        <TextField*/}
-                        {/*            variant="outlined"*/}
-                        {/*            size="small"*/}
-                        {/*            placeholder="Short by"*/}
-                        {/*            select*/}
-                        {/*            defaultValue={sortOptions[0].value}*/}
-                        {/*            fullWidth*/}
-                        {/*            sx={{*/}
-                        {/*                flex: '1 1 0',*/}
-                        {/*                mr: '1.75rem',*/}
-                        {/*                minWidth: '150px',*/}
-                        {/*            }}*/}
-                        {/*        >*/}
-                        {/*            /!*<Select*!/*/}
-                        {/*            /!*    value={sortOption}*!/*/}
-                        {/*            /!*    onChange={(event) => setSortOption(event.target.value)}>*!/*/}
-                        {/*            {sortOptions.map((item) => (*/}
-                        {/*                <MenuItem value={item.value} key={item.value}*/}
-                        {/*                          selected={item.value === sortOption}*/}
-                        {/*                          onClick={(event) => {*/}
-                        {/*                              setSortOption(item.value)*/}
-                        {/*                          }*/}
-                        {/*                          }*/}
-                        {/*                >*/}
-                        {/*                    {item.label}*/}
-                        {/*                </MenuItem>*/}
-                        {/*            ))}*/}
-                        {/*            /!*</Select>*!/*/}
-                        {/*        </TextField>*/}
-                        {/*    </FlexBox>*/}
-
-                        {/*</FlexBox>*/}
                     </Card>
 
                     <Grid container spacing={3}>
