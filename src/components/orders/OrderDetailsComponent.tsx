@@ -318,6 +318,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                 </Grid>
                 <Grid item lg={6} md={6} xs={12}>
                     <OrderAmountSummary
+                        hideCoupon={true}
                         contextData={getContextData()}
                         orderSource={order}
                         modeOrdered

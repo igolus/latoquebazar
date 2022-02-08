@@ -25,13 +25,14 @@ moment.locale('fr')
 export interface OrderAmountSummaryProps {
     currency: string
     hideDetail: boolean
+    hideCoupon: boolean
     modeOrdered: boolean
     orderSource: any
     contextData: any
 }
 
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
-                                                                  modeOrdered,orderSource, contextData}) => {
+                                                                  modeOrdered,orderSource, contextData, hideCoupon}) => {
 
     const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
@@ -275,7 +276,9 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             }
 
             {/*<Divider/>*/}
-            <CouponCode contextData={contextData}/>
+            {!hideCoupon &&
+                <CouponCode contextData={contextData}/>
+            }
         </Card1>
     )
 };
