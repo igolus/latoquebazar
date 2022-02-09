@@ -6,6 +6,7 @@ import {getBrandCurrency} from "../../util/displayUtil";
 import {cloneDeep} from "@apollo/client/utilities";
 import ProductCardDeal1 from "@component/product-cards/ProductCardDeal1";
 import useAuth from "@hook/useAuth";
+import {isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -125,7 +126,8 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             {/*<p>{JSON.stringify(allProducts)}</p>*/}
             {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
             <Grid container spacing={3} justifyContent="center" >
-                {productDisplay.map((item, ind) => {
+                {productDisplay
+                    .map((item, ind) => {
                         let url = "/assets/images/Icon_Sandwich.png";
                         if (item.files && item.files.length > 0) {
                             url = item.files[0].url;
