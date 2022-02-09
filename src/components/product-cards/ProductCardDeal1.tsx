@@ -28,6 +28,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import ProductIntro from "@component/products/ProductIntro";
 import {Close} from "@material-ui/icons";
 import BazarButton from "@component/BazarButton";
+import {isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 
 export interface ProductCardDeal1Props {
   className?: string
@@ -173,7 +174,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {dealEdit, setDealEdit} = useAuth();
+  const {dealEdit, setDealEdit, currentEstablishment} = useAuth();
 
   const classes = useStyles({ hoverEffect })
   const { state, dispatch } = useAppContext()
@@ -262,25 +263,43 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
             {/*<Link href={buildProductDetailRef()} >*/}
             {/*  <a>*/}
 
-
-            <LazyImage
-                onClick={() => {
-                  if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                    selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                  }
-                  else {
-                    setOpen(true);
-                  }
-                }}
-                objectFit="cover"
-                src={url}
-                width="100%"
-                height="100%"
-                layout="responsive"
-                alt={product.name}
-
-
-            />
+            <div className={classes.imageHolder}>
+              <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
+              >
+                {isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                    <Box ml='3px' mt='6px' mr='3px'>
+                      <Chip
+                          className={classes.offerChip}
+                          color="primary"
+                          size="small"
+                          label={localStrings.unavailable}
+                      />
+                    </Box>
+                }
+              </Box>
+                <LazyImage
+                    onClick={() => {
+                      if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
+                        return;
+                      }
+                      if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                      }
+                      else {
+                        setOpen(true);
+                      }
+                    }}
+                    objectFit="cover"
+                    src={url}
+                    width="100%"
+                    height="100%"
+                    layout="responsive"
+                    alt={product.name}
+                />
+            </div>
             {/*  </a>*/}
             {/*</Link>*/}
           </div>
@@ -316,8 +335,9 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               >
                 <Button
                     //variant="outlined"
-                    disabled={!isProductAndSkuGetOption(selectedProductAndSku) &&
-                    isProductSelected() && productAndSkus && productAndSkus.length === 1}
+                    disabled={
+                      (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment))&&
+                      isProductSelected() && productAndSkus && productAndSkus.length === 1}
                     color="primary"
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                     onClick={() => {
@@ -341,6 +361,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                                 <Box key={key}>
                                   {/*<BazarButton>grande</BazarButton>*/}
                                   <BazarButton
+                                      disabled={!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
                                       onClick={() => {
 
                                         if (isProductAndSkuGetOption(productAndSkuItem)) {
@@ -364,8 +385,11 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                           </Box>
                         </div>
                         :
-
-                        <CheckBoxIcon />
+                        <>
+                          {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                          <CheckBoxIcon/>
+                          }
+                        </>
                     }
                   </>
                   }
@@ -415,8 +439,12 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                           </Box>
                         </div>
                         :
+                        <>
+                          {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                          <CheckBoxOutlineBlankIcon />
+                          }
+                        </>
 
-                        <CheckBoxOutlineBlankIcon />
                     }
                   </>
 
