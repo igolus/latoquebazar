@@ -652,7 +652,7 @@ export const AuthProvider = ({ children }) => {
           try {
             let orderInCreationParsed = JSON.parse(orderInCreationSource);
             if (orderInCreationParsed.updateDate && (moment().unix() - parseFloat(orderInCreationParsed.updateDate)) < expireTimeSeconds) {
-              await setOrderInCreation(orderInCreationParsed, true);
+              await setOrderInCreation(orderInCreationParsed, true, null);
             }
             else {
               resetOrderInCreation();
@@ -1011,7 +1011,7 @@ export const AuthProvider = ({ children }) => {
     })
   }
 
-  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc) => {
+  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser) => {
     //currentEstablishment, currentService, orderInCreation
     const getEstaFun = getEstaFunc || currentEstablishment
 
@@ -1021,8 +1021,14 @@ export const AuthProvider = ({ children }) => {
       getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
+    //console.log("dbUser -- " + dbUser);
+    //console.log("dbUser -- " + getDbUser());
+    if (getDbUser()) {
+      await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
 
-    processOrderDiscount(orderInCreation);
+    }
+    //remove coupon if not logged
+
 
     dispatch({
       type: ORDER_IN_CREATION,
