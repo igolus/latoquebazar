@@ -517,16 +517,16 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             maxWidth={false}
             onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
-            {/*<ProductIntro imgUrl={[imgUrl]} title={title} price={price}*/}
-            {/*              disableFacebook={true}*/}
-            {/*              brand={brand}*/}
-            {/*              faceBookShare={faceBookShare}*/}
-            {/*              skuIndex={selectedSkuIndex}*/}
-            {/*              product={product}*/}
-            {/*              options={options}*/}
-            {/*              currency={currency}*/}
-            {/*              addCallBack={() => setOpen(false)}*/}
-            {/*/>*/}
+            <ProductIntro imgUrl={[imgUrl]} title={title} price={price}
+                          disableFacebook={true}
+                          brand={brand}
+                          faceBookShare={faceBookShare}
+                          skuIndex={selectedSkuIndex}
+                          product={product}
+                          options={options}
+                          currency={currency}
+                          addCallBack={() => setOpen(false)}
+            />
             <IconButton
                 sx={{ position: 'absolute', top: '0', right: '0' }}
                 onClick={toggleDialog}
