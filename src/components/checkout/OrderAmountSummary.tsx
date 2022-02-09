@@ -25,13 +25,14 @@ moment.locale('fr')
 export interface OrderAmountSummaryProps {
     currency: string
     hideDetail: boolean
+    hideCoupon: boolean
     modeOrdered: boolean
     orderSource: any
     contextData: any
 }
 
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
-                                                                  modeOrdered,orderSource, contextData}) => {
+                                                                  modeOrdered,orderSource, contextData, hideCoupon}) => {
 
     const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
@@ -162,7 +163,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 fontWeight="600"
                 lineHeight="1"
                 textAlign="right"
-                mb={3}
+                mb={1}
             >
                 {parseFloat(priceDetails.total).toFixed(2)} {currency}
             </Typography>
@@ -176,7 +177,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                     fontWeight="400"
                     lineHeight="1"
                     textAlign="right"
-                    mb={3}
+                    mb={0}
                     style={{textDecoration: 'line-through'}}
                 >
                     {parseFloat(priceDetails.totalNonDiscounted).toFixed(2)} {currency}
@@ -275,7 +276,9 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             }
 
             {/*<Divider/>*/}
-            <CouponCode contextData={contextData}/>
+            {!hideCoupon &&
+                <CouponCode contextData={contextData}/>
+            }
         </Card1>
     )
 };
