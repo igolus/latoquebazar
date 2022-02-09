@@ -20,6 +20,7 @@ import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getChargesQuery} from "../gql/chargesGql";
+import {getCouponCodeDiscount} from "../gql/productDiscountGql";
 
 const { uuid } = require('uuidv4');
 
@@ -550,6 +551,27 @@ function builAlertRestrictionComponent(setRedirectPageGlobal) {
     }
 }
 
+function builAlertNoValidComponAnymoreComponent(code) {
+    let content = (
+        <AlertHtmlLocal
+            title={localStrings.couponNotValidAnymoreTitle}
+            content={localStrings.formatString(localStrings.couponNotValidAnymore, code)}
+        >
+        </AlertHtmlLocal>
+
+    )
+
+    return {
+        content: content,
+        actions: [
+            // {
+            //     title: localStrings.detail,
+            //     action: () => setRedirectPageGlobal("/cart"),
+            // }
+        ]
+    }
+}
+
 function applyDiscountOnItem(item, discount) {
     let discountAppliedAmount = 0;
     if (!item.nonDiscountedPrice) {
@@ -569,10 +591,29 @@ function applyDiscountOnItem(item, discount) {
     return discountAppliedAmount;
 }
 
-export function processOrderDiscount(orderInCreation) {
+export async function processOrderDiscount(orderInCreation, brandId, userId, setGlobalDialog, setOrderInCreation) {
     if (!orderInCreation) {
         return;
     }
+
+    let discounts = orderInCreation.discounts || [];
+    console.log("orderInCreation.discounts " + JSON.stringify(discounts, null, 2))
+    let totalPrice = computePriceDetail(orderInCreation);
+    for (let i = 0; i < discounts.length; i++) {
+        const discount = discounts[i];
+        if (discount.couponCodeValues && discount.couponCodeValues.length === 1) {
+            let res = await executeQueryUtil(getCouponCodeDiscount(brandId, userId,
+                discount.couponCodeValues[0], totalPrice.totalNonDiscounted || 0))
+            console.log("res coupon " + JSON.stringify(res, null, 2))
+            if (!res.data?.getCouponCodeDiscount?.valid) {
+                const couponDiscountItem = res.data?.getCouponCodeDiscount;
+                //alert("not valid");
+                setGlobalDialog(builAlertNoValidComponAnymoreComponent(discount.couponCodeValues[0]));
+                deleteDiscountInCart(() => orderInCreation, setOrderInCreation, couponDiscountItem.id)
+            }
+        }
+    }
+
 
     let items = orderInCreation.order?.items || [];
     let deals = orderInCreation.order?.deals || [];
@@ -596,7 +637,6 @@ export function processOrderDiscount(orderInCreation) {
         }
     }
 
-    let discounts = orderInCreation.discounts || [];
 
     for (let i = 0; i < discounts.length; i++) {
         const discount = discounts[i];
