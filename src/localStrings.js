@@ -16,6 +16,10 @@ let localStrings = new LocalizedStrings({
 
         fillAddress: "Saisir ici votre adresse",
         fillAddressName: "Saisir ici le nom de votre adresse (Travail, Maison, ...)",
+
+        couponNotValidAnymore: "Votre coupon {0} n'est plus disponible et a été supprimé",
+        couponNotValidAnymoreTitle: "Coupon invalide",
+
         invalidCouponConsumed: "Vous avez deja consomé ce coupon !",
         invalidCouponTooSoon: "Ce coupon n'est pas encore valide !",
         invalidCouponTooLate: "Ce coupon n'est plus valide !",
