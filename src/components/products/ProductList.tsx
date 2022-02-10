@@ -156,9 +156,4 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
     )
 }
 
-const sortOptions = [
-    { label: localStrings.priceAsc, value: PRICE_ASC },
-    { label: localStrings.priceDesc, value: PRICE_DESC },
-]
-
 export default ProductList
