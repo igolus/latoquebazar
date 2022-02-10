@@ -3,7 +3,6 @@
   "brandId": "KSfP69svg0MVJWLFqljM",
   "appName": "B.Happy",
   "siteUrl": "https://commandes.by-bhappy.com",
-  "notesDelivery": "<center>\n<p>\nNos livraisons sont assurées grace a notre partenaire <img src=\"https://delivorii.com/wp-content/uploads/2021/11/logo-1024x257-345x85.png\" width=\"100px\"/>clicker <a href=\"https://oriigamii.com/\" target=\"new\">ici </a> pour en savoir plus\n</p>\n</center>",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
