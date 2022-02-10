@@ -2,7 +2,7 @@ import BazarAvatar from '@component/BazarAvatar'
 import BazarButton from '@component/BazarButton'
 import LazyImage from '@component/LazyImage'
 import {H1} from '@component/Typography'
-import {Box, Chip, Grid, Tooltip} from '@material-ui/core'
+import {Box, Chip, Dialog, Grid, Tooltip} from '@material-ui/core'
 import {useRouter} from 'next/router'
 import React, {useCallback, useEffect, useState} from 'react'
 import ImageViewer from 'react-simple-image-viewer'
@@ -137,6 +137,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
 
     return (
+        <>
+            <Dialog open={isViewerOpen}>
+                <ImageViewer
+                    src={imgUrl}
+                    currentIndex={currentImage}
+                    onClose={closeImageViewer}
+                    backgroundStyle={{
+                        backgroundColor: 'rgba(0,0,0,0.9)',
+                    }}
+                />
+            </Dialog>
         <Box width="100%">
             {/*{JSON.stringify(productAndSku || {})}*/}
             {/*<p>{window.location.protocol + "/" + window.location.host + "/product/detail/" + product?.id}</p>*/}
@@ -166,16 +177,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 loading="eager"
                                 objectFit="cover"
                             />
-                            {isViewerOpen && (
-                                <ImageViewer
-                                    src={imgUrl}
-                                    currentIndex={currentImage}
-                                    onClose={closeImageViewer}
-                                    backgroundStyle={{
-                                        backgroundColor: 'rgba(0,0,0,0.9)',
-                                    }}
-                                />
-                            )}
+
+                            {/*{isViewerOpen && (*/}
+                            {/*    <ImageViewer*/}
+                            {/*        src={imgUrl}*/}
+                            {/*        currentIndex={currentImage}*/}
+                            {/*        onClose={closeImageViewer}*/}
+                            {/*        backgroundStyle={{*/}
+                            {/*            backgroundColor: 'rgba(0,0,0,0.9)',*/}
+                            {/*        }}*/}
+                            {/*    />*/}
+                            {/*)}*/}
                         </FlexBox>
 
 
@@ -354,6 +366,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
             </Grid>
             }
         </Box>
+        </>
     )
 }
 
