@@ -94,7 +94,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             ret+=selectedProduct.name + " ";
         }
         if (selectedProduct?.skus) {
-            let prices = (selectedProduct?.skus || []).map(sku => parseInt(sku.price));
+            let prices = (selectedProduct?.skus || []).map(sku => parseFloat(sku.price));
             // prices.sort((a,b) => a-b);
             if (prices && prices.length > 0) {
                 prices.sort((a,b) => a-b);
