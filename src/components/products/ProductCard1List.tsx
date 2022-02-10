@@ -26,7 +26,7 @@ export interface ProductCard1ListProps {
 
 export const ALL_CAT = "all";
 
-const itemPerPage = 20;
+const itemPerPage = 21;
 
 const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                query,
