@@ -13,7 +13,7 @@ import useAuth from "@hook/useAuth";
 import {addToCartOrder, buildProductAndSkus} from '../../util/cartUtil'
 import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import {getFirstRestrictionDescription, getFirstRestrictionItem} from "../../util/displayUtil";
+import {formatPrice, getFirstRestrictionDescription, getFirstRestrictionItem} from "../../util/displayUtil";
 import {FacebookIcon, FacebookShareButton} from "react-share";
 import ProductSelector from './ProductSelector'
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
@@ -280,7 +280,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     <Box>
                         <h2 color="primary.main" mb={0.5} lineHeight="1">
-                            {productAndSku.sku.price} {currency}
+                            {formatPrice(productAndSku.sku.price)} {currency}
                         </h2>
                     </Box>
                     <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
