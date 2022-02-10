@@ -108,6 +108,11 @@ export const getTotalPriceOrderInCreation = (orderInCreation) => {
     return totalPrice.toFixed(2);
 }
 
+export const formatPrice = (price) => {
+    let priceF = parseFloat(price);
+    return priceF.toFixed(2)
+}
+
 export const computeTotalPriceValue = (itemSkuBooking, mul = 1) => {
     if (itemHaveRestriction(itemSkuBooking)) {
         return 0;
