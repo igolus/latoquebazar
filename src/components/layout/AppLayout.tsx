@@ -98,7 +98,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             </Head>
 
             {/*{contextData && contextData.brand?.demoSite &&*/}
-            {/*    <TopbarForTest/>*/}
+                <TopbarForTest/>
             {/*}*/}
     
 
