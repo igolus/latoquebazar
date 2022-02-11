@@ -192,7 +192,7 @@ let localStrings = new LocalizedStrings({
         timeSlot: "Créneau de réservation",
         selectDeliveryTimeSlot: "Sélectionner un créneau de livraison",
         selectPickupTimeSlot: "Sélectionner un créneau de récupération",
-        priceToPay: "Montant a payer",
+        priceToPay: "Montant à payer",
         pricePaid: "Montant payé",
         remainingToPay: "Reste a payer: {0}",
 
