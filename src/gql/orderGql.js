@@ -371,7 +371,7 @@ export const getCustomerOrdersQuery = (brandId, siteUserId) => {
 }
 
 export const addOrderToCustomer = (brandId, siteUserId, data) => {
-  var dataString = filterDataGql(data, null, ["status", "source"]);
+  var dataString = filterDataGql(data, null, ["status", "source", "service"]);
 
   var debug = `
     mutation {
