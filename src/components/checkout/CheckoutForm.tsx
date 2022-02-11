@@ -345,6 +345,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   delete productAndSkusLine.creationTimestamp;
                   delete productAndSkusLine.restrictionsApplied;
                   delete productAndSkusLine.restrictionsList;
+
+                  delete productAndSkusLine.restrictionsList;
                   (productAndSkusLine.options || []).forEach(opt => {
                     delete opt.defaultSelected
                   })
