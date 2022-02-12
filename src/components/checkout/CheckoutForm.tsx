@@ -126,7 +126,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
-  const [selectedAddId, setSelectedAddId] = useState(true);
+  const [selectedAddId, setSelectedAddId] = useState("main");
   const [customAddressSelected, setCustomAddressSelected] = useState(false);
   const [payLoading, setPayLoading] = useState(false);
 
