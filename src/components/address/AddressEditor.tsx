@@ -48,7 +48,7 @@ const AddressEditor = ({back}) => {
     const handleFormSubmit = async (values: any) => {
         //alert("handleFormSubmit" + adressInfo.address);
 
-        //setLoading(true)
+        setLoading(true)
         try {
             const dbUserCopy = cloneDeep(dbUser);
             if (id === "main") {
