@@ -280,14 +280,14 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
   const [offset, setOffset] = useState(null);
   const [reload, setReload] = useState(true);
-  const [slotSelected, setSlotSelected] = useState(false);
+  // const [slotSelected, setSlotSelected] = useState(false);
   const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation, currentBrand} = useAuth();
 
   const select = (value) => {
     if (selectCallBack) {
       selectCallBack(value);
-      setSlotSelected(true);
+      //setSlotSelected(true);
     }
   };
 
@@ -322,14 +322,14 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   }
 
   useEffect(() => {
-    if (select && currentBrand() && timeSlots.allSlots.length > 0 && !slotSelected) {
+    if (select && currentBrand() && timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
       let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && slotAlavailableInMode(slot));
       if (firstSlotAvail) {
         select(firstSlotAvail)
       }
 
     }
-  }, [currentBrand, timeSlots])
+  }, [currentBrand, timeSlots, orderInCreation])
 
 
   useEffect(() => {
