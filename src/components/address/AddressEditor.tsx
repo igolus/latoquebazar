@@ -49,69 +49,71 @@ const AddressEditor = ({back}) => {
         //alert("handleFormSubmit" + adressInfo.address);
 
         //setLoading(true)
-        const dbUserCopy = cloneDeep(dbUser);
-        if (id === "main") {
-            dbUserCopy.userProfileInfo = {
-                ...dbUser.userProfileInfo,
-                address: adressInfo.address,
-                lat: adressInfo.lat,
-                lng: adressInfo.lng,
-                placeId: adressInfo.placeId,
-                customerDeliveryInformation: values.customerDeliveryInformation,
-            }
+        try {
+            const dbUserCopy = cloneDeep(dbUser);
+            if (id === "main") {
+                dbUserCopy.userProfileInfo = {
+                    ...dbUser.userProfileInfo,
+                    address: adressInfo.address,
+                    lat: adressInfo.lat,
+                    lng: adressInfo.lng,
+                    placeId: adressInfo.placeId,
+                    customerDeliveryInformation: values.customerDeliveryInformation,
+                }
 
-        }
-        else if (id === "new") {
-            dbUserCopy.userProfileInfo = {
-                ...dbUser.userProfileInfo,
-                otherAddresses: [...(dbUser.userProfileInfo.otherAddresses || []),
-                    {
-                        id: uuid(),
-                        name: values.name,
-                        address: adressInfo.address,
-                        lat: adressInfo.lat,
-                        lng: adressInfo.lng,
-                        placeId: adressInfo.placeId,
-                        customerDeliveryInformation: values.customerDeliveryInformation,
-                    }
-                ]
-            }
-        }
-        else {
-            let oldIndex = dbUser?.userProfileInfo?.otherAddresses.findIndex(other => id === other.id)
+            } else if (id === "new") {
+                dbUserCopy.userProfileInfo = {
+                    ...dbUser.userProfileInfo,
+                    otherAddresses: [...(dbUser.userProfileInfo.otherAddresses || []),
+                        {
+                            id: uuid(),
+                            name: values.name,
+                            address: adressInfo.address,
+                            lat: adressInfo.lat,
+                            lng: adressInfo.lng,
+                            placeId: adressInfo.placeId,
+                            customerDeliveryInformation: values.customerDeliveryInformation,
+                        }
+                    ]
+                }
+            } else {
+                let oldIndex = dbUser?.userProfileInfo?.otherAddresses.findIndex(other => id === other.id)
 
-            let filterData = dbUser?.userProfileInfo?.otherAddresses
+                let filterData = dbUser?.userProfileInfo?.otherAddresses
                 //.filter(other => id !== other.id);
 
-            let otherAddUpdate = {
-                id: id,
-                name: values.name,
-                address: adressInfo.address,
-                lat: adressInfo.lat,
-                lng: adressInfo.lng,
-                placeId: adressInfo.placeId,
-                customerDeliveryInformation: values.customerDeliveryInformation,
-            }
-            filterData.splice(oldIndex, 1, otherAddUpdate);
+                let otherAddUpdate = {
+                    id: id,
+                    name: values.name,
+                    address: adressInfo.address,
+                    lat: adressInfo.lat,
+                    lng: adressInfo.lng,
+                    placeId: adressInfo.placeId,
+                    customerDeliveryInformation: values.customerDeliveryInformation,
+                }
+                filterData.splice(oldIndex, 1, otherAddUpdate);
 
-            dbUserCopy.userProfileInfo = {
-                ...dbUser.userProfileInfo,
-                otherAddresses: filterData
+                dbUserCopy.userProfileInfo = {
+                    ...dbUser.userProfileInfo,
+                    otherAddresses: filterData
+                }
+            }
+        //alert("updateSiteUserQuery")
+            let res = await executeMutationUtil(updateSiteUserQuery(currentBrand().id, dbUserCopy))
+            let user = res?.data?.updateSiteUser;
+            if (user) {
+                setDbUser(user);
+            }
+            setLoading(false);
+            if (back) {
+                router.push(decodeURI(back))
+            } else {
+            //alert("push adress")
+                router.push("/address")
             }
         }
-        //alert("updateSiteUserQuery")
-        let res = await executeMutationUtil(updateSiteUserQuery(currentBrand().id, dbUserCopy))
-        let user = res?.data?.updateSiteUser;
-        if (user) {
-            setDbUser(user);
-        }
-        setLoading(false);
-        if (back) {
-            router.push(decodeURI(back))
-        }
-        else {
-            //alert("push adress")
-            router.push("/address")
+        finally {
+            setLoading(false);
         }
     }
 
