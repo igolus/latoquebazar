@@ -322,6 +322,8 @@ export const TOO_SOON = "codeTooSoon";
 export const TOO_LATE = "codeTooLate";
 export const PRICE_LOWER = "priceLower";
 
+export const TOP_STICKY = "90px";
+
 export const deviceSize = {
   xs: 425,
   sm: 768,
