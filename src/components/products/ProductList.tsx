@@ -1,15 +1,15 @@
-import FlexBox from '@component/FlexBox'
 import NavbarLayout from '@component/layout/NavbarLayout'
 import ProductCard1List from '@component/products/ProductCard1List'
 import ProductFilterCard from '@component/products/ProductFilterCard'
-import {H5, Paragraph} from '@component/Typography'
 import useWindowSize from '@hook/useWindowSize'
-import {Card, Grid, MenuItem, Select, TextField} from '@material-ui/core'
+import {Card, Grid} from '@material-ui/core'
 import {Box} from '@material-ui/system'
 import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
-import {convertCatName} from "../../util/displayUtil";
+import Card1, {Card2} from "@component/Card1";
+
+const config = require("../../conf/config.json")
 
 export interface ProductList {
     category: string
@@ -123,6 +123,7 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
 
                     <Grid container spacing={3}>
                         <Grid
+
                             item
                             lg={3}
                             xs={12}
@@ -133,11 +134,13 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
                             }}
                         >
                             {getContextData() &&
-                            <ProductFilterCard tags={getContextData().tags}
-                                               deals={getContextData().deals}
-                                               tagsSelected={tagsSelected} setTagsSelected={setTagsSelected}
-                                               products={getContextData().products}
-                                               categories={getContextData().categories}/>
+                            <Card2 style={{position: 'sticky', top: config.topSticky}}>
+                                <ProductFilterCard tags={getContextData().tags}
+                                                   deals={getContextData().deals}
+                                                   tagsSelected={tagsSelected} setTagsSelected={setTagsSelected}
+                                                   products={getContextData().products}
+                                                   categories={getContextData().categories}/>
+                            </Card2>
                             }
                         </Grid>
 
