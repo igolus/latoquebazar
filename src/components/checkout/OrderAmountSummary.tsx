@@ -12,7 +12,7 @@ import {
 } from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import moment from "moment";
-import {ORDER_DELIVERY_MODE_DELIVERY} from "../../util/constants";
+import {ORDER_DELIVERY_MODE_DELIVERY, TOP_STICKY} from "../../util/constants";
 import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
 import CouponCode from "@component/checkout/CouponCode";
@@ -58,7 +58,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
     }
 
     return (
-        <Card1 style={{position: 'sticky', top: config.topSticky}}>
+        <Card1 style={{position: 'sticky', top: TOP_STICKY}}>
             {/*{JSON.stringify(getOrder())}*/}
             <Typography fontWeight="600" mb={1} mt={1}>
                 {modeOrdered ?
