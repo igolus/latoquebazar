@@ -589,7 +589,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         lng: lng,
         id: id,
         name: name,
-        customerDeliveryInformation: customerDeliveryInformation || getOrderInCreation().deliveryAddress?.customerDeliveryInformation,
+        customerDeliveryInformation: customerDeliveryInformation,
         distance: distance
       },
     })
@@ -1034,7 +1034,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             item.id,
                                             item.name,
                                             //item.additionalInformation,
-                                            item.customerDeliveryInformation,
+                                            item.customerDeliveryInformation || "",
                                             distInfo?.distance
                                         );
                                       }}
