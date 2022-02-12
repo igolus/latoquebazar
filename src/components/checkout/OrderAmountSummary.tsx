@@ -17,7 +17,7 @@ import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
 import CouponCode from "@component/checkout/CouponCode";
 import 'moment/locale/fr'
-// const config = require("../../conf/config.json");
+const config = require("../../conf/config.json");
 
 import 'moment/locale/fr'
 moment.locale('fr')
@@ -58,7 +58,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
     }
 
     return (
-        <Card1 style={{position: 'sticky', top: '90px'}}>
+        <Card1 style={{position: 'sticky', top: config.topSticky}}>
             {/*{JSON.stringify(getOrder())}*/}
             <Typography fontWeight="600" mb={1} mt={1}>
                 {modeOrdered ?
