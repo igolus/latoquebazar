@@ -772,6 +772,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return url;
   }
 
+
   return (
       <>
         <Dialog open={pickupAlert} maxWidth="sm"
@@ -1244,10 +1245,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                           </Box>
                           }
 
-                          <Typography fontWeight="600" mb={2} variant="h5">
-                            {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ?
-                                localStrings.selectDeliveryTimeSlot : localStrings.selectPickupTimeSlot}
-                          </Typography>
+
 
                           <BookingSlots
                               contextData={contextData}

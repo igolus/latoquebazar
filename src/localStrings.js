@@ -190,6 +190,7 @@ let localStrings = new LocalizedStrings({
         distanceTime: " distance jusqu'à l'établissement: {0} km / {1}",
         distanceOnly: " distance jusqu'à l'établissement: {0} km ",
         timeSlot: "Créneau de réservation",
+        pickupSlot: "Créneau de récupération",
         selectDeliveryTimeSlot: "Sélectionner un créneau de livraison",
         selectPickupTimeSlot: "Sélectionner un créneau de récupération",
         priceToPay: "Montant à payer",
