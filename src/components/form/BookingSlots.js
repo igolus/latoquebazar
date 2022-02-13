@@ -9,7 +9,7 @@ import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT
 } from "../../util/constants";
-import {Button, IconButton} from "@material-ui/core";
+import {Button, IconButton, Typography} from "@material-ui/core";
 import {computePriceDetail, firstOrCurrentEstablishment} from "../../util/displayUtil";
 import Grid from "@material-ui/core/Grid";
 import BazarButton from "@component/BazarButton";
@@ -484,8 +484,30 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     return !enoughTimeForPreparation(value) || isSlotFull(value) || value.locked;
   }
 
+  function getSelectTimeSlotText() {
+
+    let timeSlotsAvail = timeSlots.allSlots.filter(slot => slotInTime(slot) && slotAlavailableInMode(slot));
+    let timeSlotSelected = orderInCreation.bookingSlot
+
+    if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+      if (timeSlotSelected && timeSlotsAvail.length === 1) {
+        return localStrings.timeSlot;
+      }
+      return localStrings.selectDeliveryTimeSlot
+    }
+
+    if (timeSlotSelected && timeSlotsAvail.length === 1) {
+      return localStrings.pickupSlot;
+    }
+    return localStrings.selectPickupTimeSlot;
+  }
+
   return (
       <div>
+
+        <Typography fontWeight="600" mb={2} variant="h5">
+          {getSelectTimeSlotText()}
+        </Typography>
 
         {/*<p>{JSON.stringify(timeSlots)}</p>*/}
         {/*<p>{timeSlots.allSlots.length}</p>*/}
