@@ -92,7 +92,7 @@ let localStrings = new LocalizedStrings({
         backToHome: "Revenir à la page d'accueil",
         backNav: "Revenir en arriere",
 
-        personalInformation: "Saisir vos informations de profil",
+        personalInformation: "Saisir vos informations de commandes",
         seeInfo: "Voir les infos utiles",
         bookingadditionalInformationNotes: "Note pour la commande",
         bookingadditionalInformationNotesPlaceHolder: 'Indiquez par exemple "Viande bien cuite" ou "Sans mayonnaise", ...',
@@ -125,7 +125,7 @@ let localStrings = new LocalizedStrings({
         paymentCreditCard: "Payer par carte bancaire maintenant",
         paymentDelivery: "Payer à la réception",
 
-        paymentMethod: "Methode de payment",
+        paymentMethod: "Méthode de paiement",
         paymentMethodsForPickup: "Sélectionner vos méthodes de paiement pour le paiement à la réception",
 
         saveChange: "Sauvegarder les changements",
@@ -187,8 +187,8 @@ let localStrings = new LocalizedStrings({
 
         //myAdresses: "Mes adresses",
 
-        distanceTime: " distance jusqu'a l'établissement: {0} km / {1}",
-        distanceOnly: " distance jusqu'a l'établissement: {0} km ",
+        distanceTime: " distance jusqu'à l'établissement: {0} km / {1}",
+        distanceOnly: " distance jusqu'à l'établissement: {0} km ",
         timeSlot: "Créneau de réservation",
         selectDeliveryTimeSlot: "Sélectionner un créneau de livraison",
         selectPickupTimeSlot: "Sélectionner un créneau de récupération",
@@ -367,7 +367,7 @@ let localStrings = new LocalizedStrings({
         warningMessage: {
             noMainAddDefined: "Votre adresse principale n'est pas définie",
             maxDistanceDelivery: "L'adresse sélectionnée est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
-            maxDistanceDeliveryOk: "L'adresse sélectionnée est dans de la zone de livraison",
+            maxDistanceDeliveryOk: "L'adresse sélectionnée est dans la zone de livraison",
             selectValidDeliveryAddressAndSchedule: "Sélectionner une adresse de livraison valide et un créneau de réservation",
             optionMandatory: "Merci de choisir les options requises",
             minimalPriceForDeliveryNoReached: "La livraison n'est disponible que pour un montant minimum de {0} €",
