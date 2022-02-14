@@ -27,6 +27,7 @@ import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
 import {getBrandCurrency, getFirstRestrictionItem} from "../../util/displayUtil";
+import {cloneDeep} from "@apollo/client/utilities";
 
 export interface ProductCard1Props {
   className?: string
@@ -182,13 +183,20 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
         null, null, currentEstablishment, currentService, brand, setGlobalDialog, setRedirectPageGlobal);
     setProductAndSkus(productAndSkusRes);
+    let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
+      return parseFloat(a.sku.price) -  parseFloat(b.sku.price);
+    })
+    // alert("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2))
+    // console.log("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2) )
 
-    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
+    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? minPriceSkus[0] : null;
 
     //alert("selected " + JSON.stringify(selected || {}));
     setSelectedProductSku(selected)
+    let indexCheapest = productAndSkusRes.findIndex( pandsku => pandsku.sku.extRef === selected.sku.extRef)
+    // alert("indexCheapest " + indexCheapest)
     //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
-    setSelectedSkuIndex(0)
+    setSelectedSkuIndex(indexCheapest)
   }, [product])
 
   const {addToast} = useToasts();
@@ -334,27 +342,27 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-          {productAndSkus && productAndSkus.length > 1 &&
-          <div style={{ width: '100%' }}>
-            <Box display="flex" justifyContent="center" m={1}>
-              {productAndSkus.map((productAndSkuItem, key) =>
-                  <Box key={key}>
-                    {/*<BazarButton>grande</BazarButton>*/}
-                    <BazarButton
-                        onClick={() => {
-                          setSelectedProductSku(productAndSkuItem)
-                          setSelectedSkuIndex(key)
-                        }}
-                        variant="contained"
-                        color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
-                        sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
-                      {productAndSkuItem.sku.name}
-                    </BazarButton>
-                  </Box>
-              )}
-            </Box>
-          </div>
-          }
+          {/*{productAndSkus && productAndSkus.length > 1 &&*/}
+          {/*<div style={{ width: '100%' }}>*/}
+          {/*  <Box display="flex" justifyContent="center" m={1}>*/}
+          {/*    {productAndSkus.map((productAndSkuItem, key) =>*/}
+          {/*        <Box key={key}>*/}
+          {/*          /!*<BazarButton>grande</BazarButton>*!/*/}
+          {/*          <BazarButton*/}
+          {/*              onClick={() => {*/}
+          {/*                setSelectedProductSku(productAndSkuItem)*/}
+          {/*                setSelectedSkuIndex(key)*/}
+          {/*              }}*/}
+          {/*              variant="contained"*/}
+          {/*              color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}*/}
+          {/*              sx={{ padding: "3px", mr: "8px", ml: "8px"}}>*/}
+          {/*            {productAndSkuItem.sku.name}*/}
+          {/*          </BazarButton>*/}
+          {/*        </Box>*/}
+          {/*    )}*/}
+          {/*  </Box>*/}
+          {/*</div>*/}
+          {/*}*/}
 
           <FlexBox>
             <Box flex="1 1 0" minWidth="0px" mr={1}>
@@ -414,7 +422,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
               {/*</Button>*/}
 
-              {selectedProductAndSku && selectedProductAndSku.sku &&
+              {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
               getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
                   <Fragment>
@@ -456,7 +464,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           }
                         }}
                     >
-                      {isProductAndSkuGetOption(selectedProductAndSku) ?
+                      {(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) ?
                           isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
                           :
                           isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : <Add fontSize="small" />
@@ -474,7 +482,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         //alert("add To cart")
-                        if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                        if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length === 1) {
                           let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
                           if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
@@ -490,7 +498,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     {selectedProductAndSku &&
                       <>
                         {/*{JSON.stringify(selectedProductAndSku)}*/}
-                        {isProductAndSkuGetOption(selectedProductAndSku) ?
+                        {(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) ?
                             isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
                             :
                             isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : <Add fontSize="small" />

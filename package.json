@@ -92,6 +92,7 @@
     "react-toast-notifications": "^2.5.0",
     "react-use": "^17.3.1",
     "react-use-flexsearch": "^0.1.1",
+    "sharp": "^0.30.1",
     "simple-encryptor": "^4.0.0",
     "uuidv4": "^6.2.11",
     "vinyl-ftp": "^0.6.1",

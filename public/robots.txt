@@ -2,5 +2,8 @@
 User-agent: *
 Allow: /
 
+# Host
+Host: https://commandes.by-bhappy.com
+
 # Sitemaps
 Sitemap: https://commandes.by-bhappy.com/sitemap.xml
