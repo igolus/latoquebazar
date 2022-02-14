@@ -21,7 +21,8 @@ import {itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getChargesQuery} from "../gql/chargesGql";
 import {getCouponCodeDiscount} from "../gql/productDiscountGql";
-
+import * as ga from '../../lib/ga'
+import {gaRemoveFromCart} from "../../lib/ga";
 const { uuid } = require('uuidv4');
 
 export function getCartItems(orderInCreation, excludeRestriction) {
@@ -70,6 +71,7 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
         return;
     }
     let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
+    let removed = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
 
     let items = [];
     if (orderInCreation.order.items) {
@@ -96,11 +98,19 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
             deals: [...others, {...itemIoChange}]
         }
     });
+
+    ga.gaRemoveFromCart(
+        removed.extRef,
+        removed.name,
+        1,
+        removed.price,
+    )
 }
 
 export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
     let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
     let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
+    let added = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
 
     let items = [];
     if (orderInCreation.order.items) {
@@ -116,12 +126,20 @@ export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
             deals: [...others, {...itemIoChange}]
         }
     });
+
+    ga.gaAddToCart(
+        added.extRef,
+        added.name,
+        1,
+        added.price,
+    )
 }
 
 
 export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
     let itemIoChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
     let others = orderInCreation.order.items.filter(itemOrder => itemOrder.uuid !== uuid);
+    let removed = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
 
     let deals = [];
     if (orderInCreation.order.deals) {
@@ -148,11 +166,21 @@ export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, conte
             deals: deals
         }
     });
+
+    ga.gaRemoveFromCart(
+        removed.extRef,
+        removed.name,
+        1,
+        removed.price,
+    )
 }
 
 export function increaseCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
+    // alert("added " + JSON.stringify(added))
     let itemIoChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
     let others = orderInCreation.order.items.filter(itemOrder => itemOrder.uuid !== uuid);
+    let added = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
+
     itemIoChange.quantity++;
 
     let deals = [];
@@ -167,6 +195,15 @@ export function increaseCartQte(orderInCreation, setOrderInCreation, uuid, conte
             deals: deals
         }
     });
+
+    ga.gaAddToCart(
+        added.extRef,
+        added.name,
+        1,
+        added.price,
+    )
+
+
 }
 
 function checkOrderInCreation (orderInCreation) {
@@ -180,10 +217,13 @@ export function deleteItemInCart(orderInCreation, setOrderInCreation, uuid) {
         return
     }
 
+    let removed = orderInCreation().order.items.find(itemOrder => itemOrder.uuid === uuid);
+    console.log("removed " + JSON.stringify(removed, null, 2));
     let deals = [];
     if (orderInCreation().order.deals) {
         deals = [...orderInCreation().order.deals]
     }
+
 
     let others = orderInCreation().order.items.filter(itemOrder => itemOrder.uuid !== uuid);
     setOrderInCreation({
@@ -193,6 +233,15 @@ export function deleteItemInCart(orderInCreation, setOrderInCreation, uuid) {
             deals: deals
         }
     });
+
+    ga.gaRemoveFromCart(
+        removed.extRef,
+        removed.name,
+        1,
+        removed.price,
+    )
+
+
 }
 
 export function deleteDealInCart(orderInCreation, setOrderInCreation, uuid) {
@@ -207,6 +256,7 @@ export function deleteDealInCart(orderInCreation, setOrderInCreation, uuid) {
     }
 
     let others = orderInCreation().order.deals.filter(deal => deal.uuid !== uuid);
+    let removed = orderInCreation().order.deals.filter(deal => deal.uuid === uuid);
     setOrderInCreation({
         ...orderInCreation(),
         order: {
@@ -214,6 +264,13 @@ export function deleteDealInCart(orderInCreation, setOrderInCreation, uuid) {
             deals: [...others]
         }
     });
+
+    ga.gaRemoveFromCart(
+        removed.extRef,
+        removed.name,
+        1,
+        removed.price,
+    )
 }
 
 
@@ -359,6 +416,18 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToas
     if (addToast) {
         //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true });
     }
+    console.log("productAndSku " + JSON.stringify(dealToAdd, null, 2))
+    let price = 0;
+    dealToAdd.deal.lines.forEach(line => {
+        price += parseFloat(line.pricingValue || "0")
+    })
+
+    ga.gaAddToCart(
+        dealToAdd.deal.id,
+        dealToAdd.deal.name,
+        1,
+        price,
+    )
     //alert("addMenuToCart ")
 }
 
@@ -387,6 +456,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
     itemToAdd.productId = productAndSku.product.id;
     itemToAdd.creationTimestamp = moment().unix();
     itemToAdd.options =  productAndSku.options || []
+
 
     let optionsInit = (itemToAdd.options  || []).map(option => option.ref)
         .sort((o1, o2) => o2 < o1 ? 1:0)
@@ -417,6 +487,12 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
         if (addToast) {
             //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
         }
+        ga.gaAddToCart(
+            productAndSku.sku.id,
+            productAndSku.sku.name,
+            1,
+            productAndSku.sku.price,
+        )
         return;
     }
     itemToAdd.uuid = uuid();
@@ -442,6 +518,14 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
     if (addToast) {
         //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
     }
+
+    console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
+    ga.gaAddToCart(
+        productAndSku.sku.id,
+        productAndSku.sku.name,
+        1,
+        productAndSku.sku.price,
+        )
     return itemToAdd.uuid;
 }
 

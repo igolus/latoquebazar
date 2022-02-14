@@ -3,7 +3,10 @@ import {
   Box,
   Button,
   Checkbox,
-  CircularProgress, Dialog, DialogActions, DialogContent,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -21,7 +24,10 @@ import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW, PAYMENT_METHOD_SYSTEMPAY, PAYMENT_MODE_STRIPE, PAYMENT_MODE_SYSTEM_PAY
+  ORDER_STATUS_NEW,
+  PAYMENT_METHOD_SYSTEMPAY,
+  PAYMENT_MODE_STRIPE,
+  PAYMENT_MODE_SYSTEM_PAY
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -30,7 +36,7 @@ import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
-  formatPaymentMethod, getBrandCurrency,
+  formatPaymentMethod,
   getDeliveryDistanceWithFetch,
   getProfileName,
   getSkusListsFromProducts,
@@ -42,15 +48,9 @@ import {cloneDeep} from "@apollo/client/utilities";
 import {uuid} from "uuidv4";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
-import {
-  addOrderToCustomer,
-  bulkDeleteOrderMutation,
-  createOrderMutation,
-  getOrderByIdQuery,
-  updateOrderMutation
-} from '../../gql/orderGql'
+import {addOrderToCustomer, bulkDeleteOrderMutation, createOrderMutation, getOrderByIdQuery} from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {getCartItems, getItemNumberInCart} from "../../util/cartUtil";
+import {getCartItems} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -62,9 +62,9 @@ import parsePhoneNumber from 'libphonenumber-js'
 import KRPayment from "../../components/payment/KRPayment";
 import EmptyBasket from "@component/shop/EmptyBasket";
 import FlexBox from "@component/FlexBox";
-import {H6, Tiny2} from "@component/Typography";
-import ReactMarkdown from "react-markdown";
+import {H6} from "@component/Typography";
 import MdRender from "@component/MdRender";
+import * as ga from '../../../lib/ga'
 
 const config = require('../../conf/config.json')
 
@@ -147,6 +147,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
+
+
+  useEffect(() => {
+    ga.gaCheckout(getOrderInCreation())
+  }, [])
+
+
 
   function firstOrCurrentEstablishment() {
     if (currentEstablishment()) {
@@ -544,6 +551,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           orderNumber: result.data.addOrder.orderNumber
         }))
       }
+
+      ga.gaPurchase(result.data.addOrder);
 
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null, 2))
       increaseOrderCount();

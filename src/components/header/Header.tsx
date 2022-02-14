@@ -11,7 +11,7 @@ import {
     Container,
     Dialog,
     Drawer,
-    IconButton, Tooltip,
+    IconButton, Tooltip, Typography,
     useMediaQuery,
 } from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
@@ -29,12 +29,14 @@ import Account from './Account'
 import useAuth from "@hook/useAuth";
 import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import {getItemNumberInCart} from "../../util/cartUtil";
-import {layoutConstant} from "../../util/constants";
+import {layoutConstant, WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import {isMobile} from "react-device-detect";
 import {useRouter} from "next/router";
 import localStrings from "../../localStrings";
 import {firstOrCurrentEstablishment} from "../../util/displayUtil";
 import SelectEsta from '../SelectEsta';
+import PhoneIcon from '@material-ui/icons/Phone';
+import useWindowSize from "@hook/useWindowSize";
 
 type HeaderProps = {
     className?: string
@@ -60,7 +62,26 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
     },
 }))
 
+export function mobileBox(currentEstablishment) {
+    return (<a href={"tel:" + (currentEstablishment()?.phoneNumber || "").replace(/\s/g, '')}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                p: 1,
+                m: 1,
+            }}
+        >
+            <PhoneIcon sx={{marginRight: 1, marginTop: "5px"}}/>
+            <Typography variant="h6">
+                {currentEstablishment()?.phoneNumber || ""}
+            </Typography>
+        </Box>
+    </a>);
+}
+
 const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
+    const width = useWindowSize()
     const [sidenavOpen, setSidenavOpen] = useState(false)
     // const [estanavOpen, setEstanavOpen] = useState(false)
     //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
@@ -134,6 +155,10 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 <FlexBox justifyContent="center" flex="1 1 0">
                     <SearchBox />
                 </FlexBox>
+
+                {width > WIDTH_DISPLAY_MOBILE && currentEstablishment() && currentEstablishment().phoneNumber &&
+                    mobileBox(currentEstablishment)
+                }
 
                 <FlexBox alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
                     {/*<Link href={}*/}
