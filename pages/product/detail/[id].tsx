@@ -75,6 +75,9 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             //alert("skuRef" + split[1])
             skuIndex = split[1];
         }
+        else {
+            skuIndex = 0;
+        }
     }
 
     const selectedProduct = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
@@ -202,6 +205,7 @@ export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
             for (let i = 0; i < product.skus.length; i++) {
                 paths.push({ params: { id: product.id + "-" + i } })
             }
+            paths.push({ params: { id: product.id } })
             //paths.push({ params: { id: product.id } })
         }
     })
