@@ -23,6 +23,9 @@ export default class Bazar extends Document {
                 <Head>
                     <link rel="manifest" href="/manifest.json" />
 
+                    <script
+                        src="/hotjar.js">
+                    </script>
                     {/*<script*/}
                     {/*    src="https://api.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"*/}
                     {/*    kr-public-key="73239078:testpublickey_Zr3fXIKKx0mLY9YNBQEan42ano2QsdrLuyb2W54QWmUJQ"*/}
