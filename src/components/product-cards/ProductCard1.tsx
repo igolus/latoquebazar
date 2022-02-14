@@ -334,27 +334,27 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-          {productAndSkus && productAndSkus.length > 1 &&
-          <div style={{ width: '100%' }}>
-            <Box display="flex" justifyContent="center" m={1}>
-              {productAndSkus.map((productAndSkuItem, key) =>
-                  <Box key={key}>
-                    {/*<BazarButton>grande</BazarButton>*/}
-                    <BazarButton
-                        onClick={() => {
-                          setSelectedProductSku(productAndSkuItem)
-                          setSelectedSkuIndex(key)
-                        }}
-                        variant="contained"
-                        color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
-                        sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
-                      {productAndSkuItem.sku.name}
-                    </BazarButton>
-                  </Box>
-              )}
-            </Box>
-          </div>
-          }
+          {/*{productAndSkus && productAndSkus.length > 1 &&*/}
+          {/*<div style={{ width: '100%' }}>*/}
+          {/*  <Box display="flex" justifyContent="center" m={1}>*/}
+          {/*    {productAndSkus.map((productAndSkuItem, key) =>*/}
+          {/*        <Box key={key}>*/}
+          {/*          /!*<BazarButton>grande</BazarButton>*!/*/}
+          {/*          <BazarButton*/}
+          {/*              onClick={() => {*/}
+          {/*                setSelectedProductSku(productAndSkuItem)*/}
+          {/*                setSelectedSkuIndex(key)*/}
+          {/*              }}*/}
+          {/*              variant="contained"*/}
+          {/*              color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}*/}
+          {/*              sx={{ padding: "3px", mr: "8px", ml: "8px"}}>*/}
+          {/*            {productAndSkuItem.sku.name}*/}
+          {/*          </BazarButton>*/}
+          {/*        </Box>*/}
+          {/*    )}*/}
+          {/*  </Box>*/}
+          {/*</div>*/}
+          {/*}*/}
 
           <FlexBox>
             <Box flex="1 1 0" minWidth="0px" mr={1}>
