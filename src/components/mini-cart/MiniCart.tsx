@@ -254,6 +254,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                     increaseDealCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                   else {
+                    //alert("increaseCartQte")
                     increaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                 }}

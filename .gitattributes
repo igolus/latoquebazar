@@ -5,3 +5,4 @@
 /public/manifest-template.json merge=ours
 /public/favicon.ico merge=ours
 /public/robots.txt merge=ours
+.env.local merge=ours
