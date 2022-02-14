@@ -16,6 +16,8 @@ import useAuth from "@hook/useAuth";
 import MyMap from "@component/GoogleMap";
 import useWindowSize from "@hook/useWindowSize";
 import Link from "next/link";
+import {WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
+import {mobileBox} from "@component/header/Header";
 
 
 export interface IndexPageProps {
@@ -118,10 +120,18 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                                    products={getContextData()?.products}/>
 
 
-                {width <= 900 &&
+                {width <= WIDTH_DISPLAY_MOBILE &&
                 <div>
-
-
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            p: 0,
+                            m: 0,
+                        }}
+                    >
+                    {mobileBox(currentEstablishment)}
+                    </Box>
                     {/*<Box display="flex" justifyContent='space-evenly' p={1} m={1}>*/}
 
                     {/*    {firstPage &&*/}

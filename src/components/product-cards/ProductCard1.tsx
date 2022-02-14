@@ -440,6 +440,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
                         sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                         onClick={() => {
+                          //alert("add")
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                             //alert(selectedProductAndSku.sku.uuid)
                             //alert(JSON.stringify(selectedProductAndSku.sku));
@@ -472,6 +473,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
+                        //alert("add To cart")
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                           let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
