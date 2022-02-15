@@ -19,6 +19,7 @@ const common = `
     googleKey
     starWebProducts
     loginImg
+    carouselAsList
     notifEmailConfig {
       contentOne
       footer
@@ -59,7 +60,10 @@ const common = `
       subTitle
       action
       actionText
+      actionSecond
+      actionTextSecond
       openInNewTab
+      openInNewTabSecond
     }
   }
 `

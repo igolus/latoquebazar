@@ -74,7 +74,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 <CarouselCompo contextData={getContextData()}/>
                 }
 
-                {width <= 900 &&
+                {width <= WIDTH_DISPLAY_MOBILE &&
                     <Box display="flex" justifyContent='space-evenly' p={1} m={1}>
                         {firstPage &&
                         <Box>

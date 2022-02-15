@@ -22,6 +22,7 @@ const common = `
     starWebProducts
     signagePage
     loginImg
+    carouselAsList
     notifEmailConfig {
       contentOne
       footer
@@ -58,7 +59,10 @@ const common = `
       subTitle
       action
       actionText
+      actionSecond
+      actionTextSecond
       openInNewTab
+      openInNewTabSecond
     }
   }
 `
