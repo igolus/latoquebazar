@@ -4,6 +4,8 @@ import { Box, Button, Grid, styled } from '@material-ui/core'
 import React from 'react'
 import Link from 'next/link'
 import MdRender from "@component/MdRender";
+import useWindowSize from "@hook/useWindowSize";
+import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 
 export interface CarouselCard1Props {
     imageUrl?: string
@@ -78,7 +80,9 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                                                          openInNewTabSecond,
                                                          odd}) => {
 
-    if (odd) {
+    const width = useWindowSize()
+
+    if (odd || width < WIDTH_DISPLAY_MOBILE) {
         return (
             <StyledBox>
                 <Grid container spacing={3} alignItems="center" justifyContent="center">
