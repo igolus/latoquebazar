@@ -3,6 +3,7 @@ import { Paragraph } from '@component/Typography'
 import { Box, Button, Grid, styled } from '@material-ui/core'
 import React from 'react'
 import Link from 'next/link'
+import MdRender from "@component/MdRender";
 
 export interface CarouselCard1Props {
   imageUrl?: string
@@ -63,7 +64,7 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,  subTitle
         <Grid item className="grid-item" sm={imageUrl ? 5 : 12} xs={12}>
           <h1 className="title">{title}</h1>
           <Paragraph color="secondary.main" mb={2.7}>
-            {subTitle}
+            <MdRender content={subTitle}/>
           </Paragraph>
           {
             action &&
