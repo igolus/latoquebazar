@@ -26,7 +26,7 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
   }
 
   const carouselItems = getContextData()?.brand?.config?.carouselWebConfig || [];
-
+  const carouselAsList = getContextData()?.brand?.config.carouselAsList;
   return (
       <Fragment>
         <Navbar contextData={getContextData()}/>
@@ -34,21 +34,30 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
         {carouselItems && carouselItems.length > 0 &&
         <Box bgcolor="white" mb={7.5}>
           <Container sx={{py: '2rem'}}>
-            <Carousel
-                interval={8000}
-                totalSlides={carouselItems.length}
-                visibleSlides={1}
-                infinite={true}
-                autoPlay={true}
-                showDots={carouselItems.length > 1}
-                showArrow={false}
-                spacing="0px"
-            >
+            {!carouselAsList ?
 
-              {carouselItems.map((carouselItem, key) =>
-                  <CarouselCard1 {...carouselItem} />
-              )}
-            </Carousel>
+                <Carousel
+                    interval={8000}
+                    totalSlides={carouselItems.length}
+                    visibleSlides={1}
+                    infinite={true}
+                    autoPlay={true}
+                    showDots={carouselItems.length > 1}
+                    showArrow={false}
+                    spacing="0px"
+                >
+
+                  {carouselItems.map((carouselItem, key) =>
+                      <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0}/>
+                  )}
+                </Carousel>
+                :
+                <>
+                  {carouselItems.map((carouselItem, key) =>
+                      <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0}/>
+                  )}
+                </>
+            }
           </Container>
         </Box>
         }
