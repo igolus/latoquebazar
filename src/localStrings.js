@@ -4,6 +4,8 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        noAllergens: "Ce produit ne contient aucun allergène alimentaire majeur",
+        allergensList: "Liste des allergènes majeurs contenus dans ce produit:",
         seeDetail: "Voir le detail",
         deliveryHourAndPlace: "Horaires d'ouverture et emplacement",
         deliveryHourAndPlaceDesc: "Consultez nos horaires d'ouverture et notre emplacement",
@@ -404,6 +406,23 @@ let localStrings = new LocalizedStrings({
             activateEmail: "Cliquer <a href='{0}'>ici</a> pour activer votre compte {1}",
             passwordResetSubject: "Réinitialiser votre mot de passe {0}",
             activateEmailSubject: "Activer votre compte {0}",
+        },
+        allergens: "Allergènes",
+        allergenTypes: {
+            gluten: "gluten",
+            shellfish: "Crustacés",
+            egg: "Oeuf",
+            fishes: "Poissons",
+            peanuts: "Arachides",
+            soy: "Soja",
+            milk: "Lait",
+            nuts: "Fruits à coques",
+            celery: "Celeri",
+            mustard: "Moutarde",
+            sesameSeeds: "Graines de sésame",
+            sulfurDioxideSulphites: "Anhydride sulfureux et sulfites",
+            lupine: "Lupin",
+            molluscs: "Mollusques"
         },
 
 

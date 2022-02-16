@@ -38,7 +38,7 @@ type MiniCartProps = {
 }
 
 export function itemRestrictionMax(item: any) {
-  return item.restrictionsApplied && item.restrictionsApplied.length === 1 &&
+  return item && item.restrictionsApplied && item.restrictionsApplied.length === 1 &&
       item.restrictionsApplied[0].type === RESTRICTION_MAX_ITEM;
 }
 

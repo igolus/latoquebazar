@@ -21,6 +21,7 @@ const common = `
   shortDescription
   additionalInformation
   newProduct
+  allergens
   notAddableToCart
   newProductExpireDate
   tags {
