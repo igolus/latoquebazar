@@ -152,6 +152,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     const setAddMainLoad = async () => {
       if (
+          !selectedAddId &&
           (dbUser || bookWithoutAccount) &&
           isDeliveryActive(currentEstablishment()) &&
           getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
@@ -162,7 +163,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     setAddMainLoad()
 
 
-  }, [])
+  }, [getOrderInCreation()])
 
   useEffect(() => {
     ga.gaCheckout(getOrderInCreation())
