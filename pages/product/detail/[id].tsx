@@ -3,7 +3,7 @@ import ProductIntro from '@component/products/ProductIntro'
 import {Box, Tab, Tabs, Typography} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useRouter} from "next/router";
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import localStrings from "../../../src/localStrings";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
@@ -47,6 +47,8 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     const {currentEstablishment, bookingSlotStartDate, getContextDataAuth, getOrderInCreation} = useAuth();
 
 
+
+
     // const [selectedProduct, setSelectedProduct] = useState(null);
 
     // useEffect(() => {
@@ -83,7 +85,15 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const selectedProduct = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
 
+    useEffect(() => {
+        if (!selectedProduct?.description) {
+            setSelectedOption("allergens")
+        }
+
+    }, [])
+
     const [selectedOption, setSelectedOption] = useState("description")
+
 
     const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: string) => {
         setSelectedOption(newValue)
@@ -182,8 +192,9 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                           options={getContextData().options} currency={getBrandCurrency(getContextData().brand)}/>
             }
 
-            {selectedProduct && (selectedProduct.description !== "" || selectedProduct.additionalInformation !== "") &&
+            {/*{selectedProduct && (selectedProduct.description !== "" || selectedProduct.additionalInformation !== "") &&*/}
             <>
+                {/*<p>{JSON.stringify(selectedProduct || {})}</p>*/}
                 <StyledTabs
                     value={selectedOption}
                     onChange={handleOptionClick}
@@ -215,7 +226,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
                 </Box>
             </>
-            }
+
 
             {/*<FrequentlyBought />*/}
 
