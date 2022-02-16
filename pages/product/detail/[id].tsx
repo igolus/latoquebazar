@@ -86,7 +86,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     const selectedProduct = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
 
     useEffect(() => {
-        if (!selectedProduct?.description) {
+        if (selectedProduct && !selectedProduct?.description) {
             setSelectedOption("allergens")
         }
 
