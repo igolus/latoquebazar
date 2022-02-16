@@ -27,6 +27,7 @@ import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
 import {getBrandCurrency, getFirstRestrictionItem} from "../../util/displayUtil";
+import {cloneDeep} from "@apollo/client/utilities";
 
 export interface ProductCard1Props {
   className?: string
@@ -182,13 +183,20 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
         null, null, currentEstablishment, currentService, brand, setGlobalDialog, setRedirectPageGlobal);
     setProductAndSkus(productAndSkusRes);
+    let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
+      return parseFloat(a.sku.price) -  parseFloat(b.sku.price);
+    })
+    // alert("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2))
+    // console.log("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2) )
 
-    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
+    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? minPriceSkus[0] : null;
 
     //alert("selected " + JSON.stringify(selected || {}));
     setSelectedProductSku(selected)
+    let indexCheapest = productAndSkusRes.findIndex( pandsku => pandsku.sku.extRef === selected.sku.extRef)
+    // alert("indexCheapest " + indexCheapest)
     //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
-    setSelectedSkuIndex(0)
+    setSelectedSkuIndex(indexCheapest)
   }, [product])
 
   const {addToast} = useToasts();
@@ -449,7 +457,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
               {/*</Button>*/}
 
-              {selectedProductAndSku && selectedProductAndSku.sku &&
+              {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
               getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
                       <Fragment>
@@ -495,7 +503,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               }
                             }}
                         >
-                          {/*<p>TOTO</p>*/}
                           {getAddToCartElement()}
 
                         </Button>
@@ -511,17 +518,17 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       onClick={() => {
                         //alert("add To cart")
                         if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
-                          let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
-                          alert("uuid " + uuid);
-                          let newPAndSku = {
-                            ...selectedProductAndSku,
-                            sku: {
-                              ...selectedProductAndSku.sku,
-                              uuid: uuid,
-                            }};
-                          console.log("newPAndSku " + JSON.stringify(newPAndSku, null, 2));
-                          setSelectedProductSku(newPAndSku)
-
+                          addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                          // alert("uuid " + uuid);
+                          // let newPAndSku = {
+                          //   ...selectedProductAndSku,
+                          //   sku: {
+                          //     ...selectedProductAndSku.sku,
+                          //     uuid: uuid,
+                          //   }};
+                          // console.log("newPAndSku " + JSON.stringify(newPAndSku, null, 2));
+                          // setSelectedProductSku(newPAndSku)
+                          //
                           // if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
                           //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
                           //   setSelectedProductSku(selectedWithUuid)
