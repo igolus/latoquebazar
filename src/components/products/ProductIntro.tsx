@@ -13,12 +13,18 @@ import useAuth from "@hook/useAuth";
 import {addToCartOrder, buildProductAndSkus} from '../../util/cartUtil'
 import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import {formatPrice, getFirstRestrictionDescription, getFirstRestrictionItem} from "../../util/displayUtil";
+import {
+    formatPrice,
+    formatProductAndSkuName,
+    getFirstRestrictionDescription,
+    getFirstRestrictionItem
+} from "../../util/displayUtil";
 import {FacebookIcon, FacebookShareButton} from "react-share";
 import ProductSelector from './ProductSelector'
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import theme from "@theme/theme";
+import MdRender from "@component/MdRender";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -177,19 +183,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 loading="eager"
                                 objectFit="cover"
                             />
-
-                            {/*{isViewerOpen && (*/}
-                            {/*    <ImageViewer*/}
-                            {/*        src={imgUrl}*/}
-                            {/*        currentIndex={currentImage}*/}
-                            {/*        onClose={closeImageViewer}*/}
-                            {/*        backgroundStyle={{*/}
-                            {/*            backgroundColor: 'rgba(0,0,0,0.9)',*/}
-                            {/*        }}*/}
-                            {/*    />*/}
-                            {/*)}*/}
                         </FlexBox>
-
 
                         <FlexBox overflow="auto">
                             {imgUrl.map((url, ind) => (
@@ -218,7 +212,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 </Grid>
 
                 <Grid item md={6} xs={12} alignItems="center">
-                    <H1 mb={2}>{product.name}</H1>
+                    <H1 mb={2}>
+                        {
+                            product.skus.length > 1 ?
+                                formatProductAndSkuName({
+                                    ...productAndSku.sku,
+                                    productName: product.name
+                                })
+                                :
+                                product.name
+                        }
+                    </H1>
                     {!valid && !getFirstRestriction() &&
                     <Box mb={2} sx={{maxWidth:"285px"}}>
                         <AlertHtmlLocal severity={"warning"}
@@ -238,7 +242,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     }
 
                     {product.skus && product.skus.length > 1 &&
-                    <Box display="flex" justifyContent="left">
+                    <Box display="flex" justifyContent="left" flexWrap="wrap">
                         {buildProductAndSkus(product, getOrderInCreation, null, null,
                             currentEstablishment, currentService, setGlobalDialog, setRedirectPageGlobal)
                             .map((pandsku, key) =>
@@ -280,10 +284,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     <Box>
                         <h2 color="primary.main" mb={0.5} lineHeight="1">
-                            {formatPrice(productAndSku.sku.price)} {currency}
+                            {formatPrice(productAndSku.sku?.price)} {currency}
                         </h2>
                     </Box>
-                    <ReactMarkdown>{product.shortDescription}</ReactMarkdown>
+                    <MdRender content={product.shortDescription}/>
 
                     {options && options.length > 0 && !getFirstRestriction() &&
                     <ProductSelector options={options}
@@ -331,9 +335,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                 router.push("/cart");
                                             }
                                         } else {
-                                            addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                            let uuid = addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
                                             if (addCallBack) {
-                                                addCallBack();
+                                                addCallBack(uuid);
                                             }
                                             if (routeToCart) {
                                                 router.push("/cart");
@@ -354,21 +358,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     </FacebookShareButton>
                                 </Tooltip>
                             </Box>
-
                             }
-
-
                         </Box>
                     </div>
                     }
-
                 </Grid>
             </Grid>
             }
         </Box>
         </>
     )
-}
+};
 
 ProductIntro.defaultProps = {
     imgUrl: [

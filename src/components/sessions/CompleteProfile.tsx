@@ -74,7 +74,7 @@ const CompleteProfile = ({closeCallBack}) => {
   const {addToast} = useToasts();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const [submitOnGoing, setSubmitOnGoing] = useState(false)
-  const { user, currentBrand, currentEstablishment, establishmentList, setDbUser } = useAuth();
+  const { user, currentBrand, currentEstablishment, establishmentList, setDbUser, dbUser, setLoginOnGoing, logout } = useAuth();
   const router = useRouter();
 
   const initialValues = {
@@ -312,72 +312,37 @@ const CompleteProfile = ({closeCallBack}) => {
             >
               {localStrings.completeAccount}
             </BazarButton>
+
           </FlexBox>
 
-          {/*<Box mb={2} mt={3.3}>*/}
-          {/*  <Box width="200px" mx="auto">*/}
-          {/*    <Divider />*/}
-          {/*  </Box>*/}
 
-          {/*  <FlexBox justifyContent="center" mt={-1.625}>*/}
-          {/*    <Box color="grey.600" bgcolor="background.paper" px={2}>*/}
-          {/*      on*/}
-          {/*    </Box>*/}
-          {/*  </FlexBox>*/}
-          {/*</Box>*/}
+          <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
+            <BazarButton
+                variant="contained"
+                color="primary"
+                onClick={async () => {
+                  setDbUser(null);
+                  if (closeCallBack) {
+                    closeCallBack();
+                  }
+                  await logout();
+                  setLoginOnGoing(false);
+                  // router.push("/");
+                }}
+                fullWidth
+                disable={!dbUser}
+                sx={{
+                  height: 44,
+                }}
+                endIcon={submitOnGoing ?
+                    <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
+            >
+              {localStrings.logout}
+            </BazarButton>
+          </FlexBox>
 
-          {/*<BazarButton*/}
-          {/*  className="facebookButton"*/}
-          {/*  size="medium"*/}
-          {/*  fullWidth*/}
-          {/*  sx={{*/}
-          {/*    height: 44,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Image*/}
-          {/*    src="/assets/images/icons/facebook-filled-white.svg"*/}
-          {/*    alt="facebook"*/}
-          {/*  />*/}
-          {/*  <Box fontSize="12px" ml={1}>*/}
-          {/*    Continue with Facebook*/}
-          {/*  </Box>*/}
-          {/*</BazarButton>*/}
-          {/*<BazarButton*/}
-          {/*  className="googleButton"*/}
-          {/*  size="medium"*/}
-          {/*  fullWidth*/}
-          {/*  sx={{*/}
-          {/*    height: 44,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Image src="/assets/images/icons/google-1.svg" alt="facebook" />*/}
-          {/*  <Box fontSize="12px" ml={1}>*/}
-          {/*    Continue with Google*/}
-          {/*  </Box>*/}
-          {/*</BazarButton>*/}
-
-          {/*<FlexBox justifyContent="center" alignItems="center" my="1.25rem">*/}
-          {/*  <Box>Don’t have account?</Box>*/}
-          {/*  <Link href="/login">*/}
-          {/*    <a>*/}
-          {/*      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
-          {/*        Log In*/}
-          {/*      </H6>*/}
-          {/*    </a>*/}
-          {/*  </Link>*/}
-          {/*</FlexBox>*/}
         </form>
 
-        {/*<FlexBox justifyContent="center" bgcolor="grey.200" py={2.5}>*/}
-        {/*  Forgot your password?*/}
-        {/*  <Link href="/">*/}
-        {/*    <a>*/}
-        {/*      <H6 ml={1} borderBottom="1px solid" borderColor="grey.900">*/}
-        {/*        Reset It*/}
-        {/*      </H6>*/}
-        {/*    </a>*/}
-        {/*  </Link>*/}
-        {/*</FlexBox>*/}
       </StyledCard>
   )
 }

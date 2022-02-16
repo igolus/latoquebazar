@@ -4,6 +4,9 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        noAllergens: "Ce produit ne contient aucun allergène alimentaire majeur",
+        allergensList: "Liste des allergènes majeurs contenus dans ce produit:",
+        seeDetail: "Voir le detail",
         deliveryHourAndPlace: "Horaires d'ouverture et emplacement",
         deliveryHourAndPlaceDesc: "Consultez nos horaires d'ouverture et notre emplacement",
 
@@ -352,7 +355,7 @@ let localStrings = new LocalizedStrings({
 
             noSelectPaymentMethod: "Aucune méthode de paiments selectionné",
             noSelectSlotMethod: "Aucune Créneau selectionné",
-            noDeliveryAdress: "Aucune addresse de livraison selectionné",
+            noDeliveryAdress: "Aucune adresse de livraison selectionné",
             maxDistanceReached: "L'adresse est en dehors de la zone",
             noItemInCart: "Aucun produits dans le panier",
             badContactInfo: "Information de contact invalides",
@@ -395,7 +398,7 @@ let localStrings = new LocalizedStrings({
         },
 
         confirmMessage: {
-            deleteAddress: 'Etes vous sur de vouloir supprimer cette addresse ?',
+            deleteAddress: 'Etes-vous sûr de vouloir supprimer cette adresse ?',
         },
 
         emailTemplate: {
@@ -403,6 +406,23 @@ let localStrings = new LocalizedStrings({
             activateEmail: "Cliquer <a href='{0}'>ici</a> pour activer votre compte {1}",
             passwordResetSubject: "Réinitialiser votre mot de passe {0}",
             activateEmailSubject: "Activer votre compte {0}",
+        },
+        allergens: "Allergènes",
+        allergenTypes: {
+            gluten: "gluten",
+            shellfish: "Crustacés",
+            egg: "Oeuf",
+            fishes: "Poissons",
+            peanuts: "Arachides",
+            soy: "Soja",
+            milk: "Lait",
+            nuts: "Fruits à coques",
+            celery: "Celeri",
+            mustard: "Moutarde",
+            sesameSeeds: "Graines de sésame",
+            sulfurDioxideSulphites: "Anhydride sulfureux et sulfites",
+            lupine: "Lupin",
+            molluscs: "Mollusques"
         },
 
 
