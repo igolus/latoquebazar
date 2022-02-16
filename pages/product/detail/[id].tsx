@@ -1,25 +1,26 @@
 import NavbarLayout from '@component/layout/NavbarLayout'
 import ProductIntro from '@component/products/ProductIntro'
-import {Box, Tab, Tabs} from '@material-ui/core'
+import {Box, Tab, Tabs, Typography} from '@material-ui/core'
 import {styled} from '@material-ui/core/styles'
 import {useRouter} from "next/router";
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
-import ReactMarkdown from "react-markdown";
 import localStrings from "../../../src/localStrings";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
+import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import {getBrandCurrency} from "../../../src/util/displayUtil";
 import {SEP} from "../../../src/util/constants";
 import {getCurrentService} from "@component/form/BookingSlots";
 import useAuth from "@hook/useAuth";
 import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
-import {config} from "@fortawesome/fontawesome-svg-core";
 //const { markdownToTxt } = require('markdown-to-txt');
 import markdownToTxt from 'markdown-to-txt';
+import MdRender from "@component/MdRender";
+import {stringify} from "querystring";
+import {H3} from "@component/Typography";
 
 export const StyledTabs = styled(Tabs)(({ theme }) => ({
-    marginTop: 80,
-    marginBottom: 24,
+    marginTop: 10,
+    marginBottom: 10,
     minHeight: 0,
     borderBottom: `1px solid ${theme.palette.text.disabled}`,
     '& .inner-tab': {
@@ -82,9 +83,9 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const selectedProduct = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
 
-    const [selectedOption, setSelectedOption] = useState(0)
+    const [selectedOption, setSelectedOption] = useState("description")
 
-    const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: number) => {
+    const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: string) => {
         setSelectedOption(newValue)
     }
 
@@ -130,6 +131,38 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         return null;
     }
 
+    function getAllergenDesc() {
+        // return (<p>{selectedProduct.allergens}</p>)
+
+        if (!selectedProduct.allergens || selectedProduct.allergens.length == 0) {
+            return (
+                <Typography fontWeight="700" >
+                    {localStrings.noAllergens}
+                </Typography>
+            )
+        }
+
+        return (
+            <>
+                <Typography fontWeight="700">
+                    {localStrings.allergensList}
+                </Typography>
+                <br/>
+                <ul>
+                    {selectedProduct.allergens.map((allergen, key) =>
+                        <li key={key}>
+                            {/*{localStrings.allergensList[allergen]}*/}
+                            <Typography variant="body1" >
+                                {localStrings.allergenTypes[allergen]}
+                            </Typography>
+                        </li>
+                    )
+                    }
+                </ul>
+            </>
+        )
+    }
+
     return (
         <NavbarLayout contextData={getContextData()}
                       title={buildTitle(selectedProduct, getContextData()?.brand?.brandName)}
@@ -157,23 +190,29 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                     indicatorColor="primary"
                     textColor="primary"
                 >
-                    {selectedProduct.description !== "" &&
-                    <Tab className="inner-tab" label={localStrings.description}/>
+                    <Tab className="inner-tab" label={localStrings.allergens} value="allergens"/>
+                    {selectedProduct.description.trim() !== "" &&
+                    <Tab className="inner-tab" label={localStrings.description} value="description"/>
                     }
-                    {selectedProduct.additionalInformation !== "" &&
-                    <Tab className="inner-tab" label={localStrings.additionalInformation}/>
+                    {selectedProduct.additionalInformation.trim() !== "" &&
+                    <Tab className="inner-tab" label={localStrings.additionalInformation} value="additionalInformation"/>
                     }
+
                 </StyledTabs>
 
                 <Box mb={6}>
-                    {selectedOption === 0 && selectedProduct.description !== "" &&
-                        <ReactMarkdown>{selectedProduct.description}</ReactMarkdown>
+                    {selectedOption === "allergens" &&
+                    <>
+                        {getAllergenDesc()}
+                    </>
                     }
-                    {selectedOption === (selectedProduct.description !== "" ? 1 : 0)
+                    {selectedOption === "description" &&
+                    <MdRender content={selectedProduct.description}/>
+                    }
+                    {selectedOption=== "additionalInformation" &&
+                    <MdRender content={selectedProduct.additionalInformation}/>
+                    }
 
-                    && selectedProduct.additionalInformation !== "" &&
-                    <ReactMarkdown>{selectedProduct.additionalInformation}</ReactMarkdown>
-                    }
                 </Box>
             </>
             }

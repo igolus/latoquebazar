@@ -135,7 +135,7 @@ function ProductSelector({ productAndSku, options,
 
 
     let valid = true;
-    let optionListMatching = productAndSku && productAndSku.sku.optionListExtIds ? productAndSku.sku.optionListExtIds.map(optionId => {
+    let optionListMatching = productAndSku && productAndSku.sku && productAndSku.sku.optionListExtIds ? productAndSku.sku.optionListExtIds.map(optionId => {
       return options
           .find(optionsList => optionsList.extId === optionId)
     }).filter(element => element !== undefined) : []
@@ -191,6 +191,9 @@ function ProductSelector({ productAndSku, options,
 
   function initSelection() {
     let skuBooking;
+    if (!productAndSku.sku) {
+      return;
+    }
     productAndSku.sku.optionListExtIds.forEach(optionId => {
       let optionList = options
           .find(optionsList => optionsList.extId === optionId)
@@ -317,7 +320,7 @@ function ProductSelector({ productAndSku, options,
             // mt={1}
             // mb={1}
         >
-          {productAndSku && productAndSku.sku.optionListExtIds && productAndSku.sku.optionListExtIds.map((optionId, key) => {
+          {productAndSku && productAndSku.sku && productAndSku?.sku?.optionListExtIds && productAndSku?.sku?.optionListExtIds.map((optionId, key) => {
             let optionListMatching = options
                 .find(optionsList => optionsList.extId === optionId)
 
