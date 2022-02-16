@@ -1,13 +1,10 @@
 import CarouselCard1 from '@component/carousel-cards/CarouselCard1'
 import Carousel from '@component/carousel/Carousel'
 import Navbar from '@component/navbar/Navbar'
-import { Box, Container } from '@material-ui/core'
-import React, { Fragment } from 'react'
-import {IndexPageProps} from "../../../pages";
-import CarouselCard2 from "@component/carousel-cards/CarouselCard2";
-import {isMobile} from "react-device-detect";
-import Image from "@component/BazarImage";
+import {Box, Container} from '@material-ui/core'
+import React, {Fragment} from 'react'
 import useAuth from "@hook/useAuth";
+import Fade from 'react-reveal/Fade';
 
 export interface CarouselCompoProps {
   contextData?: any
@@ -54,7 +51,9 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
                 :
                 <>
                   {carouselItems.map((carouselItem, key) =>
-                      <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
+                      <Fade left={parseInt(key) % 2 === 0} right={parseInt(key) % 2 !== 0}>
+                        <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
+                      </Fade>
                   )}
                 </>
             }
