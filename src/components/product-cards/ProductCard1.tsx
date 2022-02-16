@@ -246,6 +246,41 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     return moment(newProductExpireDate, 'YYYY-MM-DD').isBefore()
   }
 
+  function getAddToCartElement() {
+    //return localStrings.seeDetail;
+    if (selectedProductAndSku?.product?.notAddableToCart) {
+      return localStrings.seeDetail;
+    }
+    if (isProductAndSkuGetOption(selectedProductAndSku)) {
+      if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
+        return localStrings.unavailable;
+      }
+      else {
+        // if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
+        //   return localStrings.choose;
+        // }
+        return localStrings.selectOptions;
+      }
+    }
+    else {
+      if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
+        return localStrings.unavailable;
+      }
+      else {
+        if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
+          return localStrings.choose;
+        }
+        return (<Add fontSize="small"/>)
+      }
+    }
+
+    // return (isProductAndSkuGetOption(selectedProductAndSku) || getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) ?
+    //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
+    //     :
+    //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable :
+    //         <Add fontSize="small"/>;
+  }
+
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
         {/*<p>{JSON.stringify(currentEstablishment())}</p>*/}
@@ -260,14 +295,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
           >
 
             {product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&
-                <Box ml='3px' mt='6px' mr='3px'>
-                  <Chip
-                      className={classes.offerChip}
-                      color="secondary"
-                      size="small"
-                      label={localStrings.new}
-                  />
-                </Box>
+            <Box ml='3px' mt='6px' mr='3px'>
+              <Chip
+                  className={classes.offerChip}
+                  color="secondary"
+                  size="small"
+                  label={localStrings.new}
+              />
+            </Box>
             }
 
             {/*{product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&*/}
@@ -284,14 +319,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             {/*<p>{JSON.stringify(selectedProductAndSku?.sku || {})}</p>*/}
 
             {isProductUnavailableInDelivery(selectedProductAndSku) &&
-              <Box ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    label={localStrings.unavailableInDelivery}
-                />
-              </Box>
+            <Box ml='3px' mt='6px' mr='3px'>
+              <Chip
+                  className={classes.offerChip}
+                  color="primary"
+                  size="small"
+                  label={localStrings.unavailableInDelivery}
+              />
+            </Box>
 
             }
 
@@ -425,56 +460,57 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
               {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
               getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
-                  <Fragment>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
-                        disabled={getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0}
-                        onClick={() => {
-                          if (selectedProductAndSku?.sku.uuid) {
-                            decreaseCartQte(getOrderInCreation(), setOrderInCreation, selectedProductAndSku?.sku.uuid)
-                          }
-                        }}
-                    >
-                      <Remove fontSize="small" />
-                    </Button>
-                    <Box color="text.primary" fontWeight="600">
-                      {getQteInCart(selectedProductAndSku, getOrderInCreation())}
-                    </Box>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
-                        sx={{ padding: '3px', ml:'5px', mr:'5px'}}
-                        onClick={() => {
-                          //alert("add")
-                          if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                            //alert(selectedProductAndSku.sku.uuid)
-                            //alert(JSON.stringify(selectedProductAndSku.sku));
-                            addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
-                            //alert("uuid " + uuid);
-                            // if (!selectedProductAndSku.sku.uuid) {
-                            //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
-                            //   setSelectedProductSku(selectedWithUuid)
-                            // }
-                          }
-                          else {
-                            setOpen(true);
-                          }
-                        }}
-                    >
-                      {(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) ?
-                          isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
-                          :
-                          isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : <Add fontSize="small" />
-                      }
+                      <Fragment>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
+                            disabled={getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0}
+                            onClick={() => {
+                              // alert("remove" + selectedProductAndSku?.sku.uuid)
+                              //
+                              // console.log("remove " + JSON.stringify(selectedProductAndSku, null,2))
+                              // console.log("getOrderInCreation() " + JSON.stringify(getOrderInCreation(), null,2))
+                              if (selectedProductAndSku?.sku.uuid) {
+                                decreaseCartQte(getOrderInCreation(), setOrderInCreation, selectedProductAndSku?.sku.uuid)
+                              }
+                            }}
+                        >
+                          <Remove fontSize="small" />
+                        </Button>
+                        <Box color="text.primary" fontWeight="600">
+                          {getQteInCart(selectedProductAndSku, getOrderInCreation())}
+                        </Box>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
+                            sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                            onClick={() => {
+                              //alert("add")
+                              if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
+                                //alert(selectedProductAndSku.sku.uuid)
+                                //alert(JSON.stringify(selectedProductAndSku.sku));
+                                addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                //alert("uuid " + uuid);
+                                // if (!selectedProductAndSku.sku.uuid) {
+                                //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
+                                //   setSelectedProductSku(selectedWithUuid)
+                                // }
+                              }
+                              else {
+                                setOpen(true);
+                              }
+                            }}
+                        >
+                          {/*<p>TOTO</p>*/}
+                          {getAddToCartElement()}
 
-                    </Button>
+                        </Button>
 
-                  </Fragment>
-              )
-              :
+                      </Fragment>
+                  )
+                  :
                   <Button
                       variant="outlined"
                       color="primary"
@@ -482,13 +518,22 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         //alert("add To cart")
-                        if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length === 1) {
+                        if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
                           let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
-                          //alert("uuid " + uuid);
-                          if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
-                            let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
-                            setSelectedProductSku(selectedWithUuid)
-                          }
+                          alert("uuid " + uuid);
+                          let newPAndSku = {
+                            ...selectedProductAndSku,
+                            sku: {
+                              ...selectedProductAndSku.sku,
+                              uuid: uuid,
+                            }};
+                          console.log("newPAndSku " + JSON.stringify(newPAndSku, null, 2));
+                          setSelectedProductSku(newPAndSku)
+
+                          // if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
+                          //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
+                          //   setSelectedProductSku(selectedWithUuid)
+                          // }
                         }
                         else {
                           setOpen(true);
@@ -496,14 +541,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       }}
                   >
                     {selectedProductAndSku &&
-                      <>
-                        {/*{JSON.stringify(selectedProductAndSku)}*/}
-                        {(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) ?
-                            isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
-                            :
-                            isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : <Add fontSize="small" />
-                        }
-                      </>
+                    <>
+
+                      {/*{JSON.stringify(selectedProductAndSku)}*/}
+                      {getAddToCartElement()}
+                    </>
                     }
                     {/*{selectedProductAndSku && isProductAndSkuGetOption(selectedProductAndSku) ?*/}
                     {/*    (getFirstRestrictionItem() || localStrings.selectOptions)*/}
@@ -535,7 +577,17 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           product={product}
                           options={options}
                           currency={currency}
-                          addCallBack={() => setOpen(false)}
+                          addCallBack={(uuid) => {
+                            let newPAndSku = {
+                              ...selectedProductAndSku,
+                              sku: {
+                                ...selectedProductAndSku.sku,
+                                uuid: uuid,
+                              }};
+                            setSelectedProductSku(newPAndSku)
+                            setOpen(false)
+
+                          }}
             />
             <IconButton
                 sx={{ position: 'absolute', top: '0', right: '0' }}

@@ -20,6 +20,7 @@ const common = `
   shortDescription
   additionalInformation
   newProduct
+  notAddableToCart
   newProductExpireDate
   tags {
     id

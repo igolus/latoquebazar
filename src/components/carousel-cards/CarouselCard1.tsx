@@ -16,6 +16,7 @@ export interface CarouselCard1Props {
     openInNewTab?: boolean
     actionSecond?: string
     actionTextSecond?: string
+    marginBottom?: string
     openInNewTabSecond?: boolean
 }
 
@@ -78,6 +79,7 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                                                          actionSecond,
                                                          actionTextSecond,
                                                          openInNewTabSecond,
+                                                         marginBottom,
                                                          odd}) => {
 
     const width = useWindowSize()
@@ -85,7 +87,7 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
     if (odd || width < WIDTH_DISPLAY_MOBILE) {
         return (
             <StyledBox>
-                <Grid container spacing={3} alignItems="center" justifyContent="center">
+                <Grid container spacing={3} alignItems="center" justifyContent="center" mb={marginBottom || "0"}>
                     <Grid item className="grid-item" sm={imageUrl ? 5 : 12} xs={12}>
                         <h1 className="title">{title}</h1>
                         <Paragraph color="secondary.main" mb={2.7}>
@@ -159,7 +161,7 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
     else {
         return (
             <StyledBox>
-                <Grid container spacing={3} alignItems="center" justifyContent="center">
+                <Grid container spacing={3} alignItems="center" justifyContent="center" mb={marginBottom || "0"}>
                     {imageUrl &&
                     <Grid item sm={5} xs={12}>
                         <BazarImage

@@ -74,7 +74,7 @@ const CompleteProfile = ({closeCallBack}) => {
   const {addToast} = useToasts();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
   const [submitOnGoing, setSubmitOnGoing] = useState(false)
-  const { user, currentBrand, currentEstablishment, establishmentList, setDbUser } = useAuth();
+  const { user, currentBrand, currentEstablishment, establishmentList, setDbUser, dbUser, setLoginOnGoing, logout } = useAuth();
   const router = useRouter();
 
   const initialValues = {
@@ -311,6 +311,33 @@ const CompleteProfile = ({closeCallBack}) => {
                     <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
             >
               {localStrings.completeAccount}
+            </BazarButton>
+
+          </FlexBox>
+
+
+          <FlexBox justifyContent="center" alignItems="center" my="1.25rem">
+            <BazarButton
+                variant="contained"
+                color="primary"
+                onClick={async () => {
+                  setDbUser(null);
+                  if (closeCallBack) {
+                    closeCallBack();
+                  }
+                  await logout();
+                  setLoginOnGoing(false);
+                  // router.push("/");
+                }}
+                fullWidth
+                disable={!dbUser}
+                sx={{
+                  height: 44,
+                }}
+                endIcon={submitOnGoing ?
+                    <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
+            >
+              {localStrings.logout}
             </BazarButton>
           </FlexBox>
 

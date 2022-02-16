@@ -18,8 +18,8 @@ import {config} from "@fortawesome/fontawesome-svg-core";
 import markdownToTxt from 'markdown-to-txt';
 
 export const StyledTabs = styled(Tabs)(({ theme }) => ({
-    marginTop: 80,
-    marginBottom: 24,
+    marginTop: 10,
+    marginBottom: 10,
     minHeight: 0,
     borderBottom: `1px solid ${theme.palette.text.disabled}`,
     '& .inner-tab': {
@@ -157,10 +157,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                     indicatorColor="primary"
                     textColor="primary"
                 >
-                    {selectedProduct.description !== "" &&
+                    {selectedProduct.description.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.description}/>
                     }
-                    {selectedProduct.additionalInformation !== "" &&
+                    {selectedProduct.additionalInformation.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.additionalInformation}/>
                     }
                 </StyledTabs>

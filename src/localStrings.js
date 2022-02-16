@@ -4,6 +4,7 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        seeDetail: "Voir le detail",
         deliveryHourAndPlace: "Horaires d'ouverture et emplacement",
         deliveryHourAndPlaceDesc: "Consultez nos horaires d'ouverture et notre emplacement",
 
@@ -352,7 +353,7 @@ let localStrings = new LocalizedStrings({
 
             noSelectPaymentMethod: "Aucune méthode de paiments selectionné",
             noSelectSlotMethod: "Aucune Créneau selectionné",
-            noDeliveryAdress: "Aucune addresse de livraison selectionné",
+            noDeliveryAdress: "Aucune adresse de livraison selectionné",
             maxDistanceReached: "L'adresse est en dehors de la zone",
             noItemInCart: "Aucun produits dans le panier",
             badContactInfo: "Information de contact invalides",
@@ -395,7 +396,7 @@ let localStrings = new LocalizedStrings({
         },
 
         confirmMessage: {
-            deleteAddress: 'Etes vous sur de vouloir supprimer cette addresse ?',
+            deleteAddress: 'Etes-vous sûr de vouloir supprimer cette adresse ?',
         },
 
         emailTemplate: {
