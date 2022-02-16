@@ -86,14 +86,13 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     const selectedProduct = (getContextData() && getContextData().products) ? (getContextData().products || []).find(p => p.id === productId) : null;
 
     useEffect(() => {
-        if (selectedProduct && !selectedProduct?.description) {
-            setSelectedOption("allergens")
+        if (selectedProduct && selectedProduct.description && selectedProduct.description.trim() !== "") {
+            setSelectedOption("description")
         }
 
     }, [])
 
-    const [selectedOption, setSelectedOption] = useState("description")
-
+    const [selectedOption, setSelectedOption] = useState("allergens" )
 
     const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: string) => {
         setSelectedOption(newValue)
@@ -144,7 +143,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
     function getAllergenDesc() {
         // return (<p>{selectedProduct.allergens}</p>)
 
-        if (!selectedProduct.allergens || selectedProduct.allergens.length == 0) {
+        if (!selectedProduct?.allergens || selectedProduct?.allergens.length == 0) {
             return (
                 <Typography fontWeight="700" >
                     {localStrings.noAllergens}
@@ -202,10 +201,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                     textColor="primary"
                 >
                     <Tab className="inner-tab" label={localStrings.allergens} value="allergens"/>
-                    {selectedProduct.description.trim() !== "" &&
+                    {selectedProduct?.description.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.description} value="description"/>
                     }
-                    {selectedProduct.additionalInformation.trim() !== "" &&
+                    {selectedProduct?.additionalInformation.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.additionalInformation} value="additionalInformation"/>
                     }
 
@@ -217,11 +216,18 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                         {getAllergenDesc()}
                     </>
                     }
-                    {selectedOption === "description" &&
-                    <MdRender content={selectedProduct.description}/>
+                    {selectedOption === "description" && selectedProduct && selectedProduct.description &&
+                    (typeof selectedProduct.description === "string") &&
+                    <>
+                        <p>{selectedProduct.description}</p>
+                        <p>{typeof selectedProduct.description}</p>
+                    </>
+                        // <MdRender content={selectedProduct.description}/>
                     }
-                    {selectedOption=== "additionalInformation" &&
-                    <MdRender content={selectedProduct.additionalInformation}/>
+                    {selectedOption=== "additionalInformation" && selectedProduct && selectedProduct.additionalInformation &&
+                    (typeof selectedProduct.additionalInformation === "string") &&
+                        <></>
+                    // <MdRender content={selectedProduct.additionalInformation}/>
                     }
 
                 </Box>
