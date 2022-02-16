@@ -450,7 +450,7 @@ export function addDiscountToCart(discount, orderInCreation, setOrderInCreation)
 }
 
 export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast) {
-    if (!orderInCreation || !orderInCreation()) {
+    if (!orderInCreation || !orderInCreation() || !productAndSku.product) {
         return;
     }
 
