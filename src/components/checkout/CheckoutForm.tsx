@@ -126,7 +126,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   const [checkoutError, setCheckoutError] = useState();
   const [useMyAdress, setUseMyAdress] = useState(false);
-  const [selectedAddId, setSelectedAddId] = useState("main");
+  const [selectedAddId, setSelectedAddId] = useState(null);
   const [customAddressSelected, setCustomAddressSelected] = useState(false);
   const [payLoading, setPayLoading] = useState(false);
 
@@ -148,12 +148,25 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
 
+  useEffect(() => {
+
+    const setAddMainLoad = async () => {
+      if (
+          (dbUser || bookWithoutAccount) &&
+          isDeliveryActive(currentEstablishment()) &&
+          getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+        await setAddMain()
+      }
+    };
+
+    setAddMainLoad()
+
+
+  }, [])
 
   useEffect(() => {
     ga.gaCheckout(getOrderInCreation())
   }, [])
-
-
 
   function firstOrCurrentEstablishment() {
     if (currentEstablishment()) {
@@ -782,6 +795,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
 
+  async function setAddMain() {
+    setSelectedAddId("main");
+    setCustomAddressSelected(false);
+    setAdressValue(null);
+    let distInfo = await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
+    updateDeliveryAdress(
+        dbUser?.userProfileInfo?.address,
+        dbUser?.userProfileInfo?.lat,
+        dbUser?.userProfileInfo?.lng,
+        "main",
+        "main",
+        dbUser?.userProfileInfo?.customerDeliveryInformation,
+        distInfo?.distance,
+    );
+  }
+
   return (
       <>
         <Dialog open={pickupAlert} maxWidth="sm"
@@ -1009,19 +1038,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   subtitle={dbUser?.userProfileInfo?.address}
                                   selected={selectedAddId === "main"}
                                   onCLickCallBack={async () => {
-                                    setSelectedAddId("main");
-                                    setCustomAddressSelected(false);
-                                    setAdressValue(null);
-                                    let distInfo = await checkDistance(dbUser?.userProfileInfo?.lat, dbUser?.userProfileInfo?.lng);
-                                    updateDeliveryAdress(
-                                        dbUser?.userProfileInfo?.address,
-                                        dbUser?.userProfileInfo?.lat,
-                                        dbUser?.userProfileInfo?.lng,
-                                        "main",
-                                        "main",
-                                        dbUser?.userProfileInfo?.customerDeliveryInformation,
-                                        distInfo?.distance,
-                                    );
+                                    await setAddMain();
                                   }}
                               />
                               }
