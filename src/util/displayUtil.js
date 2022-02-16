@@ -140,7 +140,7 @@ export const formatProductAndSkuName = (sku) => {
     if (sku.productName === sku.name) {
         return sku.productName;
     }
-    return (sku.productName + " " + sku.name).trim()
+    return ((sku.productName || "") + " " + (sku.name || "")).trim()
 
 }
 

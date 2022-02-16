@@ -409,7 +409,7 @@ let localStrings = new LocalizedStrings({
         },
         allergens: "Allergènes",
         allergenTypes: {
-            gluten: "gluten",
+            gluten: "Gluten",
             shellfish: "Crustacés",
             egg: "Oeuf",
             fishes: "Poissons",
