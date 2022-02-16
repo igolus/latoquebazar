@@ -177,19 +177,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 loading="eager"
                                 objectFit="cover"
                             />
-
-                            {/*{isViewerOpen && (*/}
-                            {/*    <ImageViewer*/}
-                            {/*        src={imgUrl}*/}
-                            {/*        currentIndex={currentImage}*/}
-                            {/*        onClose={closeImageViewer}*/}
-                            {/*        backgroundStyle={{*/}
-                            {/*            backgroundColor: 'rgba(0,0,0,0.9)',*/}
-                            {/*        }}*/}
-                            {/*    />*/}
-                            {/*)}*/}
                         </FlexBox>
-
 
                         <FlexBox overflow="auto">
                             {imgUrl.map((url, ind) => (
@@ -331,9 +319,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                 router.push("/cart");
                                             }
                                         } else {
-                                            addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                            let uuid = addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
                                             if (addCallBack) {
-                                                addCallBack();
+                                                addCallBack(uuid);
                                             }
                                             if (routeToCart) {
                                                 router.push("/cart");

@@ -65,9 +65,9 @@ export function getCartItems(orderInCreation, excludeRestriction) {
 }
 
 export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
-    let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
+    let itemToChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
 
-    if (!itemIoChange) {
+    if (!itemToChange) {
         return;
     }
     let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
@@ -78,7 +78,7 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
         items = [...orderInCreation.order.items]
     }
 
-    if (itemIoChange.quantity == 1) {
+    if (itemToChange.quantity == 1) {
         setOrderInCreation({
             ...orderInCreation,
             order: {
@@ -86,16 +86,16 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
                 deals: [...others]
             }
         });
-        itemIoChange.quantity--;
+        itemToChange.quantity--;
         return;
     }
 
-    itemIoChange.quantity--;
+    itemToChange.quantity--;
     setOrderInCreation({
         ...orderInCreation,
         order: {
             items: items,
-            deals: [...others, {...itemIoChange}]
+            deals: [...others, {...itemToChange}]
         }
     });
 
@@ -137,7 +137,12 @@ export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
 
 
 export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, contextData) {
-    let itemIoChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
+    //alert("uuid " + uuid)
+    let itemToChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
+    if (!itemToChange) {
+        //alert("no itemToChange ")
+        return;
+    }
     let others = orderInCreation.order.items.filter(itemOrder => itemOrder.uuid !== uuid);
     let removed = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
 
@@ -146,7 +151,7 @@ export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, conte
         deals = [...orderInCreation.order.deals]
     }
 
-    if (itemIoChange.quantity == 1) {
+    if (itemToChange.quantity == 1) {
         setOrderInCreation({
             ...orderInCreation,
             order: {
@@ -154,15 +159,15 @@ export function decreaseCartQte(orderInCreation, setOrderInCreation, uuid, conte
                 deals: deals
             }
         });
-        itemIoChange.quantity--;
+        itemToChange.quantity--;
         return;
     }
 
-    itemIoChange.quantity--;
+    itemToChange.quantity--;
     setOrderInCreation({
         ...orderInCreation,
         order: {
-            items: [...others, {...itemIoChange}],
+            items: [...others, {...itemToChange}],
             deals: deals
         }
     });

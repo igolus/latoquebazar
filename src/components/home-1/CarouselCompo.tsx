@@ -48,13 +48,13 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
                 >
 
                   {carouselItems.map((carouselItem, key) =>
-                      <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0}/>
+                      <CarouselCard1 {...carouselItem} />
                   )}
                 </Carousel>
                 :
                 <>
                   {carouselItems.map((carouselItem, key) =>
-                      <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0}/>
+                      <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
                   )}
                 </>
             }
