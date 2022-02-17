@@ -88,7 +88,7 @@ const initialAuthState = {
   //   additionalInfo: null,
   // },
   bookingSlotStartDate: moment(),
-  maxDistanceReached: false,
+  maxDistanceReached: true,
   loginDialogOpen: false,
   justCreatedOrder: null,
   loginOnGoing: false,
