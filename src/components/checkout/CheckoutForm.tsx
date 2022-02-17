@@ -134,7 +134,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [paymentCardValid, setPaymentCardValid] = useState(false);
   const router = useRouter()
   const [selectedSlotKey, setSelectedSlotKey] = useState(null);
-  //const [reloadDist, seReloadDist] = useState(false);
   const [adressValue, setAdressValue] = useState("");
   const [adressEditLock, setAdressEditLock] = useState(false);
 
@@ -175,27 +174,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     }
     return contextData.establishments[0];
   }
-
-  // useEffect(() => {
-  //   //resetDeliveryAdress();
-  //   if (typeof window !== 'undefined' && !loaded.current) {
-  //     let element = document.querySelector('#google-maps');
-  //     if (element) {
-  //       element.setAttribute("src",
-  //           'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places");
-  //     }
-  //     else {
-  //       loadScript(
-  //           'https://maps.googleapis.com/maps/api/js?key=' + config.googleKey + "&libraries=places",
-  //           document.querySelector('head'),
-  //           'google-maps',
-  //       );
-  //     }
-  //     resetDeliveryAdress();
-  //     loaded.current = true;
-  //   }
-  //
-  // },  [])
 
   useEffect(() => {
     if (currentEstablishment() &&
@@ -276,23 +254,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       }
 
       //update order
-      let resOrder = await executeQueryUtil(getOrderByIdQuery(currentBrand().id, currentEstablishment().id, orderId));
-      let order = resOrder?.data?.getOrdersByOrderIdEstablishmentIdAndOrderId;
-      //if (order) {
-        //let dataUpdate = cloneDeep(order);
-        // if (dataUpdate && dataUpdate.payments.length === 1) {
-        //   dataUpdate.payments[0] = {...order.payments[0], extId: resPay.paymentIntent.id}
-        //   await executeMutationUtil(updateOrderMutation(currentBrand().id, currentEstablishment().id, dataUpdate))
-        // }
-      //}
-
-      //alert("payment done " + JSON.stringify(resPay))
+      await executeQueryUtil(getOrderByIdQuery(currentBrand().id, currentEstablishment().id, orderId));
       return resPay;
 
     } catch (err) {
       setCheckoutError(err.message);
       console.log("error pay" + JSON.stringify(err, null,2));
-      //alert("error pay" + JSON.stringify(err));
       return null;
     }
 
@@ -1263,12 +1230,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                         <Card1 sx={{mb: '2rem'}}>
                           {getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && config.notesDelivery &&
                           <Box mb={2}>
-                          <AlertHtmlLocal severity={"info"}
-                                          //title={localStrings.warningMessage.paymentIssue}
-                                          //content={getOrderInCreation().deliveryMode}
-                          >
-                            <MdRender content = {config.notesDelivery}/>
-                          </AlertHtmlLocal>
+                            <AlertHtmlLocal severity={"info"}
+                                //title={localStrings.warningMessage.paymentIssue}
+                                //content={getOrderInCreation().deliveryMode}
+                            >
+                              <MdRender content = {config.notesDelivery}/>
+                            </AlertHtmlLocal>
                           </Box>
                           }
 
@@ -1589,12 +1556,5 @@ const checkoutSchema = (bookWithoutAccount) => {
   }
 
 }
-
-
-// uncommect these fields below for from validation
-// const checkoutSchema = yup.object().shape({
-//
-// })
-
-  export default CheckoutForm
+export default CheckoutForm
 
