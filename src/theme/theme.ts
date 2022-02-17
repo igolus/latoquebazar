@@ -98,6 +98,9 @@ const bazarTheme = createTheme({
         '.MuiRating-sizeSmall': {
           fontSize: '20px',
         },
+        '.bigFont': {
+          fontSize: '85px',
+        },
         '#nprogress .bar': {
           position: 'fixed',
           top: 0,
