@@ -355,16 +355,9 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
                   <>
                     {productAndSkus && productAndSkus.length > 1 ?
-                        <Button
-                            variant="outlined"
-                            color="primary"
-
-                            sx={{ padding: '3px', ml:'5px', mr:'5px', color: 'primary !important'}}
-
-                            disabled={!isProductUnavailable(product, currentEstablishment, selectedProductAndSku)}
-                            onClick={() => {setOpen(true)}}>
+                        <>
                           {localStrings.selectOptions}
-                        </Button>
+                        </>
                         :
                         <>
                           {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
