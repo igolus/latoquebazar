@@ -13,5 +13,7 @@
   "systemPayValidatePaymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/servicepayment/systemPayValidatePayment",
   "defaultMapZoom": 16,
   "defaultMapLng": 7.1187851,
-  "defaultMapLat": 43.5882147
+  "defaultMapLat": 43.5882147,
+  "itemPerPage": 200
+
 }
