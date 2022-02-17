@@ -302,6 +302,9 @@ function sameItem(item, itemToAdd, optionsInit) {
 
 export function selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber) {
     let price;
+    if (!dealEdit) {
+        return;
+    }
     let pricingEffect = dealEdit.deal.lines[lineNumber].pricingEffect;
     let pricingValue = dealEdit.deal.lines[lineNumber].pricingValue;
 

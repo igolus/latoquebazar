@@ -28,7 +28,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import ProductIntro from "@component/products/ProductIntro";
 import {Close} from "@material-ui/icons";
 import BazarButton from "@component/BazarButton";
-import {isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
+import {isProductUnavailable, isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 
 export interface ProductCardDeal1Props {
   className?: string
@@ -269,36 +269,36 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   flexWrap="wrap"
                   sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
               >
-                {isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                    <Box ml='3px' mt='6px' mr='3px'>
-                      <Chip
-                          className={classes.offerChip}
-                          color="primary"
-                          size="small"
-                          label={localStrings.unavailable}
-                      />
-                    </Box>
+                {isProductUnavailable(product, currentEstablishment, selectedProductAndSku) &&
+                <Box ml='3px' mt='6px' mr='3px'>
+                  <Chip
+                      className={classes.offerChip}
+                      color="primary"
+                      size="small"
+                      label={localStrings.unavailable}
+                  />
+                </Box>
                 }
               </Box>
-                <LazyImage
-                    onClick={() => {
-                      if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
-                        return;
-                      }
-                      if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                      }
-                      else {
-                        setOpen(true);
-                      }
-                    }}
-                    objectFit="cover"
-                    src={url}
-                    width="100%"
-                    height="100%"
-                    layout="responsive"
-                    alt={product.name}
-                />
+              <LazyImage
+                  onClick={() => {
+                    if (isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) {
+                      return;
+                    }
+                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+                      selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                    }
+                    else {
+                      setOpen(true);
+                    }
+                  }}
+                  objectFit="cover"
+                  src={url}
+                  width="100%"
+                  height="100%"
+                  layout="responsive"
+                  alt={product.name}
+              />
             </div>
             {/*  </a>*/}
             {/*</Link>*/}
@@ -306,7 +306,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
           <div className={classes.details}>
             <FlexBox>
-              {productAndSkus && productAndSkus.length == 1 &&
+
 
               <Box flex="1 1 0" minWidth="0px" mr={1}>
                 {/*<Link href={`/product/${id}`}>*/}
@@ -324,7 +324,6 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                 </H3>
 
               </Box>
-              }
 
               <FlexBox
                   className="add-cart"
@@ -336,15 +335,16 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                 <Button
                     //variant="outlined"
                     disabled={
-                      (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment))&&
+                      (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailable(product, currentEstablishment, selectedProductAndSku))&&
                       isProductSelected() && productAndSkus && productAndSkus.length === 1}
                     color="primary"
+                    variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                     onClick={() => {
                       if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 ) {
                         selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
                       }
-                      else if (productAndSkus && productAndSkus.length == 1){
+                      else if (productAndSkus && productAndSkus.length > 1){
                         setOpen(true);
                       }
                     }}
@@ -355,35 +355,16 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
                   <>
                     {productAndSkus && productAndSkus.length > 1 ?
-                        <div style={{ width: '100%' }}>
-                          <Box display="flex" justifyContent="center" m={1}>
-                            {productAndSkus.map((productAndSkuItem, key) =>
-                                <Box key={key}>
-                                  {/*<BazarButton>grande</BazarButton>*/}
-                                  <BazarButton
-                                      disabled={!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
-                                      onClick={() => {
+                        <Button
+                            variant="outlined"
+                            color="primary"
 
-                                        if (isProductAndSkuGetOption(productAndSkuItem)) {
-                                          setSelectedSkuIndex(key)
-                                          setOpen(true);
-                                        }
-                                        else {
-                                          setSelectedProductSku(productAndSkuItem)
-                                          selectToDealEditOrder(productAndSkuItem, dealEdit, setDealEdit, lineNumber)
-                                          setSelectedSkuIndex(key)
-                                        }
+                            sx={{ padding: '3px', ml:'5px', mr:'5px', color: 'primary !important'}}
 
-                                      }}
-                                      variant="contained"
-                                      color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
-                                      sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
-                                    {productAndSkuItem.sku.name}
-                                  </BazarButton>
-                                </Box>
-                            )}
-                          </Box>
-                        </div>
+                            disabled={!isProductUnavailable(product, currentEstablishment, selectedProductAndSku)}
+                            onClick={() => {setOpen(true)}}>
+                          {localStrings.selectOptions}
+                        </Button>
                         :
                         <>
                           {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
@@ -396,48 +377,17 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
                   <>
                     {productAndSkus && productAndSkus.length > 1 ?
-                        // <p>sel</p>
-                        <div style={{ width: '100%'}}>
-                          <H3
-                              className="title"
-                              fontSize="14px"
-                              textAlign="left"
-                              fontWeight="600"
-                              color="text.secondary"
-                              mb={1}
-                              title={product.name}
-                          >
-                            {product.name}
-                          </H3>
-                          <Box display="flex" justifyContent="center" m={1}>
-                            {productAndSkus.map((productAndSkuItem, key) =>
-                                <Box key={key}>
-                                  {/*<BazarButton>grande</BazarButton>*/}
-                                  <BazarButton
-                                      onClick={() => {
-                                        // setSelectedProductSku(productAndSkuItem)
-                                        // selectToDealEditOrder(productAndSkuItem, dealEdit, setDealEdit, lineNumber)
-
-
-                                        if (isProductAndSkuGetOption(productAndSkuItem)) {
-                                          setSelectedSkuIndex(key)
-                                          setOpen(true);
-                                        }
-                                        else {
-                                          setSelectedProductSku(productAndSkuItem)
-                                          selectToDealEditOrder(productAndSkuItem, dealEdit, setDealEdit, lineNumber)
-                                          setSelectedSkuIndex(key)
-                                        }
-                                      }}
-                                      variant="contained"
-                                      color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}
-                                      sx={{ padding: "3px", mr: "8px", ml: "8px"}}>
-                                    {productAndSkuItem.sku.name}
-                                  </BazarButton>
-                                </Box>
-                            )}
-                          </Box>
-                        </div>
+                        // <Button
+                        //     variant="outlined"
+                        //     color="primary"
+                        //     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                        //
+                        //     disabled={!isProductUnavailable(product, currentEstablishment, selectedProductAndSku)}
+                        //     onClick={() => {setOpen(true)}}>
+                        <>
+                        {localStrings.selectOptions}
+                        </>
+                        // </Button>
                         :
                         <>
                           {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&

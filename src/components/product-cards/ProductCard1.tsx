@@ -154,6 +154,42 @@ export function isProductUnavailableInEstablishment(selectedProductAndSku: any, 
   return selectedProductAndSku?.sku?.unavailableInEstablishmentIds.includes(currentEstablishment().id);
 }
 
+export function isSkuUnavailableInEstablishment(sku: any, currentEstablishment) {
+  if (!sku || !currentEstablishment) {
+    return true;
+  }
+  if (!currentEstablishment() || !sku?.unavailableInEstablishmentIds || sku?.unavailableInEstablishmentIds.length == 0) {
+    return false;
+  }
+
+  return sku?.unavailableInEstablishmentIds.includes(currentEstablishment().id);
+}
+
+
+function getUnavailability(product, currentEstablishment, selectedProductAndSku) {
+  if (product.skus.length > 1) {
+    return !product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment))
+  }
+  return isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment);
+}
+
+export function isProductUnavailable(product, currentEstablishment, selectedProductAndSku) {
+  //console.log("isProductUnavailable" + product.name + "/" + product.skus.length );
+  // console.log("product " + JSON.stringify(product) );
+  // console.log("selectedProductAndSku " + JSON.stringify(selectedProductAndSku) );
+  if (product.skus.length === 1 && getUnavailability(product, currentEstablishment, selectedProductAndSku)) {
+    return true;
+  }
+  if (product.skus.length > 1) {
+    // console.log("product.skus.length > 1");
+    if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 
 const ProductCard1: React.FC<ProductCard1Props> = ({
@@ -246,33 +282,72 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     return moment(newProductExpireDate, 'YYYY-MM-DD').isBefore()
   }
 
+
+
   function getAddToCartElement() {
     //return localStrings.seeDetail;
     if (selectedProductAndSku?.product?.notAddableToCart) {
       return localStrings.seeDetail;
     }
-    if (isProductAndSkuGetOption(selectedProductAndSku)) {
-      if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
+    if (product.skus.length === 1 && getUnavailability(product, currentEstablishment, selectedProductAndSku)) {
+      return localStrings.unavailable;
+    }
+    if (product.skus.length > 1) {
+      if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
+      {
         return localStrings.unavailable;
       }
-      else {
-        // if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
-        //   return localStrings.choose;
-        // }
-        return localStrings.selectOptions;
-      }
     }
-    else {
-      if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
-        return localStrings.unavailable;
-      }
-      else {
-        if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
-          return localStrings.choose;
-        }
-        return (<Add fontSize="small"/>)
-      }
+
+    if (isProductAndSkuGetOption(selectedProductAndSku) || product.skus.length > 1) {
+      return localStrings.selectOptions;
     }
+
+    if (product.skus.length === 1 && getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
+      return localStrings.choose;
+    }
+    return (<Add fontSize="small"/>)
+
+    // if (isProductAndSkuGetOption(selectedProductAndSku)) {
+    //   if (product.skus.length > 0) {
+    //     if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
+    //     {
+    //       return localStrings.unavailable;
+    //     }
+    //     return localStrings.selectOptions;
+    //   }
+    //   else {
+    //     if (product.skus.length === 1 && isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
+    //       return localStrings.unavailable;
+    //     }
+    //     if (product.skus.length > 1) {
+    //       if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
+    //       {
+    //         return localStrings.unavailable;
+    //       }
+    //       return localStrings.selectOptions;
+    //     }
+    //
+    //
+    //   }
+    //   // else {
+    //     // if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
+    //     //   return localStrings.choose;
+    //     // }
+    //     return localStrings.selectOptions;
+    //   // }
+    // }
+    // else {
+    //   if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
+    //     return localStrings.unavailable;
+    //   }
+    //   else {
+    //     if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
+    //       return localStrings.choose;
+    //     }
+    //     return (<Add fontSize="small"/>)
+    //   }
+    // }
 
     // return (isProductAndSkuGetOption(selectedProductAndSku) || getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) ?
     //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
@@ -280,6 +355,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable :
     //         <Add fontSize="small"/>;
   }
+
 
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
@@ -484,7 +560,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         <Button
                             variant="outlined"
                             color="primary"
-                            disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
+                            disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
                             sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                             onClick={() => {
                               //alert("add")
@@ -513,7 +589,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   <Button
                       variant="outlined"
                       color="primary"
-                      disabled={isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)}
+                      disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         //alert("add To cart")
