@@ -5,38 +5,30 @@ import FlexBox from '@component/FlexBox'
 import Category from '@component/icons/Category'
 import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import MiniCart from '@component/mini-cart/MiniCart'
-import {
-    Badge,
-    Box,
-    Container,
-    Dialog,
-    Drawer,
-    IconButton, Tooltip, Typography,
-    useMediaQuery,
-} from '@material-ui/core'
-import { useTheme } from '@material-ui/core/styles'
+import {Badge, Box, Container, Dialog, Drawer, IconButton, Tooltip, Typography, useMediaQuery,} from '@material-ui/core'
+import {useTheme} from '@material-ui/core/styles'
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown'
 import LocationOn from '@material-ui/icons/LocationOn'
+import Menu from '@material-ui/icons/Menu';
 
 import PersonOutline from '@material-ui/icons/PersonOutline'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import clsx from 'clsx'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import SearchBox from '../search-box/SearchBox'
 import Account from './Account'
 import useAuth from "@hook/useAuth";
 import LoginOrSignup from "@component/sessions/LoginOrSignup";
 import {getItemNumberInCart} from "../../util/cartUtil";
 import {layoutConstant, WIDTH_DISPLAY_MOBILE} from "../../util/constants";
-import {isMobile} from "react-device-detect";
 import {useRouter} from "next/router";
-import localStrings from "../../localStrings";
 import {firstOrCurrentEstablishment} from "../../util/displayUtil";
 import SelectEsta from '../SelectEsta';
 import PhoneIcon from '@material-ui/icons/Phone';
 import useWindowSize from "@hook/useWindowSize";
+import Sidenav from "@component/sidenav/Sidenav";
 
 type HeaderProps = {
     className?: string
@@ -82,11 +74,9 @@ export function mobileBox(currentEstablishment) {
 
 const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     const width = useWindowSize()
-    const [sidenavOpen, setSidenavOpen] = useState(false)
-    // const [estanavOpen, setEstanavOpen] = useState(false)
-    //const {loginDialogOpen, setLoginDialogOpen} = useState(false)
+    const [sideCartOpen, setSideCartOpen] = useState(false)
+    const [sideNavOpen, setSideNavOpen] = useState(false)
     const router = useRouter()
-    //alert("contextData brand " + contextData.brand)
     const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen,
         dbUser, currentEstablishment, setEstanavOpen, estanavOpen} = useAuth();
     const theme = useTheme()
@@ -94,10 +84,8 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     const logoUrl = contextData ? contextData.brand.logoUrl : null;
     const brandName = contextData ? contextData.brand.brandName : null;
 
-    const toggleSidenav = () => setSidenavOpen(!sidenavOpen)
-    const toggleEstanav = () => setEstanavOpen(!estanavOpen)
-    const toggleDialog = () => setLoginDialogOpen(!loginDialogOpen)
-
+    const toggleCartnav = () => setSideCartOpen(!sideCartOpen)
+    const toggleSidenav = () => setSideNavOpen(!sideNavOpen)
 
     const classes = useStyles()
 
@@ -108,7 +96,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 ml={2.5}
                 bgcolor="grey.200"
                 p={1.25}
-                onClick={toggleSidenav}
+                onClick={toggleCartnav}
             >
                 <ShoppingBagOutlined />
             </Box>
@@ -156,8 +144,21 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     <SearchBox />
                 </FlexBox>
 
+                {width <= WIDTH_DISPLAY_MOBILE &&
+                    <>
+                        <IconButton aria-label="delete" color="primary" onClick={toggleSidenav} style={{marginLeft: "5px"}}>
+                            <Menu/>
+                        </IconButton>
+
+                        <Sidenav open={sideNavOpen} toggleSidenav={toggleSidenav}
+                                 extraPages={contextData?.extraPages || []}/>
+                    </>
+                }
+                {/*}*/}
+
+
                 {width > WIDTH_DISPLAY_MOBILE && currentEstablishment() && currentEstablishment().phoneNumber &&
-                    mobileBox(currentEstablishment)
+                mobileBox(currentEstablishment)
                 }
 
                 <FlexBox alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -225,8 +226,8 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                             root: classes.backDrop,
                         },
                     }}
-                    open={sidenavOpen} anchor="right" onClose={toggleSidenav}>
-                    <MiniCart contextData={contextData} toggleSidenav={toggleSidenav}/>
+                    open={sideCartOpen} anchor="right" onClose={toggleCartnav}>
+                    <MiniCart contextData={contextData} toggleSidenav={toggleCartnav}/>
                 </Drawer>
 
                 {contextData && contextData.establishments && contextData.establishments.length > 1 &&
@@ -243,28 +244,6 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 }
             </Container>
 
-            {/*<Container*/}
-            {/*    sx={{*/}
-            {/*        display: 'flex',*/}
-            {/*        alignItems: 'center',*/}
-            {/*        justifyContent: 'space-between',*/}
-            {/*        height: '100%',*/}
-            {/*    }}*/}
-            {/*>*/}
-
-            {/*    <Drawer*/}
-            {/*        BackdropProps={{*/}
-            {/*            classes: {*/}
-            {/*                root: classes.backDrop,*/}
-            {/*            },*/}
-            {/*        }}*/}
-            {/*        open={estanavOpen} anchor="top" onClose={toggleEstanav}>*/}
-            {/*        /!*<h1>HEADER</h1>*!/*/}
-            {/*        <SelectEsta contextData={contextData} closeCallBack={() => setEstanavOpen(false)}/>*/}
-            {/*    </Drawer>*/}
-
-            {/*    /!*<h1>select esta</h1>*!/*/}
-            {/*</Container>*/}
         </div>
     )
 }

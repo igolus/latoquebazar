@@ -907,7 +907,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 <Box display="flex" flexDirection="row-reverse">
                                   <Box mt={2}>
                                     <Link href="/product/shop/all">
-                                      <Button variant="contained" color="primary" type="button" fullWidth
+                                      <Button variant="outlined" color="primary" type="button" fullWidth
                                               style={{textTransform: "none"}}
                                       >
                                         {localStrings.continueShopping}

@@ -66,13 +66,17 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     return (
         <div>
-            <Head>
-            </Head>
+
 
             <AppLayout contextData={getContextData()}>
+
+                {/*<p className="bigFont">TOTO</p>*/}
+
                 {getContextData()?.brand?.config?.carouselWebConfig &&
                 <CarouselCompo contextData={getContextData()}/>
                 }
+
+
 
                 {width <= WIDTH_DISPLAY_MOBILE &&
                     <Box display="flex" justifyContent='space-evenly' p={1} m={1}>
@@ -132,6 +136,8 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                     >
                     {mobileBox(currentEstablishment)}
                     </Box>
+
+
                     {/*<Box display="flex" justifyContent='space-evenly' p={1} m={1}>*/}
 
                     {/*    {firstPage &&*/}
@@ -183,16 +189,16 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
                     {/*</Card1>*/}
 
-                    <Card1 sx={{mb: '2rem'}}>
-                        <Typography variant="h6" fontWeight="600" mb={4}>
-                            {localStrings.openingHours}
-                        </Typography>
-                        <OpeningHours firstEsta={getContextData().establishments[0]}/>
-                    </Card1>
+                    {/*<Card1 sx={{mb: '2rem'}}>*/}
+                    {/*    <Typography variant="h6" fontWeight="600" mb={4}>*/}
+                    {/*        {localStrings.openingHours}*/}
+                    {/*    </Typography>*/}
+                    {/*    <OpeningHours firstEsta={getContextData().establishments[0]}/>*/}
+                    {/*</Card1>*/}
 
-                    <Card1 sx={{mb: '2rem'}}>
-                        <ClosingDays firstEsta={getContextData().establishments[0]}/>
-                    </Card1>
+                    {/*<Card1 sx={{mb: '2rem'}}>*/}
+                    {/*    <ClosingDays firstEsta={getContextData().establishments[0]}/>*/}
+                    {/*</Card1>*/}
                 </div>
                 }
             </AppLayout>
