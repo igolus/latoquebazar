@@ -23,10 +23,10 @@ export interface ProductCard1ListProps {
     tagsSelected: any
     sortOption: string
 }
-
+const config = require('../../conf/config.json')
 export const ALL_CAT = "all";
 
-const itemPerPage = 21;
+const itemPerPage = config.itemPerPage || 200;
 
 const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                query,
