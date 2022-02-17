@@ -34,7 +34,7 @@ const NavLink: React.FC<NavLinkProps> = ({
 }) => {
   const { pathname } = useRouter()
 
-  const checkRouteMatch = () => {
+  const checkRouteMatch = (href: string) => {
     if (href === '/') return pathname === href
     return pathname.includes(href) || (regExpMatch && pathname.match(new RegExp(regExpMatch)))
   }

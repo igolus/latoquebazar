@@ -1,7 +1,12 @@
-import { Drawer } from '@material-ui/core'
+import {Box, Button, Drawer, IconButton} from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import clsx from 'clsx'
 import React, { cloneElement, Fragment, useEffect, useState } from 'react'
+import Close from '@material-ui/icons/Close';
+import {useRouter} from "next/router";
+import navbarNavigations from "@data/navbarNavigations";
+import useAuth from "@hook/useAuth";
+import Link from "next/link";
 
 const useStyles = makeStyles(() => ({
   handle: {
@@ -15,6 +20,7 @@ export interface SidenavProps {
   width?: number
   handle: React.ReactElement
   toggleSidenav?: () => void
+  extraPages: any
 }
 
 const Sidenav: React.FC<SidenavProps> = ({
@@ -22,11 +28,18 @@ const Sidenav: React.FC<SidenavProps> = ({
   open,
   width,
   handle,
-  children,
   toggleSidenav,
+  extraPages
 }) => {
   const [sidenavOpen, setSidenavOpen] = useState(open)
   const classes = useStyles()
+  const {dbUser} = useAuth()
+  const { pathname } = useRouter()
+
+  const checkRouteMatch = (href: string, regExpMatch: string) => {
+    if (href === '/') return pathname === href
+    return pathname.includes(href) || (regExpMatch && pathname.match(new RegExp(regExpMatch)))
+  }
 
   const handleToggleSidenav = () => {
     setSidenavOpen(!sidenavOpen)
@@ -44,7 +57,36 @@ const Sidenav: React.FC<SidenavProps> = ({
         onClose={toggleSidenav || handleToggleSidenav}
         SlideProps={{ style: { width: width || 280 } }}
       >
-        {children}
+
+        <Box>
+          <Box
+              display={'flex'}
+              justifyContent={'flex-end'}
+              onClick={handleToggleSidenav}
+          >
+            <IconButton>
+              <Close fontSize="small" />
+            </IconButton>
+          </Box>
+          <Box paddingX={2} paddingBottom={2}>
+            {navbarNavigations(dbUser, extraPages).map((nav, key) =>
+                <Box marginTop={1} key={key}>
+                  <Link href={nav.url}>
+                    <Button
+                        variant={checkRouteMatch(nav.url, nav.regExpMatch) ? "contained" : "outlined"}
+                        color="primary"
+                        fullWidth
+                    >
+                      {nav.title}
+                    </Button>
+                  </Link>
+                </Box>
+            )}
+
+          </Box>
+        </Box>
+
+
       </Drawer>
 
       {handle &&
