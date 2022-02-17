@@ -25,6 +25,7 @@ import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/Mini
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import theme from "@theme/theme";
 import MdRender from "@component/MdRender";
+import {isSkuUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -251,6 +252,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     <Box key={key}>
                                         {/*<BazarButton>grande</BazarButton>*/}
                                         <BazarButton
+                                            //disabled={isSkuUnavailableInEstablishment(pandsku?.sku, currentEstablishment)}
                                             onClick={() => setProductAndSku(pandsku)}
                                             variant="contained"
                                             color={productAndSku && productAndSku.sku && productAndSku.sku.extRef === pandsku.sku.extRef ? "primary" : undefined}
@@ -307,7 +309,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         width: '100%',
                         position: 'sticky',
                         bottom: '-20px',
-                        backgroundColor: theme.palette.background.default
+                        backgroundColor: 'transparent'
                         // backgroundColor: "blue"
                     }} >
 
@@ -319,8 +321,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         >
                             <Box>
                                 <BazarButton
-                                    disabled={!valid || getFirstRestriction() || itemRestrictionMax(productAndSku?.sku)}
-                                    variant="contained"
+                                    disabled={
+                                        !valid ||
+                                        getFirstRestriction() ||
+                                        itemRestrictionMax(productAndSku?.sku) ||
+                                        isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment)
+                                    }
+                                    variant={isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ? "outlined" : "contained"}
                                     color="primary"
                                     sx={{
                                         mt: '15px',
@@ -345,7 +352,11 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         }
                                     }}
                                 >
-                                    {addButtonText || (getFirstRestriction() || localStrings.addToCart)}
+                                    {isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ?
+                                        localStrings.unavailable
+                                        :
+                                        (addButtonText || (getFirstRestriction() || localStrings.addToCart))
+                                    }
                                 </BazarButton>
                                 {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
                             </Box>
