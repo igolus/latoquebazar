@@ -22,7 +22,9 @@ export interface ProductCard1ListProps {
 
 export const ALL_CAT = "all";
 
-const itemPerPage = 9;
+const config = require('../../conf/config.json')
+
+const itemPerPage = config.itemPerPage || 200;
 
 const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                query,
