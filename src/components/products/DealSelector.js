@@ -101,7 +101,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function addMenuToCart() {
-        addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation, addToast, contextData);
+        addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation);
         setDealEdit(null);
         router.push("/cart")
     }
