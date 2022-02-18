@@ -26,19 +26,15 @@ export default class Bazar extends Document {
                     <script
                         src="/hotjar.js">
                     </script>
-                    {/*<script*/}
-                    {/*    src="https://api.systempay.fr/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"*/}
-                    {/*    kr-public-key="73239078:testpublickey_Zr3fXIKKx0mLY9YNBQEan42ano2QsdrLuyb2W54QWmUJQ"*/}
-                    {/*    >*/}
-                    {/*</script>*/}
+
+
+                    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
                     <link rel="stylesheet"
                           href="/css/classic-reset.css"/>
                     <script
                         src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
                     </script>
-
-                    {/*<link href="/fonts/fonts.css" rel="stylesheet"/>*/}
                     <link rel="apple-touch-icon" href="/iconApp.png"></link>
                     <meta name="theme-color" content="#fff" />
                     {/* PWA primary color */}
