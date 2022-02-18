@@ -346,11 +346,12 @@ export function selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, line
     })
 }
 
-export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToast, contextData) {
+export function addDealToCart(deal, orderInCreation, setOrderInCreation, doNotUpdateOrder) {
     // let dealToAdd = {
     //     deal: {...deal},
     //     creationTimestamp:moment().unix()
     // }
+    let newOrder;
     let dealToAdd = {...deal}
     dealToAdd.creationTimestamp = moment().unix();
     let items = [];
@@ -387,43 +388,52 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToas
     if (existing) {
         let others = orderInCreation().order.deals.filter(deal => deal.uuid !== existing.uuid);
         existing.quantity ++;
-        setOrderInCreation({
+        newOrder = {
             ...orderInCreation(),
             order: {
                 items: items,
                 deals: [...others, existing],
             }
-        })
-        if (addToast) {
-            //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true});
+        };
+
+        if (!doNotUpdateOrder) {
+            setOrderInCreation(newOrder)
         }
 
-        return;
+        return newOrder;
+
+        //if (addToast) {
+            //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true});
+        //}
+
+        //return;
     }
 
     dealToAdd.quantity = 1;
     dealToAdd.uuid = uuid();
     if (orderInCreation().order.deals) {
-        setOrderInCreation({
+        newOrder = {
             ...orderInCreation(),
             order: {
                 items: items,
                 deals: [...orderInCreation().order.deals, dealToAdd],
             }
-        })
+        };
+
     }
     else {
-        setOrderInCreation({
+        newOrder = {
             ...orderInCreation(),
             order: {
                 items: items,
                 deals: [dealToAdd]
             }
-        })
+        };
+
     }
-    if (addToast) {
-        //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true });
-    }
+    // if (addToast) {
+    //     //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true });
+    // }
     console.log("productAndSku " + JSON.stringify(dealToAdd, null, 2))
     let price = 0;
     dealToAdd.deal.lines.forEach(line => {
@@ -436,7 +446,12 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, addToas
         1,
         price,
     )
-    //alert("addMenuToCart ")
+
+    if (newOrder && !doNotUpdateOrder) {
+        setOrderInCreation(newOrder)
+    }
+
+    return newOrder;
 }
 
 
