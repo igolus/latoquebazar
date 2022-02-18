@@ -140,6 +140,68 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         return null;
     }
 
+    function getAllergenIcon(allergen) {
+
+        // gluten: "Gluten",
+        //     shellfish: "Crustacés",
+        //     egg: "Oeuf",
+        //     fishes: "Poissons",
+        //     peanuts: "Arachides",
+        //     soy: "Soja",
+        //     milk: "Lait",
+        //     nuts: "Fruits à coques",
+        //     celery: "Celeri",
+        //     mustard: "Moutarde",
+        //     sesameSeeds: "Graines de sésame",
+        //     sulfurDioxideSulphites: "Anhydride sulfureux et sulfites",
+        //     lupine: "Lupin",
+        //     molluscs: "Mollusques"
+        const base = "/assets/images/allergensIcons/";
+        if (allergen === "gluten") {
+            return base + "gluten.svg";
+        }
+        if (allergen === "shellfish") {
+            return base + "crustacean_shellfish.svg";
+        }
+        if (allergen === "egg") {
+            return base + "egg.svg";
+        }
+        if (allergen === "fishes") {
+            return base + "fish.svg";
+        }
+        if (allergen === "peanuts") {
+            return base + "peanuts.svg";
+        }
+        if (allergen === "soy") {
+            return base + "soybeans.svg";
+        }
+        if (allergen === "milk") {
+            return base + "dairy.svg";
+        }
+        if (allergen === "nuts") {
+            return base + "almonds.svg";
+        }
+        if (allergen === "celery") {
+            return base + "celery.svg";
+        }
+        if (allergen === "mustard") {
+            return base + "mustard.svg";
+        }
+        if (allergen === "sesameSeeds") {
+            return base + "sesame.svg";
+        }
+        if (allergen === "sulfurDioxideSulphites") {
+            return base + "sulfate.svg";
+        }
+        if (allergen === "lupine") {
+            return base + "lupins.svg";
+        }
+        if (allergen === "molluscs") {
+            return base + "mollusk.svg";
+        }
+
+    }
+
     function getAllergenDesc() {
         // return (<p>{selectedProduct.allergens}</p>)
 
@@ -160,10 +222,21 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                 <ul>
                     {selectedProduct.allergens.map((allergen, key) =>
                         <li key={key}>
+
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                }}
+                            >
+
                             {/*{localStrings.allergensList[allergen]}*/}
-                            <Typography variant="body1" >
-                                {localStrings.allergenTypes[allergen]}
-                            </Typography>
+                                <Typography variant="body1" >
+                                    {localStrings.allergenTypes[allergen]}
+                                </Typography>
+
+                                <img width={"15px"} src={getAllergenIcon(allergen)} style={{marginLeft: "10px"}}/>
+                            </Box>
                         </li>
                     )
                     }
