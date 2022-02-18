@@ -14,17 +14,24 @@ import {makeStyles} from "@material-ui/styles";
 import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
-import {processOrderCharge, processOrderDiscount, processOrderInCreation} from "../util/cartUtil";
+import {
+  addDealToCart,
+  computeItemRestriction,
+  processOrderCharge,
+  processOrderDiscount,
+  processOrderInCreation
+} from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
-import {getBrandCurrency} from "../util/displayUtil";
+import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
 import {getContextData, getContextDataApollo, getStaticPropsUtil, sortChainList} from "../nextUtil/propsBuilder";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getBookingSlotsOccupancyQueryNoApollo} from "../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
 import {getProductsByIdQuery} from "../gql/productGql";
 import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
 import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
+import Box from "@material-ui/core/Box";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -75,18 +82,6 @@ const initialAuthState = {
   totalCartPrice: -1,
   globalProductVariants: null,
   dealEdit: null,
-  // orderInCreation: {
-  //   deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
-  //   order: {
-  //     items: [],
-  //     deals: []
-  //   },
-  //   customer: null,
-  //   payments: null,
-  //   deliveryAddress: null,
-  //   bookingSlot: null,
-  //   additionalInfo: null,
-  // },
   bookingSlotStartDate: moment(),
   maxDistanceReached: true,
   loginDialogOpen: false,
@@ -98,30 +93,6 @@ const initialAuthState = {
   contextData: null,
   estanavOpen: false,
 };
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDKBt5pdqJ5K3qMZXc4v_HnUxAChI9WSyU",
-  authDomain: "latoque-b23f1.firebaseapp.com",
-  databaseURL: "https://latoque-b23f1.firebaseio.com",
-  projectId: "latoque-b23f1",
-  storageBucket: "latoque-b23f1.appspot.com",
-  messagingSenderId: "399587571823",
-  appId: "1:399587571823:web:f46e56774ddfe1a886759a",
-  measurementId: "G-9YPCFBQH7Z"
-};
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(require('./latoque-b23f1-firebase-adminsdk-o5hes-e83acaf80e.json'))
-// });
-
-//const db = firebase.firestore();
-
-// const admin = require('firebase-admin');
-// admin.initializeApp(firebaseConfig);
-// const db = admin.firestore();
-
-//admin.initializeApp(firebaseConfig);
-//const db = admin.firestore();
 
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
@@ -354,17 +325,13 @@ export const AuthProvider = ({ children }) => {
     let index = contextCopy[dataType].findIndex(item => item.id === getFunc(res).id);
 
     console.log("index " + index);
-    //console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
     console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
-    //console.log("getFunc(res) " + JSON.stringify(getFunc(res)));
     if (getFunc(res) && index!==-1) {
       contextCopy[dataType].splice(index, 1, getFunc(res))
     }
     else {
       return;
     }
-    //console.log(" contextCopy[dataType] " + JSON.stringify(contextCopy[dataType]));
-    console.log(" contextCopy[dataType].length " + contextCopy[dataType].length);
 
     //contextCopy[dataType] = sortChainList(contextCopy[dataType])
 
@@ -507,58 +474,12 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-
-
-  // useEffect(() => {
-  //   try {
-  //
-  //     //if (state && state.contextData) {
-  //       // db.collection("brands")
-  //       //     .doc("0S93n0HvHamy7TP5vEYF")
-  //       //     .collection("reload")
-  //       //     .doc("8cWLnecWQkyUi3n24ZFC")
-  //       //if (currentBrand()) {
-  //       // const db = firebase.firestore();
-  //       // db.collection(BRAND_COLLECTION)
-  //       //     .doc(config.brandId)
-  //       //     .collection(RELOAD_COLLECTION)
-  //       //     .doc("1")
-  //       //     .onSnapshot((doc) => {
-  //       //       console.log("state.contextData " + state.contextData);
-  //       //       console.log("contextDataState " + contextDataState);
-  //       //       console.log("Current data ------ : ", JSON.stringify(doc.data()));
-  //       //       reloadContext(doc.data());
-  //       //
-  //       //     });
-  //
-  //       // }
-  //     //}
-  //
-  //   }
-  //   catch (err) {
-  //     console.log("error ------ : ", err);
-  //   }
-  //
-  //
-  // }, [contextDataState])
-  // const [deliveryItems, loading, error] = useCollectionData(
-  //     db
-  //         .collection(BRAND_COLLECTION).doc(currentBrand().id)
-  //         .collection(RELOAD_COLLECTION).doc("1")
-  //         .collection(DELIVERY_COLLECTION)
-  //         .where('startDate', '>=', getStartDateSeconds())
-  //         .where('startDate', '<=', getEndDateSeconds())
-  //     ,
-  //     {
-  //       snapshotListenOptions: { includeMetadataChanges: true },
-  //     }
-  // );
-
   useEffect(() => {
     // Create an scoped async function in the hook
     async function loadContextData() {
       const contextData = await getContextDataApollo();
       setContextDataAuth(contextData);
+      //alert("load context !!!!")
       console.log("load context !!!!");
 
       const db = firebase.firestore();
@@ -567,11 +488,7 @@ export const AuthProvider = ({ children }) => {
           .collection(RELOAD_COLLECTION)
           .doc(reloadId)
           .onSnapshot((doc) => {
-            //console.log("state.contextData " + state.contextData);
-            //console.log("contextDataState " + contextData);
-            //console.log("Current data ------ : ", JSON.stringify(doc.data()));
             reloadContext(doc.data(), contextData);
-
           });
 
     }    // Execute the created function directly
@@ -1011,6 +928,80 @@ export const AuthProvider = ({ children }) => {
     })
   }
 
+  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brandId) {
+    const oldPrice = computePriceDetail(orderInCreation);
+    const deals = state.contextData?.deals || [];
+    for (let j = 0; j < deals.length; j++) {
+      const dealToCheck = deals[j];
+      if (dealToCheck.lines && dealToCheck.lines.length > 0) {
+
+        let itemsInCart = cloneDeep(orderInCreation.order.items);
+        let itemsCopyForDealUpdate = cloneDeep(orderInCreation.order.items);
+
+        const lines = dealToCheck.lines;
+        let matchingRemains = lines.length;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          let itemInCart = itemsInCart.find(item => item.quantity > 0 && line.skus.map(sku => sku.extRef).includes(item.extRef));
+          if (itemInCart) {
+            itemInCart.quantity = itemInCart.quantity - 1;
+            itemInCart.canditeDeal = true;
+            itemInCart.lineIndex = i;
+            matchingRemains--;
+          }
+        }
+
+
+        let toRemoveSkuRef = [];
+        for (let i = 0; i < itemsInCart.length; i++) {
+          const itemsInCartElement = itemsInCart[i];
+          if (!itemsInCartElement.canditeDeal) {
+            continue;
+          }
+          if (itemsInCartElement.quantity === 0) {
+            toRemoveSkuRef.push(itemsInCartElement.extRef);
+          } else {
+            let toUpdateQte = itemsCopyForDealUpdate.find(item => item.extRef === itemsInCartElement.extRef);
+            toUpdateQte.quantity = itemsInCartElement.quantity;
+          }
+        }
+
+        if (matchingRemains === 0) {
+          //alert("matching deal");
+          itemsCopyForDealUpdate = itemsCopyForDealUpdate.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
+
+          let orderInCreationClone = cloneDeep(orderInCreation);
+          orderInCreationClone.order.items = itemsCopyForDealUpdate;
+
+          let dealToAdd = {
+            deal: cloneDeep(dealToCheck)
+          }
+          dealToAdd.productAndSkusLines =
+              itemsInCart.filter(item => item.canditeDeal)
+                  .sort((a, b) => a.lineIndex - b.lineIndex)
+          //dealToAdd = applyDealPrice(dealToAdd);
+          orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
+          computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
+          if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
+            const newPrice = computePriceDetail(orderInCreationClone);
+            console.log("newPrice " + JSON.stringify(newPrice, null, 2))
+            console.log("oldPrice " + JSON.stringify(oldPrice, null, 2))
+            return {
+              dealApplied: dealToAdd,
+              newOrder: orderInCreationClone,
+              saved: oldPrice.total - newPrice.total,
+            }
+          }
+          //return orderInCreationClone;
+        }
+      }
+    }
+    return {
+      newOrder: orderInCreation
+    }
+  }
+
   const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser) => {
     //currentEstablishment, currentService, orderInCreation
     const getEstaFun = getEstaFunc || currentEstablishment
@@ -1021,30 +1012,62 @@ export const AuthProvider = ({ children }) => {
       getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
-    //console.log("dbUser -- " + dbUser);
-    //console.log("dbUser -- " + getDbUser());
+
     if (getDbUser()) {
       await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
 
     }
+
+    let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
+        getCurrency(), currentBrand()?.id);
+
     //remove coupon if not logged
 
 
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
-        orderInCreation: orderInCreation,
+        orderInCreation: updatedOrderMerge.newOrder || orderInCreation,
+        //orderInCreation: orderInCreation,
       }
     });
     if (localStorage && !doNotupdateLocalStorage && orderInCreation.order) {
 
-      let orderInCreationCopy = cloneDeep(orderInCreation)
+      let orderInCreationCopy = cloneDeep(updatedOrderMerge.newOrder || orderInCreation)
+      //let orderInCreationCopy = cloneDeep(orderInCreation)
       delete orderInCreationCopy["bookingSlot"]
       orderInCreationCopy.updateDate = moment().unix();
 
       //alert("orderInCreation " + JSON.stringify(orderInCreation));
       localStorage.setItem(CART_KEY, encryptor.encrypt(JSON.stringify(orderInCreationCopy)));
       //localStorage.setItem(CART_KEY, JSON.stringify(orderInCreationCopy));
+    }
+
+    if (updatedOrderMerge.dealApplied) {
+      //console.log("updatedOrderMerge " + JSON.stringify(updatedOrderMerge, null, 2))
+      //console.log("updatedOrderMerge " + JSON.stringify(updatedOrderMerge.dealApplied, null, 2))
+      setGlobalDialog({
+        content: (<AlertHtmlLocal
+            title={localStrings.dealApplied}
+            content={localStrings.formatString(localStrings.dealAppliedDetail,
+                updatedOrderMerge.dealApplied.deal.name, updatedOrderMerge.saved.toFixed(2))}
+        >
+          <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                borderRadius: 1,
+              }}
+          >
+            <div style={{maxWidth: '300px'}}
+                dangerouslySetInnerHTML={{__html: `<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_qdiq7qa5.json"  background="transparent"  speed="1"  style="width: 250px; height: 250px; margin-left: -50px; margin-left: 0;"  loop  autoplay></lottie-player>`}}
+            />
+          </Box>
+
+
+        </AlertHtmlLocal>),
+        actions: []
+      })
     }
   }
 
@@ -1129,8 +1152,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
-    //alert("useEffect getBrand" + JSON.stringify(res))
-    // alert("useEffect getBrand" + JSON.stringify(res.data))
     if (res && res.data) {
       setBrand(res.data.getBrand)
     }
