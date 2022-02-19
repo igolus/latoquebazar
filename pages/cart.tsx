@@ -45,7 +45,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
             title={localStrings.cart}
             description={localStrings.cartDesc}
             contextData={getContextData()}>
-          {/*<p>{JSON.stringify(orderInCreation(), null, 2)}</p>*/}
+          {/*<p>{JSON.stringify(getOrderInCreation() || {}, null, 2)}</p>*/}
           <Grid container spacing={3}>
             <Grid item lg={8} md={8} xs={12}>
 

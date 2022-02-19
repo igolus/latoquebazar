@@ -16,7 +16,12 @@ import BazarButton from "@component/BazarButton";
 import theme from '@theme/theme'
 import { StickyContainer, Sticky } from 'react-sticky';
 import useWindowSize from "@hook/useWindowSize";
-import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
+import {
+    PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE,
+    PRICING_EFFECT_PRICE,
+    PRICING_EFFECT_UNCHANGED,
+    WIDTH_DISPLAY_MOBILE
+} from "../../util/constants";
 
 // const useStyles = makeStyles((palette) => ({
 //     root: {
@@ -34,6 +39,38 @@ import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 //         // zIndex: 2000
 //     }
 // }));
+export function applyDealPrice(deal) {
+
+    if (deal.deal.lines.length !== deal.productAndSkusLines.length) {
+        return null;
+    }
+    let dealWithPriceUpdated = {...deal}
+
+    let lines = deal.deal.lines;
+    let productAndSkusLines = deal.productAndSkusLines;
+
+    for (let i=0; i<lines.length;i++) {
+        let line = lines[i]
+        let productAndSkusLine = productAndSkusLines[i];
+        let priceLineF = parseFloat(line.pricingValue);
+        let priceProduct = parseFloat(productAndSkusLine.price);
+        if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
+            continue;
+        }
+        else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
+            productAndSkusLine.price = line.pricingValue;
+        }
+        else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
+            productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
+        }
+        else if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
+            let factor = 1 - priceLineF / 100
+            productAndSkusLine.price = (priceProduct * factor).toFixed(2);
+        }
+
+    }
+    return dealWithPriceUpdated;
+}
 
 
 const useStyles = makeStyles((palette) => ({
