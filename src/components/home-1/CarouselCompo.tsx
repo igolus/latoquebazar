@@ -54,8 +54,10 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
                   {carouselItems.map((carouselItem, key) =>
                       <Fade left={parseInt(key) % 2 === 0} right={parseInt(key) % 2 !== 0}>
                         {/*<p>{JSON.stringify(carouselItem)}</p>*/}
-                        <Box bgcolor={parseInt(key) % 2 !== 0 ? "grey.200"  : "white" } pb={4} pt={4}>
-                          <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
+                        <Box bgcolor={parseInt(key) % 2 !== 0 ? "grey.200"  : "white" } pb={4} pt={4} >
+                          <Box ml={2} mr={2}>
+                            <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
+                          </Box>
                         </Box>
                       </Fade>
                   )}
