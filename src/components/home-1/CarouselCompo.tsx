@@ -29,8 +29,9 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
         <Navbar contextData={getContextData()}/>
 
         {carouselItems && carouselItems.length > 0 &&
-        <Box bgcolor="white" mb={7.5}>
-          <Container sx={{py: '2rem'}}>
+        // <Box bgcolor="white" mb={7.5}>
+        //   <Container sx={{py: '2rem'}}>
+            <>
             {!carouselAsList ?
 
                 <Carousel
@@ -52,13 +53,17 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
                 <>
                   {carouselItems.map((carouselItem, key) =>
                       <Fade left={parseInt(key) % 2 === 0} right={parseInt(key) % 2 !== 0}>
-                        <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
+                        {/*<p>{JSON.stringify(carouselItem)}</p>*/}
+                        <Box bgcolor={parseInt(key) % 2 !== 0 ? "grey.200"  : "white" } pb={4} pt={4}>
+                          <CarouselCard1 {...carouselItem} odd={parseInt(key) % 2 === 0} marginBottom={"75px"}/>
+                        </Box>
                       </Fade>
                   )}
                 </>
             }
-          </Container>
-        </Box>
+            </>
+        //   </Container>
+        // </Box>
         }
       </Fragment>
   )
