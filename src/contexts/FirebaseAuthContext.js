@@ -840,6 +840,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   const setBrand = async (brand) => {
+    if (!brand) {
+      return
+    }
     let res = await executeQueryUtil(establishmentsQuery(brand.id));
 
     //alert("res setBrand" + JSON.stringify(res))
