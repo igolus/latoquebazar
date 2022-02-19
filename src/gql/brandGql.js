@@ -56,6 +56,8 @@ const common = `
       id
       name
       imageUrl
+      customContent
+      useCustomContent
       title
       subTitle
       action

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import MdRender from "@component/MdRender";
 import useWindowSize from "@hook/useWindowSize";
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
+import {renderMd} from "../../../pages/specialPage/[id]";
 
 export interface CarouselCard1Props {
     imageUrl?: string
@@ -18,9 +19,13 @@ export interface CarouselCard1Props {
     actionTextSecond?: string
     marginBottom?: string
     openInNewTabSecond?: boolean
+    customContent: string
+    useCustomContent: boolean
+    odd: boolean
 }
 
-const StyledBox = styled(Box)(({ theme}) => ({
+const StyledBox = styled(Box)(({ theme, odd}) => ({
+    backgroundColor: 'grey.500',
     textAlign: 'left',
     display: 'flex',
     justifyContent: 'space-between',
@@ -80,13 +85,16 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                                                          actionTextSecond,
                                                          openInNewTabSecond,
                                                          marginBottom,
+                                                         customContent,
+                                                         useCustomContent,
                                                          odd}) => {
 
     const width = useWindowSize()
 
     if (odd || width < WIDTH_DISPLAY_MOBILE) {
         return (
-            <StyledBox>
+            // <div style={{backgroundColor: 'red', width:'100%'}} >
+                <StyledBox>
                 <Grid container spacing={3} alignItems="center" justifyContent="center" mb={marginBottom || "0"}>
                     <Grid item className="grid-item" sm={imageUrl ? 5 : 12} xs={12}>
                         <h1 className="title">{title}</h1>
@@ -140,7 +148,7 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                         </Box>
 
                     </Grid>
-                    {imageUrl &&
+                    {imageUrl && !useCustomContent &&
                     <Grid item sm={5} xs={12}>
                         <BazarImage
                             src={imageUrl}
@@ -154,15 +162,30 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                         />
                     </Grid>
                     }
+                    {useCustomContent && customContent &&
+                    <Grid item sm={5} xs={12}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <div
+                                dangerouslySetInnerHTML={{__html: renderMd(customContent)}}
+                            />
+                        </Box>
+                    </Grid>
+                    }
                 </Grid>
             </StyledBox>
+            // </div>
         )
     }
     else {
         return (
             <StyledBox>
                 <Grid container spacing={3} alignItems="center" justifyContent="center" mb={marginBottom || "0"}>
-                    {imageUrl &&
+                    {imageUrl && !useCustomContent &&
                     <Grid item sm={5} xs={12}>
                         <BazarImage
                             src={imageUrl}
@@ -175,6 +198,20 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                             }}
                         />
                     </Grid>
+                    }
+                    {useCustomContent && customContent &&
+                        <Grid item sm={5} xs={12}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <div
+                                    dangerouslySetInnerHTML={{__html: renderMd(customContent)}}
+                                />
+                            </Box>
+                        </Grid>
                     }
                     <Grid item className="grid-item-right" sm={imageUrl ? 5 : 12}  xs={12}>
                         <h1 className="title">{title}</h1>
@@ -186,10 +223,6 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                             sx={{
                                 display: 'flex',
                                 justifyContent: 'flex-end',
-                                p: 1,
-                                m: 1,
-                                bgcolor: 'background.paper',
-                                borderRadius: 1,
                             }}
                         >
                             {
