@@ -10,6 +10,7 @@ import {getBrandByIdQuery} from "../gql/brandGql";
 import {getEstablishmentQueryNoApollo, getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
 import {getExtraPagesQueryNoApollo} from "../gqlNoApollo/extraPagesGqlNoApollo";
 
+var base64 = require('base-64');
 
 export async function getStaticPathsUtil() {
     return {
@@ -168,6 +169,8 @@ export async function getStaticPropsUtil() {
     if (resExtraPages.getExtraPages) {
         extraPages = resExtraPages.getExtraPages || [];
     }
+
+    extraPages.forEach(extraPage => extraPage.content = base64.decode(extraPage.content))
 
     return {
         props: {

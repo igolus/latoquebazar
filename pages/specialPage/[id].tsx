@@ -53,11 +53,18 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             {/*    metaTitle={extraPage.title}*/}
             {/*    metaDesc={extraPage.title}*/}
             {/*/>*/}
-            <NavbarLayout title={extraPage?.title || ""} description={extraPage?.title || ""} contextData={getContextData()}
+            <NavbarLayout noSpace title={extraPage?.title || ""} description={extraPage?.title || ""} contextData={getContextData()}
             >
+                {/*<div style={{*/}
+                {/*    margin: '0 !important',*/}
+                {/*    width: '100% !important',*/}
+                {/*    padding: '0 !important',*/}
+                {/*    marginRight: '0 !important'*/}
+                {/*}}>*/}
                 {extraPage && extraPage.content &&
                 <MdRender content = {extraPage.content}/>
                 }
+                {/*</div>*/}
             </NavbarLayout>
         </>
     )

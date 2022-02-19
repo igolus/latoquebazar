@@ -10,7 +10,8 @@ const NavbarLayout: React.FC = ({ children ,
                                     contextData,
                                     title,
                                     ogImage,
-                                    description}) => {
+                                    description,
+                                    noSpace}) => {
   return (
     <AppLayout title={title} contextData={contextData}
                description={description}
@@ -24,7 +25,14 @@ const NavbarLayout: React.FC = ({ children ,
       {/*          </AlertHtmlLocal>*/}
       {/*      </Container>*/}
       {/*  :*/}
-            <Container sx={{ my: '2rem' }}>{children}</Container>
+        {noSpace ?
+            <div style={{width: "100%"}}>
+                {children}
+            </div>
+
+            :
+            <Container sx={{my: '2rem'}}>{children}</Container>
+        }
         {/*}*/}
     </AppLayout>
   )
