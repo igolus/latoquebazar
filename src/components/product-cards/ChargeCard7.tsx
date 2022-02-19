@@ -70,11 +70,12 @@ const ChargeCard7: React.FC<ProductCard7Props> = ({
                 <Span className="title" fontWeight="600" fontSize="18px" mb={1} >
                     {item.name}
                 </Span>
-                {!itemHaveRestriction(item) &&
+                {/*{itemHaveRestriction(item) ? "true": "false"}*/}
+                {/*{!itemHaveRestriction(item) &&*/}
                 <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
                     {" " + parseFloat(item.price).toFixed(2) + " " + currency}
                 </Span>
-                }
+                {/*}*/}
 
 
                 {item.restrictionsList && item.restrictionsList.length === 1 &&

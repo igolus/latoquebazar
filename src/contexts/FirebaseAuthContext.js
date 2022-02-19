@@ -32,6 +32,7 @@ import {getProductsByIdQuery} from "../gql/productGql";
 import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
 import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
+import {applyDealPrice} from "@component/products/DealSelector";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -931,6 +932,7 @@ export const AuthProvider = ({ children }) => {
   function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brandId) {
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = state.contextData?.deals || [];
+    //alert("deals " + deals.length);
     for (let j = 0; j < deals.length; j++) {
       const dealToCheck = deals[j];
       if (dealToCheck.lines && dealToCheck.lines.length > 0) {
@@ -966,7 +968,7 @@ export const AuthProvider = ({ children }) => {
             toUpdateQte.quantity = itemsInCartElement.quantity;
           }
         }
-
+        //alert("matchingRemains " + matchingRemains);
         if (matchingRemains === 0) {
           //alert("matching deal");
           itemsCopyForDealUpdate = itemsCopyForDealUpdate.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
@@ -978,8 +980,20 @@ export const AuthProvider = ({ children }) => {
             deal: cloneDeep(dealToCheck)
           }
           dealToAdd.productAndSkusLines =
-              itemsInCart.filter(item => item.canditeDeal)
+              cloneDeep(itemsInCart).filter(item => item.canditeDeal)
                   .sort((a, b) => a.lineIndex - b.lineIndex)
+
+          dealToAdd.productAndSkusLines.forEach(productAndSkusLine => {
+            productAndSkusLine.quantity = 1;
+            delete productAndSkusLine.restrictionsApplied;
+            delete productAndSkusLine.productExtName;
+            delete productAndSkusLine.uuid;
+            delete productAndSkusLine.discountApplied;
+            delete productAndSkusLine.canditeDeal;
+            delete productAndSkusLine.lineIndex;
+
+          })
+          dealToAdd = applyDealPrice(dealToAdd);
           //dealToAdd = applyDealPrice(dealToAdd);
           orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
           computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
