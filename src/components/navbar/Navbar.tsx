@@ -80,9 +80,32 @@ interface Nav {
 const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
   const classes = useStyles()
   const {dbUser} = useAuth()
-  const renderNestedNav = (list: any[], isRoot = false) => {
+
+    function getExtraPagesInInfoUtil() {
+        return contextData.extraPages.filter(exPage => exPage.displayInUtil);
+    }
+
+    const renderNestedNav = (list: any[], isRoot = false) => {
     return list?.map((nav: Nav) => {
       if (isRoot) {
+        if (nav.id === "contactInfo") {
+            let extraPagesInInfoUtil = getExtraPagesInInfoUtil();
+            if (extraPagesInInfoUtil.length > 0)
+            return (
+
+                <NavLink
+                className={classes.navLink}
+                pageChildren={extraPagesInInfoUtil}
+                href={nav.url}
+                key={nav.title}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {nav.title}
+            </NavLink>
+            )
+        }
+
         if (nav.url && nav.extLink)
           return (
               <>

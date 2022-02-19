@@ -7,6 +7,7 @@ id
     active
     title
     content
+    displayInUtil
 `
 
 export const getExtraPagesQueryNoApollo = async (brandId) => {
