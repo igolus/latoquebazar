@@ -55,14 +55,8 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             {/*/>*/}
             <NavbarLayout noSpace title={extraPage?.title || ""} description={extraPage?.title || ""} contextData={getContextData()}
             >
-                {/*<div style={{*/}
-                {/*    margin: '0 !important',*/}
-                {/*    width: '100% !important',*/}
-                {/*    padding: '0 !important',*/}
-                {/*    marginRight: '0 !important'*/}
-                {/*}}>*/}
                 {extraPage && extraPage.content &&
-                <MdRender content = {extraPage.content}/>
+                    <MdRender content = {extraPage.content}/>
                 }
                 {/*</div>*/}
             </NavbarLayout>
@@ -71,26 +65,6 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 }
 
 export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
-    // const config = require("../../../src/conf/config.json")
-    // const resProducts = await getProductsQueryNoApollo(config.brandId);
-    // let products = [];
-    //
-    // if (resProducts && resProducts.getProductsByBrandId) {
-    //     products = resProducts.getProductsByBrandId;
-    // }
-    //
-    // let paths = []
-    // products.forEach(product => {
-    //     if (product.skus && product.skus.length === 1) {
-    //         paths.push({ params: { id: product.id } })
-    //     }
-    //     else if (product.skus && product.skus.length > 1) {
-    //         for (let i = 0; i < product.skus.length; i++) {
-    //             paths.push({ params: { id: product.id + "-" + i } })
-    //         }
-    //         //paths.push({ params: { id: product.id } })
-    //     }
-    // })
 
     return {
         paths: [
