@@ -124,6 +124,7 @@ let localStrings = new LocalizedStrings({
         shopPageTitle: "Voir la carte",
         profilePageTitle: "Mon compte",
         contactInfoPageTitle: "Infos utiles",
+        openingAndLocation: "Emplacements et horaires",
         cartPageTitle: "Voir mon panier",
 
         creditCardDetail: "Detail de carte de credit",
