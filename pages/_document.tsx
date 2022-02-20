@@ -35,6 +35,9 @@ export default class Bazar extends Document {
                     <script
                         src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
                     </script>
+
+                    <script src="//embed.typeform.com/next/embed.js"></script>
+
                     <link rel="apple-touch-icon" href="/iconApp.png"></link>
                     <meta name="theme-color" content="#fff" />
                     {/* PWA primary color */}
