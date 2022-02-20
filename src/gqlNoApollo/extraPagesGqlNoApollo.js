@@ -8,6 +8,7 @@ id
     title
     content
     displayInUtil
+    variablesValues
 `
 
 export const getExtraPagesQueryNoApollo = async (brandId) => {
