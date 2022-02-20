@@ -82,7 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
   const {dbUser} = useAuth()
 
     function getExtraPagesInInfoUtil() {
-        return contextData.extraPages.filter(exPage => exPage.displayInUtil);
+        return (contextData?.extraPages || []).filter(exPage => exPage.displayInUtil);
     }
 
     const renderNestedNav = (list: any[], isRoot = false) => {
