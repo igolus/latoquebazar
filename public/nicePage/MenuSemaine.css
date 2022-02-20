@@ -21,7 +21,7 @@
 }
 
 .u-section-1 .u-text-1 {
-  font-size: 5.625rem;
+  font-size: 5.625rem !important;
   line-height: 1;
   font-weight: 400;
   margin: 0 -143px 0 0;
