@@ -83,30 +83,14 @@ const NavLink: React.FC<NavLinkProps> = ({
                 >
 
                     <MenuItem>
-                        <Link href={"/specialPage/"}>
-                            {localStrings.contactInfoPageTitle}
-                            {/*<Typography*/}
-                            {/*    color={checkRouteMatch(url) ? 'primary' : 'inherit'}>{page.title}</Typography>*/}
+                        <Link href={"/contactInfo"}>
+                            {localStrings.openingAndLocation}
                         </Link>
                     </MenuItem>
-
-                    {/*title: localStrings.contactInfoPageTitle,*/}
-                    {/*url: '/contactInfo',*/}
 
                     {pageChildren.map((page, key) => {
                         const url = '/specialPage/' + page.id
                         return(
-
-                            // <Link href={href}>
-                            //     <a
-                            //         className={clsx(classes.root, className)}
-                            //         href={href}
-                            //         style={style}
-                            //         {...props}
-                            //     >
-                            //         {children}
-                            //     </a>
-                            // </Link>
                         <MenuItem key={key}>
                             <Link href={url}>
                                 {page.title}
@@ -117,22 +101,8 @@ const NavLink: React.FC<NavLinkProps> = ({
                         )
                         }
                     )}
-
-
-                    {/*<MenuItem>*/}
-                    {/*  <Link href={"/profile"}>*/}
-                    {/*      <Typography color={checkRouteMatch("/profile") ? 'primary' : 'inherit'}>{localStrings.myAccount}</Typography>*/}
-                    {/*  </Link>*/}
-                    {/*</MenuItem>*/}
-                    {/*<MenuItem>*/}
-                    {/*  <Link href={"/orders"}>*/}
-                    {/*      <Typography color={checkRouteMatch("/orders") ? 'primary' : 'inherit'}>{localStrings.myOrders}</Typography>*/}
-                    {/*  </Link>*/}
-                    {/*</MenuItem>*/}
                 </Menu>
             </>
-
-
         )
     }
 

@@ -3,14 +3,12 @@ import {getCategoriesQueryNoApollo} from "../gqlNoApollo/categoriesGqlNoApollo";
 import {getOptionsListQueryNoApollo} from "../gqlNoApollo/productOptionListGqlNoApollo";
 import {getBrandByIdQueryNoApollo} from "../gqlNoApollo/brandGqlNoApollo";
 import {getDealsQueryNoApollo} from "../gqlNoApollo/dealGqlNoApollo";
-import {GetStaticPaths} from "next";
 import {getTagsQueryNoApollo} from "../gqlNoApollo/tagsGqlNoApollo";
-import {executeQueryUtil} from "../apolloClient/gqlUtil";
-import {getBrandByIdQuery} from "../gql/brandGql";
-import {getEstablishmentQueryNoApollo, getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
+import {getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
 import {getExtraPagesQueryNoApollo} from "../gqlNoApollo/extraPagesGqlNoApollo";
 
-var base64 = require('base-64');
+const Mustache = require("mustache");
+import {Base64} from 'js-base64';
 
 export async function getStaticPathsUtil() {
     return {
@@ -170,7 +168,15 @@ export async function getStaticPropsUtil() {
         extraPages = resExtraPages.getExtraPages || [];
     }
 
-    extraPages.forEach(extraPage => extraPage.content = base64.decode(extraPage.content))
+    extraPages.forEach(extraPage => {
+        extraPage.content = Base64.decode(extraPage.content);
+        if (extraPage.variablesValues) {
+            let variablesValuesObj = JSON.parse(Base64.decode(extraPage.variablesValues));
+            if (Object.keys(variablesValuesObj).length > 0) {
+                extraPage.content = Mustache.render( extraPage.content, variablesValuesObj);
+            }
+        }
+    })
 
     return {
         props: {
