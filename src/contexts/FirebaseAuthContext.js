@@ -25,7 +25,13 @@ import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
 import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
-import {getContextData, getContextDataApollo, getStaticPropsUtil, sortChainList} from "../nextUtil/propsBuilder";
+import {
+  getContextData,
+  getContextDataApollo,
+  getStaticPropsUtil,
+  sortChainList,
+  updateBrandBase64HomPage
+} from "../nextUtil/propsBuilder";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getBookingSlotsOccupancyQueryNoApollo} from "../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
 import {getProductsByIdQuery} from "../gql/productGql";
@@ -468,6 +474,7 @@ export const AuthProvider = ({ children }) => {
           let contextCopy = cloneDeep(contextDataParam);
           if (res.data?.getBrand) {
             contextCopy.brand = res.data.getBrand;
+            contextCopy.brand = updateBrandBase64HomPage(contextCopy.brand);
             setContextDataAuth(contextCopy, true);
           }
         })

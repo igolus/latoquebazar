@@ -56,6 +56,7 @@ export async function getContextDataApollo() {
     const resBrand = await getBrandByIdQueryNoApollo(config.brandId);
     if (resBrand.getBrand) {
         brand = resBrand.getBrand;
+        brand = updateBrandBase64HomPage(brand);
     }
 
     let establishments = [];
@@ -115,6 +116,19 @@ export function sortChainList(itemSource) {
 }
 
 
+export function updateBrandBase64HomPage(brand) {
+    if (brand.config && brand.config.useCustomHomePage && brand.config.customHomePageSource) {
+        brand.config.customHomePageSource = Base64.decode(brand.config.customHomePageSource);
+        if (brand.config.customHomePageSourceVariables &&
+            brand.config.customHomePageSourceVariables.customHomePageSourceVariables != "") {
+            let variablesValuesObj = JSON.parse(Base64.decode(brand.config.customHomePageSourceVariables));
+            if (Object.keys(variablesValuesObj).length > 0) {
+                brand.config.customHomePageSource = Mustache.render(brand.config.customHomePageSource, variablesValuesObj);
+            }
+        }
+    }
+}
+
 export async function getStaticPropsUtil() {
     const config = require("../conf/config.json")
     const resProducts = await getProductsQueryNoApollo(config.brandId);
@@ -154,6 +168,7 @@ export async function getStaticPropsUtil() {
     const resBrand = await getBrandByIdQueryNoApollo(config.brandId);
     if (resBrand.getBrand) {
         brand = resBrand.getBrand;
+        updateBrandBase64HomPage(brand);
     }
 
     let establishments = [];
