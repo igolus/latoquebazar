@@ -13,6 +13,9 @@ const common = `
   iconPath
   iconUrl
   config {
+    useCustomHomePage
+    customHomePageSource
+    customHomePageSourceVariables
     smsNotif
     currency
     siteUrl

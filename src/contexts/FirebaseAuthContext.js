@@ -934,13 +934,14 @@ export const AuthProvider = ({ children }) => {
 
   function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brandId) {
     const oldPrice = computePriceDetail(orderInCreation);
-    const deals = state.contextData?.deals || [];
+    const deals = (state.contextData?.deals || []).filter(deal => deal.visible);
     //alert("deals " + deals.length);
     for (let j = 0; j < deals.length; j++) {
       const dealToCheck = deals[j];
       if (dealToCheck.lines && dealToCheck.lines.length > 0) {
 
         let itemsInCart = cloneDeep(orderInCreation.order.items);
+        let itemsForDeal = [];
         let itemsCopyForDealUpdate = cloneDeep(orderInCreation.order.items);
 
         const lines = dealToCheck.lines;
@@ -948,12 +949,20 @@ export const AuthProvider = ({ children }) => {
 
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          let itemInCart = itemsInCart.find(item => item.quantity > 0 && line.skus.map(sku => sku.extRef).includes(item.extRef));
+          let itemInCart = itemsInCart.find(item => item.quantity > 0 && (line.skus || []).map(sku => sku.extRef).includes(item.extRef));
           if (itemInCart) {
+            itemsForDeal.push({
+              ...itemInCart,
+              lineIndex: i,
+              quantity: 1,
+            })
+            itemInCart.takenFromCart = (itemInCart.takenFromCart || 0) + 1;
             itemInCart.quantity = itemInCart.quantity - 1;
             itemInCart.canditeDeal = true;
             itemInCart.lineIndex = i;
             matchingRemains--;
+
+
           }
         }
 
@@ -983,7 +992,7 @@ export const AuthProvider = ({ children }) => {
             deal: cloneDeep(dealToCheck)
           }
           dealToAdd.productAndSkusLines =
-              cloneDeep(itemsInCart).filter(item => item.canditeDeal)
+              cloneDeep(itemsForDeal)
                   .sort((a, b) => a.lineIndex - b.lineIndex)
 
           dealToAdd.productAndSkusLines.forEach(productAndSkusLine => {
@@ -1002,8 +1011,8 @@ export const AuthProvider = ({ children }) => {
           computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
           if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
             const newPrice = computePriceDetail(orderInCreationClone);
-            console.log("newPrice " + JSON.stringify(newPrice, null, 2))
-            console.log("oldPrice " + JSON.stringify(oldPrice, null, 2))
+            // console.log("newPrice " + JSON.stringify(newPrice, null, 2))
+            // console.log("oldPrice " + JSON.stringify(oldPrice, null, 2))
             return {
               dealApplied: dealToAdd,
               newOrder: orderInCreationClone,

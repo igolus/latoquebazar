@@ -57,7 +57,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         // if (contextData.deals.length === 0) {
         //     alert("empty deals")
         // }
-        return contextData.products.concat(contextData.deals)
+        return contextData.products.concat((contextData.deals || []).filter(deal => !deal.dealNotSelectable))
     }
 
     const [allProducts, setAllProducts] = useState(contextData ? (getProductsAndDeals() || []) : []);

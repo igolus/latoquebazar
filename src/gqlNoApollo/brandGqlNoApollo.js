@@ -16,6 +16,9 @@ const common = `
   demoSite
   config {
     smsNotif
+    useCustomHomePage
+    customHomePageSource
+    customHomePageSourceVariables
     currency
     siteUrl
     googleKey
