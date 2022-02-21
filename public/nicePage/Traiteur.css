@@ -53,6 +53,10 @@
   .u-section-1 .u-text-1 {
     font-size: 3.75rem;
   }
+
+  .u-section-1 .u-image-1 {
+    margin-top: -218px;
+  }
 } .u-section-2 {
   background-image: none;
 }
@@ -210,6 +214,18 @@
     padding-left: 30px;
     padding-right: 30px;
   }
+}
+
+@media (max-width: 575px) {
+  .u-section-2 .u-sheet-1 {
+    min-height: 1019px;
+  }
+
+  .u-section-2 .u-list-1 {
+    margin-bottom: 52px;
+    margin-right: initial;
+    margin-left: initial;
+  }
 } .u-section-3 {
   background-image: none;
 }
@@ -247,7 +263,11 @@
 
 @media (max-width: 575px) {
   .u-section-3 .u-sheet-1 {
-    min-height: 1951px;
+    min-height: 557px;
+  }
+
+  .u-section-3 .u-text-2 {
+    margin-bottom: -1327px;
   }
 } .u-section-4 {
   background-image: none;
@@ -285,7 +305,11 @@
 
 @media (max-width: 575px) {
   .u-section-4 .u-sheet-1 {
-    min-height: 1951px;
+    min-height: 243px;
+  }
+
+  .u-section-4 .u-text-2 {
+    margin-bottom: -1784px;
   }
 } .u-section-5 {
   background-image: none;
@@ -323,14 +347,18 @@
 
 @media (max-width: 575px) {
   .u-section-5 .u-sheet-1 {
-    min-height: 1951px;
+    min-height: 387px;
+  }
+
+  .u-section-5 .u-text-2 {
+    margin-bottom: -1617px;
   }
 } .u-section-6 {
   background-image: none;
 }
 
 .u-section-6 .u-sheet-1 {
-  min-height: 206px;
+  min-height: 201px;
 }
 
 .u-section-6 .u-text-1 {
@@ -338,21 +366,23 @@
 }
 
 .u-section-6 .u-text-2 {
-  margin: 24px auto 60px;
+  margin: 24px auto 55px;
+}
+
+@media (max-width: 575px) {
+  .u-section-6 .u-sheet-1 {
+    min-height: 176px;
+  }
+
+  .u-section-6 .u-text-2 {
+    margin-bottom: 30px;
+  }
 } .u-section-7 {
   background-image: none;
 }
 
 .u-section-7 .u-sheet-1 {
   min-height: 234px;
-}
-
-.u-section-7 .u-text-1 {
-  margin: 4px auto 0;
-}
-
-.u-section-7 .u-text-2 {
-  margin: 20px auto 0;
 }
 
 .u-section-7 .u-btn-1 {
@@ -383,6 +413,12 @@
 
 @media (max-width: 575px) {
   .u-section-7 .u-sheet-1 {
-    min-height: 1951px;
+    min-height: 122px;
+  }
+
+  .u-section-7 .u-btn-1 {
+    margin-top: 4px;
+    margin-bottom: 50px;
+    padding: 6px 6px 8px 4px;
   }
 }
