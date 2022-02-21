@@ -81,8 +81,8 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
         dbUser, currentEstablishment, setEstanavOpen, estanavOpen} = useAuth();
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
-    const logoUrl = contextData ? contextData.brand.logoUrl : null;
-    const brandName = contextData ? contextData.brand.brandName : null;
+    const logoUrl = contextData ? contextData.brand?.logoUrl : null;
+    const brandName = contextData ? contextData.brand?.brandName : null;
 
     const toggleCartnav = () => setSideCartOpen(!sideCartOpen)
     const toggleSidenav = () => setSideNavOpen(!sideNavOpen)
