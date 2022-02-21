@@ -353,6 +353,8 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, doNotUp
     // }
     let newOrder;
     let dealToAdd = {...deal}
+
+    console.log("dealToAdd -" + JSON.stringify(dealToAdd, null, 2))
     dealToAdd.creationTimestamp = moment().unix();
     let items = [];
     if (orderInCreation().order.items) {
@@ -360,7 +362,7 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, doNotUp
     }
 
     let existing = false;
-    let productAndSkusLinesInit = dealToAdd.productAndSkusLines.sort((o1, o2) => o2.extRef < o2.extRef ? 1:0);
+    let productAndSkusLinesInit = (dealToAdd?.productAndSkusLines || []).sort((o1, o2) => o2.extRef < o2.extRef ? 1:0);
 
     if (orderInCreation() && orderInCreation().order && orderInCreation().order.deals) {
         existing = orderInCreation().order.deals.find(deal => {
@@ -436,6 +438,10 @@ export function addDealToCart(deal, orderInCreation, setOrderInCreation, doNotUp
     // }
     console.log("productAndSku " + JSON.stringify(dealToAdd, null, 2))
     let price = 0;
+
+    if (!dealToAdd.deal.lines) {
+        return;
+    }
     dealToAdd.deal.lines.forEach(line => {
         price += parseFloat(line.pricingValue || "0")
     })
