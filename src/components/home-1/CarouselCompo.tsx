@@ -69,6 +69,6 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
         }
       </Fragment>
   )
-}
+};
 
 export default CarouselCompo

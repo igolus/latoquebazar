@@ -18,6 +18,8 @@ import useWindowSize from "@hook/useWindowSize";
 import Link from "next/link";
 import {WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
 import {mobileBox} from "@component/header/Header";
+import MdRender from "@component/MdRender";
+import Navbar from "@component/navbar/Navbar";
 
 
 export interface IndexPageProps {
@@ -71,47 +73,62 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
             <AppLayout contextData={getContextData()}>
 
                 {/*<p className="bigFont">TOTO</p>*/}
+                {/*{getContextData()?.brand?.config?.carouselWebConfig &&*/}
+                {/*    <CarouselCompo contextData={getContextData()}/>*/}
+                {/*}*/}
 
-                {getContextData()?.brand?.config?.carouselWebConfig &&
-                <CarouselCompo contextData={getContextData()}/>
+
+                {getContextData()?.brand?.config.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
+                    <div>
+                        <Navbar contextData={getContextData()}/>
+                        <MdRender content = {getContextData()?.brand?.config.customHomePageSource}/>
+                    </div>
+                    :
+                    <>
+                        {getContextData()?.brand?.config?.carouselWebConfig &&
+                            <CarouselCompo contextData={getContextData()}/>
+                        }
+                    </>
                 }
 
 
 
-                {width <= WIDTH_DISPLAY_MOBILE &&
-                    <Box display="flex" justifyContent='space-evenly' p={1} m={1}>
-                        {firstPage &&
-                        <Box>
-                            <Link href={"/specialPage/" + firstPage.id}>
-                                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>
-                                    {firstPage.title}
-                                </Button>
-                            </Link>
-                        </Box>
-                        }
 
-                        {secondPage &&
-                        <Box>
-                            <Link href={"/specialPage/'" + secondPage.id}>
-                                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>
-                                    {secondPage.title}
-                                </Button>
-                            </Link>
-                        </Box>
-                        }
 
-                        {thirdPage &&
-                        <Box>
-                            <Link href={"/specialPage/'" + thirdPage.id}>
-                                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>
-                                    {thirdPage.title}
-                                </Button>
-                            </Link>
-                        </Box>
-                        }
+                {/*{width <= WIDTH_DISPLAY_MOBILE &&*/}
+                {/*    <Box display="flex" justifyContent='space-evenly' p={1} m={1}>*/}
+                {/*        {firstPage &&*/}
+                {/*        <Box>*/}
+                {/*            <Link href={"/specialPage/" + firstPage.id}>*/}
+                {/*                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
+                {/*                    {firstPage.title}*/}
+                {/*                </Button>*/}
+                {/*            </Link>*/}
+                {/*        </Box>*/}
+                {/*        }*/}
 
-                    </Box>
-                }
+                {/*        {secondPage &&*/}
+                {/*        <Box>*/}
+                {/*            <Link href={"/specialPage/'" + secondPage.id}>*/}
+                {/*                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
+                {/*                    {secondPage.title}*/}
+                {/*                </Button>*/}
+                {/*            </Link>*/}
+                {/*        </Box>*/}
+                {/*        }*/}
+
+                {/*        {thirdPage &&*/}
+                {/*        <Box>*/}
+                {/*            <Link href={"/specialPage/'" + thirdPage.id}>*/}
+                {/*                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
+                {/*                    {thirdPage.title}*/}
+                {/*                </Button>*/}
+                {/*            </Link>*/}
+                {/*        </Box>*/}
+                {/*        }*/}
+
+                {/*    </Box>*/}
+                {/*}*/}
 
 
                 {getContextData()?.brand?.config?.starWebProducts &&
