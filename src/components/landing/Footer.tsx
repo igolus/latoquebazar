@@ -32,7 +32,7 @@ const Footer = () => {
         </FlexBox>
 
         <FlexBox className="flex">
-          {iconList.map((item, ind) => (
+          {(iconList || []).map((item, ind) => (
             <a href={item.url} target="_blank" rel="noreferrer noopenner" key={ind}>
               <item.icon
                 color="inherit"

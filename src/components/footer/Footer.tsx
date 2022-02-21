@@ -34,8 +34,8 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
 const Footer = ({contextData}) => {
   const classes = useStyles()
   const { currentEstablishment } = useAuth();
-  const logoUrl = contextData ? contextData.brand.logoUrl : null;
-  const brandName = contextData ? contextData.brand.brandName : null;
+  const logoUrl = contextData ? contextData.brand?.logoUrl : null;
+  const brandName = contextData ? contextData.brand?.brandName : null;
 
   return (
     <footer>
