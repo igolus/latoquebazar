@@ -56,7 +56,7 @@ export async function getContextDataApollo() {
     const resBrand = await getBrandByIdQueryNoApollo(config.brandId);
     if (resBrand.getBrand) {
         brand = resBrand.getBrand;
-        brand = updateBrandBase64HomPage(brand);
+        updateBrandBase64HomPage(brand);
     }
 
     let establishments = [];
