@@ -81,10 +81,10 @@ const App = ({ Component, pageProps}: any) => {
                 <link href="https://fonts.googleapis.com/css2?family=Lato" rel="stylesheet" />
                 <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie" rel="stylesheet" />
                 <link href="https://fonts.googleapis.com/css2?family=Charm" rel="stylesheet" />
-                Birthstone Bounce
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-                      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-                      crossOrigin=""/>
+                {/*Birthstone Bounce*/}
+                {/*<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"*/}
+                {/*      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="*/}
+                {/*      crossOrigin=""/>*/}
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
             </Head>
