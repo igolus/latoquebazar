@@ -30,8 +30,8 @@ export default class Bazar extends Document {
 
                     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
-                    <link rel="stylesheet"
-                          href="/css/classic-reset.css"/>
+                    {/*<link rel="stylesheet"*/}
+                    {/*      href="/css/classic-reset.css"/>*/}
                     <script
                         src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
                     </script>
