@@ -17,6 +17,7 @@ const common = `
   creationDate
   updateDate
   newProduct
+  dealNotSelectable
   newProductExpireDate
   category {
     id
