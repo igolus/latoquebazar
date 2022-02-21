@@ -368,7 +368,7 @@ let localStrings = new LocalizedStrings({
         info: {
             resetPassword: "Un email a été envoyé a {0} pour réinitialiser le mot de passe",
             checkAddessInfo: "Afin de savoir si votre etes eligible à la livraison à domicile, merci de fournir une adresse",
-            connectToOrder: "Afin de garder une trace de vos commandes et de garantir un meilleur suivi, nous vous conseillons d'effectuer la commande en mode connecté. Si vous avez un compte Google, <strong>Cela ne prendra que quelques secondes !!</strong>",
+            connectToOrder: "Afin de garder une trace de vos commandes et de garantir un meilleur suivi, nous vous conseillons d'effectuer la commande en mode connecté. Si vous avez un compte Google, Cela ne prendra que quelques secondes !!",
         },
 
         warningMessage: {
