@@ -46,29 +46,35 @@ export function applyDealPrice(deal) {
     }
     let dealWithPriceUpdated = {...deal}
 
-    let lines = deal.deal.lines;
-    let productAndSkusLines = deal.productAndSkusLines;
-
+    let lines = dealWithPriceUpdated.deal.lines;
+    let productAndSkusLines = dealWithPriceUpdated.productAndSkusLines;
+    if (!lines) {
+        return;
+    }
     for (let i=0; i<lines.length;i++) {
         let line = lines[i]
         let productAndSkusLine = productAndSkusLines[i];
         let priceLineF = parseFloat(line.pricingValue);
         let priceProduct = parseFloat(productAndSkusLine.price);
         if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
+            line.pricingValue = priceProduct;
             continue;
         }
         else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
-            productAndSkusLine.price = line.pricingValue;
+            productAndSkusLine.price = productAndSkusLine.price;
         }
         else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
             productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
             let factor = 1 - priceLineF / 100
-            productAndSkusLine.price = (priceProduct * factor).toFixed(2);
+            let priceComputed = (priceProduct * factor).toFixed(2);
+            productAndSkusLine.price = priceComputed;
+            line.pricingValue = priceComputed;
         }
 
     }
+    console.log("dealWithPriceUpdated " + JSON.stringify(dealWithPriceUpdated, null,2))
     return dealWithPriceUpdated;
 }
 
