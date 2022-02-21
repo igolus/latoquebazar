@@ -110,7 +110,7 @@ export function decreaseDealCartQte(orderInCreation, setOrderInCreation, uuid, c
 export function increaseDealCartQte(orderInCreation, setOrderInCreation, uuid) {
     let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
     let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
-    let added = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
+    let added = orderInCreation.order.deals.find(itemOrder => itemOrder.uuid === uuid);
 
     let items = [];
     if (orderInCreation.order.items) {
