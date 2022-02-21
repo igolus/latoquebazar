@@ -474,7 +474,7 @@ export const AuthProvider = ({ children }) => {
           let contextCopy = cloneDeep(contextDataParam);
           if (res.data?.getBrand) {
             contextCopy.brand = res.data.getBrand;
-            contextCopy.brand = updateBrandBase64HomPage(contextCopy.brand);
+            updateBrandBase64HomPage(contextCopy.brand);
             setContextDataAuth(contextCopy, true);
           }
         })
