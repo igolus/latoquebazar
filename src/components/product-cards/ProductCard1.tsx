@@ -283,27 +283,33 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
 
+  function getProductSkuLength(product: any) {
+    return (product?.skus || []).filter(sku => sku.visible)
+  }
 
   function getAddToCartElement() {
     //return localStrings.seeDetail;
     if (selectedProductAndSku?.product?.notAddableToCart) {
       return localStrings.seeDetail;
     }
-    if (product.skus.length === 1 && getUnavailability(product, currentEstablishment, selectedProductAndSku)) {
+    let length = getProductSkuLength(product)
+
+        //.skus.length;
+    if (length === 1 && getUnavailability(product, currentEstablishment, selectedProductAndSku)) {
       return localStrings.unavailable;
     }
-    if (product.skus.length > 1) {
+    if (length > 1) {
       if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
       {
         return localStrings.unavailable;
       }
     }
 
-    if (isProductAndSkuGetOption(selectedProductAndSku) || product.skus.length > 1) {
+    if (isProductAndSkuGetOption(selectedProductAndSku) || length > 1) {
       return localStrings.selectOptions;
     }
 
-    if (product.skus.length === 1 && getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
+    if (length === 1 && getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
       return localStrings.choose;
     }
     return (<Add fontSize="small"/>)
