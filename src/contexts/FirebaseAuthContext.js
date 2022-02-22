@@ -949,7 +949,7 @@ export const AuthProvider = ({ children }) => {
 
         let itemsInCart = cloneDeep(orderInCreation.order.items);
         let itemsForDeal = [];
-        let itemsCopyForDealUpdate = cloneDeep(orderInCreation.order.items);
+        //let itemsCopyForDealUpdate = cloneDeep(orderInCreation.order.items);
 
         const lines = dealToCheck.lines;
         let matchingRemains = lines.length;
@@ -983,14 +983,14 @@ export const AuthProvider = ({ children }) => {
           if (itemsInCartElement.quantity === 0) {
             toRemoveSkuRef.push(itemsInCartElement.extRef);
           } else {
-            let toUpdateQte = itemsCopyForDealUpdate.find(item => item.extRef === itemsInCartElement.extRef);
+            let toUpdateQte = itemsInCart.find(item => item.extRef === itemsInCartElement.extRef);
             toUpdateQte.quantity = itemsInCartElement.quantity;
           }
         }
         //alert("matchingRemains " + matchingRemains);
         if (matchingRemains === 0) {
           //alert("matching deal");
-          itemsCopyForDealUpdate = itemsCopyForDealUpdate.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
+          let itemsCopyForDealUpdate = itemsInCart.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
 
           let orderInCreationClone = cloneDeep(orderInCreation);
           orderInCreationClone.order.items = itemsCopyForDealUpdate;
@@ -1018,6 +1018,12 @@ export const AuthProvider = ({ children }) => {
           computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
           if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
             const newPrice = computePriceDetail(orderInCreationClone);
+
+            if (newPrice.total >= oldPrice.total) {
+              return {
+                newOrder: orderInCreation
+              }
+            }
             // console.log("newPrice " + JSON.stringify(newPrice, null, 2))
             // console.log("oldPrice " + JSON.stringify(oldPrice, null, 2))
             return {
