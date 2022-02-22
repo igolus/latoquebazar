@@ -28,6 +28,7 @@ const common = `
     brandId
     tag
     creationDate
+    color
   } 
   category {
     id
