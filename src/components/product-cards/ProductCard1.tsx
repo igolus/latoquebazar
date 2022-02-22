@@ -190,7 +190,9 @@ export function isProductUnavailable(product, currentEstablishment, selectedProd
   return false;
 }
 
-
+export function getProductSkuLength(product: any) {
+  return (product?.skus || []).filter(sku => sku.visible).length
+}
 
 const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      id,
@@ -280,11 +282,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   function newProductExpired(newProductExpireDate: string) {
     return moment(newProductExpireDate, 'YYYY-MM-DD').isBefore()
-  }
-
-
-  function getProductSkuLength(product: any) {
-    return (product?.skus || []).filter(sku => sku.visible)
   }
 
   function getAddToCartElement() {
