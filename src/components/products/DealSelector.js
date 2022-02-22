@@ -53,6 +53,7 @@ export function applyDealPrice(deal) {
     }
     for (let i=0; i<lines.length;i++) {
         let line = lines[i]
+        line.quantity = 1;
         let productAndSkusLine = productAndSkusLines[i];
         let priceLineF = parseFloat(line.pricingValue);
         let priceProduct = parseFloat(productAndSkusLine.price);
@@ -61,7 +62,7 @@ export function applyDealPrice(deal) {
             continue;
         }
         else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
-            productAndSkusLine.price = productAndSkusLine.price;
+            productAndSkusLine.price = priceLineF;
         }
         else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
             productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
