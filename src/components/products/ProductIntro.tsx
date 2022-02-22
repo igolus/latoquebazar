@@ -25,7 +25,7 @@ import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/Mini
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import theme from "@theme/theme";
 import MdRender from "@component/MdRender";
-import {isSkuUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
+import {getProductSkuLength, isSkuUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -215,7 +215,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 <Grid item md={6} xs={12} alignItems="center">
                     <H1 mb={2}>
                         {
-                            product.skus.length > 1 ?
+                            getProductSkuLength(product) > 1 ?
                                 formatProductAndSkuName({
                                     ...productAndSku.sku,
                                     productName: product.name
@@ -242,7 +242,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     </AlertHtmlLocal>
                     }
 
-                    {product.skus && product.skus.length > 1 &&
+                    {product.skus && getProductSkuLength(product) > 1 &&
                     <Box display="flex" justifyContent="left" flexWrap="wrap">
                         {buildProductAndSkus(product, getOrderInCreation, null, null,
                             currentEstablishment, currentService, setGlobalDialog, setRedirectPageGlobal)
