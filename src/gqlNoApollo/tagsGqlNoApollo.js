@@ -4,6 +4,7 @@ const config = require('../conf/config.json')
 const common = `
     id
     tag
+    color
 `
 
 export const getTagsQueryNoApollo = async (brandId) => {
