@@ -28,6 +28,7 @@ import {useToasts} from "react-toast-notifications";
 import moment from "moment";
 import {getBrandCurrency, getFirstRestrictionItem} from "../../util/displayUtil";
 import {cloneDeep} from "@apollo/client/utilities";
+import {palette} from "@material-ui/system";
 
 export interface ProductCard1Props {
   className?: string
@@ -425,12 +426,21 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
             {product.tags && product.tags.map((tag, key) =>
                 <Box key={key} ml='3px' mt='6px' mr='3px'>
-                  <Chip
-                      className={classes.offerChip}
-                      color="primary"
-                      size="small"
-                      label={tag.tag}
-                  />
+                  {tag.color ?
+                      <Chip
+                          sx={{backgroundColor: tag.color, color: 'white'}}
+                          className={classes.offerChip}
+                          size="small"
+                          label={tag.tag}
+                      />
+                      :
+                      <Chip
+                          className={classes.offerChip}
+                          color={"primary"}
+                          size="small"
+                          label={tag.tag}
+                      />
+                  }
                 </Box>
             )}
           </Box>
