@@ -19,6 +19,9 @@ import CouponCode from "@component/checkout/CouponCode";
 import 'moment/locale/fr'
 const config = require("../../conf/config.json");
 
+const fontSize = "14px";
+const fontWeight = "400";
+
 import 'moment/locale/fr'
 moment.locale('fr')
 
@@ -60,7 +63,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
     return (
         <Card1 style={{position: 'sticky', top: TOP_STICKY}}>
             {/*{JSON.stringify(getOrder())}*/}
-            <Typography fontWeight="600" mb={1} mt={1}>
+            <Typography fontWeight={fontWeight} mb={0} mt={.5}>
                 {modeOrdered ?
 
                     (getRemainingToPay(getOrder()) === 0 ?
@@ -75,10 +78,10 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
             {(getOrder()?.charges || []).map((chargeItem, key) =>
                 <>
-                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
+                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={0}>
                         <Typography color="grey.600">{chargeItem.name}</Typography>
                         <FlexBox alignItems="flex-end">
-                            <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                            <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
                                 {chargeItem.price.toFixed(2)} {currency}
                             </Typography>
                         </FlexBox>
@@ -89,7 +92,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                         {/*</Tiny2>*/}
                     </FlexBox>
                     {chargeItem.restrictionsList && chargeItem.restrictionsList.length === 1 &&
-                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={1}>
+                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={0}>
                         <Tiny2 color="grey.600">
                             <ReactMarkdown>{chargeItem.restrictionsList[0].description}</ReactMarkdown>
                         </Tiny2>
@@ -99,10 +102,10 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             )}
 
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
-            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
                 <Typography color="grey.600">{localStrings.totalCharge}</Typography>
                 <FlexBox alignItems="flex-end">
-                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
                         {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
@@ -110,18 +113,18 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
 
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
                 <Typography color="grey.600">{localStrings.totalNoTax}</Typography>
                 <FlexBox alignItems="flex-end">
-                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
                         {parseFloat(priceDetails.totalNoTax).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
             </FlexBox>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
                 <Typography color="grey.600">{localStrings.totalFee}</Typography>
                 <FlexBox alignItems="flex-end">
-                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
                         {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
@@ -129,7 +132,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.totalTax}</Typography>
                 <FlexBox alignItems="flex-end">
-                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
                         {parseFloat(priceDetails.totalNoCharge - priceDetails.totalNoTax).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
@@ -140,7 +143,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.formatString(localStrings.savedCode, getUsedCode())}</Typography>
                 <FlexBox alignItems="flex-end">
-                    <Typography fontSize="18px" fontWeight="600" lineHeight="1">
+                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
                         {parseFloat(priceDetails.totalNonDiscounted - priceDetails.total).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
@@ -149,7 +152,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {/*<FlexBox justifyContent="space-between" alignItems="center" mb={2}>*/}
             {/*    <Typography color="grey.600">Discount:</Typography>*/}
             {/*    <FlexBox alignItems="flex-end">*/}
-            {/*        <Typography fontSize="18px" fontWeight="600" lineHeight="1">*/}
+            {/*        <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">*/}
             {/*            -*/}
             {/*        </Typography>*/}
             {/*    </FlexBox>*/}
@@ -159,8 +162,8 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {/*<Divider sx={{mb: '1rem'}}/>*/}
 
             <Typography
-                fontSize="25px"
-                fontWeight="600"
+                fontSize="22px"
+                fontWeight={"600"}
                 lineHeight="1"
                 textAlign="right"
                 mb={1}
@@ -173,7 +176,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {/*<p>{JSON.stringify(getOrderInCreation()?.discounts || {})}</p>*/}
 
                 <Typography
-                    fontSize="20px"
+                    fontSize={fontSize}
                     fontWeight="400"
                     lineHeight="1"
                     textAlign="right"
@@ -193,24 +196,24 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 {getOrder() && getOrder().deliveryAddress &&
                 getOrder().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                 <>
-                    <Divider sx={{mb: '1rem'}}/>
+                    <Divider sx={{mb: 0}}/>
 
-                    <Typography fontWeight="600" mb={1} mt={2}>
+                    <Typography fontWeight={fontWeight} mb={0} mt={.25}>
                         {localStrings.deliveryAdress}
                     </Typography>
 
-                    <Typography color="grey.600" fontSize="16px">
+                    <Typography color="grey.600" fontSize={fontSize}>
                         {maxDistanceReached ? localStrings.tooFarAddress : getOrder().deliveryAddress.address}
                     </Typography>
 
                 </>
                 }
                 {/*<Divider sx={{mb: '1rem'}}/>*/}
-                <Typography fontWeight="600" mb={0} mt={1}>
+                <Typography fontWeight={fontWeight} mb={0} mt={.25}>
                     {localStrings.deliveryMode}
                 </Typography>
                 {getOrder() && getOrder().deliveryMode &&
-                <Typography color="grey.600" fontSize="16px">
+                <Typography color="grey.600" fontSize={fontSize}>
                     {/*{orderInCreation().deliveryMode}*/}
                     {formatOrderConsumingMode(getOrder(), localStrings)}
                 </Typography>
@@ -218,13 +221,13 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                 }
 
                 {/*<Divider sx={{mb: '1rem'}}/>*/}
-                <Typography fontWeight="600" mb={0} mt={1}>
+                <Typography fontWeight={fontWeight} mb={0} mt={.5}>
                     {localStrings.timeSlot}
                 </Typography>
                 {getOrder() && getOrder().bookingSlot ?
                     <>
                         {modeOrdered ?
-                            <Typography color="grey.600" fontSize="16px">
+                            <Typography color="grey.600" fontSize={fontSize}>
                                 {moment.unix(getOrder().bookingSlot.startDate).locale("fr").calendar().split(' ')[0]}
                                 {" "}
                                 {moment.unix(getOrder().bookingSlot.startDate).format("HH:mm")}
@@ -232,7 +235,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                                 {moment.unix(getOrder().bookingSlot.endDate).format("HH:mm")}
                             </Typography>
                             :
-                            <Typography color="grey.600" fontSize="16px">
+                            <Typography color="grey.600" fontSize={fontSize}>
                                 {getOrder().bookingSlot.startDate.locale("fr").calendar().split(' ')[0]}
                                 {" "}
                                 {getOrder().bookingSlot.startDate.format("HH:mm")}
@@ -244,22 +247,22 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                         }
                     </>
                     :
-                    <Typography color="grey.600" fontSize="16px">
+                    <Typography color="grey.600" fontSize={fontSize}>
                         -
                     </Typography>
                 }
 
                 <Divider sx={{mb: '1rem'}}/>
-                <Typography fontWeight="600" mb={0} mt={1}>
+                <Typography fontWeight={fontWeight} mb={0} mt={0}>
                     {localStrings.selectedEsta}
                 </Typography>
 
-                <Typography color="grey.600" fontSize="16px">
+                <Typography color="grey.600" fontSize={fontSize}>
                     {/*{orderInCreation().deliveryMode}*/}
                     {getEsta().establishmentName}
                 </Typography>
 
-                <Typography color="grey.600" fontSize="16px">
+                <Typography color="grey.600" fontSize={fontSize}>
                     {/*{orderInCreation().deliveryMode}*/}
                     {getEsta().address}
                 </Typography>

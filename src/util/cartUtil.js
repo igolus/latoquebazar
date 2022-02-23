@@ -704,7 +704,59 @@ function applyDiscountOnItem(item, discount) {
     return discountAppliedAmount;
 }
 
-export async function processOrderDiscount(orderInCreation, brandId, userId, setGlobalDialog, setOrderInCreation) {
+
+export function processOrderDiscountSync(orderInCreation) {
+    if (!orderInCreation) {
+        return;
+    }
+
+    let discounts = orderInCreation.discounts || [];
+    console.log("orderInCreation.discounts " + JSON.stringify(discounts, null, 2))
+
+    let items = orderInCreation.order?.items || [];
+    let deals = orderInCreation.order?.deals || [];
+    for (let j = 0; j < items.length; j++) {
+        const item = items[j];
+        item.discountApplied = [];
+        if (item.nonDiscountedPrice) {
+            item.price = parseFloat(item.nonDiscountedPrice).toFixed(2)
+        }
+
+    }
+
+    for (let j = 0; j < deals.length; j++) {
+        const deal = deals[j];
+        const productAndSkusLines = deal.productAndSkusLines;
+        for (let k = 0; k < productAndSkusLines.length; k++) {
+            const productAndSkusLine = productAndSkusLines[k];
+            if (productAndSkusLine.nonDiscountedPrice) {
+                productAndSkusLine.price = parseFloat(productAndSkusLine.nonDiscountedPrice).toFixed(2)
+            }
+        }
+    }
+
+
+    for (let i = 0; i < discounts.length; i++) {
+        const discount = discounts[i];
+        let totalDisc = 0;
+        for (let j = 0; j < items.length; j++) {
+            const item = items[j];
+            totalDisc += applyDiscountOnItem(item, discount);
+        }
+
+        for (let j = 0; j < deals.length; j++) {
+            const deal = deals[j];
+            const productAndSkusLines = deal.productAndSkusLines;
+            for (let k = 0; k < productAndSkusLines.length; k++) {
+                const productAndSkusLine = productAndSkusLines[k];
+                totalDisc += applyDiscountOnItem(productAndSkusLine, discount);
+            }
+        }
+        discount.pricingOff = totalDisc.toFixed(2);
+    }
+}
+
+export async function processOrderDiscount(orderInCreation, brandId, userId, setGlobalDialog, setOrderInCreation, doNotCheckValidity) {
     if (!orderInCreation) {
         return;
     }
@@ -712,7 +764,7 @@ export async function processOrderDiscount(orderInCreation, brandId, userId, set
     let discounts = orderInCreation.discounts || [];
     console.log("orderInCreation.discounts " + JSON.stringify(discounts, null, 2))
     let totalPrice = computePriceDetail(orderInCreation);
-    for (let i = 0; i < discounts.length; i++) {
+    for (let i = 0; !doNotCheckValidity && i < discounts.length; i++) {
         const discount = discounts[i];
         if (discount.couponCodeValues && discount.couponCodeValues.length === 1) {
             let res = await executeQueryUtil(getCouponCodeDiscount(brandId, userId,
