@@ -18,7 +18,7 @@ import {
   addDealToCart,
   computeItemRestriction,
   processOrderCharge,
-  processOrderDiscount,
+  processOrderDiscount, processOrderDiscountSync,
   processOrderInCreation
 } from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
@@ -962,6 +962,7 @@ export const AuthProvider = ({ children }) => {
               ...itemInCart,
               lineIndex: i,
               quantity: 1,
+
             })
             itemInCart.takenFromCart = (itemInCart.takenFromCart || 0) + 1;
             itemInCart.quantity = itemInCart.quantity - 1;
@@ -1017,8 +1018,9 @@ export const AuthProvider = ({ children }) => {
           orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
           computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
           if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
-            const newPrice = computePriceDetail(orderInCreationClone);
+            processOrderDiscountSync(orderInCreationClone, currentBrand().id, getDbUser()?.id, setGlobalDialog, null, true);
 
+            const newPrice = computePriceDetail(orderInCreationClone);
             if (newPrice.total >= oldPrice.total) {
               return {
                 newOrder: orderInCreation
@@ -1057,7 +1059,7 @@ export const AuthProvider = ({ children }) => {
 
     }
 
-    let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
+    let updatedOrderMerge = processDealMerge(currentEstablishment, currentService, orderInCreation,
         getCurrency(), currentBrand()?.id);
 
     //remove coupon if not logged

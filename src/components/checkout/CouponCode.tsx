@@ -1,4 +1,4 @@
-import Card1 from '@component/Card1'
+import Card1, {Card2, Card3} from '@component/Card1'
 import {Button, Dialog, DialogActions, DialogContent, Grid, TextField, Typography} from '@material-ui/core'
 import React, {useState} from 'react'
 import useAuth from "@hook/useAuth";
@@ -204,7 +204,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                 </DialogActions>
             </Dialog>
 
-            <Card1>
+            <Card3>
                 {/*{wrongCode &&*/}
                 {/*<DialogContent className={classes.dialogContent}>*/}
                 {/*    <AlertHtmlLocal*/}
@@ -226,9 +226,9 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                 {/*}*/}
 
                 {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
-                <Typography fontWeight="600" mb={0} mt={1}>
-                    {localStrings.IHaveACouponCode}
-                </Typography>
+                {/*<Typography fontWeight="600" mb={0} mt={1}>*/}
+                {/*    {localStrings.IHaveACouponCode}*/}
+                {/*</Typography>*/}
 
                 {/*<Divider sx={{mb: '1rem'}}/>*/}
                 <Formik
@@ -249,7 +249,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                       }) => (
                         <form onSubmit={handleSubmit}>
 
-                                <Grid container spacing={6}>
+                                <Grid container spacing={2}>
                                     <Grid item sm={12} xs={12}>
 
                                         <TextField
@@ -259,6 +259,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                                             fullWidth
                                             sx={{mb: '1rem'}}
                                             onBlur={handleBlur}
+                                            placeholder={localStrings.IHaveACouponCode}
                                             onChange={handleChange}
                                             value={values.couponCode}
                                             error={!!touched.couponCode && !!errors.couponCode}
@@ -277,7 +278,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                         </form>
                     )}
                 </Formik>
-            </Card1>
+            </Card3>
         </div>
     )
 };
