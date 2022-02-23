@@ -73,9 +73,9 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
       zIndex: 2,
     },
 
-    [theme.breakpoints.down('sm')]: {
-      display: 'block',
-    },
+    // [theme.breakpoints.down('sm')]: {
+    //   display: 'block',
+    // },
   },
   offerChip: {
     //position: 'absolute',

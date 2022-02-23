@@ -22,6 +22,7 @@ export interface ProductCard1ListProps {
     restrictedskuRefs: any
     tagsSelected: any
     sortOption: string
+    restrictedProductId: [string]
 }
 const config = require('../../conf/config.json')
 export const ALL_CAT = "all";
@@ -36,6 +37,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                restrictedskuRefs,
                                                                tagsSelected,
                                                                sortOption,
+                                                               restrictedProductId,
 }) => {
 
 
@@ -57,7 +59,14 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         // if (contextData.deals.length === 0) {
         //     alert("empty deals")
         // }
-        return contextData.products.concat((contextData.deals || []).filter(deal => !deal.dealNotSelectable))
+        let productAndDeals = contextData.products.concat((contextData.deals || []).filter(deal => !deal.dealNotSelectable));
+
+
+        if (restrictedProductId && restrictedProductId.length > 0) {
+            productAndDeals = productAndDeals.filter(productDeal => restrictedProductId.includes(productDeal.id))
+        }
+
+        return productAndDeals;
     }
 
     const [allProducts, setAllProducts] = useState(contextData ? (getProductsAndDeals() || []) : []);

@@ -309,7 +309,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         width: '100%',
                         position: 'sticky',
                         bottom: '-20px',
-                        backgroundColor: 'transparent'
+                        backgroundColor: 'grey.100'
                         // backgroundColor: "blue"
                     }} >
 

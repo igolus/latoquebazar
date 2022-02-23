@@ -148,9 +148,11 @@ const ProductList: React.FC<ProductList> = ({category, contextData}) => {
                         <Grid item lg={9} xs={12}>
                             <ProductCard1List
                                 sortOption={sortOption}
-                                filter={filter} query={query}
+                                filter={filter}
+                                query={query}
                                 tagsSelected={tagsSelected}
-                                category={category} contextData={getContextData()}/>
+                                category={category}
+                                contextData={getContextData()}/>
                         </Grid>
                     </Grid>
                 </Box>

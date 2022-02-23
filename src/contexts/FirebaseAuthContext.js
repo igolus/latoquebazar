@@ -39,6 +39,7 @@ import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
 import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
+import ProductCard1List from "@component/products/ProductCard1List";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -323,6 +324,7 @@ const createAction= "create";
 const localStorageEstaKey = "defaultEstaId";
 export const AuthProvider = ({ children }) => {
   const [contextDataState, setContextDataState] = useState(null)
+  const [dialogDealProposalContent, setDialogDealProposalContent] = useState(null)
 
   function updateItem(dataType, getFunc, res, contextDataParam) {
     if (!contextDataParam) {
@@ -691,10 +693,10 @@ export const AuthProvider = ({ children }) => {
     }
     catch (err) {
       setGlobalDialog(<AlertHtmlLocal
-          title={localStrings.loginError}
-          content={err.message}
-      >
-      </AlertHtmlLocal>
+              title={localStrings.loginError}
+              content={err.message}
+          >
+          </AlertHtmlLocal>
       )
     }
   };
@@ -942,6 +944,7 @@ export const AuthProvider = ({ children }) => {
   function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brandId) {
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = (state.contextData?.deals || []).filter(deal => deal.visible);
+    let candidateDeals = [];
     //alert("deals " + deals.length);
     for (let j = 0; j < deals.length; j++) {
       const dealToCheck = deals[j];
@@ -951,8 +954,10 @@ export const AuthProvider = ({ children }) => {
         let itemsForDeal = [];
         //let itemsCopyForDealUpdate = cloneDeep(orderInCreation.order.items);
 
-        const lines = dealToCheck.lines;
+        const lines = cloneDeep(dealToCheck.lines);
+        // lines.sort((l1,l2) => l1.);
         let matchingRemains = lines.length;
+        let missingLine;
 
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
@@ -968,13 +973,16 @@ export const AuthProvider = ({ children }) => {
             itemInCart.canditeDeal = true;
             itemInCart.lineIndex = i;
             matchingRemains--;
-
-
+          }
+          else {
+            missingLine = line;
           }
         }
 
 
         let toRemoveSkuRef = [];
+
+
         for (let i = 0; i < itemsInCart.length; i++) {
           const itemsInCartElement = itemsInCart[i];
           if (!itemsInCartElement.canditeDeal) {
@@ -1019,24 +1027,35 @@ export const AuthProvider = ({ children }) => {
           if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
             const newPrice = computePriceDetail(orderInCreationClone);
 
-            if (newPrice.total >= oldPrice.total) {
+            if (newPrice.total < oldPrice.total) {
               return {
-                newOrder: orderInCreation
+                dealApplied: dealToAdd,
+                newOrder: orderInCreationClone,
+                saved: oldPrice.total - newPrice.total,
               }
             }
             // console.log("newPrice " + JSON.stringify(newPrice, null, 2))
             // console.log("oldPrice " + JSON.stringify(oldPrice, null, 2))
-            return {
-              dealApplied: dealToAdd,
-              newOrder: orderInCreationClone,
-              saved: oldPrice.total - newPrice.total,
-            }
+
           }
           //return orderInCreationClone;
         }
+
+
+        if (matchingRemains === 1 && missingLine) {
+          //alert("matching deal");
+          missingLine.missing = true;
+          let dealCanditate = cloneDeep(dealToCheck);
+          let indexLineMissing  = dealCanditate.lines.findIndex(line => line.uuid !== missingLine.uuid);
+          dealCanditate.lines.splice(indexLineMissing, indexLineMissing, missingLine)
+          candidateDeals.push(dealCanditate)
+        }
       }
     }
+
+    //console.log()
     return {
+      candidateDeals: candidateDeals,
       newOrder: orderInCreation
     }
   }
@@ -1048,7 +1067,7 @@ export const AuthProvider = ({ children }) => {
     const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, getOrderInCreation()?.deliveryMode)
     //setEstanavOpen(false);
     processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
-      getBrandCurrency(currentBrand()));
+        getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
@@ -1060,6 +1079,34 @@ export const AuthProvider = ({ children }) => {
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
         getCurrency(), currentBrand()?.id);
 
+    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length > 0 && getContextDataAuth()) {
+      // setDialogDealProposalContent(
+      //     <ProductCard1List
+      //         category={"all"}
+      //         contextData={getContextDataAuth()}
+      //         restrictedProductId={updatedOrderMerge.candidateDeals.map(c => c.id)}
+      //     />
+      // )
+      setGlobalDialog({
+        fullWidth: true,
+        content: (
+
+            <AlertHtmlLocal
+                title={localStrings.candidateDeals}
+            >
+                <ProductCard1List
+                    category={"all"}
+                    contextData={getContextDataAuth()}
+                    restrictedProductId={updatedOrderMerge.candidateDeals.map(c => c.id)}
+                />
+              </AlertHtmlLocal>
+        ),
+        actions: []
+      })
+
+      //setGlobalDialog()
+      console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
+    }
     //remove coupon if not logged
 
 
@@ -1099,7 +1146,7 @@ export const AuthProvider = ({ children }) => {
               }}
           >
             <div style={{maxWidth: '300px'}}
-                dangerouslySetInnerHTML={{__html: `<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_qdiq7qa5.json"  background="transparent"  speed="1"  style="width: 250px; height: 250px; margin-left: -50px; margin-left: 0;"  loop  autoplay></lottie-player>`}}
+                 dangerouslySetInnerHTML={{__html: `<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_qdiq7qa5.json"  background="transparent"  speed="1"  style="width: 250px; height: 250px; margin-left: -50px; margin-left: 0;"  loop  autoplay></lottie-player>`}}
             />
           </Box>
 
@@ -1299,12 +1346,23 @@ export const AuthProvider = ({ children }) => {
           }}
       >
 
+        {dialogDealProposalContent &&
+        <Dialog open={state.globalDialog} open={dialogDealProposalContent} fullWidth>
+          {dialogDealProposalContent}
+        </Dialog>
+        }
+
         {state.globalDialog &&
-        <Dialog open={state.globalDialog} maxWidth="sm"
+        <Dialog open={state.globalDialog} fullWidth={state.globalDialog.fullWidth}
+                sx={{minHeight: '80vh'}}
         >
           <DialogContent className={classes.dialogContent}>
             {state.globalDialog.content}
           </DialogContent>
+
+          {/*<DialogContent>*/}
+          {/*  {state.globalDialog.content}*/}
+          {/*</DialogContent>*/}
 
           <DialogActions>
             <Button onClick={() => resetGlobalDialog()} color="primary">
