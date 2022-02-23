@@ -73,6 +73,7 @@ export function applyDealPrice(deal) {
             productAndSkusLine.price = priceComputed;
             line.pricingValue = priceComputed;
         }
+        productAndSkusLine.nonDiscountedPrice = productAndSkusLine.price.toString();
 
     }
     console.log("dealWithPriceUpdated " + JSON.stringify(dealWithPriceUpdated, null,2))

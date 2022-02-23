@@ -17,4 +17,15 @@ export const Card2 = styled(Card)({
   },
 })
 
+export const Card3 = styled(Card)({
+  position: 'relative',
+  border: 'none',
+  boxShadow: 'none',
+  borderRadius: 0,
+  padding: '1rem',
+  ['@media only screen and (max-width: 678px)']: {
+    padding: '0rem',
+  },
+})
+
 export default Card1
