@@ -23,22 +23,6 @@ import {
     WIDTH_DISPLAY_MOBILE
 } from "../../util/constants";
 
-// const useStyles = makeStyles((palette) => ({
-//     root: {
-//         // alignItems: 'center',
-//         // backgroundColor: palette.background.default,
-//         // display: 'flex',
-//         // flexDirection: 'column',
-//         // height: '100%',
-//         // justifyContent: 'center',
-//         // left: 0,
-//         // padding: 3,
-//         // position: 'fixed',
-//         // top: 0,
-//         // width: '100%',
-//         // zIndex: 2000
-//     }
-// }));
 export function applyDealPrice(deal) {
 
     if (deal.deal.lines.length !== deal.productAndSkusLines.length) {
@@ -55,6 +39,10 @@ export function applyDealPrice(deal) {
         let line = lines[i]
         line.quantity = 1;
         let productAndSkusLine = productAndSkusLines[i];
+        if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
+            line.pricingValue = "";
+            continue;
+        }
         let priceLineF = parseFloat(line.pricingValue);
         let priceProduct = parseFloat(productAndSkusLine.price);
         if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
@@ -63,15 +51,17 @@ export function applyDealPrice(deal) {
         }
         else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
             productAndSkusLine.price = priceLineF;
+            line.pricingValue = parseFloat(priceLineF);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
             productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
+            line.pricingValue = parseFloat(productAndSkusLine.price);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
             let factor = 1 - priceLineF / 100
             let priceComputed = (priceProduct * factor).toFixed(2);
             productAndSkusLine.price = priceComputed;
-            line.pricingValue = priceComputed;
+            line.pricingValue = (priceProduct * factor);
         }
         productAndSkusLine.nonDiscountedPrice = productAndSkusLine.price.toString();
 

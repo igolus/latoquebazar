@@ -21313,14 +21313,7 @@ a.u-button-style.u-border-20 {
 .u-body {
 
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: Roboto,sans-serif;
-}
+
 /*end-variables font-family*/
 /*begin-variables color*/
 .u-overlap.u-overlap-transparent .u-header,
@@ -21590,7 +21583,9 @@ li.active > a.u-button-style.u-button-style.u-active-color-1[class*="u-border-"]
   color: #ffffff !important;
   background-color: #478ac9 !important;
 }
-
+a.u-link.u-hover-color-1:hover {
+  color: #478ac9 !important;
+}
 .u-color-1-light-1,
 .u-body.u-color-1-light-1,
 .u-color-1-light-1 > .u-container-layout:before,
@@ -21800,7 +21795,9 @@ li.active > a.u-button-style.u-button-style.u-active-color-1-base[class*="u-bord
   color: #ffffff !important;
   background-color: #478ac9 !important;
 }
-
+a.u-link.u-hover-color-1-base:hover {
+  color: #478ac9 !important;
+}
 .u-color-2-dark-3,
 .u-body.u-color-2-dark-3,
 .u-color-2-dark-3 > .u-container-layout:before,
@@ -23705,6 +23702,9 @@ li.active > a.u-button-style.u-button-style.u-active-palette-1,
 li.active > a.u-button-style.u-button-style.u-active-palette-1[class*="u-border-"] {
   color: #ffffff !important;
   background-color: #478ac9 !important;
+}
+a.u-link.u-hover-palette-1:hover {
+  color: #478ac9 !important;
 }
 .u-palette-1-light-1,
 .u-body.u-palette-1-light-1,
@@ -36040,70 +36040,70 @@ a.u-link.u-text-hover-grey-90:hover {
         }
 
         /** common-rules **/
-        h1.u-title
-        {
-        font-weight: 400;
-        font-size: 4.5rem;
-        line-height: 1.1;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h2.u-subtitle
-        {
-        font-weight: 400;
-        font-size: 2.25rem;
-        line-height: 1.1;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h1:not(.u-title)
-        {
-        font-weight: 400;
-        font-size: 3rem;
-        line-height: 1.1;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h2:not(.u-subtitle)
-        {
-        font-weight: 400;
-        font-size: 2.25rem;
-        line-height: 1.1;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h3
-        {
-        font-weight: 400;
-        font-size: 1.875rem;
-        line-height: 1.2;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h4
-        {
-        font-weight: 400;
-        font-size: 1.5rem;
-        line-height: 1.2;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h5
-        {
-        font-weight: 400;
-        font-size: 1.25rem;
-        line-height: 1.2;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
-        h6
-        {
-        font-weight: 400;
-        font-size: 1.125rem;
-        line-height: 1.2;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        }
+        /*h1.u-title*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 4.5rem;*/
+        /*line-height: 1.1;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h2.u-subtitle*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 2.25rem;*/
+        /*line-height: 1.1;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h1:not(.u-title)*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 3rem;*/
+        /*line-height: 1.1;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h2:not(.u-subtitle)*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 2.25rem;*/
+        /*line-height: 1.1;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h3*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 1.875rem;*/
+        /*line-height: 1.2;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h4*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 1.5rem;*/
+        /*line-height: 1.2;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h5*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 1.25rem;*/
+        /*line-height: 1.2;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
+        /*h6*/
+        /*{*/
+        /*font-weight: 400;*/
+        /*font-size: 1.125rem;*/
+        /*line-height: 1.2;*/
+        /*margin-top: 20px;*/
+        /*margin-bottom: 20px;*/
+        /*}*/
         p.u-large-text
         {
         font-size: 1.25rem;
@@ -36232,6 +36232,10 @@ a.u-link.u-text-hover-grey-90:hover {
         .u-overlap.u-overlap-transparent:not(.u-overlap-contrast) .u-header :not(.u-nav-item) > a,
         .u-gradient > .u-container-layout > a,
         .u-image:not(.u-shading) > .u-container-layout > a,
+        a
+        {
+        color: #478ac9;
+        }
         .u-overlap.u-overlap-transparent:not(.u-overlap-contrast) .u-header :not(.u-nav-item) > a:hover,
         .u-gradient > .u-container-layout > a:hover,
         .u-image:not(.u-shading) > .u-container-layout > a:hover,

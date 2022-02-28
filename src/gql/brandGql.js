@@ -21,6 +21,7 @@ const common = `
     siteUrl
     googleKey
     starWebProducts
+    proposeDeal
     loginImg
     carouselAsList
     notifEmailConfig {

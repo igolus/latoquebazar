@@ -46,7 +46,7 @@ const AddressEditor = ({back}) => {
     const [adressInfo, setAdressInfo] = useState(null);
 
     const handleFormSubmit = async (values: any) => {
-        //alert("handleFormSubmit" + adressInfo.address);
+        //alert("handleFormSubmit" + values.additionalInformation);
 
         setLoading(true)
         try {
@@ -98,7 +98,7 @@ const AddressEditor = ({back}) => {
                     otherAddresses: filterData
                 }
             }
-        //alert("updateSiteUserQuery")
+
             let res = await executeMutationUtil(updateSiteUserQuery(currentBrand().id, dbUserCopy))
             let user = res?.data?.updateSiteUser;
             if (user) {
@@ -108,7 +108,6 @@ const AddressEditor = ({back}) => {
             if (back) {
                 router.push(decodeURI(back))
             } else {
-            //alert("push adress")
                 router.push("/address")
             }
         }
@@ -118,8 +117,6 @@ const AddressEditor = ({back}) => {
     }
 
     function updateDeliveryAdress(address, lat, lng, placeId) {
-        // alert("updateDeliveryAdress " + address);
-        // alert("updateDeliveryAdress " + placeId);
         setAdressInfo({
                 address: address,
                 lat: lat,
@@ -196,6 +193,12 @@ const AddressEditor = ({back}) => {
                     <Card1>
                         <Formik
                             initialValues={initialValues(id, dbUser, adressInfo)}
+
+                            // initialValues={{
+                            //     name: "INITIAL",
+                            //     //address: '',
+                            //     additionalInformation: "ADD INFO"
+                            // }}
                             validationSchema={checkoutSchema(id)}
                             onSubmit={handleFormSubmit}
                         >
