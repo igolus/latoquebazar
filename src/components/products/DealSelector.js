@@ -55,6 +55,10 @@ export function applyDealPrice(deal) {
         let line = lines[i]
         line.quantity = 1;
         let productAndSkusLine = productAndSkusLines[i];
+        if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
+            line.pricingValue = "";
+            continue;
+        }
         let priceLineF = parseFloat(line.pricingValue);
         let priceProduct = parseFloat(productAndSkusLine.price);
         if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
@@ -63,15 +67,17 @@ export function applyDealPrice(deal) {
         }
         else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
             productAndSkusLine.price = priceLineF;
+            line.pricingValue = parseFloat(priceLineF);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
             productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
+            line.pricingValue = parseFloat(productAndSkusLine.price);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
             let factor = 1 - priceLineF / 100
             let priceComputed = (priceProduct * factor).toFixed(2);
             productAndSkusLine.price = priceComputed;
-            line.pricingValue = priceComputed;
+            line.pricingValue = (priceProduct * factor);
         }
 
     }
