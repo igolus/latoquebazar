@@ -15,14 +15,14 @@ import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
 import {
-  addDealToCart,
+  addDealToCart, addToCartOrder,
   computeItemRestriction,
   processOrderCharge,
   processOrderDiscount,
   processOrderInCreation
 } from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
-import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton} from "@material-ui/core";
 import Router from 'next/router'
 import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
 import {
@@ -40,6 +40,9 @@ import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
 import ProductCard1List from "@component/products/ProductCard1List";
+import {MuiThemeProps} from "@theme/theme";
+import UpSellDeal from "@component/products/UpSellDeal";
+import CloseIcon from '@material-ui/icons/Close';
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -63,6 +66,15 @@ const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
+
+
+// const useStyles = makeStyles(() => ({
+//   dialogContent: {
+//     paddingBottom: '1.25rem',
+//     backgroundColor: palette.background.default
+//     //maxWidth: "750px"
+//   },
+// }))
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -324,7 +336,8 @@ const createAction= "create";
 const localStorageEstaKey = "defaultEstaId";
 export const AuthProvider = ({ children }) => {
   const [contextDataState, setContextDataState] = useState(null)
-  const [dialogDealProposalContent, setDialogDealProposalContent] = useState(null)
+  const [candidateDeal, setCandidateDeal] = useState(null)
+  const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
 
   function updateItem(dataType, getFunc, res, contextDataParam) {
     if (!contextDataParam) {
@@ -941,7 +954,11 @@ export const AuthProvider = ({ children }) => {
     })
   }
 
-  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brandId) {
+  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand) {
+    if (!brand?.config?.proposeDeal) {
+      return;
+    }
+
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = (state.contextData?.deals || []).filter(deal => deal.visible);
     let candidateDeals = [];
@@ -958,11 +975,14 @@ export const AuthProvider = ({ children }) => {
         // lines.sort((l1,l2) => l1.);
         let matchingRemains = lines.length;
         let missingLine;
-
+        let missingLineNumber;
+        let priceItemsWithoutDeal = 0;
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
           let itemInCart = itemsInCart.find(item => item.quantity > 0 && (line.skus || []).map(sku => sku.extRef).includes(item.extRef));
+
           if (itemInCart) {
+            priceItemsWithoutDeal += parseFloat(itemInCart.price);
             itemsForDeal.push({
               ...itemInCart,
               lineIndex: i,
@@ -976,6 +996,11 @@ export const AuthProvider = ({ children }) => {
           }
           else {
             missingLine = line;
+            missingLineNumber = i
+            itemsForDeal.push({
+              lineIndex: i,
+              notSet: true
+            })
           }
         }
 
@@ -1032,6 +1057,7 @@ export const AuthProvider = ({ children }) => {
                 dealApplied: dealToAdd,
                 newOrder: orderInCreationClone,
                 saved: oldPrice.total - newPrice.total,
+
               }
             }
             // console.log("newPrice " + JSON.stringify(newPrice, null, 2))
@@ -1042,13 +1068,27 @@ export const AuthProvider = ({ children }) => {
         }
 
 
-        if (matchingRemains === 1 && missingLine) {
+        if (matchingRemains === 1 && missingLine && missingLineNumber) {
           //alert("matching deal");
-          missingLine.missing = true;
-          let dealCanditate = cloneDeep(dealToCheck);
-          let indexLineMissing  = dealCanditate.lines.findIndex(line => line.uuid !== missingLine.uuid);
-          dealCanditate.lines.splice(indexLineMissing, indexLineMissing, missingLine)
-          candidateDeals.push(dealCanditate)
+          // missingLine.missing = true;
+          let dealCanditate = {
+            deal: cloneDeep(dealToCheck),
+            productAndSkusLines: []
+          }
+
+          dealCanditate.productAndSkusLines =
+              cloneDeep(itemsForDeal)
+                  .sort((a, b) => a.lineIndex - b.lineIndex)
+          dealCanditate = applyDealPrice(dealCanditate);
+
+          // let indexLineMissing  = dealCanditate.lines.findIndex(line => line.uuid !== missingLine.uuid);
+          //dealCanditate.lines.splice(indexLineMissing, indexLineMissing, missingLine)
+          candidateDeals.push({
+            canditate: dealCanditate,
+            missingLine: missingLine,
+            missingLineNumber: missingLineNumber,
+            priceItemsWithoutDeal: priceItemsWithoutDeal
+          })
         }
       }
     }
@@ -1071,15 +1111,17 @@ export const AuthProvider = ({ children }) => {
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
-    if (getDbUser()) {
+    if (getDbUser() && currentBrand()) {
       await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
 
     }
 
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
-        getCurrency(), currentBrand()?.id);
+        getCurrency(), currentBrand());
 
-    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length > 0 && getContextDataAuth()) {
+    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
+      setCandidateDeal(updatedOrderMerge.candidateDeals[0])
+      setDialogDealProposalContent(true);
       // setDialogDealProposalContent(
       //     <ProductCard1List
       //         category={"all"}
@@ -1087,22 +1129,22 @@ export const AuthProvider = ({ children }) => {
       //         restrictedProductId={updatedOrderMerge.candidateDeals.map(c => c.id)}
       //     />
       // )
-      setGlobalDialog({
-        fullWidth: true,
-        content: (
-
-            <AlertHtmlLocal
-                title={localStrings.candidateDeals}
-            >
-                <ProductCard1List
-                    category={"all"}
-                    contextData={getContextDataAuth()}
-                    restrictedProductId={updatedOrderMerge.candidateDeals.map(c => c.id)}
-                />
-              </AlertHtmlLocal>
-        ),
-        actions: []
-      })
+      // setGlobalDialog({
+      //   fullWidth: true,
+      //   content: (
+      //
+      //       <AlertHtmlLocal
+      //           title={localStrings.candidateDeals}
+      //       >
+      //           <ProductCard1List
+      //               category={"all"}
+      //               contextData={getContextDataAuth()}
+      //               restrictedProductId={updatedOrderMerge.candidateDeals.map(c => c.id)}
+      //           />
+      //         </AlertHtmlLocal>
+      //   ),
+      //   actions: []
+      // })
 
       //setGlobalDialog()
       console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
@@ -1294,6 +1336,10 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, [dispatch]);
 
+  function selectDealProposal(selectedProductAndSku) {
+    addToCartOrder(selectedProductAndSku, () => state.orderInCreation, setOrderInCreation)
+  }
+
   return (
       <AuthContext.Provider
           value={{
@@ -1346,9 +1392,43 @@ export const AuthProvider = ({ children }) => {
           }}
       >
 
-        {dialogDealProposalContent &&
-        <Dialog open={state.globalDialog} open={dialogDealProposalContent} fullWidth>
-          {dialogDealProposalContent}
+        {/*<p>{JSON.stringify(candidateDeal || {})}</p>*/}
+
+        {candidateDeal && getContextDataAuth() &&
+        <Dialog
+            onClose={() => setDialogDealProposalContent(false)}
+            open={dialogDealProposalContent}
+            fullWidth>
+          {/*<DialogContent className={classes.dialogContent}>*/}
+          <DialogTitle sx={{ m: 0, p: 2 }}>
+
+                <IconButton
+                    aria-label="close"
+                    onClick={() => setDialogDealProposalContent(false)}
+                    sx={{
+                      position: 'absolute',
+                      right: 8,
+                      top: 8,
+                      color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                  <CloseIcon />
+                </IconButton>
+          </DialogTitle>
+
+          <DialogContent>
+          {/*  <p>TEST</p>*/}
+            <UpSellDeal
+                candidateDeal={candidateDeal}
+                cancelCallBack={() => setDialogDealProposalContent(false)}
+                selectCallBack={
+                  (selectedProductAndSku) => {
+                    setDialogDealProposalContent(false);
+                    selectDealProposal(selectedProductAndSku)
+                  }
+                }
+                contextData={getContextDataAuth()}/>
+          </DialogContent>
         </Dialog>
         }
 

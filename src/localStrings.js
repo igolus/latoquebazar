@@ -4,6 +4,12 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        thisIspresent: "Offert",
+        noThanks: "Non merci",
+        priceWithOffer: "Prix avec l'offre: {0}",
+        saveWithOffer: "Economie avec l'offre:-{0}%",
+        specialOffer: "Profitez de l'offre \"{0}\" pour seulement  {1} de plus et économisez sur les produits suivants",
+        specialOfferNoSavePrice: "Profitez de l'offre \"{0}\" et économisez sur les produits suivants",
         candidateDeals: "Profitez des offres speciales",
         dealApplied: "offre appliquée",
         dealAppliedDetail: "L'offre spéciale {0} a été appliqué à votre panier vous économisez {1} Eur",

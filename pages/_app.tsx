@@ -92,15 +92,17 @@ const App = ({ Component, pageProps}: any) => {
 
 
                 <ToastProvider placement="bottom-left">
+                    <MuiTheme>
                     <AuthProvider>
-                        <MuiTheme>
+
 
                             <Layout>
                                 <Component {...pageProps} />
                             </Layout>
-                        </MuiTheme>
+
 
                     </AuthProvider>
+                    </MuiTheme>
                 </ToastProvider>
             {/*</AppProvider>*/}
 

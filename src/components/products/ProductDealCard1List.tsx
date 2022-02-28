@@ -6,7 +6,6 @@ import {getBrandCurrency} from "../../util/displayUtil";
 import {cloneDeep} from "@apollo/client/utilities";
 import ProductCardDeal1 from "@component/product-cards/ProductCardDeal1";
 import useAuth from "@hook/useAuth";
-import {isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 
 var elasticlunr = require('elasticlunr')
 export interface ProductCard1ListProps {
@@ -17,7 +16,12 @@ export interface ProductCard1ListProps {
     modeFullScren: boolean
     restrictedskuRefs: any
     lineNumber: number,
-    deal: any
+    deal: any,
+    xps: number,
+    selectCallBack: any,
+    priceDiff: number,
+    priceBySkuId: any
+    priceItemsWithoutDeal: number,
 }
 
 export const ALL_CAT = "all";
@@ -33,8 +37,13 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                                                modeFullScren,
                                                                restrictedskuRefs,
                                                                lineNumber,
-                                                                deal
-}) => {
+                                                               deal,
+                                                               xps,
+                                                               selectCallBack,
+                                                               priceDiff,
+                                                               priceBySkuId,
+                                                               priceItemsWithoutDeal
+                                                           }) => {
 
     var productMapper = (product) => {
         return {
@@ -58,7 +67,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     useEffect( () => {
         let filteredProduct = [];
-        let productsLoaded = contextData ? (getProductsAndDeals() || []) : []
+        let productsLoaded = contextData ? (contextData.products || []) : []
         //alert("productsLoaded " + productsLoaded.length)
         if (query) {
             var index = elasticlunr();
@@ -115,7 +124,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
 
     function getLgSize(modeFullScren) {
-         return modeFullScren? 3 : 4
+        return modeFullScren? 3 : 4
     }
 
     function getSmSize(modeFullScren) {
@@ -130,48 +139,53 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             <Grid container spacing={3} justifyContent="center" >
                 {productDisplay
                     .map((item, ind) => {
-                        let url = "/assets/images/Icon_Sandwich.png";
-                        if (item.files && item.files.length > 0) {
-                            url = item.files[0].url;
+                            let url = "/assets/images/Icon_Sandwich.png";
+                            if (item.files && item.files.length > 0) {
+                                url = item.files[0].url;
+                            }
+
+                            let itemShop = {
+                                id: item.id,
+                                imgUrl: url,
+                                title: item.name,
+                                price: 200,
+                                hoverEffect: true
+                            }
+                            return (
+                                <Grid item
+                                      lg={xps || getLgSize(modeFullScren)}
+                                      sm={xps || getSmSize(modeFullScren)}
+                                      xs={12} key={ind}>
+                                    {/*<p>{JSON.stringify(deal)}</p>*/}
+                                    <ProductCardDeal1
+                                        product={item}
+                                        priceItemsWithoutDeal={priceItemsWithoutDeal}
+                                        priceDiff={priceDiff}
+                                        priceBySkuId={priceBySkuId}
+                                        faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
+                                        deal={deal}
+                                        selectCallBack={selectCallBack}
+                                        options={contextData.options}
+                                        lineNumber={lineNumber}
+                                        contextData={contextData}
+                                        currency={getBrandCurrency(contextData.brand)}/>
+                                </Grid>
+                            )
                         }
 
-                        let itemShop = {
-                            id: item.id,
-                            imgUrl: url,
-                            title: item.name,
-                            price: 200,
-                            hoverEffect: true
-                        }
-                        return (
-                            <Grid item
-                                  lg={getLgSize(modeFullScren)}
-                                  sm={getSmSize(modeFullScren)}
-                                  xs={12} key={ind}>
-                                {/*<p>{JSON.stringify(deal)}</p>*/}
-                                <ProductCardDeal1 product={item}
-                                              faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
-                                              deal={deal}
-                                              options={contextData.options}
-                                              lineNumber={lineNumber}
-                                              contextData={contextData}
-                                              currency={getBrandCurrency(contextData.brand)}/>
-                            </Grid>
-                        )
-                    }
-
-                )}
+                    )}
             </Grid>
             {maxPage > 1 &&
-                <FlexBox
-                    flexWrap="wrap"
-                    flexDirection="row-reverse"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mt={4}
-                >
-                    {/*<Span color="grey.600">Showing 1-9 of 1.3k Products</Span>*/}
-                    <Pagination count={maxPage} variant="outlined" color="primary" page={page} onChange={handleChange}/>
-                </FlexBox>
+            <FlexBox
+                flexWrap="wrap"
+                flexDirection="row-reverse"
+                justifyContent="space-between"
+                alignItems="center"
+                mt={4}
+            >
+                {/*<Span color="grey.600">Showing 1-9 of 1.3k Products</Span>*/}
+                <Pagination count={maxPage} variant="outlined" color="primary" page={page} onChange={handleChange}/>
+            </FlexBox>
             }
         </div>
     )

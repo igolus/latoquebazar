@@ -1,5 +1,5 @@
 {
-  "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
+  "graphQlUrl": "http://localhost:5001/latoqueprod/us-central1/graphQlApi",
   "brandId": "KSfP69svg0MVJWLFqljM",
   "appName": "B.Happy",
   "siteUrl": "https://commandes.by-bhappy.com",
