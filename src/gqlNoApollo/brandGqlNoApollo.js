@@ -25,6 +25,7 @@ const common = `
     starWebProducts
     signagePage
     loginImg
+    proposeDeal
     carouselAsList
     notifEmailConfig {
       contentOne
