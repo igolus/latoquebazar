@@ -157,10 +157,28 @@ export const getMininimalSkuPrice = (item) => {
 }
 
 export const getPriceDeal = (deal) => {
+    if (deal.lines.find(line => line === ""))
+    {
+        return null;
+    }
     if (!deal || !deal.lines) {
         return 0;
     }
-    return deal.lines.map(line => parseFloat(line.pricingValue)).reduce((a, v) => a+v);
+    let sum = 0;
+    for (let i = 0; i < deal.lines.length; i++) {
+        const line = deal.lines[i];
+        if ( typeof line.pricingValue === "string") {
+            if (line.pricingValue === "") {
+                return null;
+            }
+            sum += parseFloat(line.pricingValue)
+        }
+        else {
+            sum += line.pricingValue
+        }
+    }
+
+    return sum;
 }
 
 export const computePriceDetail = (orderInCreation) => {
