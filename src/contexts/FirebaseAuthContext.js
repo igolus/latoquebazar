@@ -954,9 +954,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand) {
-    if (!brand?.config?.proposeDeal) {
-      return;
-    }
+    // if (!brand?.config?.proposeDeal) {
+    //   return;
+    // }
 
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = (state.contextData?.deals || []).filter(deal => deal.visible);
@@ -1054,7 +1054,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
 
-        if (matchingRemains === 1 && missingLine && missingLineNumber) {
+        if (matchingRemains === 1 && missingLine && missingLineNumber && brand?.config?.proposeDeal) {
           let dealCanditate = {
             deal: cloneDeep(dealToCheck),
             productAndSkusLines: []
@@ -1090,7 +1090,6 @@ export const AuthProvider = ({ children }) => {
 
     if (getDbUser() && currentBrand()) {
       await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
-
     }
 
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
@@ -1099,8 +1098,9 @@ export const AuthProvider = ({ children }) => {
     if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
       setCandidateDeal(updatedOrderMerge.candidateDeals[0])
       setDialogDealProposalContent(true);
-      //console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
+      console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
     }
+
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
