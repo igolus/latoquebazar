@@ -29,6 +29,8 @@ import ProductIntro from "@component/products/ProductIntro";
 import {Close} from "@material-ui/icons";
 import BazarButton from "@component/BazarButton";
 import {isProductUnavailable, isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
+import {functions} from "firebase";
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 export interface ProductCardDeal1Props {
   className?: string
@@ -47,6 +49,10 @@ export interface ProductCardDeal1Props {
   lineNumber: number,
   deal: any
   contextData: any
+  selectCallBack: any
+  priceDiff: number,
+  priceBySkuId: any,
+  priceItemsWithoutDeal: number
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -98,9 +104,9 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
       zIndex: 2,
     },
 
-    [theme.breakpoints.down('sm')]: {
-      display: 'block',
-    },
+    // [theme.breakpoints.down('sm')]: {
+    //   display: 'block',
+    // },
   },
   offerChip: {
     offerChip: {
@@ -153,6 +159,10 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                                                              lineNumber,
                                                              deal,
                                                              contextData,
+                                                             selectCallBack,
+                                                             priceDiff,
+                                                             priceBySkuId,
+                                                             priceItemsWithoutDeal
                                                            }) => {
 
   if (!product) {
@@ -216,8 +226,11 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
       let factor = 1 - parseFloat(pricingValue) / 100
       productAndSku.sku.price = (parseFloat(productAndSku.sku.price) * factor).toFixed(2);
     }
-
-    selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
+    selectCallBack ?
+        selectCallBack(selectedProductAndSku)
+        :
+        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+    // selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
     setSelectedProductSku(productAndSku)
     //alert()
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
@@ -230,6 +243,21 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     color: "primary.800",
     border: isProductSelected() ? 3 : 0,
   };
+
+  function getPercentDisplay() {
+
+    let percentSave = ((1 - ((priceBySkuId[selectedProductAndSku.sku.extRef] - priceItemsWithoutDeal) /
+        parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0);
+
+    if (percentSave === "100") {
+      return localStrings.thisIspresent;
+    }
+    return localStrings.formatString(localStrings.saveWithOffer,
+        percentSave
+    )
+
+
+  }
 
   return (
       <Box {...defaultProps}>
@@ -252,6 +280,45 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                     />
                   </Box>
               )}
+
+              {isProductUnavailable(product, currentEstablishment, selectedProductAndSku) &&
+              <Box ml='3px' mt='6px' mr='3px'>
+                <Chip
+                    className={classes.offerChip}
+                    color="primary"
+                    size="small"
+                    label={localStrings.unavailable}
+                />
+              </Box>
+              }
+              {priceDiff && selectedProductAndSku &&
+              <Box ml='3px' mt='6px' mr='3px'>
+                <Chip
+                    className={classes.offerChip}
+                    color="primary"
+                    size="small"
+                    icon={<LocalOfferIcon />}
+                    label={
+                      localStrings.formatString(localStrings.saveWithOffer,
+                          ((1 - (priceDiff /   parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                      )}
+                />
+              </Box>
+              }
+
+              {priceBySkuId && selectedProductAndSku && priceBySkuId[selectedProductAndSku.sku.extRef] &&
+              <Box ml='3px' mt='6px' mr='3px'>
+                <Chip
+                    className={classes.offerChip}
+                    color="primary"
+                    size="small"
+                    icon={<LocalOfferIcon />}
+                    label={getPercentDisplay()}
+                />
+              </Box>
+              }
+
+
             </Box>
 
             <div className="extra-icons">
@@ -260,33 +327,24 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               </IconButton>
             </div>
 
-            {/*<Link href={buildProductDetailRef()} >*/}
-            {/*  <a>*/}
-
             <div className={classes.imageHolder}>
-              <Box
-                  display="flex"
-                  flexWrap="wrap"
-                  sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
-              >
-                {isProductUnavailable(product, currentEstablishment, selectedProductAndSku) &&
-                <Box ml='3px' mt='6px' mr='3px'>
-                  <Chip
-                      className={classes.offerChip}
-                      color="primary"
-                      size="small"
-                      label={localStrings.unavailable}
-                  />
-                </Box>
-                }
-              </Box>
+              {/*<Box*/}
+              {/*    display="flex"*/}
+              {/*    flexWrap="wrap"*/}
+              {/*    sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}*/}
+              {/*>*/}
+              {/*  */}
+              {/*</Box>*/}
               <LazyImage
                   onClick={() => {
                     if (isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) {
                       return;
                     }
                     if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                      selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                      selectCallBack ?
+                          selectCallBack(selectedProductAndSku)
+                          :
+                          selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
                     }
                     else {
                       setOpen(true);
@@ -342,6 +400,11 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                     onClick={() => {
                       if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 ) {
+                        selectCallBack ?
+                            selectCallBack(selectedProductAndSku)
+                            :
+                            selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+
                         selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
                       }
                       else if (productAndSkus && productAndSkus.length > 1){
@@ -361,7 +424,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                         :
                         <>
                           {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                          <CheckBoxIcon/>
+                            <CheckBoxIcon/>
                           }
                         </>
                     }
@@ -370,21 +433,14 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
                   <>
                     {productAndSkus && productAndSkus.length > 1 ?
-                        // <Button
-                        //     variant="outlined"
-                        //     color="primary"
-                        //     sx={{ padding: '3px', ml:'5px', mr:'5px'}}
-                        //
-                        //     disabled={!isProductUnavailable(product, currentEstablishment, selectedProductAndSku)}
-                        //     onClick={() => {setOpen(true)}}>
                         <>
                         {localStrings.selectOptions}
                         </>
-                        // </Button>
                         :
                         <>
                           {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                          <CheckBoxOutlineBlankIcon />
+                            localStrings.choose
+                          // <CheckBoxOutlineBlankIcon />
                           }
                         </>
 

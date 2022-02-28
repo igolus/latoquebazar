@@ -15,14 +15,14 @@ import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
 import {
-  addDealToCart,
+  addDealToCart, addToCartOrder,
   computeItemRestriction,
   processOrderCharge,
   processOrderDiscount, processOrderDiscountSync,
   processOrderInCreation
 } from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
-import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton} from "@material-ui/core";
 import Router from 'next/router'
 import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
 import {
@@ -39,6 +39,9 @@ import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
 import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
+import {MuiThemeProps} from "@theme/theme";
+import UpSellDeal from "@component/products/UpSellDeal";
+import CloseIcon from '@material-ui/icons/Close';
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -62,6 +65,15 @@ const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
+
+
+// const useStyles = makeStyles(() => ({
+//   dialogContent: {
+//     paddingBottom: '1.25rem',
+//     backgroundColor: palette.background.default
+//     //maxWidth: "750px"
+//   },
+// }))
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -323,6 +335,8 @@ const createAction= "create";
 const localStorageEstaKey = "defaultEstaId";
 export const AuthProvider = ({ children }) => {
   const [contextDataState, setContextDataState] = useState(null)
+  const [candidateDeal, setCandidateDeal] = useState(null)
+  const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
 
   function updateItem(dataType, getFunc, res, contextDataParam) {
     if (!contextDataParam) {
@@ -691,10 +705,10 @@ export const AuthProvider = ({ children }) => {
     }
     catch (err) {
       setGlobalDialog(<AlertHtmlLocal
-          title={localStrings.loginError}
-          content={err.message}
-      >
-      </AlertHtmlLocal>
+              title={localStrings.loginError}
+              content={err.message}
+          >
+          </AlertHtmlLocal>
       )
     }
   };
@@ -939,43 +953,55 @@ export const AuthProvider = ({ children }) => {
     })
   }
 
-  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brandId) {
+  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand) {
+    // if (!brand?.config?.proposeDeal) {
+    //   return;
+    // }
+
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = (state.contextData?.deals || []).filter(deal => deal.visible);
-    //alert("deals " + deals.length);
+    let candidateDeals = [];
     for (let j = 0; j < deals.length; j++) {
       const dealToCheck = deals[j];
       if (dealToCheck.lines && dealToCheck.lines.length > 0) {
-
         let itemsInCart = cloneDeep(orderInCreation.order.items);
         let itemsForDeal = [];
-        //let itemsCopyForDealUpdate = cloneDeep(orderInCreation.order.items);
-
-        const lines = dealToCheck.lines;
+        const lines = cloneDeep(dealToCheck.lines);
         let matchingRemains = lines.length;
-
+        let missingLine;
+        let missingLineNumber;
+        let priceItemsWithoutDeal = 0;
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
           let itemInCart = itemsInCart.find(item => item.quantity > 0 && (line.skus || []).map(sku => sku.extRef).includes(item.extRef));
+
           if (itemInCart) {
+            priceItemsWithoutDeal += parseFloat(itemInCart.price);
             itemsForDeal.push({
               ...itemInCart,
               lineIndex: i,
               quantity: 1,
-
             })
             itemInCart.takenFromCart = (itemInCart.takenFromCart || 0) + 1;
             itemInCart.quantity = itemInCart.quantity - 1;
             itemInCart.canditeDeal = true;
             itemInCart.lineIndex = i;
             matchingRemains--;
-
-
+          }
+          else {
+            missingLine = line;
+            missingLineNumber = i
+            itemsForDeal.push({
+              lineIndex: i,
+              notSet: true
+            })
           }
         }
 
 
         let toRemoveSkuRef = [];
+
+
         for (let i = 0; i < itemsInCart.length; i++) {
           const itemsInCartElement = itemsInCart[i];
           if (!itemsInCartElement.canditeDeal) {
@@ -988,11 +1014,8 @@ export const AuthProvider = ({ children }) => {
             toUpdateQte.quantity = itemsInCartElement.quantity;
           }
         }
-        //alert("matchingRemains " + matchingRemains);
         if (matchingRemains === 0) {
-          //alert("matching deal");
           let itemsCopyForDealUpdate = itemsInCart.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
-
           let orderInCreationClone = cloneDeep(orderInCreation);
           orderInCreationClone.order.items = itemsCopyForDealUpdate;
 
@@ -1018,75 +1041,81 @@ export const AuthProvider = ({ children }) => {
           orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
           computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
           if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
-            processOrderDiscountSync(orderInCreationClone, currentBrand().id, getDbUser()?.id, setGlobalDialog, null, true);
-
             const newPrice = computePriceDetail(orderInCreationClone);
-            if (newPrice.total >= oldPrice.total) {
+
+            if (newPrice.total < oldPrice.total) {
               return {
-                newOrder: orderInCreation
+                dealApplied: dealToAdd,
+                newOrder: orderInCreationClone,
+                saved: oldPrice.total - newPrice.total,
+
               }
             }
-            // console.log("newPrice " + JSON.stringify(newPrice, null, 2))
-            // console.log("oldPrice " + JSON.stringify(oldPrice, null, 2))
-            return {
-              dealApplied: dealToAdd,
-              newOrder: orderInCreationClone,
-              saved: oldPrice.total - newPrice.total,
-            }
           }
-          //return orderInCreationClone;
+        }
+
+        if (matchingRemains === 1 && missingLine && missingLineNumber && brand?.config?.proposeDeal) {
+          let dealCanditate = {
+            deal: cloneDeep(dealToCheck),
+            productAndSkusLines: []
+          }
+
+          dealCanditate.productAndSkusLines =
+              cloneDeep(itemsForDeal)
+                  .sort((a, b) => a.lineIndex - b.lineIndex)
+          dealCanditate = applyDealPrice(dealCanditate);
+          candidateDeals.push({
+            canditate: dealCanditate,
+            missingLine: missingLine,
+            missingLineNumber: missingLineNumber,
+            priceItemsWithoutDeal: priceItemsWithoutDeal
+          })
         }
       }
     }
     return {
+      candidateDeals: candidateDeals,
       newOrder: orderInCreation
     }
   }
 
   const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser) => {
-    //currentEstablishment, currentService, orderInCreation
     const getEstaFun = getEstaFunc || currentEstablishment
 
     const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, getOrderInCreation()?.deliveryMode)
-    //setEstanavOpen(false);
     processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
-      getBrandCurrency(currentBrand()));
+        getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
-    if (getDbUser()) {
+    if (getDbUser() && currentBrand()) {
       await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
-
     }
 
-    let updatedOrderMerge = processDealMerge(currentEstablishment, currentService, orderInCreation,
-        getCurrency(), currentBrand()?.id);
+    let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
+        getCurrency(), currentBrand());
 
-    //remove coupon if not logged
-
+    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
+      setCandidateDeal(updatedOrderMerge.candidateDeals[0])
+      setDialogDealProposalContent(true);
+      console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
+    }
 
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
         orderInCreation: updatedOrderMerge.newOrder || orderInCreation,
-        //orderInCreation: orderInCreation,
       }
     });
     if (localStorage && !doNotupdateLocalStorage && orderInCreation.order) {
 
       let orderInCreationCopy = cloneDeep(updatedOrderMerge.newOrder || orderInCreation)
-      //let orderInCreationCopy = cloneDeep(orderInCreation)
       delete orderInCreationCopy["bookingSlot"]
       orderInCreationCopy.updateDate = moment().unix();
-
-      //alert("orderInCreation " + JSON.stringify(orderInCreation));
       localStorage.setItem(CART_KEY, encryptor.encrypt(JSON.stringify(orderInCreationCopy)));
-      //localStorage.setItem(CART_KEY, JSON.stringify(orderInCreationCopy));
     }
 
     if (updatedOrderMerge.dealApplied) {
-      //console.log("updatedOrderMerge " + JSON.stringify(updatedOrderMerge, null, 2))
-      //console.log("updatedOrderMerge " + JSON.stringify(updatedOrderMerge.dealApplied, null, 2))
       setGlobalDialog({
         content: (<AlertHtmlLocal
             title={localStrings.dealApplied}
@@ -1101,11 +1130,9 @@ export const AuthProvider = ({ children }) => {
               }}
           >
             <div style={{maxWidth: '300px'}}
-                dangerouslySetInnerHTML={{__html: `<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_qdiq7qa5.json"  background="transparent"  speed="1"  style="width: 250px; height: 250px; margin-left: -50px; margin-left: 0;"  loop  autoplay></lottie-player>`}}
+                 dangerouslySetInnerHTML={{__html: `<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_qdiq7qa5.json"  background="transparent"  speed="1"  style="width: 250px; height: 250px; margin-left: -50px; margin-left: 0;"  loop  autoplay></lottie-player>`}}
             />
           </Box>
-
-
         </AlertHtmlLocal>),
         actions: []
       })
@@ -1249,6 +1276,10 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, [dispatch]);
 
+  function selectDealProposal(selectedProductAndSku) {
+    addToCartOrder(selectedProductAndSku, () => state.orderInCreation, setOrderInCreation)
+  }
+
   return (
       <AuthContext.Provider
           value={{
@@ -1301,6 +1332,45 @@ export const AuthProvider = ({ children }) => {
           }}
       >
 
+        {/*<p>{JSON.stringify(candidateDeal || {})}</p>*/}
+
+        {candidateDeal && getContextDataAuth() &&
+        <Dialog
+            onClose={() => setDialogDealProposalContent(false)}
+            open={dialogDealProposalContent}
+            fullWidth>
+          {/*<DialogContent className={classes.dialogContent}>*/}
+          <DialogTitle sx={{ m: 0, p: 2 }}>
+
+            <IconButton
+                aria-label="close"
+                onClick={() => setDialogDealProposalContent(false)}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent>
+            {/*  <p>TEST</p>*/}
+            <UpSellDeal
+                candidateDeal={candidateDeal}
+                cancelCallBack={() => setDialogDealProposalContent(false)}
+                selectCallBack={
+                  (selectedProductAndSku) => {
+                    setDialogDealProposalContent(false);
+                    selectDealProposal(selectedProductAndSku)
+                  }
+                }
+                contextData={getContextDataAuth()}/>
+          </DialogContent>
+        </Dialog>
+        }
         {state.globalDialog &&
         <Dialog open={state.globalDialog} maxWidth="sm"
         >
