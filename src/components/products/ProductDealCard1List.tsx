@@ -67,7 +67,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     useEffect( () => {
         let filteredProduct = [];
-        let productsLoaded = contextData ? (contextData.products || []) : []
+        let productsLoaded = contextData ? (getProductsAndDeals() || []) : []
         //alert("productsLoaded " + productsLoaded.length)
         if (query) {
             var index = elasticlunr();

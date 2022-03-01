@@ -48,6 +48,7 @@ const common = `
   skus {
     name
     visible
+    onlyInDeal
     unavailableInEstablishmentIds
     extName
     extRef
