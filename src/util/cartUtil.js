@@ -1221,18 +1221,13 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
             computeItemRestriction(copySku, currentEstablishment, currentService, orderInCreation,
                 getBrandCurrency(brand))
             //if (!sku.unavailableInEstablishmentIds || !sku.unavailableInEstablishmentIds.includes(currentEstablishment().id)) {
-            if (sku.visible) {
+            if (sku.visible && !sku.onlyInDeal) {
                 allSkusWithProduct.push({
                     product: product,
                     sku: copySku,
                     options: options
                 });
             }
-
-
-
-
-            //}
         })
     }
 

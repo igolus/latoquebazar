@@ -192,7 +192,7 @@ export function isProductUnavailable(product, currentEstablishment, selectedProd
 }
 
 export function getProductSkuLength(product: any) {
-  return (product?.skus || []).filter(sku => sku.visible).length
+  return (product?.skus || []).filter(sku => sku.visible && !sku.onlyInDeal).length
 }
 
 const ProductCard1: React.FC<ProductCard1Props> = ({
