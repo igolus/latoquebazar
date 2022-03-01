@@ -293,6 +293,7 @@ const AuthContext = createContext({
   setEstablishment: () => {},
 
   setOrderInCreation: () => {},
+  checkDealProposal: () => {},
   setOrderInCreationNoLogic: () => {},
   getOrderInCreation: () => {},
   resetOrderInCreation: () => {},
@@ -1079,6 +1080,21 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  async function checkDealProposal(orderInCreation, getEstaFunc) {
+    const getEstaFun = getEstaFunc || currentEstablishment
+    const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, orderInCreation?.deliveryMode)
+
+    let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
+        getCurrency(), currentBrand());
+
+    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
+      setCandidateDeal(updatedOrderMerge.candidateDeals[0])
+      setDialogDealProposalContent(true);
+      console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
+    }
+
+  }
+
   const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser) => {
     const getEstaFun = getEstaFunc || currentEstablishment
 
@@ -1095,11 +1111,11 @@ export const AuthProvider = ({ children }) => {
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
         getCurrency(), currentBrand());
 
-    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
-      setCandidateDeal(updatedOrderMerge.candidateDeals[0])
-      setDialogDealProposalContent(true);
-      console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
-    }
+    // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
+    //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
+    //   setDialogDealProposalContent(true);
+    //   //console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
+    // }
 
     dispatch({
       type: ORDER_IN_CREATION,
@@ -1310,6 +1326,7 @@ export const AuthProvider = ({ children }) => {
             currentUser,
 
             setOrderInCreation,
+            checkDealProposal,
             setOrderInCreationNoLogic,
             getOrderInCreation,
             resetOrderInCreation,

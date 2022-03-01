@@ -101,7 +101,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             let allRef = search.map(item => item.ref)
             filteredProduct = productsLoaded
                 .filter(p => allRef.includes(p.id))
-                .filter(p => (p.type === "product"  && p.skus && p.skus.some(s => s.visible))
+                .filter(p => (p.type === "product"  && p.skus && p.skus.some(s => s.visible) && p.skus.some(s => !s.onlyInDeal))
                     || p.type === "deal" && p.visible);
             //alert("size search  " + filteredProduct.length)
         }

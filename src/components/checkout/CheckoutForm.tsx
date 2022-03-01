@@ -139,13 +139,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
-    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic, setGlobalDialog, setRedirectPageGlobal, bookingSlotStartDate} = useAuth();
+    dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
+    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, checkDealProposal} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
-  const {maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, setJustCreatedOrder} = useAuth();
+  const {} = useAuth();
 
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
+
+  // useEffect(() => {
+  //   checkDealProposal(orderInCreation, currentEstablishment)
+  // }, [])
+
 
   useEffect(() => {
 
@@ -323,6 +329,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 delete deal.creationTimestamp;
                 delete deal.deal.restrictionsApplied;
                 delete deal.restrictionsList;
+
+                deal.deal.lines.forEach(line => {
+                  delete line.quantity;
+                  if (typeof line.pricingValue !== "string") {
+                    line.pricingValue = line.pricingValue.toString()
+                  }
+                })
 
                 let productAndSkusLines = cloneDeep(deal.productAndSkusLines);
                 deal.productAndSkusLines = [];
