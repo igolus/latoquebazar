@@ -6,10 +6,10 @@ import {
   CircularProgress,
   Dialog,
   DialogActions,
-  DialogContent,
+  DialogContent, DialogTitle,
   FormControlLabel,
   FormGroup,
-  Grid,
+  Grid, IconButton,
   Radio,
   TextField,
   Typography,
@@ -50,7 +50,7 @@ import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil"
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
 import {addOrderToCustomer, bulkDeleteOrderMutation, createOrderMutation, getOrderByIdQuery} from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {getCartItems} from "../../util/cartUtil";
+import {addToCartOrder, getCartItems} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -65,6 +65,8 @@ import FlexBox from "@component/FlexBox";
 import {H6} from "@component/Typography";
 import MdRender from "@component/MdRender";
 import * as ga from '../../../lib/ga'
+import CloseIcon from "@material-ui/icons/Close";
+import UpSellDeal from "@component/products/UpSellDeal";
 
 const config = require('../../conf/config.json')
 
@@ -140,17 +142,29 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
-    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen, checkDealProposal} = useAuth();
+    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,
+    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
   const {} = useAuth();
 
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
+  const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
 
-  // useEffect(() => {
-  //   checkDealProposal(orderInCreation, currentEstablishment)
-  // }, [])
+  useEffect(() => {
+    checkDealProposal(orderInCreation, currentEstablishment)
+  }, [])
+
+
+  useEffect(() => {
+    if (dealCandidates.length > 0) {
+      setDialogDealProposalContent(true);
+    }
+    else {
+      setDialogDealProposalContent(false);
+    }
+  }, [dealCandidates])
 
 
   useEffect(() => {
@@ -792,8 +806,58 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     );
   }
 
+
+  function selectDealProposal(selectedProductAndSku, deal) {
+    //setPrefferedDealToApply(deal.canditae.deal);
+    addToCartOrder(selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
+  }
+
   return (
       <>
+        {dealCandidates && dealCandidates.length > 0 &&
+        <Dialog
+            onClose={() => setDialogDealProposalContent(false)}
+            open={dialogDealProposalContent}
+            fullWidth>
+          {/*<DialogContent className={classes.dialogContent}>*/}
+          <DialogTitle sx={{ m: 0, p: 2 }}>
+
+            <IconButton
+                aria-label="close"
+                onClick={() => setDialogDealProposalContent(false)}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent>
+            {/*  <p>TEST</p>*/}
+            <UpSellDeal
+                candidateDeal={dealCandidates[0]}
+                cancelCallBack={() => {
+                  //setDialogDealProposalContent(false)
+                  setDealCandidates([...dealCandidates].slice(1))
+                }}
+                selectCallBack={
+                  (selectedProductAndSku) => {
+                    //setDialogDealProposalContent(false);
+                    selectDealProposal(selectedProductAndSku, dealCandidates[0])
+                    setDealCandidates([...dealCandidates].slice(1));
+                  }
+                }
+                contextData={contextData}/>
+          </DialogContent>
+        </Dialog>
+        }
+
+
+
         <Dialog open={pickupAlert} maxWidth="sm"
         >
           <DialogContent className={classes.dialogContent}>
@@ -825,6 +889,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         {/*<p>{firstOrCurrentEstablishment().id}</p>*/}
         {!payLoading && getCartItems(getOrderInCreation, true).length > 0 &&
         <>
+          {/*<p>{JSON.stringify(dealCandidates)}</p>*/}
           {(!firstOrCurrentEstablishment() || !orderInCreation) ?
               // {false ?
               <ClipLoaderComponent/>
