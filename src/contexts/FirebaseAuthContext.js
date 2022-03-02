@@ -40,7 +40,7 @@ import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
 import {MuiThemeProps} from "@theme/theme";
-import UpSellDeal from "@component/products/UpSellDeal";
+import UpSellDeal, {isDealValuable, IsDealValuable} from "@component/products/UpSellDeal";
 import CloseIcon from '@material-ui/icons/Close';
 
 const CURRENCY = 'CURRENCY';
@@ -62,6 +62,8 @@ const ORDER_COUNT = 'ORDER_COUNT';
 const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
 const CONTEXT_DATA = 'CONTEXT_DATA';
 const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
+const DEAL_CANDIDATES = 'DEAL_CANDIDATES';
+// const PREFFERED_DEAL_TO_APPLY = 'PREFFERED_DEAL_TO_APPLY';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
@@ -111,11 +113,29 @@ const initialAuthState = {
   globalDialog: null,
   contextData: null,
   estanavOpen: false,
+  dealCandidates: [],
+  prefferedDealToApply: null,
 };
 
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
   switch (action.type) {
+    // case PREFFERED_DEAL_TO_APPLY: {
+    //   const { prefferedDealToApply } = action.payload;
+    //   return {
+    //     ...state,
+    //     prefferedDealToApply: prefferedDealToApply
+    //   };
+    // }
+
+    case DEAL_CANDIDATES: {
+      const { dealCandidates } = action.payload;
+      return {
+        ...state,
+        dealCandidates: dealCandidates
+      };
+    }
+
 
     case GLOBAL_DIALOG: {
       const { globalDialog } = action.payload;
@@ -318,6 +338,10 @@ const AuthContext = createContext({
   setRedirectPageGlobal: () => {},
 
   setEstanavOpen: () => {},
+
+  setDealCandidates: () => {},
+
+  // setPrefferedDealToApply: () => {}
 });
 
 const expireTimeSeconds = 1800;
@@ -337,7 +361,6 @@ const localStorageEstaKey = "defaultEstaId";
 export const AuthProvider = ({ children }) => {
   const [contextDataState, setContextDataState] = useState(null)
   const [candidateDeal, setCandidateDeal] = useState(null)
-  const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
 
   function updateItem(dataType, getFunc, res, contextDataParam) {
     if (!contextDataParam) {
@@ -954,7 +977,7 @@ export const AuthProvider = ({ children }) => {
     })
   }
 
-  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand) {
+  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
     // if (!brand?.config?.proposeDeal) {
     //   return;
     // }
@@ -1015,7 +1038,9 @@ export const AuthProvider = ({ children }) => {
             toUpdateQte.quantity = itemsInCartElement.quantity;
           }
         }
-        if (matchingRemains === 0) {
+        if (matchingRemains === 0 && (!prefferedDealToApply || dealToCheck.id === prefferedDealToApply.id)) {
+
+          // setPrefferedDealToApply(null);
           let itemsCopyForDealUpdate = itemsInCart.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
           let orderInCreationClone = cloneDeep(orderInCreation);
           orderInCreationClone.order.items = itemsCopyForDealUpdate;
@@ -1056,21 +1081,30 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (matchingRemains === 1 && missingLine && missingLineNumber && brand?.config?.proposeDeal) {
-          let dealCanditate = {
+          let dealCandidate = {
             deal: cloneDeep(dealToCheck),
             productAndSkusLines: []
           }
 
-          dealCanditate.productAndSkusLines =
+          dealCandidate.productAndSkusLines =
               cloneDeep(itemsForDeal)
                   .sort((a, b) => a.lineIndex - b.lineIndex)
-          dealCanditate = applyDealPrice(dealCanditate);
-          candidateDeals.push({
-            canditate: dealCanditate,
+          dealCandidate = applyDealPrice(dealCandidate);
+
+          if (isDealValuable({
+            candidate: dealCandidate,
             missingLine: missingLine,
             missingLineNumber: missingLineNumber,
             priceItemsWithoutDeal: priceItemsWithoutDeal
-          })
+          }), getContextDataAuth())
+          {
+            candidateDeals.push({
+              candidate: dealCandidate,
+              missingLine: missingLine,
+              missingLineNumber: missingLineNumber,
+              priceItemsWithoutDeal: priceItemsWithoutDeal
+            })
+          }
         }
       }
     }
@@ -1087,15 +1121,18 @@ export const AuthProvider = ({ children }) => {
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
         getCurrency(), currentBrand());
 
-    if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
-      setCandidateDeal(updatedOrderMerge.candidateDeals[0])
-      setDialogDealProposalContent(true);
-      console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
-    }
+
+
+    setDealCandidates(updatedOrderMerge.candidateDeals)
+    // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
+    //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
+    //   setDialogDealProposalContent(true);
+    //   console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
+    // }
 
   }
 
-  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser) => {
+  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply) => {
     const getEstaFun = getEstaFunc || currentEstablishment
 
     const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, getOrderInCreation()?.deliveryMode)
@@ -1109,7 +1146,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
-        getCurrency(), currentBrand());
+        getCurrency(), currentBrand(), prefferedDealToApply);
 
     // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
     //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
@@ -1176,6 +1213,25 @@ export const AuthProvider = ({ children }) => {
       }
     });
   }
+
+
+  const setDealCandidates = (dealCandidates) => {
+    dispatch({
+      type: DEAL_CANDIDATES,
+      payload: {
+        dealCandidates: dealCandidates,
+      }
+    });
+  }
+
+  // const setPrefferedDealToApply = (prefferedDealToApply) => {
+  //   dispatch({
+  //     type: PREFFERED_DEAL_TO_APPLY,
+  //     payload: {
+  //       prefferedDealToApply: prefferedDealToApply,
+  //     }
+  //   });
+  // }
 
   const setDealEdit = (dealEdit) => {
     dispatch({
@@ -1292,9 +1348,6 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, [dispatch]);
 
-  function selectDealProposal(selectedProductAndSku) {
-    addToCartOrder(selectedProductAndSku, () => state.orderInCreation, setOrderInCreation)
-  }
 
   return (
       <AuthContext.Provider
@@ -1346,48 +1399,14 @@ export const AuthProvider = ({ children }) => {
             setContextDataAuth,
             getContextDataAuth,
             setEstanavOpen,
+            setDealCandidates,
+            // setPrefferedDealToApply,
           }}
       >
 
         {/*<p>{JSON.stringify(candidateDeal || {})}</p>*/}
 
-        {candidateDeal && getContextDataAuth() &&
-        <Dialog
-            onClose={() => setDialogDealProposalContent(false)}
-            open={dialogDealProposalContent}
-            fullWidth>
-          {/*<DialogContent className={classes.dialogContent}>*/}
-          <DialogTitle sx={{ m: 0, p: 2 }}>
 
-            <IconButton
-                aria-label="close"
-                onClick={() => setDialogDealProposalContent(false)}
-                sx={{
-                  position: 'absolute',
-                  right: 8,
-                  top: 8,
-                  color: (theme) => theme.palette.grey[500],
-                }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-
-          <DialogContent>
-            {/*  <p>TEST</p>*/}
-            <UpSellDeal
-                candidateDeal={candidateDeal}
-                cancelCallBack={() => setDialogDealProposalContent(false)}
-                selectCallBack={
-                  (selectedProductAndSku) => {
-                    setDialogDealProposalContent(false);
-                    selectDealProposal(selectedProductAndSku)
-                  }
-                }
-                contextData={getContextDataAuth()}/>
-          </DialogContent>
-        </Dialog>
-        }
         {state.globalDialog &&
         <Dialog open={state.globalDialog} maxWidth="sm"
         >
