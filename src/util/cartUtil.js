@@ -473,7 +473,7 @@ export function addDiscountToCart(discount, orderInCreation, setOrderInCreation)
     })
 }
 
-export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast) {
+export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreation, addToast, prefferedDealToApply) {
     if (!orderInCreation || !orderInCreation() || !productAndSku.product) {
         return;
     }
@@ -512,7 +512,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
                 items: [...others, existing],
                 deals: deals
             }
-        })
+        }, null, null, null, prefferedDealToApply)
         if (addToast) {
             //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
         }
@@ -533,7 +533,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
                 items: [...orderInCreation().order.items, itemToAdd],
                 deals: deals
             }
-        })
+        }, null, null, null, prefferedDealToApply)
     }
     else {
         setOrderInCreation({
@@ -542,7 +542,7 @@ export function addToCartOrder(productAndSku, orderInCreation, setOrderInCreatio
                 items: [itemToAdd],
                 deals: deals
             }
-        })
+        }, null, null, null, prefferedDealToApply)
     }
     if (addToast) {
         //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
