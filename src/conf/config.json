@@ -2,7 +2,7 @@
   "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
   "brandId": "vBn3jsjlVcGDq632Mmdc",
   "appName": "Bakery Street",
-  "siteUrl": "https://commandes.by-bhappy.com",
+  "siteUrl": "https://bakerystreet.vercel.app",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
