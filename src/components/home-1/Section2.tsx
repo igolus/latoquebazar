@@ -51,7 +51,7 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
           seeMoreTitle={localStrings.viewAllCat}
       >
         {/*<p>{productDisplay?.length}</p>*/}
-        <Box mt={-0.5} mb={-0.5}>
+        <Box mt={2} mb={-0.5}>
           <Carousel
               totalSlides={productDisplay.length}
               visibleSlides={visibleSlides}

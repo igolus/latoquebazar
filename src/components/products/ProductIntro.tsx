@@ -21,11 +21,11 @@ import {
 } from "../../util/displayUtil";
 import {FacebookIcon, FacebookShareButton} from "react-share";
 import ProductSelector from './ProductSelector'
-import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
-import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
-import theme from "@theme/theme";
+import {itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import MdRender from "@component/MdRender";
 import {getProductSkuLength, isSkuUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { grey } from '../../theme/themeColors'
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -112,7 +112,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
             //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
         }
 
-    }, [])
+    }, [firstOrCurrentEstablishment(), brand])
 
     const [productAndSku, setProductAndSku] = useState(null);
     const [valid, setValid] = useState(false);
@@ -156,18 +156,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 />
             </Dialog>
         <Box width="100%">
-            {/*{JSON.stringify(productAndSku || {})}*/}
-            {/*<p>{window.location.protocol + "/" + window.location.host + "/product/detail/" + product?.id}</p>*/}
-            {/*<h1>PRO</h1>*/}
-            {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
-            {/*<p>{JSON.stringify(brand || {})}</p>*/}
-            {/*  <p>{JSON.stringify(product)}</p>*/}
-            {/*  <p>{JSON.stringify(productAndSku?.sku?.unavailableInEstablishmentIds || {})}</p>*/}
-            {/*  <p>{JSON.stringify(productAndSku || {})}</p>*/}
-            {/*  <p>{currentEstablishment() ? currentEstablishment().id : 0}</p>*/}
-
-            {productAndSku &&
-            <Grid container spacing={3} justifyContent="space-around">
+            {productAndSku ?
+                <Grid container spacing={3} justifyContent="space-around">
                 <Grid item md={6} xs={12} alignItems="center">
                     <Box>
                         <FlexBox justifyContent="center" mb={6}>
@@ -309,8 +299,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         width: '100%',
                         position: 'sticky',
                         bottom: '-20px',
-                        backgroundColor: 'grey.100'
-                        // backgroundColor: "blue"
+                        backgroundColor: grey["100"],
                     }} >
 
                         <Box
@@ -375,11 +364,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     }
                 </Grid>
             </Grid>
+                :
+                <CircularProgress />
             }
         </Box>
         </>
     )
-};
+}
 
 ProductIntro.defaultProps = {
     imgUrl: [
