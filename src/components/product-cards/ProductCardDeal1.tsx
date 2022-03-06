@@ -272,12 +272,21 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
             >
               {product.tags && product.tags.map((tag, key) =>
                   <Box key={key} ml='3px' mt='6px' mr='3px'>
-                    <Chip
-                        className={classes.offerChip}
-                        color="primary"
-                        size="small"
-                        label={tag.tag}
-                    />
+                    {tag.color ?
+                        <Chip
+                            sx={{backgroundColor: tag.color, color: 'white'}}
+                            className={classes.offerChip}
+                            size="small"
+                            label={tag.tag}
+                        />
+                        :
+                        <Chip
+                            className={classes.offerChip}
+                            color={"primary"}
+                            size="small"
+                            label={tag.tag}
+                        />
+                    }
                   </Box>
               )}
 

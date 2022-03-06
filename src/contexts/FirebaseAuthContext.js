@@ -978,9 +978,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
-    // if (!brand?.config?.proposeDeal) {
-    //   return;
-    // }
+    if (!brand?.config?.proposeDeal) {
+      return;
+    }
 
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = (state.contextData?.deals || []).filter(deal => deal.visible);

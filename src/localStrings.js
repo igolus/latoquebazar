@@ -4,6 +4,17 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        update: "Mettre a jour",
+        deleteReview: "Supprimmer cet avis",
+        editReview: "Editer cet avis",
+        writeReviewHere: "Ecrire votre avis ici",
+        yourReview: "Votre avis sur le produit",
+        yourRating: "Votre note",
+        postComment: "Poster le commentaire",
+        writeReview: "Donnez votre avis sur ce produit",
+        writeReviewFirst: "Soyez le premier a donnez votre avis sur ce produit",
+        updateReview: "Mettez a jour votre avis sur ce produit",
+        reviews: "Avis",
         thisIspresent: "Offert",
         noThanks: "Non merci",
         priceWithOffer: "Prix avec l'offre: {0}",
@@ -40,6 +51,7 @@ let localStrings = new LocalizedStrings({
         codeApplied: "Code {0} appliqué",
         applyCouponCode: "Appliquer mon code",
         connectApplyCouponCode: "Connectez-vous pour appliquer votre code",
+        connectWriteComment: "Connectez-vous pour laisser votre avis",
         IHaveACouponCode: "J'ai un code promo",
         IUnderstand: "J'ai compris",
         setClosestEsta: "Sélectionnez l'établissement le plus proche",
@@ -408,6 +420,7 @@ let localStrings = new LocalizedStrings({
 
         confirmMessage: {
             deleteAddress: 'Etes-vous sûr de vouloir supprimer cette adresse ?',
+            deleteReview: 'Etes-vous sûr de vouloir supprimer cet avis ?',
         },
 
         emailTemplate: {

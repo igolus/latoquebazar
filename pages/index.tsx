@@ -78,7 +78,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {/*}*/}
 
 
-                {getContextData()?.brand?.config.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
+                {getContextData()?.brand?.config?.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
                     <div>
                         <Navbar contextData={getContextData()}/>
                         <MdRender content = {getContextData()?.brand?.config.customHomePageSource}/>
