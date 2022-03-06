@@ -173,8 +173,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       if (
           !selectedAddId &&
           (dbUser || bookWithoutAccount) &&
-          isDeliveryActive(currentEstablishment()) &&
-          getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+          isDeliveryActive(currentEstablishment())) {
         await setAddMain()
       }
     };

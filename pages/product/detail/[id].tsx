@@ -12,11 +12,10 @@ import {SEP} from "../../../src/util/constants";
 import {getCurrentService} from "@component/form/BookingSlots";
 import useAuth from "@hook/useAuth";
 import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
+import {getProductReviewsQueryNoApollo} from "../../../src/gqlNoApollo/productReviewGqlNoApollo";
 //const { markdownToTxt } = require('markdown-to-txt');
 import markdownToTxt from 'markdown-to-txt';
-import MdRender from "@component/MdRender";
-import {stringify} from "querystring";
-import {H3} from "@component/Typography";
+import ProductReview from "@component/products/ProductReview";
 
 export const StyledTabs = styled(Tabs)(({ theme }) => ({
     marginTop: 10,
@@ -33,11 +32,12 @@ export const StyledTabs = styled(Tabs)(({ theme }) => ({
 
 export interface ProductDetailsProps {
     contextData?: any
+    productReviews?: any
 }
 
 //const config = require('../../../src/conf/config.json');
 
-const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
+const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productReviews}) => {
     const config = require('../../../src/conf/config.json');
     const router = useRouter();
 
@@ -280,13 +280,19 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
                     {selectedProduct?.additionalInformation.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.additionalInformation} value="additionalInformation"/>
                     }
-
+                    <Tab className="inner-tab" label={localStrings.reviews} value="reviews"/>
+                    {/*ProductReview*/}
                 </StyledTabs>
 
                 <Box mb={6}>
                     {selectedOption === "allergens" &&
-                    <>
+                    <Box mt={2}>
                         {getAllergenDesc()}
+                    </Box>
+                    }
+                    {selectedOption === "reviews" &&
+                    <>
+                        <ProductReview productReviews={productReviews} productId={productId}/>
                     </>
                     }
                     {selectedOption === "description" && selectedProduct && selectedProduct.description &&
@@ -346,7 +352,18 @@ export const getStaticPaths: GetStaticPaths<{ id: string }> = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-    return await getStaticPropsUtil();
+    const { id } = context.params;
+    let productId = id;
+    const split = id.split("-");
+    if (split.length > 1) {
+        productId = split[0];
+    }
+    const config = require("../../../src/conf/config.json")
+    const productReviews = await getProductReviewsQueryNoApollo(config.brandId, productId);
+    const propsUtil = await getStaticPropsUtil()
+    propsUtil.props["productReviews"] = productReviews;
+    return propsUtil;
+
 }
 
 export default ProductDetails
