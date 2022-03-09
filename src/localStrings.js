@@ -4,13 +4,14 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        ownerResponse: "Response du propriétaire",
         update: "Mettre a jour",
         deleteReview: "Supprimmer cet avis",
         editReview: "Editer cet avis",
         writeReviewHere: "Ecrire votre avis ici",
         yourReview: "Votre avis sur le produit",
         yourRating: "Votre note",
-        postComment: "Poster le commentaire",
+        postReview: "Poster le l'avis",
         writeReview: "Donnez votre avis sur ce produit",
         writeReviewFirst: "Soyez le premier a donnez votre avis sur ce produit",
         updateReview: "Mettez a jour votre avis sur ce produit",

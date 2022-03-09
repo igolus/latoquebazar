@@ -24,16 +24,6 @@ const navbarNavigations = (dbUser, extraPages) => {
         title: localStrings.cartPageTitle,
         url: '/cart',
       },
-      // {
-      //   title: 'Back to Demos',
-      //   url: '/landing',
-      // },
-      // {
-      //   title: "Documentation",
-      //   url:
-      //     "https://docs.google.com/document/d/13Bnyugzcty75hzi9GdbVh01YV75a7AhViZws0qGf5yo/edit?usp=sharing",
-      //   extLink: true,
-      // },
     ]
   }
 
@@ -44,7 +34,7 @@ const navbarNavigations = (dbUser, extraPages) => {
     return {
       title: page.title,
       url: '/specialPage/' + page.id
-    };
+    } ;
   }
 
   if (extraPages && extraPages.length > 0) {

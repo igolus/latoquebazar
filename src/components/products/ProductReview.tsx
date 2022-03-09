@@ -1,6 +1,6 @@
 import FlexBox from '@component/FlexBox'
 import { H2, H5 } from '@component/Typography'
-import { Box, Button, TextField } from '@material-ui/core'
+import {Box, Button, CircularProgress, TextField} from '@material-ui/core'
 import { Rating } from '@material-ui/lab'
 import { useFormik } from 'formik'
 import React, {useEffect, useState} from 'react'
@@ -11,6 +11,15 @@ import useAuth from "@hook/useAuth";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import {createProductReviewMutation, getProductReviewsQuery, updateProductReviewMutation} from "../../gql/productReviewGql";
 import {getProfileName} from "../../util/displayUtil";
+import BazarButton from "@component/BazarButton";
+import {makeStyles} from "@material-ui/styles";
+import {green} from "@material-ui/core/colors";
+
+const useStyles = makeStyles((theme) => ({
+  buttonProgress: {
+    color: green[500],
+  },
+}));
 
 export interface ProductReviewProps {
   productReviews?: any
@@ -29,48 +38,64 @@ const ProductReview: React.FC<ProductReviewProps> = ({
                                                        updateCallBack,
                                                        updateValues}) => {
 
+  const classes = useStyles();
   const [productReviewItems, setProductReviewItems] = useState(productReviews);
   const [reload, setReload] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {dbUser, setLoginDialogOpen, currentBrand, currentUser} = useAuth();
 
   const handleFormSubmit = async (values: any, { resetForm }: any) => {
+    setLoading(true);
     // alert("handleFormSubmit" );
-    if (!dbUser) {
-      setLoginDialogOpen(true);
-      return;
-    }
+    try {
+      if (!dbUser) {
+        setLoginDialogOpen(true);
+        return;
+      }
 
-    let dataCreate = {
-      comment: values.comment,
-      stars: values.stars,
-      //creationDate: String
-      userName: getProfileName(dbUser),
-      userIconUrl: currentUser()?.photoURL,
-      userId: dbUser.id
-    }
+      let dataCreate = {
+        comment: values.comment,
+        stars: values.stars,
+        //creationDate: String
+        userName: getProfileName(dbUser),
+        userIconUrl: currentUser()?.photoURL,
+        userId: dbUser.id,
+        userEmail: dbUser.userProfileInfo.email
+      }
 
-    if (modeEdit) {
-      await executeMutationUtil(updateProductReviewMutation(currentBrand()?.id, productId, {
-        ...dataCreate,
-        id: updateValues.id,
-      }))
-    }
-    else {
-      await executeMutationUtil(createProductReviewMutation(currentBrand()?.id, productId, dataCreate))
-    }
+      if (modeEdit) {
+        dataCreate.answerResponse = updateValues.answerResponse;
+        dataCreate.answerUserIconUrl = updateValues.answerUserIconUrl;
+        dataCreate.productId = updateValues.productId;
 
-    setReload(!reload);
+        // let resExisting = (productReviewItems || []).find(item => item.id === updateValues.id);
+        // alert("resExisting" + JSON.stringify(resExisting || {}))
+        let dataUpdate = {
+          ...dataCreate,
+          id: updateValues.id,
+        };
+        console.log("dataUpdate " + JSON.stringify(dataUpdate, null, 2));
+        await executeMutationUtil(updateProductReviewMutation(currentBrand()?.id, productId, dataUpdate))
+      } else {
+        await executeMutationUtil(createProductReviewMutation(currentBrand()?.id, productId, dataCreate))
+      }
 
-    console.log(JSON.stringify(values));
+      setReload(!reload);
 
-    if (closeCallBack) {
-      closeCallBack();
+      console.log(JSON.stringify(values));
+
+      if (updateCallBack) {
+        updateCallBack();
+      } else if (closeCallBack) {
+        closeCallBack();
+      }
+
+      resetForm()
     }
-    if (updateCallBack) {
-      updateCallBack();
+    finally {
+      setLoading(false);
     }
-    resetForm()
   }
 
   useEffect(() => {
@@ -169,14 +194,16 @@ const ProductReview: React.FC<ProductReviewProps> = ({
                   {localStrings.cancel}
                 </Button>
                 }
-                <Button
+                <BazarButton
                     variant="contained"
                     color="primary"
                     type="submit"
-                    disabled={!modeEdit && !(dirty && isValid)}
+                    disabled={loading && !modeEdit && !(dirty && isValid)}
+                    endIcon={loading ?
+                        <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
                 >
-                  {modeEdit ? localStrings.update: localStrings.postComment}
-                </Button>
+                  {modeEdit ? localStrings.update: localStrings.postReview}
+                </BazarButton>
 
               </>
               :
@@ -196,15 +223,18 @@ const ProductReview: React.FC<ProductReviewProps> = ({
 const initialValues = (updateValues: any) => {
   return (
       {
-        stars: updateValues?.stars || 0,
+        stars: updateValues?.stars,
         comment: updateValues?.comment || '',
+        answerResponse: updateValues?.answerResponse || '',
+        answerUpdateDate: updateValues?.answerUpdateDate,
+        answerUserIconUrl: updateValues?.answerUserIconUrl,
         date: new Date().toISOString(),
       })
 }
 
 const reviewSchema = yup.object().shape({
-  stars: yup.number().required('required'),
-  comment: yup.string().required('required'),
+  stars: yup.number().required(localStrings.requiredField),
+  comment: yup.string().required(localStrings.requiredField),
 })
 
 export default ProductReview
