@@ -10,6 +10,9 @@ const common = `
     userName
     userIconUrl
     userId
+    answerResponse
+    answerUpdateDate
+    answerUserIconUrl
 `
 
 export const getProductReviewsQuery = (brandId, productId) => {

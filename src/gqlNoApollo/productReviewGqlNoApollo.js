@@ -21,7 +21,7 @@ export const getProductReviewsQueryNoApollo = async (brandId, productId) => {
         }
       }
   `
-    console.log(debug);
+    // console.log(debug);
 
     const query = gql`
     {

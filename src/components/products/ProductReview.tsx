@@ -11,6 +11,7 @@ import useAuth from "@hook/useAuth";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import {createProductReviewMutation, getProductReviewsQuery, updateProductReviewMutation} from "../../gql/productReviewGql";
 import {getProfileName} from "../../util/displayUtil";
+import BazarButton from "@component/BazarButton";
 
 export interface ProductReviewProps {
   productReviews?: any
@@ -47,14 +48,23 @@ const ProductReview: React.FC<ProductReviewProps> = ({
       //creationDate: String
       userName: getProfileName(dbUser),
       userIconUrl: currentUser()?.photoURL,
-      userId: dbUser.id
+      userId: dbUser.id,
+      userEmail: dbUser.userProfileInfo.email
     }
 
     if (modeEdit) {
-      await executeMutationUtil(updateProductReviewMutation(currentBrand()?.id, productId, {
+      dataCreate.answerResponse = updateValues.answerResponse;
+      dataCreate.answerUserIconUrl = updateValues.answerUserIconUrl;
+      dataCreate.productId = updateValues.productId;
+
+      // let resExisting = (productReviewItems || []).find(item => item.id === updateValues.id);
+      // alert("resExisting" + JSON.stringify(resExisting || {}))
+      let dataUpdate = {
         ...dataCreate,
         id: updateValues.id,
-      }))
+      };
+      console.log("dataUpdate " + JSON.stringify(dataUpdate, null, 2));
+      await executeMutationUtil(updateProductReviewMutation(currentBrand()?.id, productId, dataUpdate))
     }
     else {
       await executeMutationUtil(createProductReviewMutation(currentBrand()?.id, productId, dataCreate))
@@ -64,12 +74,14 @@ const ProductReview: React.FC<ProductReviewProps> = ({
 
     console.log(JSON.stringify(values));
 
-    if (closeCallBack) {
-      closeCallBack();
-    }
     if (updateCallBack) {
       updateCallBack();
     }
+
+    else if (closeCallBack) {
+      closeCallBack();
+    }
+
     resetForm()
   }
 
@@ -169,14 +181,14 @@ const ProductReview: React.FC<ProductReviewProps> = ({
                   {localStrings.cancel}
                 </Button>
                 }
-                <Button
+                <BazarButton
                     variant="contained"
                     color="primary"
                     type="submit"
                     disabled={!modeEdit && !(dirty && isValid)}
                 >
-                  {modeEdit ? localStrings.update: localStrings.postComment}
-                </Button>
+                  {modeEdit ? localStrings.update: localStrings.postReview}
+                </BazarButton>
 
               </>
               :
@@ -196,15 +208,18 @@ const ProductReview: React.FC<ProductReviewProps> = ({
 const initialValues = (updateValues: any) => {
   return (
       {
-        stars: updateValues?.stars || 0,
+        stars: updateValues?.stars,
         comment: updateValues?.comment || '',
+        answerResponse: updateValues?.answerResponse || '',
+        answerUpdateDate: updateValues?.answerUpdateDate,
+        answerUserIconUrl: updateValues?.answerUserIconUrl,
         date: new Date().toISOString(),
       })
 }
 
 const reviewSchema = yup.object().shape({
-  stars: yup.number().required('required'),
-  comment: yup.string().required('required'),
+  stars: yup.number().required(localStrings.requiredField),
+  comment: yup.string().required(localStrings.requiredField),
 })
 
 export default ProductReview

@@ -44,71 +44,74 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
   }, [width])
 
   return (
-      <CategorySectionCreator
-          icon={<Food color="primary" />}
-          title={localStrings.starProducts}
-          seeMoreLink="/product/shop/all"
-          seeMoreTitle={localStrings.viewAllCat}
-      >
-        {/*<p>{productDisplay?.length}</p>*/}
-        <Box mt={2} mb={-0.5}>
-          <Carousel
-              totalSlides={productDisplay.length}
-              visibleSlides={visibleSlides}
-              showArrow={productDisplay.length > visibleSlides}
-              infinite={true}
-          >
-            {productDisplay.map((item, ind) => {
+      <Box mt={2}>
+        <CategorySectionCreator
 
-              let url = "/assets/images/Icon_Sandwich.png";
+            icon={<Food color="primary" />}
+            title={localStrings.starProducts}
+            seeMoreLink="/product/shop/all"
+            seeMoreTitle={localStrings.viewAllCat}
+        >
+          {/*<p>{productDisplay?.length}</p>*/}
+          <Box mt={2} mb={-0.5}>
+            <Carousel
+                totalSlides={productDisplay.length}
+                visibleSlides={visibleSlides}
+                showArrow={productDisplay.length > visibleSlides}
+                infinite={true}
+            >
+              {productDisplay.map((item, ind) => {
 
-              if (item.files && item.files.length > 0) {
-                url = item.files[0].url;
-              }
+                let url = "/assets/images/Icon_Sandwich.png";
 
-              let itemShop = {
-                id: item.id,
-                imgUrl: url,
-                title: item.name,
-                price: 200,
-                hoverEffect: true
-              }
+                if (item.files && item.files.length > 0) {
+                  url = item.files[0].url;
+                }
 
-              return(
+                let itemShop = {
+                  id: item.id,
+                  imgUrl: url,
+                  title: item.name,
+                  price: 200,
+                  hoverEffect: true
+                }
+
+                return(
 
 
-                //{productList.map((item, ind) => {
-                // (
-                <Box py={0.5} key={ind}>
-                  {/*<p>{JSON.stringify(item)}</p>*/}
-                  {item.type === TYPE_PRODUCT &&
-                  <ProductCard1
-                    {...itemShop}
-                    brand={contextData.brand}
-                    product={item}
-                    options={contextData.options}
-                    currency={getBrandCurrency(contextData.brand)}/>
-                  }
-                  {item.type === TYPE_DEAL &&
-                  <DealCard1
-                      {...itemShop}
-                      deal={item}
-                      options={contextData.options}
-                      currency={getBrandCurrency(contextData.brand)}/>
-                  }
-                  {/*<ProductCard1*/}
-                  {/*  id={ind}*/}
-                  {/*  imgUrl={item.imgUrl}*/}
-                  {/*  title="Smart watch black"*/}
-                  {/*  rating={4}*/}
-                  {/*  price={250}*/}
-                  {/*  off={20}*/}
-                  {/*/>*/}
-                </Box>
-            )})}
-          </Carousel>
-        </Box>
-      </CategorySectionCreator>
+                    //{productList.map((item, ind) => {
+                    // (
+                    <Box py={0.5} key={ind}>
+                      {/*<p>{JSON.stringify(item)}</p>*/}
+                      {item.type === TYPE_PRODUCT &&
+                      <ProductCard1
+                          {...itemShop}
+                          brand={contextData.brand}
+                          product={item}
+                          options={contextData.options}
+                          currency={getBrandCurrency(contextData.brand)}/>
+                      }
+                      {item.type === TYPE_DEAL &&
+                      <DealCard1
+                          {...itemShop}
+                          deal={item}
+                          options={contextData.options}
+                          currency={getBrandCurrency(contextData.brand)}/>
+                      }
+                      {/*<ProductCard1*/}
+                      {/*  id={ind}*/}
+                      {/*  imgUrl={item.imgUrl}*/}
+                      {/*  title="Smart watch black"*/}
+                      {/*  rating={4}*/}
+                      {/*  price={250}*/}
+                      {/*  off={20}*/}
+                      {/*/>*/}
+                    </Box>
+                )})}
+            </Carousel>
+          </Box>
+        </CategorySectionCreator>
+      </Box>
   )
 }
 

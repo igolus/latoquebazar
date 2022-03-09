@@ -1,13 +1,12 @@
 import BazarAvatar from '@component/BazarAvatar'
 import BazarRating from '@component/BazarRating'
 import FlexBox from '@component/FlexBox'
-import { H5, H6, Paragraph, Span } from '@component/Typography'
+import {H5, H6, Paragraph, Span} from '@component/Typography'
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip} from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { getDateDifference } from '../../util/utils'
+import {getDateDifference} from '../../util/utils'
 import React, {useState} from 'react'
-import moment from "moment";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {executeMutationUtil} from "../../apolloClient/gqlUtil";
@@ -24,6 +23,9 @@ export interface ProductCommentProps {
     userIconUrl: string
     userId: string
     handleReload: any
+    answerResponse: string
+    answerUpdateDate: string
+    answerUserIconUrl: string
 }
 
 const ProductComment: React.FC<ProductCommentProps> = ({
@@ -36,7 +38,10 @@ const ProductComment: React.FC<ProductCommentProps> = ({
                                                            userName,
                                                            userIconUrl,
                                                            userId,
-                                                           handleReload
+                                                           handleReload,
+                                                           answerResponse,
+                                                           answerUpdateDate,
+                                                           answerUserIconUrl
                                                        }) => {
 
     const {dbUser, currentBrand} = useAuth();
@@ -84,11 +89,15 @@ const ProductComment: React.FC<ProductCommentProps> = ({
                             comment: comment,
                             stars: stars,
                             id: id,
+                            answerResponse: answerResponse,
+                            answerUserIconUrl: answerUserIconUrl,
+                            productId: productId,
                         }}
                         closeCallBack={() => {
                            setUpdateReview(false);
                         }}
                         updateCallBack={() => {
+                            setUpdateReview(false);
                             handleReload();
                         }}
                     />
@@ -104,7 +113,7 @@ const ProductComment: React.FC<ProductCommentProps> = ({
                 {/*</DialogActions>*/}
             </Dialog>
 
-            <Box mb={4} maxWidth="600px">
+            <Box mb={2} maxWidth="600px">
                 <FlexBox alignItems="center" mb={2}>
                     <BazarAvatar src={userIconUrl} height={48} width={48} />
                     <Box ml={2}>
@@ -136,6 +145,22 @@ const ProductComment: React.FC<ProductCommentProps> = ({
 
                 <Paragraph color="grey.700">{comment}</Paragraph>
             </Box>
+
+            {answerResponse && answerResponse !== "" &&
+                <Box pl={3} mb={1} maxWidth="600px">
+                    <FlexBox alignItems="center" mb={2}>
+
+                        <BazarAvatar src={answerUserIconUrl} height={30} width={30} style={{marginRight: 15}}/>
+                        <Box ml={2}>
+                            <H6 mb={0.5}>{localStrings.ownerResponse + " (" +getDateDifference(answerUpdateDate) + ")"}</H6>
+                        </Box>
+                        {/*<Span >{getDateDifference(answerUpdateDate)}</Span>*/}
+
+                    </FlexBox>
+
+                    <Paragraph color="grey.700">{answerResponse}</Paragraph>
+                </Box>
+            }
         </>
     )
 }
