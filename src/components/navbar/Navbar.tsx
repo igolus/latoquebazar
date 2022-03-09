@@ -94,6 +94,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
             return (
 
                 <NavLink
+                styleNavRoot
                 className={classes.navLink}
                 pageChildren={extraPagesInInfoUtil}
                 href={nav.url}
@@ -111,6 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
               <>
                 {/*<p>LINk</p>*/}
                 <NavLink
+                    styleNavRoot
                     className={classes.navLink}
                     regExpMatch={nav.regExpMatch}
                     href={nav.url}
@@ -127,7 +129,12 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
               <>
                 {/*<p>LINK2</p>*/}
                 {/*  <p>{nav.url}</p>*/}
-              <NavLink className={classes.navLink} href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
+              <NavLink
+                  styleNavRoot
+                  className={classes.navLink}
+                  href={nav.url}
+                  key={nav.title}
+                  regExpMatch={nav.regExpMatch}>
                 {nav.title}
               </NavLink>
               </>
@@ -160,7 +167,12 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
       else {
         if (nav.url)
           return (
-              <NavLink href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>
+              <NavLink
+                  styleNavRoot
+                  href={nav.url}
+                  key={nav.title}
+                  styleNavRoot
+                  regExpMatch={nav.regExpMatch}>
                 <MenuItem>{nav.title}</MenuItem>
               </NavLink>
           )

@@ -29,6 +29,20 @@ const useStylesCurrent = makeStyles(({ palette }: MuiThemeProps) => ({
     },
 }))
 
+const useStylesStandard = makeStyles(({ palette }: MuiThemeProps) => ({
+    root:
+        {
+            position: 'relative',
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+                color: `${palette.primary.main} !important`,
+            },
+        },
+    popover: {
+        width: 200,
+    },
+}))
+
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
     root:
     {
@@ -66,6 +80,7 @@ export interface NavLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
     style?: CSSProperties
     className?: string
     pageChildren: any
+    styleNavRoot: boolean
 }
 
 
@@ -76,6 +91,7 @@ const NavLink: React.FC<NavLinkProps> = ({
                                              style,
                                              className,
                                              pageChildren,
+                                             styleNavRoot,
                                              ...props
                                          }) => {
     const { pathname } = useRouter()
@@ -90,6 +106,7 @@ const NavLink: React.FC<NavLinkProps> = ({
 
     const classes = useStyles()
     const classesCurrent = useStylesCurrent()
+    const classesStandard = useStylesStandard()
     const refBox = useRef(null);
     const [isNavInfoOpen, setNavInfoOpen] = useState(false);
 
@@ -147,9 +164,10 @@ const NavLink: React.FC<NavLinkProps> = ({
 
     return (
         <>
+            {/*<p>{styleNavRoot ? "Y" : "N"}</p>*/}
             <Link href={href}>
                 <a
-                    className={clsx( checkRouteMatch(href) ? classesCurrent.root : classes.root, className)}
+                    className={clsx( checkRouteMatch(href) ? classesCurrent.root : (styleNavRoot ? classes.root : classesStandard.root), className)}
                     href={href}
                     style={style}
                     {...props}
