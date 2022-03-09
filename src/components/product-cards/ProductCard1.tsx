@@ -225,16 +225,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
       return parseFloat(a.sku.price) -  parseFloat(b.sku.price);
     })
-    // alert("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2))
-    // console.log("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2) )
-
     let selected = productAndSkusRes && productAndSkusRes.length > 0 ? minPriceSkus[0] : null;
-
-    //alert("selected " + JSON.stringify(selected || {}));
     setSelectedProductSku(selected)
     let indexCheapest = productAndSkusRes.findIndex( pandsku => pandsku.sku.extRef === selected.sku.extRef)
-    // alert("indexCheapest " + indexCheapest)
-    //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
     setSelectedSkuIndex(indexCheapest)
   }, [product])
 
@@ -246,12 +239,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const {getOrderInCreation, setOrderInCreation, currentEstablishment, setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
-
-
-  // const { state, dispatch } = useAppContext()
-  // const cartItem: CartItem | undefined = state.cart.cartList.find(
-  //     (item) => item.id === id
-  // )
 
   const toggleDialog = useCallback(() => {
     setOpen((open) => !open)
@@ -311,61 +298,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
       return localStrings.choose;
     }
     return (<Add fontSize="small"/>)
-
-    // if (isProductAndSkuGetOption(selectedProductAndSku)) {
-    //   if (product.skus.length > 0) {
-    //     if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
-    //     {
-    //       return localStrings.unavailable;
-    //     }
-    //     return localStrings.selectOptions;
-    //   }
-    //   else {
-    //     if (product.skus.length === 1 && isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
-    //       return localStrings.unavailable;
-    //     }
-    //     if (product.skus.length > 1) {
-    //       if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
-    //       {
-    //         return localStrings.unavailable;
-    //       }
-    //       return localStrings.selectOptions;
-    //     }
-    //
-    //
-    //   }
-    //   // else {
-    //     // if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
-    //     //   return localStrings.choose;
-    //     // }
-    //     return localStrings.selectOptions;
-    //   // }
-    // }
-    // else {
-    //   if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
-    //     return localStrings.unavailable;
-    //   }
-    //   else {
-    //     if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
-    //       return localStrings.choose;
-    //     }
-    //     return (<Add fontSize="small"/>)
-    //   }
-    // }
-
-    // return (isProductAndSkuGetOption(selectedProductAndSku) || getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) ?
-    //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
-    //     :
-    //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable :
-    //         <Add fontSize="small"/>;
   }
 
 
   return (
       <BazarCard className={classes.root} hoverEffect={hoverEffect}>
-        {/*<p>{JSON.stringify(currentEstablishment())}</p>*/}
-        {/*<p>{JSON.stringify(selectedProductAndSku || {})}</p>*/}
-        {/*{product.newProductExpireDate}*/}
         <div className={classes.imageHolder}>
           {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
           <Box
@@ -453,14 +390,25 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
           <Link href={buildProductDetailRef()} >
             <a>
+
+
+
               <LazyImage
                   objectFit="cover"
+                  // transition="transform .7s ease !important"
+                  // sx={{
+                  //   //filter: grayscale(100%);
+                  //   transition: 'transform .7s ease !important',
+                  //   transform: 'scale(1.0)',
+                  //   objectFit: 'cover',
+                  // }}
                   src={url}
                   width="100%"
                   height="100%"
                   layout="responsive"
                   alt={product.name}
               />
+
             </a>
           </Link>
         </div>

@@ -116,15 +116,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             }
         }
 
-        // if (restrictedskuRefs) {
-        //     //filteredProduct = filteredProduct.filter(p => p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
-        //     filteredProduct = filteredProduct.filter(p => p.skus && p.skus.some(sku => restrictedskuRefs.includes(sku.extRef)));
-        //     filteredProduct = cloneDeep(filteredProduct);
-        //     filteredProduct.forEach(product => {
-        //         product.skus = product.skus.filter(sku => restrictedskuRefs.includes(sku.extRef))
-        //     })
-        // }
-
         if (tagsSelected && tagsSelected.length > 0) {
             filteredProduct = filteredProduct.filter(product => {
                 return product.tags.map(t => t.id).some(id => tagsSelected.map(t => t.id).includes(id));
@@ -146,11 +137,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         setAllProducts(
             filteredProduct);
 
-        //console.log("filteredProduct " + JSON.stringify(filteredProduct, null, 2))
         setPage(0);
-        // alert("MaxPag " + Math.floor(filteredProduct ? filteredProduct.length : 0 / itemPerPage) + 1)
-        // alert("filteredProduct.length " + filteredProduct.length);
-
         let pSize = filteredProduct ? filteredProduct.length : 0
 
 
@@ -158,7 +145,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
         if (pSize % itemPerPage == 0) {
             maxPage = pSize/itemPerPage;
         }
-        //alert("maxPage " + maxPage)
 
         setMaxPage(maxPage);
         setProductDisplay(filteredProduct.slice(0,
@@ -221,8 +207,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                   lg={getLgSize(modeFullScren)}
                                   sm={getSmSize(modeFullScren)}
                                   xs={12} key={ind}>
-
-                                {/*<h1>{item.name}</h1>*/}
                                 {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
                                 <ProductCard1 {...itemShop}
                                               brand={contextData.brand}
@@ -240,7 +224,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                               options={contextData.options}
                                               currency={getBrandCurrency(contextData.brand)}/>
                                 }
-                                {/*<ProductCard1 {...item} />*/}
                             </Grid>
                         )
                     }
