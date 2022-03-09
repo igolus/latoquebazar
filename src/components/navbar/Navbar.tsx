@@ -156,7 +156,8 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
                 </Box>
               </FlexBox>
           )
-      } else {
+      }
+      else {
         if (nav.url)
           return (
               <NavLink href={nav.url} key={nav.title} regExpMatch={nav.regExpMatch}>

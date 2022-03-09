@@ -71,6 +71,48 @@ const bazarTheme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        '.hover_underline_animation': {
+          display: "inline-block",
+          position: "relative",
+          color: "#0087ca",
+          '& after': {
+            content: "''",
+            position: "absolute",
+            width: "100%",
+            transform: "scaleX(0)",
+            height: "2px",
+            bottom: "0",
+            left: "0",
+            backgroundColor: "#0087ca",
+            transformOrigin: "bottom right",
+            transition: "transform 0.25s ease-out"
+          },
+          '& hover': {
+            '& after': {
+              transform: "scaleX(1)",
+              transformOrigin: "bottom left"
+            }
+          }
+
+        },
+        // 'hover_underline_animation_after': {
+        //   content: "''",
+        //   position: "absolute",
+        //   width: "100%",
+        //   transform: "scaleX(0)",
+        //   height: "2px",
+        //   bottom: "0",
+        //   left: "0",
+        //   backgroundColor: "#0087ca",
+        //   transformOrigin: "bottom right",
+        //   transition: "transform 0.25s ease-out"
+        // },
+        // 'hover_underline_animation_hover_after': {
+        //   transform: "scaleX(1)",
+        //   transformOrigin: "bottom left"
+        // },
+
+
         h1:  {
           fontFamily: 'Selfie_Regular',
           fontSize: '50px !important',
