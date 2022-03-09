@@ -28,20 +28,14 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
     const filteredCat = filterCat(categories, products, deals)
     return (
         <Card sx={{ p: '18px 27px', overflow: 'auto' }} elevation={1}>
-            {/*{asPath.split("/").slice(-1)}*/}
-            {/*<p>{JSON.stringify(categories || {})}</p>*/}
-            {/*<p>{JSON.stringify(filteredCat || {})}</p>*/}
             <H6 mb={1.25}>{localStrings.categories}</H6>
-            {/*{tagsSelected && JSON.stringify(tagsSelected)}*/}
             <StyledDashboardNav
                 isCurrentPath={asPath.includes(ALL_CAT)}
                 href={"/product/shop/all"}
-                // key={item.id}
             >
                 <FlexBox alignItems="center">
                     <span>{localStrings.allCategories}</span>
                 </FlexBox>
-                {/*<span>{item.count}</span>*/}
             </StyledDashboardNav>
 
             {(filteredCat || []).map((item) => {
@@ -58,36 +52,9 @@ const ProductFilterCard: React.FC<ProductFilterCardProps> = ({categories, produc
                         </StyledDashboardNav>
                     )
                 }
-                // <StyledCategory
-                //     isSelected={selectedCat === item.id}
-                //     title={item.title}
-                //     key={item.id}
-                //     id={item.id}
-                //     sx={{ cursor: 'pointer' }}
-                //     onClick={() => {
-                //         //alert(callBackFilter)
-                //         setSelectedCat(item.id);
-                //
-                //         if (callBackFilter) {
-                //             callBackFilter( { selectedCategory : item.id});
-                //         }
-                //     }}
-                // >
-                // </StyledCategory>
-
             )}
 
             <Divider sx={{ mt: '18px', mb: '24px' }} />
-
-            {/*<H6 mb={2}>Price Range</H6>*/}
-            {/*<FlexBox justifyContent="space-between" alignItems="center">*/}
-            {/*    <TextField placeholder="0" type="number" size="small" fullWidth />*/}
-            {/*    <H5 color="grey.600" px={1}>*/}
-            {/*        -*/}
-            {/*    </H5>*/}
-            {/*    <TextField placeholder="250" type="number" size="small" fullWidth />*/}
-            {/*</FlexBox>*/}
-
             <Divider sx={{ my: '1.5rem' }} />
 
             {tags && tags.length > 0 &&
