@@ -29,6 +29,29 @@ const useStylesCurrent = makeStyles(({ palette }: MuiThemeProps) => ({
     },
 }))
 
+
+const useStylesCurrentStandard = makeStyles(({ palette }: MuiThemeProps) => ({
+    root:
+        {
+            position: 'relative',
+            color: palette.primary.main,
+            transition: 'all 0.3s ease-in-out',
+            // '&:before': {
+            //     content: "''",
+            //     position: 'absolute',
+            //     width: '100%',
+            //     height: '2px',
+            //     bottom: '-3px',
+            //     left: '50%',
+            //     transform: 'translate(-50%,0%)',
+            //     backgroundColor: palette.primary.main,
+            // },
+        },
+    popover: {
+        width: 200,
+    },
+}))
+
 const useStylesStandard = makeStyles(({ palette }: MuiThemeProps) => ({
     root:
         {
@@ -94,18 +117,19 @@ const NavLink: React.FC<NavLinkProps> = ({
                                              styleNavRoot,
                                              ...props
                                          }) => {
-    const { pathname } = useRouter()
+    const { pathname, asPath } = useRouter()
 
     const checkRouteMatch = (href: string) => {
         if (href === '/') {
             //console.log("pathname " + pathname);
-            return pathname === href
+            return asPath === href
         }
-        return pathname.includes(href) || (regExpMatch && pathname.match(new RegExp(regExpMatch)))
+        return asPath.includes(href) || (regExpMatch && asPath.match(new RegExp(regExpMatch)))
     }
 
     const classes = useStyles()
     const classesCurrent = useStylesCurrent()
+    const classesCurrentStandard = useStylesCurrentStandard()
     const classesStandard = useStylesStandard()
     const refBox = useRef(null);
     const [isNavInfoOpen, setNavInfoOpen] = useState(false);
@@ -167,7 +191,11 @@ const NavLink: React.FC<NavLinkProps> = ({
             {/*<p>{styleNavRoot ? "Y" : "N"}</p>*/}
             <Link href={href}>
                 <a
-                    className={clsx( checkRouteMatch(href) ? classesCurrent.root : (styleNavRoot ? classes.root : classesStandard.root), className)}
+                    className={
+                        clsx( checkRouteMatch(href) ?
+                        (styleNavRoot ? classesCurrent.root : classesCurrentStandard.root)
+                        : (styleNavRoot ? classes.root : classesStandard.root), className)
+                    }
                     href={href}
                     style={style}
                     {...props}
