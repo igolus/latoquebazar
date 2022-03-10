@@ -7,22 +7,94 @@ import React, {AnchorHTMLAttributes, useRef, useState} from 'react'
 import {Box, Menu, MenuItem, MenuList, Typography} from "@material-ui/core";
 import localStrings from "../../localStrings";
 
-const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
-    root: ({ isCurrentRoute }: any) => ({
-        position: 'relative',
-        color: isCurrentRoute ? palette.primary.main : 'inherit',
-        transition: 'color 150ms ease-in-out',
-        '&:hover': {
-            color: `${palette.primary.main} !important`,
+const useStylesCurrent = makeStyles(({ palette }: MuiThemeProps) => ({
+    root:
+        {
+            position: 'relative',
+            color: palette.primary.main,
+            transition: 'all 0.3s ease-in-out',
+            '&:before': {
+                content: "''",
+                position: 'absolute',
+                width: '100%',
+                height: '2px',
+                bottom: '-3px',
+                left: '50%',
+                transform: 'translate(-50%,0%)',
+                backgroundColor: palette.primary.main,
+            },
         },
-    }),
     popover: {
         width: 200,
     },
-    // typoLink: ({ isCurrentRoute }: any) => ({
-    //   color: isCurrentRoute ? palette.primary.main : 'inherit',
-    // })
+}))
 
+
+const useStylesCurrentStandard = makeStyles(({ palette }: MuiThemeProps) => ({
+    root:
+        {
+            position: 'relative',
+            color: palette.primary.main,
+            transition: 'all 0.3s ease-in-out',
+            // '&:before': {
+            //     content: "''",
+            //     position: 'absolute',
+            //     width: '100%',
+            //     height: '2px',
+            //     bottom: '-3px',
+            //     left: '50%',
+            //     transform: 'translate(-50%,0%)',
+            //     backgroundColor: palette.primary.main,
+            // },
+        },
+    popover: {
+        width: 200,
+    },
+}))
+
+const useStylesStandard = makeStyles(({ palette }: MuiThemeProps) => ({
+    root:
+        {
+            position: 'relative',
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+                color: `${palette.primary.main} !important`,
+            },
+        },
+    popover: {
+        width: 200,
+    },
+}))
+
+const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
+    root:
+        {
+            position: 'relative',
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+                color: `${palette.primary.main} !important`,
+            },
+            '&:before': {
+                content: "''",
+                position: 'absolute',
+                width: '0',
+                height: '2px',
+                bottom: '-3px',
+                left: '50%',
+                transform: 'translate(-50%,0%)',
+                backgroundColor: palette.primary.main,
+                visibility: 'hidden',
+                transition: 'all 0.3s ease-in-out',
+            },
+            '&:hover:before': {
+                visibility: 'visible',
+                width: '100%',
+                //backgroundColor: isCurrentRoute && palette.primary.main,
+            },
+        },
+    popover: {
+        width: 200,
+    },
 }))
 
 export interface NavLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -31,6 +103,7 @@ export interface NavLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
     style?: CSSProperties
     className?: string
     pageChildren: any
+    styleNavRoot: boolean
 }
 
 
@@ -41,16 +114,23 @@ const NavLink: React.FC<NavLinkProps> = ({
                                              style,
                                              className,
                                              pageChildren,
+                                             styleNavRoot,
                                              ...props
                                          }) => {
-    const { pathname } = useRouter()
+    const { pathname, asPath } = useRouter()
 
     const checkRouteMatch = (href: string) => {
-        if (href === '/') return pathname === href
-        return pathname.includes(href) || (regExpMatch && pathname.match(new RegExp(regExpMatch)))
+        if (href === '/') {
+            //console.log("pathname " + pathname);
+            return asPath === href
+        }
+        return asPath.includes(href) || (regExpMatch && asPath.match(new RegExp(regExpMatch)))
     }
 
-    const classes = useStyles({ isCurrentRoute: checkRouteMatch() })
+    const classes = useStyles()
+    const classesCurrent = useStylesCurrent()
+    const classesCurrentStandard = useStylesCurrentStandard()
+    const classesStandard = useStylesStandard()
     const refBox = useRef(null);
     const [isNavInfoOpen, setNavInfoOpen] = useState(false);
 
@@ -89,16 +169,16 @@ const NavLink: React.FC<NavLinkProps> = ({
                     </MenuItem>
 
                     {pageChildren.map((page, key) => {
-                        const url = '/specialPage/' + page.id
-                        return(
-                        <MenuItem key={key}>
-                            <Link href={url}>
-                                {page.title}
-                                {/*<Typography*/}
-                                {/*    color={checkRouteMatch(url) ? 'primary' : 'inherit'}>{page.title}</Typography>*/}
-                            </Link>
-                        </MenuItem>
-                        )
+                            const url = '/specialPage/' + page.id
+                            return(
+                                <MenuItem key={key}>
+                                    <Link href={url}>
+                                        {page.title}
+                                        {/*<Typography*/}
+                                        {/*    color={checkRouteMatch(url) ? 'primary' : 'inherit'}>{page.title}</Typography>*/}
+                                    </Link>
+                                </MenuItem>
+                            )
                         }
                     )}
                 </Menu>
@@ -107,16 +187,23 @@ const NavLink: React.FC<NavLinkProps> = ({
     }
 
     return (
-        <Link href={href}>
-            <a
-                className={clsx(classes.root, className)}
-                href={href}
-                style={style}
-                {...props}
-            >
-                {children}
-            </a>
-        </Link>
+        <>
+            {/*<p>{styleNavRoot ? "Y" : "N"}</p>*/}
+            <Link href={href}>
+                <a
+                    className={
+                        clsx( checkRouteMatch(href) ?
+                            (styleNavRoot ? classesCurrent.root : classesCurrentStandard.root)
+                            : (styleNavRoot ? classes.root : classesStandard.root), className)
+                    }
+                    href={href}
+                    style={style}
+                    {...props}
+                >
+                    {children}
+                </a>
+            </Link>
+        </>
     )
 }
 
