@@ -151,7 +151,7 @@ let localStrings = new LocalizedStrings({
         paymentDelivery: "Payer à la réception",
 
         paymentMethod: "Méthode de paiement",
-        paymentMethodsForPickup: "Sélectionner vos méthodes de paiement pour le paiement à la réception",
+        paymentMethodsForPickup: "Sélectionnez vos méthodes de paiement pour le paiement à la réception",
 
         saveChange: "Sauvegarder les changements",
         backToProfile: "Retour à mon profil",
@@ -314,7 +314,7 @@ let localStrings = new LocalizedStrings({
         description: "Description",
         additionalInformation: "Information additionnelle",
         customerDeliveryInformation: "Information additionnelle pour la livraison",
-        customerDeliveryInformationPlaceHolder: 'Indiquer ici par exemple votre code porte, ou d\'autres indiquations pour le livreur',
+        customerDeliveryInformationPlaceHolder: 'Indiquer ici par exemple votre code porte, ou d\'autres indications pour le livreur',
         priceAsc: "Prix croissant",
         priceDesc: "Prix décroissant",
 
