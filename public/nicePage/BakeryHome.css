@@ -878,7 +878,7 @@
 }
 
 #nicediv .u-section-4 .u-image-7 {
-  background-image: url("/nicePage/images/45689a59667c9370ddeec898b51dcd29-10.jpeg");
+  background-image: url("/nicePage/images/45689a59667c9370ddeec898b51dcd29-14.jpeg");
   min-height: 442px;
   background-position: 50% 50%;
 }
@@ -1475,25 +1475,19 @@
   min-height: 800px;
 }
 
-#nicediv .u-section-8 .u-shape-1 {
-  width: 228px;
-  height: 228px;
-  margin: 85px auto 0 646px;
-}
-
 #nicediv .u-section-8 .u-image-1 {
   width: 218px;
   height: 218px;
   box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
   background-image: url("/nicePage/images/laToqueLogo.png");
   background-position: 50% 50%;
-  margin: -223px auto 0 651px;
+  margin: 128px 248px 0 auto;
 }
 
 #nicediv .u-section-8 .u-slider-1 {
   min-height: 338px;
   width: 673px;
-  margin: 58px 0 0 auto;
+  margin: 20px 0 60px auto;
 }
 
 #nicediv .u-section-8 .u-carousel-indicators-1 {
@@ -1580,7 +1574,7 @@
   }
 
   .u-section-8 .u-image-1 {
-    margin-top: -225px;
+    margin-top: 88px;
   }
 
   .u-section-8 .u-slider-1 {
@@ -1591,14 +1585,6 @@
 #nicediv @media (max-width: 991px) {
   .u-section-8 .u-sheet-1 {
     min-height: 506px;
-  }
-
-  .u-section-8 .u-shape-1 {
-    margin-left: 492px;
-  }
-
-  .u-section-8 .u-image-1 {
-    margin-left: 502px;
   }
 
   .u-section-8 .u-container-layout-1 {
@@ -1617,14 +1603,8 @@
     min-height: 380px;
   }
 
-  .u-section-8 .u-shape-1 {
-    margin-top: -78px;
-    margin-left: 312px;
-  }
-
   .u-section-8 .u-image-1 {
-    margin-top: -234px;
-    margin-left: 322px;
+    margin-top: -84px;
   }
 
   .u-section-8 .u-slider-1 {
@@ -1651,14 +1631,9 @@
     min-height: 239px;
   }
 
-  .u-section-8 .u-shape-1 {
-    margin-top: -163px;
-    margin-left: 112px;
-  }
-
   .u-section-8 .u-image-1 {
-    margin-top: -128px;
-    margin-left: 122px;
+    margin-top: -63px;
+    margin-right: 122px;
   }
 
   .u-section-8 .u-slider-1 {
