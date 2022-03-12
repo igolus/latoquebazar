@@ -299,13 +299,13 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productRevie
                     (typeof selectedProduct.description === "string") &&
                     <>
                         <p>{selectedProduct.description}</p>
-                        <p>{typeof selectedProduct.description}</p>
+                        {/*<p>{typeof selectedProduct.description}</p>*/}
                     </>
                         // <MdRender content={selectedProduct.description}/>
                     }
                     {selectedOption=== "additionalInformation" && selectedProduct && selectedProduct.additionalInformation &&
                     (typeof selectedProduct.additionalInformation === "string") &&
-                        <></>
+                        <p>{selectedProduct.additionalInformation}</p>
                     // <MdRender content={selectedProduct.additionalInformation}/>
                     }
 
