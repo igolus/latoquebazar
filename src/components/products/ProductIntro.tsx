@@ -115,7 +115,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }, [firstOrCurrentEstablishment(), brand])
 
     const [productAndSku, setProductAndSku] = useState(null);
-    const [valid, setValid] = useState(false);
+    const [valid, setValid] = useState(true);
     const {addToast} = useToasts()
     const [selectedImage, setSelectedImage] = useState(0)
     const [isViewerOpen, setIsViewerOpen] = useState(false)
