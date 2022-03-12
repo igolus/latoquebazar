@@ -979,7 +979,7 @@ export const AuthProvider = ({ children }) => {
 
   function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
     if (!brand?.config?.proposeDeal) {
-      return;
+      return null;
     }
 
     const oldPrice = computePriceDetail(orderInCreation);
@@ -1157,18 +1157,18 @@ export const AuthProvider = ({ children }) => {
     dispatch({
       type: ORDER_IN_CREATION,
       payload: {
-        orderInCreation: updatedOrderMerge.newOrder || orderInCreation,
+        orderInCreation: updatedOrderMerge?.newOrder || orderInCreation,
       }
     });
     if (localStorage && !doNotupdateLocalStorage && orderInCreation.order) {
 
-      let orderInCreationCopy = cloneDeep(updatedOrderMerge.newOrder || orderInCreation)
+      let orderInCreationCopy = cloneDeep(updatedOrderMerge?.newOrder || orderInCreation)
       delete orderInCreationCopy["bookingSlot"]
       orderInCreationCopy.updateDate = moment().unix();
       localStorage.setItem(CART_KEY, encryptor.encrypt(JSON.stringify(orderInCreationCopy)));
     }
 
-    if (updatedOrderMerge.dealApplied) {
+    if (updatedOrderMerge?.dealApplied) {
       setGlobalDialog({
         content: (<AlertHtmlLocal
             title={localStrings.dealApplied}
