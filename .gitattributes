@@ -2,6 +2,7 @@
 /src/config.js merge=ours
 /public/iconApp.png merge=ours
 /public/nicePage/ merge=ours
+/public/nicePage/nicepage.css merge=ours
 /src/theme/theme.ts merge=ours
 /public/manifest-template.json merge=ours
 /public/favicon.ico merge=ours
