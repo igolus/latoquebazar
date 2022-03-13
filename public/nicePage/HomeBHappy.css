@@ -6,7 +6,7 @@
   height: 537px;
   width: 537px;
   object-position: 100% 50%;
-  background-image: url("images/delivery-man-carrying-packages-while-making-home-d-2021-08-28-11-01-47-utc.jpg");
+  background-image: url("/nicePage/images/delivery-man-carrying-packages-while-making-home-d-2021-08-28-11-01-47-utc.jpg");
   background-position: 50% 50%;
   margin: 63px auto 0 81px;
 }
@@ -51,7 +51,7 @@
 .u-section-1 .u-image-3 {
   height: 294px;
   width: 294px;
-  background-image: url("images/103_510123006.jpg");
+  background-image: url("/nicePage/images/103_510123006.jpg");
   background-position: 50% 50%;
   margin: 262px auto 41px 56px;
 }
@@ -152,7 +152,9 @@
     width: 100px;
     margin: 376px 0 60px auto;
   }
-} .u-section-2 {
+}
+
+.u-section-2 {
   background-image: none;
 }
 
@@ -195,7 +197,7 @@
 
 .u-section-2 .u-image-1 {
   min-height: 625px;
-  background-image: url("images/96266484_870584983415777_3563865370030768128_n.jpg");
+  background-image: url("/nicePage/images/96266484_870584983415777_3563865370030768128_n.jpg");
   background-position: 50% 50%;
 }
 
@@ -295,8 +297,10 @@
   .u-section-2 .u-image-1 {
     min-height: 385px;
   }
-} .u-section-3 {
-  background-image: url("images/7a6364bd098592394be42f9b6a055db26bcec87c9c9ecd9928e891aef80f0e1e5dea880087945806d7df55185cd704804fcffb63e7baa01c8afc08_1280.jpg");
+}
+
+.u-section-3 {
+  background-image: url("/nicePage/images/7a6364bd098592394be42f9b6a055db26bcec87c9c9ecd9928e891aef80f0e1e5dea880087945806d7df55185cd704804fcffb63e7baa01c8afc08_1280.jpg");
   background-position: 50% 50%;
   background-size: 125%;
 }
@@ -349,7 +353,7 @@
 }
 
 @media (max-width: 767px) {
-   .u-section-3 {
+  .u-section-3 {
     background-position: 16.97% 20.07%;
     background-size: auto 125%;
   }
@@ -375,8 +379,10 @@
   .u-section-3 .u-btn-1 {
     margin-top: 72px;
   }
-} .u-section-4 {
-  background-image: url("images/188034084_1143015589506047_1914895803024445631_n.jpg");
+}
+
+.u-section-4 {
+  background-image: url("/nicePage/images/188034084_1143015589506047_1914895803024445631_n.jpg");
   background-position: 50% 50%;
 }
 
@@ -430,7 +436,7 @@
 .u-section-4 .u-image-1 {
   height: 185px;
   width: 185px;
-  background-image: url("images/121011105_990398064767801_8909856151306179127_n.png");
+  background-image: url("/nicePage/images/121011105_990398064767801_8909856151306179127_n.png");
   background-position: 50% 50%;
   margin: -547px auto 0 268px;
 }
@@ -438,7 +444,7 @@
 .u-section-4 .u-image-2 {
   height: 196px;
   width: 196px;
-  background-image: url("images/123977092_1015489992258608_5171343497905515320_n.jpg");
+  background-image: url("/nicePage/images/123977092_1015489992258608_5171343497905515320_n.jpg");
   background-position: 50% 50%;
   margin: -96px auto 0 36px;
 }
@@ -446,7 +452,7 @@
 .u-section-4 .u-image-3 {
   height: 241px;
   width: 241px;
-  background-image: url("images/118995991_963638860777055_944093775928547974_n.png");
+  background-image: url("/nicePage/images/118995991_963638860777055_944093775928547974_n.png");
   background-position: 50% 50%;
   margin: 0 auto 0 292px;
 }
@@ -460,7 +466,7 @@
 .u-section-4 .u-image-4 {
   height: 220px;
   width: 220px;
-  background-image: url("images/84411161_801997083607901_1026590105361448960_n.png");
+  background-image: url("/nicePage/images/84411161_801997083607901_1026590105361448960_n.png");
   background-position: 50% 50%;
   margin: 36px auto -141px 12px;
 }
@@ -523,7 +529,7 @@
 }
 
 @media (max-width: 575px) {
-   .u-section-4 {
+  .u-section-4 {
     background-position: 64.26% 50%;
   }
 
@@ -560,8 +566,10 @@
   .u-section-4 .u-image-4 {
     margin-bottom: 0;
   }
-} .u-section-5 {
-  background-image: linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15)), url("images/bfc35aea626da2a521460adbd1ccb9f45eb949dc82d8b7de9bee2c4060359a5f20daa7ceda95e59828a811eb3899fd9d5a278d20985129cdee0177_1280.jpg");
+}
+
+.u-section-5 {
+  background-image: linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15)), url("/nicePage/images/bfc35aea626da2a521460adbd1ccb9f45eb949dc82d8b7de9bee2c4060359a5f20daa7ceda95e59828a811eb3899fd9d5a278d20985129cdee0177_1280.jpg");
   background-position: 50% 50%;
 }
 

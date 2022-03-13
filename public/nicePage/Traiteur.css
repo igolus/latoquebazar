@@ -1,5 +1,5 @@
- .u-section-1 {
-  background-image: linear-gradient(0deg, rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url("images/235570420_1194317977709141_6690269753113168391_n.jpg");
+.u-section-1 {
+  background-image: linear-gradient(0deg, rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url("/nicePage/images/235570420_1194317977709141_6690269753113168391_n.jpg");
   background-position: 50% 50%;
 }
 
@@ -57,7 +57,9 @@
   .u-section-1 .u-image-1 {
     margin-top: -218px;
   }
-} .u-section-2 {
+}
+
+.u-section-2 {
   background-image: none;
 }
 
@@ -226,7 +228,9 @@
     margin-right: initial;
     margin-left: initial;
   }
-} .u-section-3 {
+}
+
+.u-section-3 {
   background-image: none;
 }
 
@@ -269,7 +273,9 @@
   .u-section-3 .u-text-2 {
     margin-bottom: -1327px;
   }
-} .u-section-4 {
+}
+
+.u-section-4 {
   background-image: none;
 }
 
@@ -311,7 +317,9 @@
   .u-section-4 .u-text-2 {
     margin-bottom: -1784px;
   }
-} .u-section-5 {
+}
+
+.u-section-5 {
   background-image: none;
 }
 
@@ -353,7 +361,9 @@
   .u-section-5 .u-text-2 {
     margin-bottom: -1617px;
   }
-} .u-section-6 {
+}
+
+.u-section-6 {
   background-image: none;
 }
 
@@ -377,7 +387,9 @@
   .u-section-6 .u-text-2 {
     margin-bottom: 30px;
   }
-} .u-section-7 {
+}
+
+.u-section-7 {
   background-image: none;
 }
 
