@@ -5,7 +5,7 @@ var checkNiceDiv = setInterval(function(){
     clearInterval(checkNiceDiv);
     applyLazyLoad();
   }
-}, 1000); // check after 10ms every time
+}, 100); // check after 10ms every time
 
 function applyLazyLoad() {
   var lazyloadImages;
