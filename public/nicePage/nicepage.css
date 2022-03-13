@@ -524,21 +524,6 @@ footer > *,
   position: relative;
 }
 
-a {
-  color: #259bca;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #0676a4;
-}
-
-a:focus {
-  outline: thin dotted;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
-}
-
 .u-clearfix:after,
 .u-clearfix:before {
   content: '';
@@ -5234,14 +5219,12 @@ ol {
 /** color-rules **/
 
 .u-gradient > .u-container-layout > a,
-.u-image:not(.u-shading) > .u-container-layout > a,
-a {
+.u-image:not(.u-shading) > .u-container-layout > a{
   color: #e3dcd2;
 }
 
 .u-gradient > .u-container-layout > a:hover,
-.u-image:not(.u-shading) > .u-container-layout > a:hover,
-a:hover {
+.u-image:not(.u-shading) > .u-container-layout > a:hover {
   color: #d2c7b7;
 }
 
