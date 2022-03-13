@@ -4,23 +4,16 @@ import AppLayout from '@component/layout/AppLayout'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import React from "react";
-import Head from 'next/head';
 import Section2 from "@component/home-1/Section2";
 
-import {Box, Button, Typography} from "@material-ui/core";
-import Card1 from "@component/Card1";
-import localStrings from "../src/localStrings";
-import OpeningHours from "@component/OpeningHours";
-import ClosingDays from "@component/ClosingDays";
+import {Box} from "@material-ui/core";
 import useAuth from "@hook/useAuth";
-import MyMap from "@component/GoogleMap";
 import useWindowSize from "@hook/useWindowSize";
-import Link from "next/link";
 import {WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
 import {mobileBox} from "@component/header/Header";
 import MdRender from "@component/MdRender";
 import Navbar from "@component/navbar/Navbar";
-
+import InnerHTML from 'dangerously-set-html-content'
 
 export interface IndexPageProps {
     contextData?: any
@@ -81,7 +74,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {getContextData()?.brand?.config?.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
                     <div>
                         <Navbar contextData={getContextData()}/>
-                        <MdRender content = {getContextData()?.brand?.config.customHomePageSource}/>
+                        <InnerHTML html={getContextData()?.brand?.config.customHomePageSource}/>
                     </div>
                     :
                     <>
