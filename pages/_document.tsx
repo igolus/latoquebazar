@@ -23,9 +23,9 @@ export default class Bazar extends Document {
                 <Head>
                     <link rel="manifest" href="/manifest.json" />
 
-                    <script
-                        src="/hotjar.js">
-                    </script>
+                    {/*<script*/}
+                    {/*    src="/hotjar.js">*/}
+                    {/*</script>*/}
 
 
                     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
