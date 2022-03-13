@@ -1,19 +1,20 @@
-alert("checkDiv")
-var checkDiv = setInterval(function(){
-
-  var my_div_width = $("#nicediv").width(); // find width
-
+var checkNiceDiv = setInterval(function(){
+  var my_div_width = document.getElementById('nicediv').offsetWidth; // find width
+    console.log("my_div_width " + my_div_width)
   if( my_div_width > 0) {
-    clearInterval(checkDiv);
-    ready();
+    clearInterval(checkNiceDiv);
+    applyLazyLoad();
+  }
+}, 1000); // check after 10ms every time
   }
 }, 10); // check after 10ms every time
 
 
 function ready() {
 
-  var lazyloadImages;
 
+function applyLazyLoad() {
+  var lazyloadImages;
   if ("IntersectionObserver" in window) {
     lazyloadImages = document.querySelectorAll(".lazynicepage");
     var imageObserver = new IntersectionObserver(function (entries, observer) {
