@@ -195,22 +195,24 @@ const Profile:React.FC<ProfileProps> = ({contextData}) => {
                                             {getInfoList().map((item) => (
                                                 <Grid item lg={6} sm={6} xs={6} key={item.subtitle}>
                                                     <Link href="/orders">
-                                                        <Card
-                                                            sx={{
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                alignItems: 'center',
-                                                                height: '100%',
-                                                                p: '1rem 1.25rem',
-                                                            }}
-                                                        >
-                                                            <H3 color="primary.main" my="0px" fontWeight="600">
-                                                                {item.title}
-                                                            </H3>
-                                                            <Small color="grey.600" textAlign="center">
-                                                                {item.subtitle}
-                                                            </Small>
-                                                        </Card>
+                                                        <a>
+                                                            <Card
+                                                                sx={{
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    alignItems: 'center',
+                                                                    height: '100%',
+                                                                    p: '1rem 1.25rem',
+                                                                }}
+                                                            >
+                                                                <H3 color="primary.main" my="0px" fontWeight="600">
+                                                                    {item.title}
+                                                                </H3>
+                                                                <Small color="grey.600" textAlign="center">
+                                                                    {item.subtitle}
+                                                                </Small>
+                                                            </Card>
+                                                        </a>
                                                     </Link>
                                                 </Grid>
                                             ))}
