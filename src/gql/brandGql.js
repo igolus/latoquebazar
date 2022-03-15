@@ -47,6 +47,8 @@ const common = `
     }
     socialWebConfig {
       facebookUrl
+      googleMBUrl
+      googleMBCommentUrl
       twitterUrl
       instagramUrl
       enableShareOnFacebookButton

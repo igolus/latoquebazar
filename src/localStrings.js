@@ -4,6 +4,10 @@ import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {
+        myMainInfo: "Mes informations principales",
+        myRequirements: "Mes exigences",
+        myOptions: "Mes options",
+        leaveCommentOnGoogle: "Laissez nous un commentaire sur google",
         ownerResponse: "Response du propriétaire",
         update: "Mettre a jour",
         deleteReview: "Supprimmer cet avis",
