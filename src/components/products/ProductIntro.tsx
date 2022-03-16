@@ -205,13 +205,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 <Grid item md={6} xs={12} alignItems="center">
                     <H1 mb={2}>
                         {
-                            getProductSkuLength(product) > 1 ?
-                                formatProductAndSkuName({
-                                    ...productAndSku.sku,
-                                    productName: product.name
-                                })
-                                :
-                                product.name
+                            formatProductAndSkuName({
+                                ...productAndSku.sku,
+                                productName: product.name
+                            })
+                            // getProductSkuLength(product) > 1 ?
+                            //     formatProductAndSkuName({
+                            //         ...productAndSku.sku,
+                            //         productName: product.name
+                            //     })
+                            //     :
+                            //     product.name
                         }
                     </H1>
                     {!valid && !getFirstRestriction() &&
