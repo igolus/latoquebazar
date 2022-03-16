@@ -198,7 +198,7 @@ function ProductSelector({ productAndSku, options,
       let optionList = options
           .find(optionsList => optionsList.extId === optionId)
 
-      let optionListComplete = optionList.options.map(option => buildOption(optionList, option));
+      let optionListComplete = (optionList.options || []).map(option => buildOption(optionList, option));
       if (optionList.type === OPTION_LIST_SINGLE) {
         let fistDefault = optionListComplete.find(option => option.defaultSelected);
         //alert("fistDefault " + fistDefault)

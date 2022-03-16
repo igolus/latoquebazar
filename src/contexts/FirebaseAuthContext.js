@@ -993,7 +993,7 @@ export const AuthProvider = ({ children }) => {
         const lines = cloneDeep(dealToCheck.lines);
         let matchingRemains = lines.length;
         let missingLine;
-        let missingLineNumber;
+        let missingLineNumber = -1;
         let priceItemsWithoutDeal = 0;
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
@@ -1080,7 +1080,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
 
-        if (matchingRemains === 1 && missingLine && missingLineNumber && brand?.config?.proposeDeal) {
+        if (matchingRemains === 1 && missingLine && missingLineNumber !== -1 && brand?.config?.proposeDeal) {
           let dealCandidate = {
             deal: cloneDeep(dealToCheck),
             productAndSkusLines: []
@@ -1122,8 +1122,10 @@ export const AuthProvider = ({ children }) => {
         getCurrency(), currentBrand());
 
 
+    if (updatedOrderMerge) {
+      setDealCandidates(updatedOrderMerge.candidateDeals)
+    }
 
-    setDealCandidates(updatedOrderMerge.candidateDeals)
     // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
     //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
     //   setDialogDealProposalContent(true);
