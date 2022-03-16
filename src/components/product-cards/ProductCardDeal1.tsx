@@ -227,7 +227,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
       productAndSku.sku.price = (parseFloat(productAndSku.sku.price) * factor).toFixed(2);
     }
     selectCallBack ?
-        selectCallBack(selectedProductAndSku)
+        selectCallBack(productAndSkus.find(item => item.sku.extRef == selectedProductAndSku.sku.extRef))
         :
         selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
     // selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
@@ -482,6 +482,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                             currency={currency}
                             disableAdd={!isProductAndSkuGetOption(selectedProductAndSku)
                             && productAndSkus && productAndSkus.length === 1}
+                            changeSelectionCallBack={selected => setSelectedProductSku(selected)}
                   //addCallBack={() => setOpen(false)}
                             addToCartOrderCallBack={addToDeal}
                             addButtonText={localStrings.select}
