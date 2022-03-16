@@ -414,10 +414,11 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                             :
                             selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
 
-                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                        //selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
                       }
-                      else if (productAndSkus && productAndSkus.length > 1){
-                        setOpen(true);
+                      // else if (productAndSkus && productAndSkus.length > 1){
+                      else if (productAndSkus){
+                        setOpen(true)
                       }
                     }}
                 >
