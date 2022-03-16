@@ -342,8 +342,8 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
         //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
         let distanceInfo =
             {
-                distance: res.data.rows[0].elements[0].distance.value,
-                duration: res.data.rows[0].elements[0].duration.value,
+                distance: res.data.rows[0].elements[0].distance?.value,
+                duration: res.data.rows[0].elements[0].duration?.value,
             }
         return distanceInfo;
     }
