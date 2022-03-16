@@ -46,7 +46,8 @@ export interface ProductIntroProps {
     routeToCart: boolean,
     lineNumber: number,
     currentService: any,
-    disableFacebook: boolean
+    disableFacebook: boolean,
+    changeSelectionCallBack: any
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -68,7 +69,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        routeToCart,
                                                        lineNumber,
                                                        currentService,
-                                                       disableFacebook
+                                                       disableFacebook,
+                                                       changeSelectionCallBack
                                                    }) => {
 
     if (!product) {
@@ -247,7 +249,12 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         {/*<BazarButton>grande</BazarButton>*/}
                                         <BazarButton
                                             //disabled={isSkuUnavailableInEstablishment(pandsku?.sku, currentEstablishment)}
-                                            onClick={() => setProductAndSku(pandsku)}
+                                            onClick={() => {
+                                                if (changeSelectionCallBack) {
+                                                    changeSelectionCallBack(pandsku)
+                                                }
+                                                setProductAndSku(pandsku)
+                                            }}
                                             variant="contained"
                                             color={productAndSku && productAndSku.sku && productAndSku.sku.extRef === pandsku.sku.extRef ? "primary" : undefined}
                                             sx={{padding: "7px", mr: "7px", mb: "7px"}}>
