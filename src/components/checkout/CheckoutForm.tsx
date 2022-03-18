@@ -318,6 +318,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           delete item.creationTimestamp;
           delete item.uuid;
 
+          delete item.canditeDeal;
+          delete item.takenFromCart;
+          delete item.lineIndex;
+
           (item.options || []).forEach(opt => {
             delete opt.defaultSelected
           })
