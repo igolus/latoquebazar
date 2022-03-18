@@ -191,7 +191,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     if (currentEstablishment()) {
       return currentEstablishment();
     }
-    return contextData.establishments[0];
+    return contextData?.establishments[0];
   }
 
   useEffect(() => {
@@ -359,6 +359,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   delete productAndSkusLine.creationTimestamp;
                   delete productAndSkusLine.restrictionsApplied;
                   delete productAndSkusLine.restrictionsList;
+                  delete productAndSkusLine.takenFromCart;
 
                   delete productAndSkusLine.restrictionsList;
                   (productAndSkusLine.options || []).forEach(opt => {
