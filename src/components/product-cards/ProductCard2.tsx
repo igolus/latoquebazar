@@ -1,6 +1,6 @@
 import HoverBox from '@component/HoverBox'
 import LazyImage from '@component/LazyImage'
-import { H4 } from '@component/Typography'
+import {H4} from '@component/Typography'
 import Link from 'next/link'
 import React from 'react'
 

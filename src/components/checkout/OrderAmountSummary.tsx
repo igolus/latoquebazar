@@ -17,12 +17,12 @@ import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
 import CouponCode from "@component/checkout/CouponCode";
 import 'moment/locale/fr'
+
 const config = require("../../conf/config.json");
 
 const fontSize = "14px";
 const fontWeight = "400";
 
-import 'moment/locale/fr'
 moment.locale('fr')
 
 export interface OrderAmountSummaryProps {

@@ -15,9 +15,9 @@ import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBa
 import SaleNavbar from '@component/navbar/SaleNavbar'
 import Sticky from '@component/sticky/Sticky'
 import Topbar from '@component/topbar/Topbar'
-import { Divider } from '@material-ui/core'
+import {Divider} from '@material-ui/core'
 import Head from 'next/head'
-import React, { Fragment } from 'react'
+import React, {Fragment} from 'react'
 
 type Props = {
   title?: string

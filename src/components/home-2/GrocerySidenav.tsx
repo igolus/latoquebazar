@@ -3,10 +3,10 @@ import AccordionHeader from '@component/accordion/AccordionHeader'
 import BazarCard from '@component/BazarCard'
 import FlexBox from '@component/FlexBox'
 import NavLink from '@component/nav-link/NavLink'
-import { Span } from '@component/Typography'
+import {Span} from '@component/Typography'
 import groceryNavigations from '@data/groceryNavigations'
-import { Box } from '@material-ui/core'
-import React, { Fragment } from 'react'
+import {Box} from '@material-ui/core'
+import React, {Fragment} from 'react'
 
 export interface GrocerySidenavProps {
   isFixed?: boolean

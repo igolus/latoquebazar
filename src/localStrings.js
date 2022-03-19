@@ -1,6 +1,5 @@
 import LocalizedStrings from 'react-localization';
 import React from 'react';
-import {formatOrderConsumingMode} from "./util/displayUtil";
 
 let localStrings = new LocalizedStrings({
     fr: {

@@ -3,14 +3,8 @@ import Header from '@component/header/Header'
 import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBar'
 import Sticky from '@component/sticky/Sticky'
 import Head from 'next/head'
-import React, {Fragment, useCallback, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import TopbarForTest from "@component/topbar/TopbarForTest";
-import {isMobile} from "react-device-detect";
-import {Box, Container} from "@material-ui/core";
-import Image from "@component/BazarImage";
-import {isBrandInBadStripStatus} from "../../util/displayUtil";
-import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import localStrings from "../../localStrings";
 
 type AppLayoutProps = {
     title?: string

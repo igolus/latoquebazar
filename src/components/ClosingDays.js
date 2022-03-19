@@ -1,14 +1,9 @@
 import React from 'react';
-import { GoogleMap, Marker, withScriptjs, withGoogleMap } from "react-google-maps"
 import useAuth from "@hook/useAuth";
 import TableRow from "@component/TableRow";
-import {H5} from "@component/Typography";
 import localStrings from "../localStrings";
-import {Box} from "@material-ui/system";
-import {Chip, IconButton, Typography} from "@material-ui/core";
-import {formatOrderStatus} from "../util/displayUtil";
+import {Typography} from "@material-ui/core";
 import moment from "moment";
-import East from "@material-ui/icons/East";
 import Card1 from "@component/Card1";
 
 const ClosingDayItem = ({slot}) => {

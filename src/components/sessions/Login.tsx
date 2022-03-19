@@ -2,19 +2,19 @@ import BazarButton from '@component/BazarButton'
 import Image from '@component/BazarImage'
 import BazarTextField from '@component/BazarTextField'
 import FlexBox from '@component/FlexBox'
-import { H3, H6, Small } from '@component/Typography'
-import {Box, Button, Card, CardProps, CircularProgress, Divider, IconButton} from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {H3} from '@component/Typography'
+import {Box, Button, Card, CardProps, CircularProgress, IconButton} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { useFormik } from 'formik'
+import {useFormik} from 'formik'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import React, {useCallback, useEffect, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import useAuth from '../../hooks/useAuth';
-import {executeQueryUtil, executeQueryUtilSync} from "../../apolloClient/gqlUtil";
+import {executeQueryUtil} from "../../apolloClient/gqlUtil";
 import {getSiteUserByIdQuery} from "../../gql/siteUserGql";
 import Signup from "@component/sessions/Signup";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";

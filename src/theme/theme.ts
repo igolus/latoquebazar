@@ -1,5 +1,5 @@
-import { createTheme, Theme } from '@material-ui/core/styles'
-import { error, grey, primary, secondary, success, warning } from './themeColors'
+import {createTheme, Theme} from '@material-ui/core/styles'
+import {error, grey, primary, secondary, success, warning} from './themeColors'
 
 const fontSize = 16
 

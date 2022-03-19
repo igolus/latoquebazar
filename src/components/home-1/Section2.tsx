@@ -1,4 +1,3 @@
-import Light from '@component/icons/Light'
 import useWindowSize from '@hook/useWindowSize'
 import {Box} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
@@ -8,7 +7,6 @@ import ProductCard1 from '@component/product-cards/ProductCard1'
 import DealCard1 from "@component/product-cards/DealCard1";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import {getBrandCurrency} from "../../util/displayUtil";
-import Category from "@component/icons/Category";
 import Food from "@component/icons/Food";
 import localStrings from "../../localStrings";
 

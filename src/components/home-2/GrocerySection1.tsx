@@ -1,12 +1,11 @@
 import AppStore from '@component/AppStore'
 import BazarCard from '@component/BazarCard'
-import Carousel from '@component/carousel/Carousel'
 import FlexBox from '@component/FlexBox'
 import LazyImage from '@component/LazyImage'
-import { H1, H5, H6 } from '@component/Typography'
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {H1, H5, H6} from '@component/Typography'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import React from 'react'
 
 const useStyles = makeStyles(({ breakpoints }: MuiThemeProps) => ({

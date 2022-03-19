@@ -1,6 +1,6 @@
 import AddressEditor from '@component/address/AddressEditor'
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
-import React, {useEffect} from 'react'
+import React from 'react'
 import {useRouter} from "next/router";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import {GetStaticProps} from "next";

@@ -1,6 +1,6 @@
 import FlexBox from '@component/FlexBox'
 import LazyImage from '@component/LazyImage'
-import { Typography } from '@material-ui/core'
+import {Typography} from '@material-ui/core'
 import React from 'react'
 
 export interface MobileCategoryImageBoxProps {

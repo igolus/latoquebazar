@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Alert, AlertTitle} from "@material-ui/core";
-import localStrings from "../../localStrings";
-import Parser from "html-react-parser";
 import Typography from "@material-ui/core/Typography";
 
 function AlertHtmlLocal({severity, title, content, children}) {

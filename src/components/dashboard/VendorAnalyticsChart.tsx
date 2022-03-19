@@ -1,7 +1,7 @@
-import { alpha, useTheme } from '@material-ui/core'
-import { format } from 'date-fns'
-import React, { useEffect, useState } from 'react'
-import { Line } from 'react-chartjs-2'
+import {alpha, useTheme} from '@material-ui/core'
+import {format} from 'date-fns'
+import React, {useEffect, useState} from 'react'
+import {Line} from 'react-chartjs-2'
 
 const datasetOptions = {
   fill: true,

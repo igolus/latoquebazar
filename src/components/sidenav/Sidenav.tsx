@@ -1,7 +1,7 @@
 import {Box, Button, Drawer, IconButton} from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
+import {makeStyles} from '@material-ui/styles'
 import clsx from 'clsx'
-import React, { cloneElement, Fragment, useEffect, useState } from 'react'
+import React, {cloneElement, Fragment, useEffect, useState} from 'react'
 import Close from '@material-ui/icons/Close';
 import {useRouter} from "next/router";
 import navbarNavigations from "@data/navbarNavigations";

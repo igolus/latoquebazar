@@ -1,8 +1,8 @@
 import BazarImage from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
-import { Button } from '@material-ui/core'
+import {Button} from '@material-ui/core'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import React from 'react'
 import localStrings from "../src/localStrings";
 

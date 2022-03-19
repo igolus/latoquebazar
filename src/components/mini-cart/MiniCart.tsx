@@ -4,30 +4,37 @@ import BazarIconButton from '@component/BazarIconButton'
 import FlexBox from '@component/FlexBox'
 import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import LazyImage from '@component/LazyImage'
-import {H5, H6, Span, Tiny, Tiny2} from '@component/Typography'
-import { useAppContext } from '@context/app/AppContext'
-import {Box, Divider, Typography} from '@material-ui/core'
-import { useTheme } from '@material-ui/core/styles'
+import {H5, H6, Tiny, Tiny2} from '@component/Typography'
+import {useAppContext} from '@context/app/AppContext'
+import {Box, Divider} from '@material-ui/core'
+import {useTheme} from '@material-ui/core/styles'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
-import { CartItem } from '@reducer/cartReducer'
 import Link from 'next/link'
 import React, {useCallback, useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {
-  decreaseCartQte, decreaseDealCartQte,
-  deleteItemInCart,
-  getCartItems,
-  getPriceWithOptions,
-  increaseCartQte, increaseDealCartQte, getItemNumberInCart, deleteDealInCart, RESTRICTION_MAX_ITEM, deleteDiscountInCart
+    decreaseCartQte,
+    decreaseDealCartQte,
+    deleteDealInCart,
+    deleteDiscountInCart,
+    deleteItemInCart,
+    getCartItems,
+    getItemNumberInCart,
+    getPriceWithOptions,
+    increaseCartQte,
+    increaseDealCartQte,
+    RESTRICTION_MAX_ITEM
 } from "../../util/cartUtil";
 import {
-  computePriceDetail, formatProductAndSkuName,
-  getBrandCurrency, getImgUrlFromProducts,
-  getProductFirstImgUrl,
-  getTotalPriceOrderInCreation
+    computePriceDetail,
+    formatProductAndSkuName,
+    getBrandCurrency,
+    getImgUrlFromProducts,
+    getProductFirstImgUrl,
+    getTotalPriceOrderInCreation
 } from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import ReactMarkdown from "react-markdown";

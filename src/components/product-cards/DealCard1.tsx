@@ -12,7 +12,6 @@ import FlexBox from '../FlexBox'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {getFirstRestrictionItem, getPriceDeal} from "../../util/displayUtil";
-import {computeItemRestriction} from "../../util/cartUtil";
 
 export interface DealCard1Props {
   className?: string

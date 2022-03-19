@@ -1,18 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Box, Button, FormControlLabel, IconButton, LinearProgress, Paper, Radio, RadioGroup} from "@material-ui/core";
+import React, {useState} from 'react';
+import {Box, FormControlLabel, IconButton, Radio, RadioGroup} from "@material-ui/core";
 
 import 'leaflet/dist/leaflet.css';
 import {firstOrCurrentEstablishment, getDistanceWithFetch} from "../util/displayUtil";
 import useAuth from "@hook/useAuth";
 import OpenStreetMap from "@component/map/OpenStreetMap";
 import Grid from "@material-ui/core/Grid";
-import {styled} from "@material-ui/styles";
-import {deleteItemInCart} from "../util/cartUtil";
 import Close from "@material-ui/icons/Close";
 import {H2} from "@component/Typography";
 import localStrings from "../localStrings";
 import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import {cloneDeep} from "@apollo/client/utilities";
 import {isMobile} from "react-device-detect";
 import BazarButton from "@component/BazarButton";

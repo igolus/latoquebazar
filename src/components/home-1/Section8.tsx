@@ -1,5 +1,5 @@
 import LazyImage from '@component/LazyImage'
-import { Container, Grid } from '@material-ui/core'
+import {Container, Grid} from '@material-ui/core'
 import Link from 'next/link'
 import React from 'react'
 

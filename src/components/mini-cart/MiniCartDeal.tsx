@@ -3,10 +3,10 @@ import FlexBox from '@component/FlexBox'
 import {H5, Span} from '@component/Typography'
 import {Box, Button} from '@material-ui/core'
 import {useTheme} from '@material-ui/core/styles'
-import React, {useState} from 'react'
+import React from 'react'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
-import {formatProductAndSkuName, getProductFirstImgUrl, getTotalPriceOrderInCreation} from "../../util/displayUtil";
+import {formatProductAndSkuName, getProductFirstImgUrl} from "../../util/displayUtil";
 import {isMobile} from "react-device-detect";
 
 type MiniCartProps = {

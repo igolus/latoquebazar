@@ -25,7 +25,7 @@ import {itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import MdRender from "@component/MdRender";
 import {getProductSkuLength, isSkuUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { grey } from '../../theme/themeColors'
+import {grey} from '../../theme/themeColors'
 
 export interface ProductIntroProps {
     imgUrl?: string[]

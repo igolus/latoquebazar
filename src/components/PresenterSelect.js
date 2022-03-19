@@ -1,11 +1,7 @@
 import React from 'react';
-import ClipLoader from 'react-spinners/ClipLoader';
-import {overrideCss} from "../util/overrideCss";
-import {faShoppingBag} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {Typography} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
 
 function PresenterSelect({icon, title, subtitle, selected, onCLickCallBack}) {
   return (

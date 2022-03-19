@@ -1,10 +1,10 @@
 import FlexBox from '@component/FlexBox'
 import LazyImage from '@component/LazyImage'
-import { H1, H4, Paragraph } from '@component/Typography'
-import { Button, Container } from '@material-ui/core'
-import { Box } from '@material-ui/system'
+import {H1, H4, Paragraph} from '@component/Typography'
+import {Button, Container} from '@material-ui/core'
+import {Box} from '@material-ui/system'
 import React from 'react'
-import { Link as Scroll } from 'react-scroll'
+import {Link as Scroll} from 'react-scroll'
 import Header from './Header'
 
 const Section1 = () => {

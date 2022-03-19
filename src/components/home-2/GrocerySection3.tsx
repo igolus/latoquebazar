@@ -1,9 +1,9 @@
 import BazarCard from '@component/BazarCard'
 import LazyImage from '@component/LazyImage'
-import { Box, Grid } from '@material-ui/core'
+import {Box, Grid} from '@material-ui/core'
 import Link from 'next/link'
 import React from 'react'
-import { H3, H5, Tiny } from '../Typography'
+import {H3, H5, Tiny} from '../Typography'
 
 const GrocerySection3 = () => {
   return (

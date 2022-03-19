@@ -3,7 +3,7 @@ import Carousel from '@component/carousel/Carousel'
 import Category from '@component/icons/Category'
 import useWindowSize from '@hook/useWindowSize'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import CategorySectionCreator from '../CategorySectionCreator'
 import ProductCard6 from '../product-cards/ProductCard6'
 

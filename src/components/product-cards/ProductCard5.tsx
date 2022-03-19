@@ -1,7 +1,7 @@
 import HoverBox from '@component/HoverBox'
 import LazyImage from '@component/LazyImage'
-import { H4 } from '@component/Typography'
-import { Box } from '@material-ui/core'
+import {H4} from '@component/Typography'
+import {Box} from '@material-ui/core'
 import React from 'react'
 
 export interface ProductCard5Props {

@@ -1,6 +1,6 @@
 import Menu from '@material-ui/core/Menu'
-import { CSSProperties } from '@material-ui/styles'
-import React, { Children, cloneElement, Fragment, ReactElement } from 'react'
+import {CSSProperties} from '@material-ui/styles'
+import React, {Children, cloneElement, Fragment, ReactElement} from 'react'
 
 interface MenuProps {
   open?: boolean

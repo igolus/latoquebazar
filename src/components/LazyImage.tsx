@@ -1,15 +1,6 @@
-import {
-  bgcolor,
-  borderRadius,
-  BordersProps,
-  compose,
-  spacing,
-  SpacingProps,
-  styled,
-} from '@material-ui/system'
-import NextImage, { ImageProps } from 'next/image'
+import {bgcolor, borderRadius, BordersProps, compose, spacing, SpacingProps, styled,} from '@material-ui/system'
+import NextImage, {ImageProps} from 'next/image'
 import React from 'react'
-import {Box} from "@material-ui/core";
 
 const LazyImage = styled<React.FC<ImageProps & BordersProps & SpacingProps>>(
   ({ borderRadius, ...rest }) =>

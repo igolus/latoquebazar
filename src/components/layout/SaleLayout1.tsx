@@ -1,10 +1,9 @@
-import Footer from '@component/footer/Footer'
 import Header from '@component/header/Header'
 import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBar'
 import Navbar from '@component/navbar/Navbar'
 import Topbar from '@component/topbar/Topbar'
 import Head from 'next/head'
-import React, { Fragment } from 'react'
+import React, {Fragment} from 'react'
 
 type Props = {
   title?: string

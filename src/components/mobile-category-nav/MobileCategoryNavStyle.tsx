@@ -1,5 +1,5 @@
-import { styled } from '@material-ui/core/styles'
-import { layoutConstant } from '../../util/constants'
+import {styled} from '@material-ui/core/styles'
+import {layoutConstant} from '../../util/constants'
 
 const MobileCategoryNavStyle = styled('div')(({ theme }) => ({
   position: 'relative',

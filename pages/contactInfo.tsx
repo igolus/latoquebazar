@@ -6,8 +6,6 @@ import {Tab, Tabs} from "@material-ui/core";
 import useAuth from "@hook/useAuth";
 import EstaInfo from "../src/components/EstaInfo"
 import {GetStaticProps} from "next";
-import OpenStreetMap from "@component/map/OpenStreetMap";
-import SeoHead from "@component/seo/SeoHead";
 import localStrings from "../src/localStrings";
 
 // const config = require('../src/conf/config.json')

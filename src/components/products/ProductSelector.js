@@ -1,23 +1,11 @@
 import React, {useEffect} from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  FormGroup,
-  RadioGroup, Typography,
-} from '@material-ui/core';
+import {Checkbox, Divider, FormControlLabel, FormGroup, RadioGroup, Typography,} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 //import ClipLoaderComponent from '../ClipLoaderComponent';
 import localStrings from '../../localStrings';
 import Radio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import {makeStyles} from "@material-ui/styles";
-import FlexBox from "@component/FlexBox";
 import useAuth from "@hook/useAuth";
 
 export const OPTION_LIST_SINGLE = "single";

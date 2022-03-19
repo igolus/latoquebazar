@@ -1,7 +1,7 @@
 import CarouselCard1 from '@component/carousel-cards/CarouselCard1'
 import Carousel from '@component/carousel/Carousel'
 import Navbar from '@component/navbar/Navbar'
-import {Box, Container} from '@material-ui/core'
+import {Box} from '@material-ui/core'
 import React, {Fragment} from 'react'
 import useAuth from "@hook/useAuth";
 import Fade from 'react-reveal/Fade';

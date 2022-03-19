@@ -1,15 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import localStrings from "../../localStrings";
-import {Alert, Button, Typography} from "@material-ui/core";
+import {Alert, Button} from "@material-ui/core";
 import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import Card1 from "@component/Card1";
-import {
-    formatDuration,
-    getDeliveryDistance,
-    getDeliveryDistanceWithFetch,
-    getMaxDistanceDelivery,
-    isDeliveryActive
-} from "../../util/displayUtil";
+import {getDeliveryDistanceWithFetch, getMaxDistanceDelivery, isDeliveryActive} from "../../util/displayUtil";
 import useAuth from "@hook/useAuth";
 import Box from "@material-ui/core/Box";
 

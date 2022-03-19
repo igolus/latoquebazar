@@ -12,7 +12,6 @@ import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {createSiteUserMutation} from "../../gql/siteUserGql";
-import {DIST_INFO} from "@component/address/AdressCheck";
 import {useToasts} from "react-toast-notifications";
 import parsePhoneNumber from "libphonenumber-js";
 import {makeStyles} from "@material-ui/styles";

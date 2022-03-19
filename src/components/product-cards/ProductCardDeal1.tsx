@@ -9,27 +9,18 @@ import {CartItem} from '@reducer/cartReducer'
 import {MuiThemeProps} from '@theme/theme'
 import React, {useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
+import {PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE, PRICING_EFFECT_PRICE} from "../../util/constants";
 import {
-  PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE, PRICING_EFFECT_PERCENTAGE_OFF, PRICING_EFFECT_PRICE,
-  PRICING_EFFECT_PRICE_OFF,
-  PRICING_EFFECT_UNCHANGED,
-  SEP
-} from "../../util/constants";
-import {
-  buildProductAndSkus,
   buildProductAndSkusNoCheckOrderInCreation,
   isProductAndSkuGetOption,
   selectToDealEditOrder
 } from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import ProductIntro from "@component/products/ProductIntro";
 import {Close} from "@material-ui/icons";
-import BazarButton from "@component/BazarButton";
 import {isProductUnavailable, isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
-import {functions} from "firebase";
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 export interface ProductCardDeal1Props {

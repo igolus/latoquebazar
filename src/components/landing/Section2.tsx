@@ -1,7 +1,7 @@
 import BazarImage from '@component/BazarImage'
-import { H3, H4 } from '@component/Typography'
-import { Card, Container, Grid } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {H3, H4} from '@component/Typography'
+import {Card, Container, Grid} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import React from 'react'
 
 const StyledContent = styled('div')(({ theme }) => ({

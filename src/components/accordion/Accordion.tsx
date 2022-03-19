@@ -1,12 +1,5 @@
-import { makeStyles } from '@material-ui/styles'
-import React, {
-  Children,
-  cloneElement,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import {makeStyles} from '@material-ui/styles'
+import React, {Children, cloneElement, ReactElement, useEffect, useRef, useState,} from 'react'
 
 export interface AccordionProps {
   expanded?: boolean

@@ -1,4 +1,4 @@
-import { differenceInMinutes } from 'date-fns'
+import {differenceInMinutes} from 'date-fns'
 import ceil from 'lodash/ceil'
 import moment from "moment";
 

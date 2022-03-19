@@ -1,5 +1,5 @@
-import { H3 } from '@component/Typography'
-import { Box } from '@material-ui/core'
+import {H3} from '@component/Typography'
+import {Box} from '@material-ui/core'
 import React from 'react'
 
 export interface ProductDescriptionProps {}
