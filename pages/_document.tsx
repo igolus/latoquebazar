@@ -28,15 +28,15 @@ export default class Bazar extends Document {
                     {/*</script>*/}
 
 
-                    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                    {/*<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>*/}
 
                     <link rel="stylesheet"
                           href="/css/classic-reset.css"/>
-                    <script
+                    <script defer
                         src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
                     </script>
 
-                    <script src="//embed.typeform.com/next/embed.js"></script>
+                    <script defer src="//embed.typeform.com/next/embed.js"></script>
 
                     <link rel="apple-touch-icon" href="/iconApp.png"></link>
                     <meta name="theme-color" content="#fff" />
