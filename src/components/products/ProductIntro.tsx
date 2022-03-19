@@ -116,7 +116,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     }, [firstOrCurrentEstablishment(), brand])
 
-    const [productAndSku, setProductAndSku] = useState(null);
+    const initialProductAndSku = {
+        ...buildProductAndSkus(product, null,
+            null, null, () => firstEsta, null, brand,
+            null, null)[0]
+    }
+
+    const [productAndSku, setProductAndSku] = useState(initialProductAndSku);
     const [valid, setValid] = useState(true);
     const {addToast} = useToasts()
     const [selectedImage, setSelectedImage] = useState(0)
@@ -144,6 +150,15 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
 
+    function getUrl() {
+        try {
+            let href = window.location.href;
+            return href;
+        }
+        catch (err) {
+            return null;
+        }
+    }
 
     return (
         <>
@@ -361,10 +376,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
                             </Box>
 
-                            {faceBookShare && !disableFacebook &&
+                            {faceBookShare && !disableFacebook && getUrl() &&
                             <Box ml={2} mt={"16px"}>
                                 <Tooltip title={localStrings.shareOnFacebook}>
-                                    <FacebookShareButton url={window.location.href} >
+                                    <FacebookShareButton url={getUrl()} >
                                         <FacebookIcon size={38} round={false}/>
                                     </FacebookShareButton>
                                 </Tooltip>

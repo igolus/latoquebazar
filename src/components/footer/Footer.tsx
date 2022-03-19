@@ -37,6 +37,13 @@ const Footer = ({contextData}) => {
   const logoUrl = contextData ? contextData.brand?.logoUrl : null;
   const brandName = contextData ? contextData.brand?.brandName : null;
 
+  function firstOrCurrentEstablishment() {
+    if (currentEstablishment()) {
+      return currentEstablishment();
+    }
+    return contextData?.establishments[0];
+  }
+
   return (
       <footer>
         <Box bgcolor="#0c0e30">
@@ -68,13 +75,22 @@ const Footer = ({contextData}) => {
                   </Box>
 
                   <Box py={0.6} color="grey.500">
-                    {currentEstablishment() ? currentEstablishment().address : "-"}
+                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().address ?
+                        firstOrCurrentEstablishment().address : contextData?.establishments[0].address }
                   </Box>
                   <Box py={0.6} color="grey.500">
-                    {currentEstablishment() ? <a href={"mailto:\"" + currentEstablishment().contactMail + "\""}>{currentEstablishment().contactMail}</a>  : "-"}
+                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().contactMail ?
+                        <a href={"mailto:\"" + firstOrCurrentEstablishment().contactMail + "\""}>{firstOrCurrentEstablishment().contactMail}</a>
+                        :
+                        <a href={"mailto:\"" + contextData?.establishments[0]?.contactMail + "\""}>{contextData?.establishments[0]?.contactMail}</a>
+                    }
                   </Box>
                   <Box py={0.6} mb={2} color="grey.500">
-                    {currentEstablishment() ? <a href={"tel:\"" + currentEstablishment().phoneNumber + "\""}>{currentEstablishment().phoneNumber}</a> : "-"}
+                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().phoneNumber ?
+                        <a href={"tel:\"" + firstOrCurrentEstablishment().phoneNumber + "\""}>{firstOrCurrentEstablishment().phoneNumber}</a>
+                        :
+                        <a href={"tel:\"" + contextData?.establishments[0]?.phoneNumber + "\""}>{contextData?.establishments[0]?.phoneNumber}</a>
+                    }
                   </Box>
 
                   {contextData?.brand?.config?.socialWebConfig?.googleMBCommentUrl &&

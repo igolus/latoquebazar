@@ -54,8 +54,8 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
     },
 }))
 
-export function mobileBox(currentEstablishment) {
-    return (<a href={"tel:" + (currentEstablishment()?.phoneNumber || "").replace(/\s/g, '')}>
+export function mobileBox(establishment) {
+    return (<a href={"tel:" + (establishment?.phoneNumber || "").replace(/\s/g, '')}>
         <Box
             sx={{
                 display: 'flex',
@@ -66,7 +66,7 @@ export function mobileBox(currentEstablishment) {
         >
             <PhoneIcon sx={{marginRight: 1, marginTop: "5px"}}/>
             <Typography variant="h6">
-                {currentEstablishment()?.phoneNumber || ""}
+                {establishment?.phoneNumber || ""}
             </Typography>
         </Box>
     </a>);
@@ -157,8 +157,10 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 {/*}*/}
 
 
-                {width > WIDTH_DISPLAY_MOBILE && currentEstablishment() && currentEstablishment().phoneNumber &&
-                mobileBox(currentEstablishment)
+                {width > WIDTH_DISPLAY_MOBILE && currentEstablishment() && currentEstablishment().phoneNumber ?
+                    mobileBox(currentEstablishment())
+                    :
+                    mobileBox(contextData?.establishments[0])
                 }
 
                 <FlexBox alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>

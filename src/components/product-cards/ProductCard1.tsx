@@ -395,6 +395,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
               <LazyImage
                   objectFit="cover"
+                  priority={true}
                   // transition="transform .7s ease !important"
                   // sx={{
                   //   //filter: grayscale(100%);

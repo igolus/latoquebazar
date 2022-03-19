@@ -22,10 +22,10 @@ export interface IndexPageProps {
 // let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
-    const {currentEstablishment, getContextDataAuth} = useAuth();
+    const {currentEstablishment, getContextDataAuth, contextDataState} = useAuth();
 
     function getContextData() {
-        if (getContextDataAuth() && getContextDataAuth().brand) {
+        if (contextDataState && contextDataState.brand) {
             return getContextDataAuth()
         }
         return contextData;
@@ -69,12 +69,13 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 {/*{getContextData()?.brand?.config?.carouselWebConfig &&*/}
                 {/*    <CarouselCompo contextData={getContextData()}/>*/}
                 {/*}*/}
-
+                {/*<p>{JSON.stringify(getContextData() || {})}</p>*/}
 
                 {getContextData()?.brand?.config?.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
                     <div>
                         <Navbar contextData={getContextData()}/>
-                        <InnerHTML html={getContextData()?.brand?.config.customHomePageSource}/>
+                        <div className="text-container" dangerouslySetInnerHTML={{ __html: getContextData()?.brand?.config.customHomePageSource }} />
+                        {/*<InnerHTML html={getContextData()?.brand?.config.customHomePageSource}/>*/}
                     </div>
                     :
                     <>
@@ -83,9 +84,6 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                         }
                     </>
                 }
-
-
-
 
 
                 {/*{width <= WIDTH_DISPLAY_MOBILE &&*/}
@@ -125,7 +123,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
 
                 {getContextData()?.brand?.config?.starWebProducts &&
-                <Section2 contextData={getContextData()}/>
+                    <Section2 contextData={getContextData()}/>
                 }
 
                 <SectionCategories categories={getContextData()?.categories}
@@ -144,7 +142,8 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                             m: 0,
                         }}
                     >
-                    {mobileBox(currentEstablishment)}
+                    {mobileBox(currentEstablishment() && currentEstablishment().phoneNumber ?
+                        currentEstablishment() : contextData?.establishments[0])}
                     </Box>
 
 
