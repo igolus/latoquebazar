@@ -39,7 +39,8 @@ const Checkout:React.FC<Checkout> = ({contextData}) => {
   return (
     <>
       <Head>
-        <script defer
+        <link rel="stylesheet" href="/css/classic-reset.css"/>
+        <script
                 src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
         </script>
       </Head>
