@@ -1,11 +1,8 @@
-import navigations from '@data/navigations'
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import React from 'react'
 import CategoryMenuItem from './CategoryMenuItem'
-import MegaMenu1 from './mega-menu/MegaMenu1'
-import MegaMenu2 from './mega-menu/MegaMenu2'
 import localStrings from "../../localStrings";
 import {convertCatName, filterCat} from "../../util/displayUtil";
 

@@ -1,4 +1,4 @@
-import { Reducer } from 'react'
+import {Reducer} from 'react'
 
 interface Reducers {
   [key: string]: Reducer<any, any>

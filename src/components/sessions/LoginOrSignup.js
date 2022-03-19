@@ -1,12 +1,7 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import useAuth from "../../hooks/useAuth";
-import Login, {StyledCard} from "./Login";
-import Signup from "./Signup";
+import Login from "./Login";
 import CompleteProfile from "@component/sessions/CompleteProfile";
-import {executeQueryUtilSync} from "../../apolloClient/gqlUtil";
-import {getSiteUserByIdQuery} from "../../gql/siteUserGql";
-import {CircularProgress} from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
 import PassordReset from "@component/sessions/PassordReset";
 
 const LoginOrSignup = ({closeCallBack, contextData}) => {

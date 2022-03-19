@@ -1,5 +1,4 @@
 import React from 'react';
-import localStrings from '../../localStrings';
 import Head from 'next/head';
 
 function SeoHead({metaDesc, metaTitle, metaImg}) {

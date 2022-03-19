@@ -1,8 +1,8 @@
 import FlexBox from '@component/FlexBox'
-import { BoxProps } from '@material-ui/core'
+import {BoxProps} from '@material-ui/core'
 import ChevronRight from '@material-ui/icons/ChevronRight'
-import { makeStyles } from '@material-ui/styles'
-import { SxProps } from '@material-ui/system'
+import {makeStyles} from '@material-ui/styles'
+import {SxProps} from '@material-ui/system'
 import React from 'react'
 
 interface AccordionHeaderProps {

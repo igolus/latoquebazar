@@ -1,6 +1,6 @@
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import React, { useEffect, useRef, useState } from 'react'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
+import React, {useEffect, useRef, useState} from 'react'
 import CategoryMenuCard from './CategoryMenuCard'
 
 export interface CategoryMenuProps {

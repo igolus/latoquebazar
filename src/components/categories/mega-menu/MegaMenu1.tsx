@@ -1,7 +1,7 @@
 import FlexBox from '@component/FlexBox'
 import LazyImage from '@component/LazyImage'
 import NavLink from '@component/nav-link/NavLink'
-import { Box, Card, Grid } from '@material-ui/core'
+import {Box, Card, Grid} from '@material-ui/core'
 import Link from 'next/link'
 import React from 'react'
 import StyledMegaMenu from './StyledMegaMenu'

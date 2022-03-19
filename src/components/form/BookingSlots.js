@@ -5,11 +5,11 @@ import {ArrowBackIos, ArrowForwardIos} from '@material-ui/icons';
 import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
 import {
-  ORDER_DELIVERY_MODE_ALL,
-  ORDER_DELIVERY_MODE_DELIVERY,
-  ORDER_DELIVERY_MODE_PICKUP_ON_SPOT
+    ORDER_DELIVERY_MODE_ALL,
+    ORDER_DELIVERY_MODE_DELIVERY,
+    ORDER_DELIVERY_MODE_PICKUP_ON_SPOT
 } from "../../util/constants";
-import {Button, IconButton, Typography} from "@material-ui/core";
+import {IconButton, Typography} from "@material-ui/core";
 import {computePriceDetail, firstOrCurrentEstablishment} from "../../util/displayUtil";
 import Grid from "@material-ui/core/Grid";
 import BazarButton from "@component/BazarButton";

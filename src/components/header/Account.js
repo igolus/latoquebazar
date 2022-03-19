@@ -1,15 +1,5 @@
-import React, {
-    useRef,
-    useState
-} from 'react';
-import {
-    Avatar,
-    Box,
-    ButtonBase, Hidden,
-    Menu,
-    MenuItem,
-    Typography,
-} from '@material-ui/core';
+import React, {useRef, useState} from 'react';
+import {Avatar, Box, ButtonBase, Hidden, Menu, MenuItem, Typography,} from '@material-ui/core';
 import {makeStyles} from "@material-ui/styles";
 import localStrings from "../../localStrings";
 import {getCroppedProfileName} from "../../util/displayUtil";

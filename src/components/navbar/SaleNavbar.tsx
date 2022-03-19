@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react'
+import React, {useCallback, useState} from 'react'
 import FlexBox from '../FlexBox'
-import { H5 } from '../Typography'
+import {H5} from '../Typography'
 
 export interface SaleNavbarProps {
   saleCategoryList: {

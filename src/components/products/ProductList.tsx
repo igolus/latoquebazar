@@ -7,7 +7,7 @@ import {Box} from '@material-ui/system'
 import React, {useCallback, useState} from 'react'
 import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
-import Card1, {Card2} from "@component/Card1";
+import {Card2} from "@component/Card1";
 import {TOP_STICKY} from "../../util/constants";
 
 const config = require("../../conf/config.json")

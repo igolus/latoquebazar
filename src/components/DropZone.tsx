@@ -1,8 +1,8 @@
-import { Button, Divider, Typography } from '@material-ui/core'
-import { Box } from '@material-ui/system'
-import React, { useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { H5, Small } from './Typography'
+import {Button, Divider, Typography} from '@material-ui/core'
+import {Box} from '@material-ui/system'
+import React, {useCallback} from 'react'
+import {useDropzone} from 'react-dropzone'
+import {H5, Small} from './Typography'
 
 export interface DropZoneProps {
   onChange?: (files: []) => void

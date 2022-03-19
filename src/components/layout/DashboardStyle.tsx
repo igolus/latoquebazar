@@ -1,6 +1,6 @@
-import NavLink, { NavLinkProps } from '@component/nav-link/NavLink'
-import { Card } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import NavLink, {NavLinkProps} from '@component/nav-link/NavLink'
+import {Card} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import React from 'react'
 
 export const DashboardNavigationWrapper = styled(Card)(({ theme }) => ({

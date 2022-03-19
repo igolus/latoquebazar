@@ -11,9 +11,7 @@ import useAuth from "@hook/useAuth";
 import useWindowSize from "@hook/useWindowSize";
 import {WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
 import {mobileBox} from "@component/header/Header";
-import MdRender from "@component/MdRender";
 import Navbar from "@component/navbar/Navbar";
-import InnerHTML from 'dangerously-set-html-content'
 
 export interface IndexPageProps {
     contextData?: any

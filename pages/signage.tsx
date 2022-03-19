@@ -1,21 +1,7 @@
-import CarouselCompo from '@component/home-1/CarouselCompo'
-import SectionCategories from '@component/home-1/SectionCategories'
-import AppLayout from '@component/layout/AppLayout'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import React from "react";
-import Head from 'next/head';
-import Section2 from "@component/home-1/Section2";
-
-import {Box, Button, Typography} from "@material-ui/core";
-import Card1 from "@component/Card1";
-import localStrings from "../src/localStrings";
-import OpeningHours from "@component/OpeningHours";
-import ClosingDays from "@component/ClosingDays";
 import useAuth from "@hook/useAuth";
-import MyMap from "@component/GoogleMap";
-import useWindowSize from "@hook/useWindowSize";
-import Link from "next/link";
 
 
 export interface IndexPageProps {

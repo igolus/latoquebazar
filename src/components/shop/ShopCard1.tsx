@@ -1,10 +1,10 @@
 import FlexBox from '@component/FlexBox'
-import { H3, Span } from '@component/Typography'
-import { alpha, Avatar, Card, IconButton, Rating, useTheme } from '@material-ui/core'
+import {H3, Span} from '@component/Typography'
+import {alpha, Avatar, Card, IconButton, Rating, useTheme} from '@material-ui/core'
 import Call from '@material-ui/icons/Call'
 import East from '@material-ui/icons/East'
 import Place from '@material-ui/icons/Place'
-import { Box } from '@material-ui/system'
+import {Box} from '@material-ui/system'
 import Link from 'next/link'
 import React from 'react'
 

@@ -2,8 +2,8 @@ import FlexBox from '@component/FlexBox'
 import FeedbackThumbsUp from '@component/icons/FeedbackThumbsUp'
 import Shield from '@component/icons/Shield'
 import Truck from '@component/icons/Truck'
-import { H4, Span } from '@component/Typography'
-import { Grid } from '@material-ui/core'
+import {H4, Span} from '@component/Typography'
+import {Grid} from '@material-ui/core'
 import React from 'react'
 
 const GrocerySection2 = () => {

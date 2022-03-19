@@ -1,5 +1,5 @@
-import { Card, CardProps } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {Card, CardProps} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import React from 'react'
 
 type BazarCardProps = {

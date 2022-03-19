@@ -1,4 +1,4 @@
-import { keyframes } from '@material-ui/styled-engine'
+import {keyframes} from '@material-ui/styled-engine'
 
 export const slideDown = keyframes`
     from {opacity: 0; transform: translateY(-200%)}

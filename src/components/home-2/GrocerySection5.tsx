@@ -1,10 +1,10 @@
 import Carousel from '@component/carousel/Carousel'
 import ProductCard10 from '@component/product-cards/ProductCard10'
-import { H3 } from '@component/Typography'
+import {H3} from '@component/Typography'
 import productDatabase from '@data/product-database'
 import useWindowSize from '@hook/useWindowSize'
-import { Box } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import {Box} from '@material-ui/core'
+import React, {useEffect, useState} from 'react'
 
 const GrocerySection5 = () => {
   const [visibleSlides, setVisibleSlides] = useState(3)

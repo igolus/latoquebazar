@@ -1,7 +1,7 @@
 import FlexBox from '@component/FlexBox'
 import {H6, Span} from '@component/Typography'
 import {Card, Checkbox, Divider, FormControlLabel,} from '@material-ui/core'
-import React, {useState} from 'react'
+import React from 'react'
 import localStrings from "../../localStrings";
 import {StyledDashboardNav} from "@component/layout/DashboardStyle";
 import {useRouter} from "next/router";

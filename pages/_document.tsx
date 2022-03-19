@@ -1,12 +1,10 @@
 import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import {CacheProvider} from '@emotion/react'
 import createEmotionServer from '@emotion/server/create-instance'
-import { ServerStyleSheets } from '@material-ui/styles'
+import {ServerStyleSheets} from '@material-ui/styles'
 import theme from '@theme/theme'
-import Document, { Head, Html, Main, NextScript } from 'next/document'
+import Document, {Head, Html, Main, NextScript} from 'next/document'
 import React from 'react'
-import {GetStaticProps} from "next";
-import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 
 const getCache = () => {
     const cache = createCache({ key: 'css', prepend: true })
@@ -32,9 +30,7 @@ export default class Bazar extends Document {
 
                     <link rel="stylesheet"
                           href="/css/classic-reset.css"/>
-                    <script defer
-                        src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">
-                    </script>
+
 
                     <script defer src="//embed.typeform.com/next/embed.js"></script>
 

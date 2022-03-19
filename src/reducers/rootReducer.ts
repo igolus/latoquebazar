@@ -1,6 +1,6 @@
-import { cartActionType, cartInitialState, cartReducer } from './cartReducer'
+import {cartActionType, cartInitialState, cartReducer} from './cartReducer'
 import combineReducers from './combineReducers'
-import { layoutActionType, layoutInitialState, layoutReducer } from './layoutReducer'
+import {layoutActionType, layoutInitialState, layoutReducer} from './layoutReducer'
 
 export type rootActionType = layoutActionType | cartActionType
 

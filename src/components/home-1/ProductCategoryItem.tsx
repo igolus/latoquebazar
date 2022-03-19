@@ -1,10 +1,10 @@
 import BazarCard from '@component/BazarCard'
 import LazyImage from '@component/LazyImage'
-import { H4 } from '@component/Typography'
-import { makeStyles } from '@material-ui/styles'
-import { SxProps } from '@material-ui/system'
-import { MuiThemeProps } from '@theme/theme'
-import React, { HtmlHTMLAttributes } from 'react'
+import {H4} from '@component/Typography'
+import {makeStyles} from '@material-ui/styles'
+import {SxProps} from '@material-ui/system'
+import {MuiThemeProps} from '@theme/theme'
+import React, {HtmlHTMLAttributes} from 'react'
 
 export interface ProductCategoryItemProps extends HtmlHTMLAttributes<HTMLElement> {
   isSelected?: boolean

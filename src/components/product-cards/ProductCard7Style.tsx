@@ -1,6 +1,6 @@
-import { Card } from '@material-ui/core'
-import { styled } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {Card} from '@material-ui/core'
+import {styled} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 
 const ProductCard7Style = styled(Card)<MuiThemeProps>(({ theme }) => ({
   position: 'relative',

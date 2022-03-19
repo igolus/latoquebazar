@@ -1,9 +1,9 @@
 import BazarCard from '@component/BazarCard'
 import FlexBox from '@component/FlexBox'
-import { H2, H3, Paragraph } from '@component/Typography'
-import { Button, Container } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
-import { Box } from '@material-ui/system'
+import {H2, H3, Paragraph} from '@component/Typography'
+import {Button, Container} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
+import {Box} from '@material-ui/system'
 import React from 'react'
 
 const SectionWrapper = styled('div')(({ theme }) => ({

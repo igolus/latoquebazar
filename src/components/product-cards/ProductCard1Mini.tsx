@@ -1,7 +1,6 @@
 import BazarCard from '@component/BazarCard'
 import LazyImage from '@component/LazyImage'
 import {H3} from '@component/Typography'
-import {useAppContext} from '@context/app/AppContext'
 import {Box, Button, Chip, Dialog, DialogContent, IconButton,} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
@@ -16,17 +15,16 @@ import ProductIntro from '../products/ProductIntro'
 import BazarButton from "@component/BazarButton";
 import {ORDER_DELIVERY_MODE_DELIVERY, SEP} from "../../util/constants";
 import {
-  addToCartOrder,
-  buildProductAndSkus,
-  decreaseCartQte,
-  getQteInCart,
-  isProductAndSkuGetOption, RESTRICTION_DELIVERY
+    addToCartOrder,
+    buildProductAndSkus,
+    decreaseCartQte,
+    getQteInCart,
+    isProductAndSkuGetOption
 } from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
-import {getBrandCurrency, getFirstRestrictionItem} from "../../util/displayUtil";
 
 export interface ProductCard1MiniProps {
   className?: string

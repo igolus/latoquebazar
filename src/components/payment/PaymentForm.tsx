@@ -1,20 +1,12 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
 import useWindowSize from '@hook/useWindowSize'
-import {
-  Button,
-  Divider,
-  FormControlLabel,
-  Grid,
-  Radio,
-  TextField,
-  Typography,
-} from '@material-ui/core'
-import { Box } from '@material-ui/system'
-import { Formik } from 'formik'
+import {Button, Divider, FormControlLabel, Grid, Radio, TextField, Typography,} from '@material-ui/core'
+import {Box} from '@material-ui/system'
+import {Formik} from 'formik'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { Fragment, useState } from 'react'
+import {useRouter} from 'next/router'
+import React, {Fragment, useState} from 'react'
 import * as yup from 'yup'
 
 const PaymentForm = () => {

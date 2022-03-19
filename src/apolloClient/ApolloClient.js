@@ -1,7 +1,7 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import {ApolloClient, InMemoryCache} from '@apollo/client';
 import ApolloLinkTimeout from 'apollo-link-timeout';
-import { createHttpLink } from 'apollo-link-http';
-import { setContext } from '@apollo/client/link/context';
+import {createHttpLink} from 'apollo-link-http';
+import {setContext} from '@apollo/client/link/context';
 import firebase from '../lib/firebase';
 import moment from 'moment';
 

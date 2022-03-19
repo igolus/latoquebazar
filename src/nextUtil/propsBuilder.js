@@ -6,9 +6,9 @@ import {getDealsQueryNoApollo} from "../gqlNoApollo/dealGqlNoApollo";
 import {getTagsQueryNoApollo} from "../gqlNoApollo/tagsGqlNoApollo";
 import {getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
 import {getExtraPagesQueryNoApollo} from "../gqlNoApollo/extraPagesGqlNoApollo";
+import {Base64} from 'js-base64';
 
 const Mustache = require("mustache");
-import {Base64} from 'js-base64';
 
 export async function getStaticPathsUtil() {
     return {

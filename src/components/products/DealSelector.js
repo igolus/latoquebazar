@@ -14,10 +14,10 @@ import {makeStyles} from "@material-ui/styles";
 import MiniCartDeal from "@component/mini-cart/MiniCartDeal";
 import BazarButton from "@component/BazarButton";
 import theme from '@theme/theme'
-import { StickyContainer, Sticky } from 'react-sticky';
 import useWindowSize from "@hook/useWindowSize";
 import {
-    PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE,
+    PRICING_EFFECT_FIXED_PRICE,
+    PRICING_EFFECT_PERCENTAGE,
     PRICING_EFFECT_PRICE,
     PRICING_EFFECT_UNCHANGED,
     WIDTH_DISPLAY_MOBILE

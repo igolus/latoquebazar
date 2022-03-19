@@ -1,8 +1,6 @@
 import React from 'react';
-import { GoogleMap, Marker, withScriptjs, withGoogleMap } from "react-google-maps"
+import {GoogleMap, Marker, withGoogleMap, withScriptjs} from "react-google-maps"
 import useInView from "react-cool-inview";
-
-import dynamic from "next/dynamic";
 //const GoogleMap = dynamic(() => import("../components/Comments"));
 
 const MyMap =  withScriptjs(withGoogleMap((props) => {

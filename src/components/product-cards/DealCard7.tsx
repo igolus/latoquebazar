@@ -1,23 +1,15 @@
 import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
 import {Span, Tiny2} from '@component/Typography'
-import { useAppContext } from '@context/app/AppContext'
 import {Avatar, Button, IconButton} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
-import { Box } from '@material-ui/system'
-import Link from 'next/link'
-import React, { useCallback } from 'react'
+import {Box} from '@material-ui/system'
+import React from 'react'
 import ProductCard7Style from './ProductCard7Style'
 import useAuth from "@hook/useAuth";
-import {
-  decreaseCartQte, decreaseDealCartQte,
-  deleteDealInCart,
-  deleteItemInCart,
-  getPriceWithOptions,
-  increaseCartQte, increaseDealCartQte
-} from '../../util/cartUtil'
+import {decreaseDealCartQte, deleteDealInCart, getPriceWithOptions, increaseDealCartQte} from '../../util/cartUtil'
 import {formatProductAndSkuName, getPriceDeal} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";

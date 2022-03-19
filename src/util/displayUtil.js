@@ -2,9 +2,11 @@ import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getProductsQuery} from "../gql/productGql";
 import {
     getOrderDeliveryMode,
-    getOrderStatus, getPaymentMethods,
+    getOrderStatus,
+    getPaymentMethods,
     ORDER_DELIVERY_MODE_DELIVERY,
-    orderDeliveryMode, STRIPE_SUB_STATUS_ACTIVE, STRIPE_SUB_STATUS_TRIALING,
+    STRIPE_SUB_STATUS_ACTIVE,
+    STRIPE_SUB_STATUS_TRIALING,
     TYPE_DEAL,
     TYPE_PRODUCT
 } from "./constants";
@@ -13,6 +15,7 @@ import localStrings from "../localStrings";
 import axios from "axios";
 import {DINNER_PERIOD, LUNCH_PERIOD} from "@component/form/BookingSlots";
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
+
 const config = require('../conf/config.json')
 
 export const getSkusLists = async (brandId) => {

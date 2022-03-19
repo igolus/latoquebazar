@@ -1,15 +1,15 @@
 import FlexBox from '@component/FlexBox'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import {
-  IconButton,
-  Pagination,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
+    IconButton,
+    Pagination,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
 } from '@material-ui/core'
 import ShoppingBag from '@material-ui/icons/ShoppingBag'
 import React, {Fragment, useEffect, useState} from 'react'
@@ -23,7 +23,7 @@ import moment from "moment";
 import East from "@material-ui/icons/East";
 import {styled} from "@material-ui/styles";
 import Link from "next/link";
-import { H5 } from '@component/Typography'
+import {H5} from '@component/Typography'
 import {isMobile} from "react-device-detect";
 
 export interface CustomerOrderListProps {
