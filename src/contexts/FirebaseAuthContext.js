@@ -1402,6 +1402,7 @@ export const AuthProvider = ({ children }) => {
             getContextDataAuth,
             setEstanavOpen,
             setDealCandidates,
+            contextDataState
             // setPrefferedDealToApply,
           }}
       >
