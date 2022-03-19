@@ -660,6 +660,5 @@ export const firstOrCurrentEstablishment = (currentEstablishment, contextData) =
     if (currentEstablishment()) {
         return currentEstablishment();
     }
-    return contextData.establishments[0];
+    return contextData?.establishments[0];
 }
-

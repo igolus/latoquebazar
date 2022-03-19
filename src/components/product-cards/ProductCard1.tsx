@@ -455,6 +455,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             <a>
               <LazyImage
                   objectFit="cover"
+                  priority={true}
                   src={url}
                   width="100%"
                   height="100%"

@@ -52,7 +52,9 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
             <NavbarLayout noSpace title={extraPage?.title || ""} description={extraPage?.title || ""} contextData={getContextData()}
             >
                 {extraPage && extraPage.content &&
-                     <InnerHTML html={extraPage.content} />
+                    <div className="text-container" dangerouslySetInnerHTML={{ __html: extraPage.content }} />
+
+                    // <InnerHTML html={extraPage.content} />
                     // <MdRender content = {extraPage.content}/>
                 }
                 {/*</div>*/}
