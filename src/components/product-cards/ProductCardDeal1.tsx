@@ -227,7 +227,10 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
       productAndSku.sku.price = (parseFloat(productAndSku.sku.price) * factor).toFixed(2);
     }
     selectCallBack ?
-        selectCallBack(productAndSkus.find(item => item.sku.extRef == selectedProductAndSku.sku.extRef))
+        selectCallBack({
+          ...productAndSkus.find(item => item.sku.extRef == selectedProductAndSku.sku.extRef),
+          options: productAndSku.options
+        })
         :
         selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
     // selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
