@@ -1,4 +1,4 @@
-import { SvgIcon } from '@material-ui/core'
+import {SvgIcon} from '@material-ui/core'
 import React from 'react'
 
 export interface BazarIconProps {}

@@ -1,7 +1,6 @@
-import FlexBox from '@component/FlexBox'
 import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
 import ProductCard7 from '@component/product-cards/ProductCard7'
-import {Box, Button, Grid,} from '@material-ui/core'
+import {Button, Grid,} from '@material-ui/core'
 import Link from 'next/link'
 import useAuth from "@hook/useAuth";
 import {GetStaticProps} from "next";
@@ -11,14 +10,11 @@ import {getCartItems} from "../src/util/cartUtil";
 import {getBrandCurrency} from "../src/util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../src/util/constants";
 import DealCard7 from "@component/product-cards/DealCard7";
-import LazyImage from "@component/LazyImage";
 import localStrings from "../src/localStrings";
-import {isMobile} from "react-device-detect";
 import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
 import ChargeCard7 from "@component/product-cards/ChargeCard7";
 import EmptyBasket from "../src/components/shop/EmptyBasket";
 import DiscountCard7 from "@component/product-cards/DiscountCard7";
-import SeoHead from "@component/seo/SeoHead";
 
 export interface CartProps {
   contextData?: any

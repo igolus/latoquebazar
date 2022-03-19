@@ -1,4 +1,4 @@
-import { Box, BoxProps } from '@material-ui/system'
+import {Box, BoxProps} from '@material-ui/system'
 
 const FlexBox: React.FC<BoxProps> = ({ children, ...props }) => (
   <Box display="flex" {...props}>

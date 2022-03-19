@@ -1,9 +1,8 @@
 import ArrowRight from '@material-ui/icons/ArrowRight'
 import Link from 'next/link'
-import React, { ReactNode } from 'react'
+import React, {ReactNode} from 'react'
 import FlexBox from './FlexBox'
-import { H2 } from './Typography'
-import localStrings from "../localStrings";
+import {H2} from './Typography'
 
 export interface CategorySectionHeaderProps {
   title?: string

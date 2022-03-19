@@ -1,5 +1,3 @@
-import localStrings from "../localStrings";
-
 export const MODE_EDIT = 1;
 export const MODE_CREATE = 2;
 

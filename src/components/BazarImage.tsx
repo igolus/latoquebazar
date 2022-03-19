@@ -1,4 +1,4 @@
-import { compose, display, spacing, styled } from '@material-ui/system'
+import {compose, display, spacing, styled} from '@material-ui/system'
 import 'lazysizes';
 
 const BazarImage = styled('img')(compose(spacing, display))

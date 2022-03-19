@@ -1,13 +1,11 @@
 import NavbarLayout from '@component/layout/NavbarLayout'
-import {Box, Tab, Tabs} from '@material-ui/core'
-import {styled} from '@material-ui/core/styles'
+import {Box, Tab} from '@material-ui/core'
 import {useRouter} from "next/router";
 import React, {useEffect, useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import DealSelector from '../../../src/components/products/DealSelector'
 import useAuth from "@hook/useAuth";
-import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {getDealsQueryNoApollo} from "../../../src/gqlNoApollo/dealGqlNoApollo";
 import localStrings from "../../../src/localStrings";
 import ReactMarkdown from "react-markdown";

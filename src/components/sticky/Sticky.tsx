@@ -1,7 +1,7 @@
-import { styled } from '@material-ui/core/styles'
-import { slideDown } from 'animations/keyframes'
+import {styled} from '@material-ui/core/styles'
+import {slideDown} from 'animations/keyframes'
 import clsx from 'clsx'
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import React, {ReactElement, useCallback, useEffect, useRef, useState} from 'react'
 
 export interface StickyProps {
   fixedOn: number

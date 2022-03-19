@@ -1,7 +1,7 @@
 import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
 import React from 'react'
-import {GetStaticPaths, GetStaticProps} from "next";
-import {getStaticPathsUtil, getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import ConfirmedOrderComponent from "@component/orders/ConfirmedOrderComponent";
 
 export interface ConfirmedProps {

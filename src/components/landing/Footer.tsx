@@ -1,5 +1,5 @@
 import FlexBox from '@component/FlexBox'
-import { Container } from '@material-ui/core'
+import {Container} from '@material-ui/core'
 import Facebook from '@material-ui/icons/Facebook'
 import Favorite from '@material-ui/icons/Favorite'
 import Instagram from '@material-ui/icons/Instagram'

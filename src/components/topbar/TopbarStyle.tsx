@@ -1,6 +1,6 @@
-import { styled } from '@material-ui/system'
-import { MuiThemeProps } from '@theme/theme'
-import { layoutConstant } from '../../util/constants'
+import {styled} from '@material-ui/system'
+import {MuiThemeProps} from '@theme/theme'
+import {layoutConstant} from '../../util/constants'
 
 const TopbarStyle = styled('div')(({ palette }: MuiThemeProps) => ({
   root: {

@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core'
+import {Box} from '@material-ui/core'
 import React from 'react'
 import FlexBox from './FlexBox'
 import AppleStore from './icons/AppleStore'

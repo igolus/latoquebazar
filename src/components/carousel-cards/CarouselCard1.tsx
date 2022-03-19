@@ -1,6 +1,6 @@
 import BazarImage from '@component/BazarImage'
-import { Paragraph } from '@component/Typography'
-import { Box, Button, Grid, styled } from '@material-ui/core'
+import {Paragraph} from '@component/Typography'
+import {Box, Button, Grid, styled} from '@material-ui/core'
 import React from 'react'
 import Link from 'next/link'
 import MdRender from "@component/MdRender";

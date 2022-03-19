@@ -1,6 +1,6 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import { Divider, Typography } from '@material-ui/core'
+import {Divider, Typography} from '@material-ui/core'
 import React from 'react'
 
 const PaymentSummary = () => {

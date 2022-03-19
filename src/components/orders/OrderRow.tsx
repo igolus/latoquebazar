@@ -1,25 +1,18 @@
 import TableRow from '@component/TableRow'
-import { H5 } from '@component/Typography'
-import { Chip, IconButton, Typography } from '@material-ui/core'
+import {H5} from '@component/Typography'
+import {IconButton, Typography} from '@material-ui/core'
 import East from '@material-ui/icons/East'
-import { Box } from '@material-ui/system'
-import { format } from 'date-fns'
 import Link from 'next/link'
 import React from 'react'
 import moment from "moment";
-import {
-  formatOrderConsumingMode,
-  formatOrderConsumingModeGrid,
-  formatOrderStatus,
-  formatOrderStatusGrid
-} from "../../util/displayUtil";
+import {formatOrderConsumingModeGrid} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import {
-  ORDER_STATUS_COMPLETE,
-  ORDER_STATUS_DELIVERING, ORDER_STATUS_FINISHED,
-  ORDER_STATUS_NEW,
-  ORDER_STATUS_PREPARATION,
-  ORDER_STATUS_READY
+    ORDER_STATUS_COMPLETE,
+    ORDER_STATUS_DELIVERING,
+    ORDER_STATUS_FINISHED,
+    ORDER_STATUS_NEW,
+    ORDER_STATUS_PREPARATION
 } from "../../util/constants";
 
 export interface OrderRowProps {

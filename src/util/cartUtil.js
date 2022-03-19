@@ -22,7 +22,7 @@ import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getChargesQuery} from "../gql/chargesGql";
 import {getCouponCodeDiscount} from "../gql/productDiscountGql";
 import * as ga from '../../lib/ga'
-import {gaRemoveFromCart} from "../../lib/ga";
+
 const { uuid } = require('uuidv4');
 
 export function getCartItems(orderInCreation, excludeRestriction) {

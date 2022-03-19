@@ -1,7 +1,7 @@
 import BazarAvatar from '@component/BazarAvatar'
 import FlexBox from '@component/FlexBox'
-import { H3, H4 } from '@component/Typography'
-import { Box, Card, Grid } from '@material-ui/core'
+import {H3, H4} from '@component/Typography'
+import {Box, Card, Grid} from '@material-ui/core'
 import Link from 'next/link'
 import React from 'react'
 

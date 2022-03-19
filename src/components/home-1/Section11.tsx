@@ -1,5 +1,5 @@
 import productDatabase from '@data/product-database'
-import { Container, Grid } from '@material-ui/core'
+import {Container, Grid} from '@material-ui/core'
 import React from 'react'
 import CategorySectionHeader from '../CategorySectionHeader'
 import ProductCard1 from '../product-cards/ProductCard1'

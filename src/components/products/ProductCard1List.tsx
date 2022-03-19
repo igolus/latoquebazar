@@ -3,12 +3,10 @@ import ProductCard1 from '@component/product-cards/ProductCard1'
 import {Grid, Pagination} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {FilterProps} from "@component/products/ProductFilterCard";
-import {getMininimalSkuPrice, getBrandCurrency, convertCatName} from "../../util/displayUtil";
+import {convertCatName, getBrandCurrency, getMininimalSkuPrice} from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import DealCard1 from "@component/product-cards/DealCard1";
-import {cloneDeep} from "@apollo/client/utilities";
 import {PRICE_ASC, PRICE_DESC} from "@component/products/ProductList";
-import {createUpdateBookingSlotOccupancyMutation} from "../../gql/BookingSlotOccupancyGql";
 import {getCurrentService} from "@component/form/BookingSlots";
 import useAuth from "@hook/useAuth";
 

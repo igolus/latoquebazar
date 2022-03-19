@@ -6,7 +6,6 @@ import React, {useRef, useState} from 'react'
 import {useRouter} from 'next/router'
 import Link from 'next/link'
 import localStrings from "../../localStrings";
-import Image from "@component/BazarImage";
 
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({

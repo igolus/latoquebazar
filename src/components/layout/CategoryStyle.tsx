@@ -1,7 +1,6 @@
 import NavLink, {NavLinkProps} from '@component/nav-link/NavLink'
 import {styled} from '@material-ui/core/styles'
 import React from 'react'
-import {Paragraph} from "@component/Typography";
 
 
 type StyledCategoryNavProps = {

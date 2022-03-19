@@ -1,14 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {ALL_CAT} from "@component/products/ProductCard1List";
 import ProductDealCard1List from "@component/products/ProductDealCard1List";
-import {getProductSkuLength} from "@component/product-cards/ProductCard1";
-import {
-    formatProductAndSkuName,
-    getBrandCurrency,
-    getPriceDeal,
-    getSkusListsFromProducts
-} from "../../util/displayUtil";
-import {H1, H2} from "@component/Typography";
+import {getBrandCurrency, getPriceDeal, getSkusListsFromProducts} from "../../util/displayUtil";
+import {H2} from "@component/Typography";
 import localStrings from "../../localStrings";
 import Box from "@material-ui/core/Box";
 import {Button} from "@material-ui/core";

@@ -1,14 +1,11 @@
 import FlexBox from '@component/FlexBox'
-import CustomerService from '@component/icons/CustomerService'
-import { Typography } from '@material-ui/core'
-import CreditCard from '@material-ui/icons/CreditCard'
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder'
+import {Typography} from '@material-ui/core'
 import Person from '@material-ui/icons/Person'
 import Place from '@material-ui/icons/Place'
 import ShoppingBagOutlined from '@material-ui/icons/ShoppingBagOutlined'
-import { useRouter } from 'next/router'
-import React, { Fragment } from 'react'
-import { DashboardNavigationWrapper, StyledDashboardNav } from './DashboardStyle'
+import {useRouter} from 'next/router'
+import React, {Fragment} from 'react'
+import {DashboardNavigationWrapper, StyledDashboardNav} from './DashboardStyle'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 

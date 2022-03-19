@@ -1,5 +1,4 @@
 import React from 'react'
-import {useRouter} from "next/router";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder"
 import ProductList from "@component/products/ProductList";

@@ -1,5 +1,5 @@
-import { Card } from '@material-ui/core'
-import { styled } from '@material-ui/styles'
+import {Card} from '@material-ui/core'
+import {styled} from '@material-ui/styles'
 
 const TableRow = styled(Card)({
   display: 'flex',

@@ -1,5 +1,4 @@
 import {gql} from "@apollo/client";
-import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
   id

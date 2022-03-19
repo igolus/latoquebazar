@@ -1,5 +1,5 @@
-import Card1, {Card2, Card3} from '@component/Card1'
-import {Button, Dialog, DialogActions, DialogContent, Grid, TextField, Typography} from '@material-ui/core'
+import {Card3} from '@component/Card1'
+import {Button, Dialog, DialogActions, DialogContent, Grid, TextField} from '@material-ui/core'
 import React, {useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {computePriceDetail} from "../../util/displayUtil";

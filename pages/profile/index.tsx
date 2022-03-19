@@ -6,7 +6,6 @@ import {H3, H5, Small} from '@component/Typography'
 import {Button, Card, Grid} from '@material-ui/core'
 import Person from '@material-ui/icons/Person'
 import {Box} from '@material-ui/system'
-import {format} from 'date-fns'
 import Link from 'next/link'
 import React, {useEffect, useState} from 'react'
 import {isMobile} from 'react-device-detect';
@@ -23,7 +22,6 @@ import {ORDER_STATUS_FINISHED} from "../../src/util/constants";
 import {useRouter} from "next/router";
 import AppLayout from "@component/layout/AppLayout";
 import Navbar from "@component/navbar/Navbar";
-import SeoHead from "@component/seo/SeoHead";
 
 export interface ProfileProps {
     contextData?: any

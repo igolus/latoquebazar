@@ -3,7 +3,7 @@ import firebase from '../lib/firebase';
 import localStrings from "../localStrings";
 import {CURRENCY_EUR} from "../util/Currencies";
 import {useToasts} from "react-toast-notifications";
-import filterDataGql, {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
+import {executeQueryUtil, executeQueryUtilSync} from "../apolloClient/gqlUtil";
 import '@firebase/messaging';
 import {getSiteUserByIdQuery} from "../gql/siteUserGql";
 import moment from "moment";
@@ -15,33 +15,24 @@ import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
 import cloneDeep from "clone-deep";
 import {
-  addDealToCart, addToCartOrder,
+  addDealToCart,
   computeItemRestriction,
   processOrderCharge,
-  processOrderDiscount, processOrderDiscountSync,
+  processOrderDiscount,
   processOrderInCreation
 } from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
 import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
-import {
-  getContextData,
-  getContextDataApollo,
-  getStaticPropsUtil,
-  sortChainList,
-  updateBrandBase64HomPage
-} from "../nextUtil/propsBuilder";
+import {getContextDataApollo, sortChainList, updateBrandBase64HomPage} from "../nextUtil/propsBuilder";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import {getBookingSlotsOccupancyQueryNoApollo} from "../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
 import {getProductsByIdQuery} from "../gql/productGql";
 import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
 import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
-import {MuiThemeProps} from "@theme/theme";
-import UpSellDeal, {isDealValuable, IsDealValuable} from "@component/products/UpSellDeal";
-import CloseIcon from '@material-ui/icons/Close';
+import {isDealValuable} from "@component/products/UpSellDeal";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';

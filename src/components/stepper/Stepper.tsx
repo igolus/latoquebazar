@@ -1,7 +1,7 @@
 import FlexBox from '@component/FlexBox'
-import { Chip } from '@material-ui/core'
-import { Box } from '@material-ui/system'
-import React, { Fragment, useEffect, useState } from 'react'
+import {Chip} from '@material-ui/core'
+import {Box} from '@material-ui/system'
+import React, {Fragment, useEffect, useState} from 'react'
 
 type Step = {
   title: string

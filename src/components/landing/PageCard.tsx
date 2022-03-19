@@ -1,12 +1,12 @@
 import FlexBox from '@component/FlexBox'
 import LazyImage from '@component/LazyImage'
-import { H3 } from '@component/Typography'
-import { Card, IconButton } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {H3} from '@component/Typography'
+import {Card, IconButton} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import Visibility from '@material-ui/icons/Visibility'
-import { Box } from '@material-ui/system'
+import {Box} from '@material-ui/system'
 import Link from 'next/link'
-import React, { Fragment } from 'react'
+import React, {Fragment} from 'react'
 
 const Wrapper = styled(Box)({
   '.overlay': {

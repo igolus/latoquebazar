@@ -1,7 +1,7 @@
 import ProductCard1 from '@component/product-cards/ProductCard1'
-import { H3 } from '@component/Typography'
+import {H3} from '@component/Typography'
 import productDatabase from '@data/product-database'
-import { Box, Grid } from '@material-ui/core'
+import {Box, Grid} from '@material-ui/core'
 import React from 'react'
 
 export interface RelatedProductsProps {}

@@ -1,10 +1,10 @@
 import BazarButton from '@component/BazarButton'
-import { Box, Card, debounce, MenuItem, TextField } from '@material-ui/core'
+import {Box, Card, debounce, MenuItem, TextField} from '@material-ui/core'
 import SearchOutlined from '@material-ui/icons/SearchOutlined'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import Link from 'next/link'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   searchIcon: {

@@ -1,6 +1,6 @@
 import FlexBox from '@component/FlexBox'
-import { Span } from '@component/Typography'
-import { Box, Divider, Typography } from '@material-ui/core'
+import {Span} from '@component/Typography'
+import {Box, Divider, Typography} from '@material-ui/core'
 import React from 'react'
 
 const CheckoutSummary2 = () => {

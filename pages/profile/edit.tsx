@@ -2,7 +2,7 @@ import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
 import CustomerDashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
-import {Button, CardHeader, Checkbox, FormControlLabel, FormGroup, Grid, TextField, Typography} from '@material-ui/core'
+import {Button, Checkbox, FormControlLabel, FormGroup, Grid, TextField, Typography} from '@material-ui/core'
 import Person from '@material-ui/icons/Person'
 import {Box} from '@material-ui/system'
 import {Formik} from 'formik'
@@ -21,7 +21,6 @@ import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {useRouter} from "next/router";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import {H6} from "@component/Typography";
 
 
 const ProfileEditor = ({contextData}) => {

@@ -2,9 +2,9 @@ import GroceryHeader from '@component/header/GroceryHeader'
 import MobileNavigationBar from '@component/mobile-navigation/MobileNavigationBar'
 import Navbar2 from '@component/navbar/Navbar2'
 import Sticky from '@component/sticky/Sticky'
-import { Box } from '@material-ui/core'
+import {Box} from '@material-ui/core'
 import Head from 'next/head'
-import React, { Fragment, useCallback, useState } from 'react'
+import React, {Fragment, useCallback, useState} from 'react'
 
 type Props = {
   title?: string

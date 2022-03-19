@@ -1,18 +1,11 @@
 import ArrowBack from '@material-ui/icons/ArrowBack'
 import ArrowForward from '@material-ui/icons/ArrowForward'
-import { CSSProperties, makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {CSSProperties, makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import clsx from 'clsx'
-import {
-  ButtonBack,
-  ButtonNext,
-  CarouselProvider,
-  DotGroup,
-  Slide,
-  Slider,
-} from 'pure-react-carousel'
+import {ButtonBack, ButtonNext, CarouselProvider, DotGroup, Slide, Slider,} from 'pure-react-carousel'
 import 'pure-react-carousel/dist/react-carousel.es.css'
-import React, { Fragment } from 'react'
+import React, {Fragment} from 'react'
 
 export interface CarouselProps {
   naturalSlideWidth?: number

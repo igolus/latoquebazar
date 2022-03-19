@@ -4,7 +4,6 @@ import {GetStaticPaths, GetStaticProps} from "next";
 import useAuth from "@hook/useAuth";
 import {useRouter} from "next/router";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
-import InnerHTML from 'dangerously-set-html-content'
 
 export interface ProductDetailsProps {
     contextData?: any

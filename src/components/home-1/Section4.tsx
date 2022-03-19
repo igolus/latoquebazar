@@ -1,7 +1,7 @@
 import BazarCard from '@component/BazarCard'
 import DottedStar from '@component/icons/DottedStar'
 import RankBadge from '@component/icons/RankBadge'
-import { Box, Container, Grid } from '@material-ui/core'
+import {Box, Container, Grid} from '@material-ui/core'
 import Link from 'next/link'
 import React from 'react'
 import CategorySectionHeader from '../CategorySectionHeader'

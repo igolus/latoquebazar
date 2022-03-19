@@ -1,5 +1,5 @@
-import { Box, BoxProps, TextField, TextFieldProps } from '@material-ui/core'
-import { Small } from './Typography'
+import {Box, BoxProps, TextField, TextFieldProps} from '@material-ui/core'
+import {Small} from './Typography'
 
 export interface BazarTextFieldProps {}
 

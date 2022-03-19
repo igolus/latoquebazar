@@ -2,20 +2,16 @@ import Card1 from '@component/Card1'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import {Button, Divider, Grid, TextField, Typography} from '@material-ui/core'
 import Place from '@material-ui/icons/Place'
-import { Box } from '@material-ui/system'
-import { Formik } from 'formik'
+import {Box} from '@material-ui/system'
+import {Formik} from 'formik'
 import Link from 'next/link'
 import React, {useEffect, useState} from 'react'
 import * as yup from 'yup'
 import DashboardLayout from '../layout/CustomerDashboardLayout'
 import localStrings from "../../localStrings";
 import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
-import {getDeliveryDistanceWithFetch} from "../../util/displayUtil";
-import {setDistanceAndCheck} from "@component/address/AdressCheck";
-import {MODE_EDIT, ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} from "../../util/constants";
 import useAuth from "@hook/useAuth";
-import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
-import {getOrderByIdQuery} from "../../gql/orderGql";
+import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {cloneDeep} from "@apollo/client/utilities";
 import {updateSiteUserQuery} from "../../gql/siteUserGql";
 import {useRouter} from "next/router";

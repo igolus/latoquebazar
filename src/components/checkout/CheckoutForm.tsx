@@ -1,18 +1,20 @@
 import Card1 from '@component/Card1'
 import {
-  Box,
-  Button,
-  Checkbox,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent, DialogTitle,
-  FormControlLabel,
-  FormGroup,
-  Grid, IconButton,
-  Radio,
-  TextField,
-  Typography,
+    Box,
+    Button,
+    Checkbox,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    FormGroup,
+    Grid,
+    IconButton,
+    Radio,
+    TextField,
+    Typography,
 } from '@material-ui/core'
 import {Formik} from 'formik'
 import Link from 'next/link'
@@ -21,13 +23,13 @@ import React, {useEffect, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
-  ORDER_DELIVERY_MODE_DELIVERY,
-  ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
-  ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW,
-  PAYMENT_METHOD_SYSTEMPAY,
-  PAYMENT_MODE_STRIPE,
-  PAYMENT_MODE_SYSTEM_PAY
+    ORDER_DELIVERY_MODE_DELIVERY,
+    ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
+    ORDER_SOURCE_ONLINE,
+    ORDER_STATUS_NEW,
+    PAYMENT_METHOD_SYSTEMPAY,
+    PAYMENT_MODE_STRIPE,
+    PAYMENT_MODE_SYSTEM_PAY
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -35,12 +37,12 @@ import moment from 'moment';
 import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
-  computePriceDetail,
-  formatPaymentMethod,
-  getDeliveryDistanceWithFetch,
-  getProfileName,
-  getSkusListsFromProducts,
-  isDeliveryActive
+    computePriceDetail,
+    formatPaymentMethod,
+    getDeliveryDistanceWithFetch,
+    getProfileName,
+    getSkusListsFromProducts,
+    isDeliveryActive
 } from "../../util/displayUtil";
 import {makeStyles} from "@material-ui/styles";
 import {isMobile} from "react-device-detect";

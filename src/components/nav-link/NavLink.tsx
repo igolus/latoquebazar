@@ -1,10 +1,10 @@
-import { CSSProperties, makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {CSSProperties, makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import React, {AnchorHTMLAttributes, useRef, useState} from 'react'
-import {Box, Menu, MenuItem, MenuList, Typography} from "@material-ui/core";
+import {Box, Menu, MenuItem} from "@material-ui/core";
 import localStrings from "../../localStrings";
 
 const useStylesCurrent = makeStyles(({ palette }: MuiThemeProps) => ({

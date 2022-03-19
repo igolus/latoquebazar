@@ -1,5 +1,5 @@
-import { Rating } from '@material-ui/core'
-import { compose, spacing, styled, typography } from '@material-ui/system'
+import {Rating} from '@material-ui/core'
+import {compose, spacing, styled, typography} from '@material-ui/system'
 
 const BazarRating = styled(Rating)(compose(spacing, typography))
 

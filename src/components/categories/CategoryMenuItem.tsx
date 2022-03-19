@@ -1,7 +1,7 @@
-import {Avatar, Box, MenuItem} from '@material-ui/core'
+import {Box, MenuItem} from '@material-ui/core'
 import ChevronRight from '@material-ui/icons/ChevronRight'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import Link from 'next/link'
 import React from 'react'
 import BazarImage from "@component/BazarImage";

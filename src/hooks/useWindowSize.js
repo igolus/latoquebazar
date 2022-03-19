@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce'
-import { useCallback, useEffect, useState } from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 const useWindowSize = () => {
   const [width, setWidth] = useState(0)

@@ -1,6 +1,6 @@
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import clsx from 'clsx'
 import React from 'react'
 
