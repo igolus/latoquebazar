@@ -111,13 +111,13 @@ const initialAuthState = {
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
   switch (action.type) {
-    // case PREFFERED_DEAL_TO_APPLY: {
-    //   const { prefferedDealToApply } = action.payload;
-    //   return {
-    //     ...state,
-    //     prefferedDealToApply: prefferedDealToApply
-    //   };
-    // }
+      // case PREFFERED_DEAL_TO_APPLY: {
+      //   const { prefferedDealToApply } = action.payload;
+      //   return {
+      //     ...state,
+      //     prefferedDealToApply: prefferedDealToApply
+      //   };
+      // }
 
     case DEAL_CANDIDATES: {
       const { dealCandidates } = action.payload;
@@ -978,6 +978,8 @@ export const AuthProvider = ({ children }) => {
     let candidateDeals = [];
     for (let j = 0; j < deals.length; j++) {
       const dealToCheck = deals[j];
+
+
       if (dealToCheck.lines && dealToCheck.lines.length > 0) {
         let itemsInCart = cloneDeep(orderInCreation.order.items);
         let itemsForDeal = [];
@@ -1002,8 +1004,7 @@ export const AuthProvider = ({ children }) => {
             itemInCart.canditeDeal = true;
             itemInCart.lineIndex = i;
             matchingRemains--;
-          }
-          else {
+          } else {
             missingLine = line;
             missingLineNumber = i
             itemsForDeal.push({
@@ -1029,72 +1030,83 @@ export const AuthProvider = ({ children }) => {
             toUpdateQte.quantity = itemsInCartElement.quantity;
           }
         }
+        let dealClone = cloneDeep(dealToCheck);
         if (matchingRemains === 0 && (!prefferedDealToApply || dealToCheck.id === prefferedDealToApply.id)) {
+          computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency);
+          const restrictions = (dealClone.restrictionsApplied || [])
+              .map(res => res.type).sort((a, b) => a.localeCompare(b));
+          if (restrictions.length === 0) {
 
-          // setPrefferedDealToApply(null);
-          let itemsCopyForDealUpdate = itemsInCart.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
-          let orderInCreationClone = cloneDeep(orderInCreation);
-          orderInCreationClone.order.items = itemsCopyForDealUpdate;
 
-          let dealToAdd = {
-            deal: cloneDeep(dealToCheck)
-          }
-          dealToAdd.productAndSkusLines =
-              cloneDeep(itemsForDeal)
-                  .sort((a, b) => a.lineIndex - b.lineIndex)
+            // setPrefferedDealToApply(null);
+            let itemsCopyForDealUpdate = itemsInCart.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
+            let orderInCreationClone = cloneDeep(orderInCreation);
+            orderInCreationClone.order.items = itemsCopyForDealUpdate;
 
-          dealToAdd.productAndSkusLines.forEach(productAndSkusLine => {
-            productAndSkusLine.quantity = 1;
-            delete productAndSkusLine.restrictionsApplied;
-            delete productAndSkusLine.productExtName;
-            delete productAndSkusLine.uuid;
-            delete productAndSkusLine.discountApplied;
-            delete productAndSkusLine.canditeDeal;
-            delete productAndSkusLine.lineIndex;
+            let dealToAdd = {
+              deal: dealClone
+            }
+            dealToAdd.productAndSkusLines =
+                cloneDeep(itemsForDeal)
+                    .sort((a, b) => a.lineIndex - b.lineIndex)
 
-          })
-          dealToAdd = applyDealPrice(dealToAdd);
-          //dealToAdd = applyDealPrice(dealToAdd);
-          orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
-          computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
-          if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
-            const newPrice = computePriceDetail(orderInCreationClone);
+            dealToAdd.productAndSkusLines.forEach(productAndSkusLine => {
+              productAndSkusLine.quantity = 1;
+              delete productAndSkusLine.restrictionsApplied;
+              delete productAndSkusLine.productExtName;
+              delete productAndSkusLine.uuid;
+              delete productAndSkusLine.discountApplied;
+              delete productAndSkusLine.canditeDeal;
+              delete productAndSkusLine.lineIndex;
 
-            if (newPrice.total < oldPrice.total) {
-              return {
-                dealApplied: dealToAdd,
-                newOrder: orderInCreationClone,
-                saved: oldPrice.total - newPrice.total,
+            })
+            dealToAdd = applyDealPrice(dealToAdd);
+            //dealToAdd = applyDealPrice(dealToAdd);
+            orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
+            computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
+            if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
+              const newPrice = computePriceDetail(orderInCreationClone);
 
+              if (newPrice.total < oldPrice.total) {
+                return {
+                  dealApplied: dealToAdd,
+                  newOrder: orderInCreationClone,
+                  saved: oldPrice.total - newPrice.total,
+
+                }
               }
             }
           }
         }
 
         if (matchingRemains === 1 && missingLine && missingLineNumber !== -1 && brand?.config?.proposeDeal) {
-          let dealCandidate = {
-            deal: cloneDeep(dealToCheck),
-            productAndSkusLines: []
-          }
+          computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency);
+          const restrictions = (dealClone.restrictionsApplied || [])
+              .map(res => res.type).sort((a, b) => a.localeCompare(b));
+          if (restrictions.length == 0) {
+            let dealCandidate = {
+              deal: dealClone,
+              productAndSkusLines: []
+            }
 
-          dealCandidate.productAndSkusLines =
-              cloneDeep(itemsForDeal)
-                  .sort((a, b) => a.lineIndex - b.lineIndex)
-          dealCandidate = applyDealPrice(dealCandidate);
+            dealCandidate.productAndSkusLines =
+                cloneDeep(itemsForDeal)
+                    .sort((a, b) => a.lineIndex - b.lineIndex)
+            dealCandidate = applyDealPrice(dealCandidate);
 
-          if (isDealValuable({
-            candidate: dealCandidate,
-            missingLine: missingLine,
-            missingLineNumber: missingLineNumber,
-            priceItemsWithoutDeal: priceItemsWithoutDeal
-          }), getContextDataAuth())
-          {
-            candidateDeals.push({
+            if (isDealValuable({
               candidate: dealCandidate,
               missingLine: missingLine,
               missingLineNumber: missingLineNumber,
               priceItemsWithoutDeal: priceItemsWithoutDeal
-            })
+            }), getContextDataAuth()) {
+              candidateDeals.push({
+                candidate: dealCandidate,
+                missingLine: missingLine,
+                missingLineNumber: missingLineNumber,
+                priceItemsWithoutDeal: priceItemsWithoutDeal
+              })
+            }
           }
         }
       }

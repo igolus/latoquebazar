@@ -635,6 +635,8 @@ export function buildProductAndSkusNoCheckOrderInCreation(product) {
 }
 
 export const RESTRICTION_DOW = "dow";
+export const RESTRICTION_BOOKING_TIME = "bookingTime";
+export const RESTRICTION_SAME_DAY = "sameDay";
 export const RESTRICTION_UNAVAILABLE = "unavailable";
 export const RESTRICTION_DELIVERY = "delivery";
 export const RESTRICTION_DISTANCE = "distance";
@@ -908,19 +910,11 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
 
 
 export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch) {
-    let countMatching = 7;
+    let countMatching = 9;
 
     if (!currentEstablishment()) {
         return;
     }
-
-    // if (currentEstablishment() && (item?.unavailableInEstablishmentIds || []).includes(currentEstablishment().id)) {
-    //     item.restrictionsApplied.push({
-    //         type: RESTRICTION_UNAVAILABLE,
-    //         description: "unavailable",
-    //         local: localStrings.unavailable,
-    //     })
-    // }
 
     item.restrictionsApplied = [];
 
@@ -939,9 +933,50 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     if (!restrictionToApply) {
         restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === null);
     }
-    // if (!restrictionToApply) {
-    //     return;
-    // }
+
+
+    if (currentService && restrictionToApply && restrictionToApply?.startBookingTime && restrictionToApply?.endBookingTime) {
+        let minutesMin = getMinutesFromHour(restrictionToApply.startBookingTime)
+        let minutesMax = getMinutesFromHour(restrictionToApply.endBookingTime)
+        let momentNow = moment();
+        let nowMinutes = momentNow.hours() * 60 + momentNow.minutes();
+
+        let condition = nowMinutes < minutesMin || nowMinutes > minutesMax;
+        if (invertMatch) {
+            condition = !condition;
+        }
+        if (condition) {
+            item.restrictionsApplied.push({
+                type: RESTRICTION_BOOKING_TIME,
+                description: RESTRICTION_BOOKING_TIME,
+                local: localStrings.bookingTimeUnable,
+            })
+            countMatching --;
+        }
+    }
+    else {
+        countMatching --;
+    }
+
+    if (currentService && restrictionToApply && restrictionToApply?.bookingAndDeliverySameDay) {
+        let momentNow = moment();
+        let condition = !orderInCreation.bookingSlot ||
+            momentNow.format("MMDDYYYY") !== orderInCreation.bookingSlot.startDate.format("MMDDYYYY");
+        if (invertMatch) {
+            condition = !condition;
+        }
+        if (condition) {
+            item.restrictionsApplied.push({
+                type: RESTRICTION_SAME_DAY,
+                description: RESTRICTION_SAME_DAY,
+                local: localStrings.bookingSameDay,
+            })
+            countMatching --;
+        }
+    }
+    else {
+        countMatching --;
+    }
 
     //condition day of week
     if (currentService && restrictionToApply && restrictionToApply?.dow && restrictionToApply?.dow.length > 0) {

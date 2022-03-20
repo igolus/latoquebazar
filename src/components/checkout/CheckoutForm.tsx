@@ -173,7 +173,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     const setAddMainLoad = async () => {
       if (
-          !selectedAddId && !getOrderInCreation().deliveryAddress?.address &&
+          !selectedAddId && !getOrderInCreation()?.deliveryAddress?.address &&
           (dbUser || bookWithoutAccount) &&
           isDeliveryActive(currentEstablishment())) {
         await setAddMain()
