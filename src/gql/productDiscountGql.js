@@ -17,6 +17,7 @@ const common = `
     couponCodes
     startDate
     endDate
+    
     serviceTypes
     minOrderAmount
     maxPerOrder

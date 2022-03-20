@@ -82,6 +82,11 @@ const common = `
             startDate
             endDate
             startTime
+            
+            startBookingTime
+            endBookingTime
+            bookingAndDeliverySameDay
+            
             endTime
             serviceTypes
             minOrderAmount

@@ -322,12 +322,14 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   }
 
   useEffect(() => {
-    if (select && currentBrand() && timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
-      let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && slotAlavailableInMode(slot));
+    if (allClosed()) {
+      select(null)
+    }
+    else if (select && currentBrand() && timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
+      let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && !isSlotUnavailable(slot) && slotAlavailableInMode(slot) );
       if (firstSlotAvail) {
         select(firstSlotAvail)
       }
-
     }
   }, [currentBrand, timeSlots, orderInCreation])
 

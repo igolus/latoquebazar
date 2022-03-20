@@ -40,6 +40,11 @@ const common = `
       endDate
       startTime
       endTime
+      
+      startBookingTime
+      endBookingTime
+      bookingAndDeliverySameDay
+      
       serviceTypes
       minOrderAmount
       maxPerOrder
