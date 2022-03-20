@@ -82,6 +82,8 @@ let localStrings = new LocalizedStrings({
         close: "Fermer",
         unavailableDay: "Indisponible pour le {0}",
         deliveryUnable: "Indisponible pour {0}",
+        bookingTimeUnable: "Indisponible pour pour le moment",
+        bookingSameDay: "La date de commande et la date de retrait/livraison doivent être égales",
 
         deliveryDistanceMin: "La distance jusqu'à l'établissement doit être supérieure à {0} kms",
         deliveryDistanceMax: "La distance jusqu'à l'établissement doit être inférieure à {0} kms",
