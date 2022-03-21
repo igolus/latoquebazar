@@ -1,9 +1,8 @@
-# *
-User-agent: *
-Allow: /
+User-agent: Googlebot
+Disallow: /nogooglebot/
 
-# Host
-Host: https://commandes.by-bhappy.com
+User-agent: *
+Allow: / 
 
 # Sitemaps
 Sitemap: https://commandes.by-bhappy.com/sitemap.xml
