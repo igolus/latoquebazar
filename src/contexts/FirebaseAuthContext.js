@@ -1129,6 +1129,8 @@ export const AuthProvider = ({ children }) => {
       setDealCandidates(updatedOrderMerge.candidateDeals)
     }
 
+    return updatedOrderMerge?.candidateDeals;
+
     // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
     //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
     //   setDialogDealProposalContent(true);

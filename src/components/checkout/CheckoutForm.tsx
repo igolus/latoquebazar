@@ -155,8 +155,31 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
 
   useEffect(() => {
-    checkDealProposal(orderInCreation, currentEstablishment)
-  }, [])
+    const checkRemains = async () => {
+      const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+      if (candidatesRemains.length === 0) {
+        setDialogDealProposalContent(false);
+      }
+    };
+
+    checkRemains()
+
+  }, [orderInCreation])
+
+  // useEffect(() => {
+  //   checkDealProposal(orderInCreation, currentEstablishment)
+  // }, [])
+
+  // useEffect(() => {
+  //   const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+  //   // const dealProposal = checkDealProposal();
+  //   // let candidatesRemains = [...dealCandidates].slice(1);
+  //   if (candidatesRemains.len)
+  //   return candidatesRemains;
+  //   if (dealCandidates.length === 0) {
+  //     setDialogDealProposalContent(false);
+  //   }
+  // }, [dealCandidates])
 
 
   useEffect(() => {
@@ -818,6 +841,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     addToCartOrder(selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
   }
 
+  // async function reduceCandidates() {
+  //   const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+  //   // const dealProposal = checkDealProposal();
+  //   // let candidatesRemains = [...dealCandidates].slice(1);
+  //   return candidatesRemains;
+  // }
+
   return (
       <>
         {dealCandidates && dealCandidates.length > 0 &&
@@ -851,10 +881,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   setDealCandidates([...dealCandidates].slice(1))
                 }}
                 selectCallBack={
-                  (selectedProductAndSku) => {
+                  async (selectedProductAndSku) => {
                     //setDialogDealProposalContent(false);
                     selectDealProposal(selectedProductAndSku, dealCandidates[0])
-                    setDealCandidates([...dealCandidates].slice(1));
+                    //await reduceCandidates();
+                    //setDealCandidates(newCandidates);
                   }
                 }
                 contextData={contextData}/>
