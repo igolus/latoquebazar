@@ -1079,7 +1079,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
 
-        if (matchingRemains === 1 && missingLine && missingLineNumber !== -1 && brand?.config?.proposeDeal) {
+        if (matchingRemains === 1 && dealClone.lines && dealClone.lines.length > 1 && missingLine && missingLineNumber !== -1 && brand?.config?.proposeDeal) {
           computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency);
           const restrictions = (dealClone.restrictionsApplied || [])
               .map(res => res.type).sort((a, b) => a.localeCompare(b));
