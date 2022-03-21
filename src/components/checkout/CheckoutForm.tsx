@@ -157,7 +157,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   useEffect(() => {
     const checkRemains = async () => {
       const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-      if (candidatesRemains.length === 0) {
+      if (candidatesRemains && candidatesRemains.length === 0) {
         setDialogDealProposalContent(false);
       }
     };
