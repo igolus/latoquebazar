@@ -1,9 +1,8 @@
-# *
+User-agent: Googlebot
+Disallow: /nogooglebot/
+
 User-agent: *
 Allow: /
 
-# Host
-Host: undefined
-
 # Sitemaps
-Sitemap: undefined/sitemap.xml
+Sitemap: https://commandes.by-bhappy.com/sitemap.xml
