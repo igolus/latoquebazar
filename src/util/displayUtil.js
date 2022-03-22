@@ -491,6 +491,14 @@ export function getImgUrlFromProducts(item, products) {
     }
     let defaultUrl = "/assets/images/Icon_Sandwich.png";
     if (item.type === TYPE_DEAL) {
+
+        if (item.productAndSkusLines && item.productAndSkusLines.length === 1) {
+            const singleProductLine = item.productAndSkusLines[0];
+            let singleProduct = products.find(p => p.id === singleProductLine?.productId)
+            if (singleProduct) {
+                return singleProduct.files[0].url || defaultUrl;
+            }
+        }
         return getProductFirstImgUrl(item.deal) || defaultUrl;
     }
 

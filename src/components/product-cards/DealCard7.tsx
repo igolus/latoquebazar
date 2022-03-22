@@ -40,7 +40,15 @@ const DealCard7: React.FC<DealCard7Props> = ({
   const item = deal.deal;
   const {getOrderInCreation, setOrderInCreation} = useAuth();
   let imgUrl = "/assets/images/Icon_Sandwich.png";
-  if (item && item.files && item.files.length > 0) {
+  if (deal.productAndSkusLines && deal.productAndSkusLines.length === 1) {
+    const singleProductLine = deal.productAndSkusLines[0];
+    let singleProduct = products.find(p => p.id === singleProductLine?.productId)
+    if (singleProduct) {
+      imgUrl = singleProduct.files[0].url;
+    }
+  }
+
+  else if (item && item.files && item.files.length > 0) {
     imgUrl = item.files[0].url;
   }
   else if (imgUrl) {
