@@ -183,7 +183,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
 
   useEffect(() => {
-    if (dealCandidates.length > 0) {
+    if (dealCandidates && dealCandidates.length > 0) {
       setDialogDealProposalContent(true);
     }
     else {
