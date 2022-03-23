@@ -45,6 +45,12 @@ const common = `
       instagramUrl
       enableShareOnFacebookButton
     }
+    loyaltyConfig {
+      useLoyalty
+      loyaltyConversionEarn
+      loyaltyConversionSpend
+      minPointSpend
+    }
     metaWebConfig {
       title
       description

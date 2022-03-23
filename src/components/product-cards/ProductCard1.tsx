@@ -525,7 +525,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
                                 //alert(selectedProductAndSku.sku.uuid)
                                 //alert(JSON.stringify(selectedProductAndSku.sku));
-                                addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                                 //alert("uuid " + uuid);
                                 // if (!selectedProductAndSku.sku.uuid) {
                                 //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
@@ -552,7 +552,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       onClick={() => {
                         //alert("add To cart")
                         if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
-                          addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                          addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           // alert("uuid " + uuid);
                           // let newPAndSku = {
                           //   ...selectedProductAndSku,

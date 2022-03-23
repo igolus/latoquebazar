@@ -410,7 +410,7 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                             //alert(selectedProductAndSku.sku.uuid)
                             //alert(JSON.stringify(selectedProductAndSku.sku));
-                            addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                            addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                             //alert("uuid " + uuid);
                             // if (!selectedProductAndSku.sku.uuid) {
                             //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
@@ -440,7 +440,7 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                          let uuid = addToCartOrder(selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                          let uuid = addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
                           //alert("uuid " + uuid);
                           if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
                             let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
