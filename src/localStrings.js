@@ -3,6 +3,21 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        loyalty: "Fidelité",
+        bravo: "Bravo",
+        loyaltyPoints: "Mes points de fidelités",
+        loyaltyPointsEarned: "Felicitation Vous avez cumulé {0} points de fidelités",
+        loyaltyPointsSpent: "Vous avez depensé {0} points de fidelités",
+        loyaltyPointNumber: "{0} points",
+        loyaltyRemainsToSpent: "Plus que {0} points pour pouvoir en profiter !!",
+        loyaltyCanUsuPoints: "Vous points sont utilisables !!!",
+        useLoyaltyPoints: "Utiliser {0} points et economiser {1}",
+        usedLoyaltyPoints: "Vous Economisez {0} avec vos {1} points de fidelités (Les prix rééls appliqué peuvent variés de quelques centimes)",
+        discountsLoyaltyName: "-{0} avec vos {1} points de fidelités",
+
+        discountPointRemoved: "Promotion desactivé",
+        discountPointRemovedDetail: "Votre promotion avec vos point de fidelité a été desactivé car le montant de votre panier change. Vous pouvez toujours réappliquer votre promotion",
+
         myMainInfo: "Mes informations principales",
         myRequirements: "Mes exigences",
         myOptions: "Mes options",
@@ -54,6 +69,7 @@ let localStrings = new LocalizedStrings({
         codeApplied: "Code {0} appliqué",
         applyCouponCode: "Appliquer mon code",
         connectApplyCouponCode: "Connectez-vous pour appliquer votre code",
+        cannotApplyCouponCodeWithLoyalty: "Imcompatible avec les points de fidelités",
         connectWriteComment: "Connectez-vous pour laisser votre avis",
         IHaveACouponCode: "J'ai un code promo",
         IUnderstand: "J'ai compris",
@@ -258,6 +274,7 @@ let localStrings = new LocalizedStrings({
         checkOutNow: "Commander",
         checkOutNowAndPayLater: "Commander et payer {0}€ à la réception",
         checkOutNowAndPayCard: "Commander et payer {0}€ maintenant",
+        orderFree: "Commander gratuitement !!",
         continueShopping: "Ajouter d'autres produits",
         viewCart: "Voir le detail du panier",
         emptyBasket: "Votre panier est vide",

@@ -143,7 +143,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 padding: '4px',
                 ml: '12px',
               }}
-              onClick={() => deleteDealInCart(getOrderInCreation, setOrderInCreation, deal.uuid)}
+              onClick={() => deleteDealInCart(setGlobalDialog, getOrderInCreation, setOrderInCreation, deal.uuid)}
           >
             <Close fontSize="small"/>
           </IconButton>

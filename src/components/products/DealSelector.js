@@ -136,7 +136,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function addMenuToCart() {
-        addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation);
+        addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation, setOrderInCreation);
         setDealEdit(null);
         router.push("/cart")
     }

@@ -8,7 +8,7 @@ import useAuth from "@hook/useAuth";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
-import {addSiteUserMessagingToken} from "../../gql/siteUserGql";
+import {addSiteUserMessagingToken, getSiteUserByIdQuery} from "../../gql/siteUserGql";
 import {getOrderByIdQuery} from "../../gql/orderGql";
 import localStrings from "../../localStrings";
 import {getBrandCurrency} from "../../util/displayUtil";
@@ -32,13 +32,32 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
 
     }
 
+
+
     //const router = useRouter();
 
     function getContextData() {
         return contextData;
     }
 
-    const {currentBrand, currentEstablishment, dbUser} = useAuth();
+    const {currentBrand, currentEstablishment, dbUser, setDbUser} = useAuth();
+
+    useEffect(() => {
+            const reloadUser = async () => {
+                let result = await executeQueryUtil(getSiteUserByIdQuery(currentBrand() ? currentBrand().id : contextData.brand.id, dbUser.id));
+                //alert("result.data.getSiteUser " + JSON.stringify(result.data.getSiteUser))
+                setDbUser({
+                    ...dbUser,
+                    loyaltyPoints: result.data.getSiteUser?.loyaltyPoints || 0
+                });
+
+            }
+            if (dbUser) {
+                reloadUser()
+            }
+        },
+        []
+    )
     //
     // const { id } = router.query;
 
@@ -130,6 +149,21 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
                         >
                         </AlertHtmlLocal>
                         }
+                        {order?.loyaltyPoints &&
+                        <AlertHtmlLocal severity="info"
+                                        title={localStrings.loyalty}
+                                        content={
+                                            order?.loyaltyPoints > 0 ?
+                                            localStrings.formatString(localStrings.loyaltyPointsEarned,
+                                            order?.loyaltyPoints)
+                                            :
+                                            localStrings.formatString(localStrings.loyaltyPointsSpent,
+                                                -order?.loyaltyPoints)
+                                        }
+                        >
+                        </AlertHtmlLocal>
+                        }
+
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.activateNotification}
                                         content={localStrings.notificationInfo}

@@ -1,20 +1,20 @@
 import Card1 from '@component/Card1'
 import {
-    Box,
-    Button,
-    Checkbox,
-    CircularProgress,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    FormGroup,
-    Grid,
-    IconButton,
-    Radio,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  IconButton,
+  Radio,
+  TextField,
+  Typography,
 } from '@material-ui/core'
 import {Formik} from 'formik'
 import Link from 'next/link'
@@ -23,13 +23,13 @@ import React, {useEffect, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
-    ORDER_DELIVERY_MODE_DELIVERY,
-    ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
-    ORDER_SOURCE_ONLINE,
-    ORDER_STATUS_NEW,
-    PAYMENT_METHOD_SYSTEMPAY,
-    PAYMENT_MODE_STRIPE,
-    PAYMENT_MODE_SYSTEM_PAY
+  ORDER_DELIVERY_MODE_DELIVERY,
+  ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
+  ORDER_SOURCE_ONLINE,
+  ORDER_STATUS_NEW,
+  PAYMENT_METHOD_SYSTEMPAY,
+  PAYMENT_MODE_STRIPE,
+  PAYMENT_MODE_SYSTEM_PAY, PRICING_EFFECT_FIXED_PRICE
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -37,12 +37,12 @@ import moment from 'moment';
 import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
-    computePriceDetail,
-    formatPaymentMethod,
-    getDeliveryDistanceWithFetch,
-    getProfileName,
-    getSkusListsFromProducts,
-    isDeliveryActive
+  computePriceDetail,
+  formatPaymentMethod, getBrandCurrency,
+  getDeliveryDistanceWithFetch,
+  getProfileName,
+  getSkusListsFromProducts,
+  isDeliveryActive
 } from "../../util/displayUtil";
 import {makeStyles} from "@material-ui/styles";
 import {isMobile} from "react-device-detect";
@@ -52,7 +52,7 @@ import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil"
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
 import {addOrderToCustomer, bulkDeleteOrderMutation, createOrderMutation, getOrderByIdQuery} from '../../gql/orderGql'
 import {green} from "@material-ui/core/colors";
-import {addToCartOrder, getCartItems} from "../../util/cartUtil";
+import {addDiscountToCart, addToCartOrder, getCartItems} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -144,15 +144,26 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
-    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,
+    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,setGlobalDialog,
     checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
-  const {} = useAuth();
 
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
   const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
+  const [maxPointsToSpend, setMaxPointsToSpend] = useState(0)
+  const [saveAmountWithPoint, setSaveAmountWithPoint] = useState(0)
+
+  const [maxPointsToSpendSave, setMaxPointsToSpendSave] = useState(0)
+  const [saveAmountWithPointSave, setSaveAmountWithPointSave] = useState(0)
+
+  const [pointsUsed, setPointsUsed] = useState(false);
+  const [priceDetails, setPriceDetails] = useState(false);
+
+  useEffect(() => {
+    setPriceDetails(computePriceDetail(getOrderInCreation()))
+  }, [getOrderInCreation])
 
   useEffect(() => {
     const checkRemains = async () => {
@@ -227,11 +238,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }, [orderInCreation])
 
   useEffect(() => {
-    //removeGoogleMapScript()
-  }, [])
+    if (dbUser) {
+      let priceDetail = computePriceDetail(orderInCreation);
+      //let priceInPoints = getOrderInCreation().totalPrice;
+      const conversion = currentBrand()?.config?.loyaltyConfig?.loyaltyConversionSpend;
+      const pointOwned = dbUser.loyaltyPoints;
+      const priceInPoints = priceDetail.total * conversion
+      const maxPointToSpend = Math.min(Math.ceil(priceInPoints), pointOwned);
+      const saveAmount = Math.min(priceDetail.total, pointOwned / conversion);
+      setMaxPointsToSpend(maxPointToSpend);
+      setSaveAmountWithPoint(saveAmount);
+    }
+  }, [orderInCreation, dbUser])
 
+  function usePoints() {
 
-
+  }
 
   function buildOrderInformation() {
     let ret = "";
@@ -476,9 +498,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         )
       }
 
-      if (dataOrder.order.discounts) {
-        dataOrder.order.discounts.forEach(discount => {
+      if (dataOrder.discounts) {
+        dataOrder.discounts.forEach(discount => {
               delete discount.uuid;
+              delete discount.initialPricingValue;
             }
         )
       }
@@ -492,6 +515,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       dataOrder.totalPrice = parseFloat(detailPrice.total);
       dataOrder.totalNonDiscounted = parseFloat(detailPrice.totalNonDiscounted);
       dataOrder.totalPriceNoTax = parseFloat(detailPrice.totalNoTax);
+      dataOrder.totalPriceNoCharge = parseFloat(detailPrice.totalNoCharge);
       let taxDetailForOrder = [];
 
       Object.keys(detailPrice.taxDetail).forEach(key => {
@@ -577,10 +601,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           return;
         }
       }
-
-      // if (!dataOrder.customer && dbUser) {
-      //   dataOrder.customer = dbUser;
-      // }
       if (dataOrder.customer && dataOrder.customer.id && !bookWithoutAccount) {
         await executeMutationUtil(addOrderToCustomer(currentBrand.id, dataOrder.customer.id, {
           ...dataOrder,
@@ -651,46 +671,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     })
   }
 
-
-  function resetDeliveryAdress() {
-    //alert("resetDeliveryAdress")
-    setOrderInCreation({
-      ...getOrderInCreation(),
-      deliveryAddress: null,
-    })
-  }
-
-  function resetCustomerDeliveryInformation() {
-    //alert("resetDeliveryAdress")
-    setOrderInCreation({
-      ...getOrderInCreation(),
-      deliveryAddress: {
-        ...getOrderInCreation().deliveryAddress,
-        customerDeliveryInformation: null
-      },
-    })
-  }
-
-  function updateCustomer(customer) {
-    setOrderInCreation({
-      ...getOrderInCreation(),
-      customer: customer,
-    })
-  }
-
-  function getUserAdress() {
-    if (!dbUser || !dbUser.userProfileInfo || !dbUser.userProfileInfo.address) {
-      return null
-    }
-    return dbUser.userProfileInfo.address;
-  }
-
   function isDeliveryPriceDisabled() {
+    let totalDiscounts = 0;
+    if (getOrderInCreation().discounts) {
+      getOrderInCreation().discounts.forEach(d => totalDiscounts += parseFloat(d.pricingOff))
+    }
+
+
     return isDeliveryActive(currentEstablishment()) &&
         getOrderInCreation() &&
         currentEstablishment().serviceSetting &&
         currentEstablishment().serviceSetting.minimalDeliveryOrderPrice &&
-        computePriceDetail(getOrderInCreation()).total < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
+        computePriceDetail(getOrderInCreation()).total + totalDiscounts < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
   }
 
   const handlePaymentMethodChange = ({ target: { name } }: any) => {
@@ -717,7 +709,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     // if (!paymentMethod) {
     //   return localStrings.check.noSelectPaymentMethod;
     // }
-    if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
+    if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0 && priceDetails.total > 0) {
       return localStrings.check.noSelectPaymentMethod;
     }
 
@@ -745,6 +737,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.pleaseAcceptCgv;
     }
 
+    if ( priceDetails?.total === 0) {
+      return localStrings.orderFree;
+    }
+
     return paymentMethod === "cc" ?
         localStrings.formatString(localStrings.checkOutNowAndPayCard,
             computePriceDetail(orderInCreation).total.toFixed(2))
@@ -767,7 +763,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function isPaymentDisabled(values) {
-    return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0) ||
+    return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0 && priceDetails.total > 0) ||
         !cgvChecked ||
         !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
         !getOrderInCreation().bookingSlot ||
@@ -838,7 +834,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function selectDealProposal(selectedProductAndSku, deal) {
     //setPrefferedDealToApply(deal.canditae.deal);
-    addToCartOrder(selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
+    addToCartOrder(setGlobalDialog, selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
   }
 
   // async function reduceCandidates() {
@@ -848,8 +844,50 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   //   return candidatesRemains;
   // }
 
+
+  function formatPointsAppliedMessage() {
+    return localStrings.formatString(localStrings.usedLoyaltyPoints, saveAmountWithPointSave + " " + getBrandCurrency(currentBrand()), maxPointsToSpendSave)
+  }
+
+  function spendPoints() {
+    const saveAmount = saveAmountWithPoint + " " + getBrandCurrency(currentBrand());
+    let discount = {
+      id: uuid(),
+      name: localStrings.formatString(localStrings.discountsLoyaltyName, saveAmount, maxPointsToSpend),
+      pricingEffect: PRICING_EFFECT_FIXED_PRICE,
+      pricingValue: saveAmountWithPoint,
+      loyaltyPointCost: maxPointsToSpend,
+    }
+    setMaxPointsToSpendSave(maxPointsToSpend);
+    setSaveAmountWithPointSave(saveAmountWithPoint);
+
+    addDiscountToCart(discount, getOrderInCreation, setOrderInCreation);
+
+    setPointsUsed(true);
+  }
+
   return (
       <>
+
+        <Dialog open={pointsUsed} maxWidth="sm">
+          <DialogContent className={classes.dialogContent}>
+            <AlertHtmlLocal
+                severity="success"
+                title={localStrings.bravo}
+                // content={config.alertOnSelectPickup}
+            >
+              <MdRender content = {formatPointsAppliedMessage()}/>
+            </AlertHtmlLocal>
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setPointsUsed(false)} color="primary">
+              {localStrings.IUnderstand}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+
         {dealCandidates && dealCandidates.length > 0 &&
         <Dialog
             onClose={() => setDialogDealProposalContent(false)}
@@ -1406,149 +1444,152 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             content={checkoutError.toString()}
                             />
                             }
-
-                            <Typography fontWeight="600" mb={2}>
-                              {localStrings.paymentMethod}
-                            </Typography>
-
-                            <FormControlLabel
-                                name="delivery"
-                                label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
-                                control={
-                                  <Radio
-                                      checked={paymentMethod === 'delivery'}
-                                      color="secondary"
-                                      size="small"
-                                  />
-                                }
-                                sx={{mb: '.5rem'}}
-                                onChange={handlePaymentMethodChange}
-                            />
-
-                            {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
+                            {priceDetails && priceDetails.total > 0 &&
                             <>
-                              <br/>
+                              <Typography fontWeight="600" mb={2}>
+                                {localStrings.paymentMethod}
+                              </Typography>
+
                               <FormControlLabel
-                                  name="cc"
-                                  label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                  name="delivery"
+                                  label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
                                   control={
                                     <Radio
-                                        checked={paymentMethod === 'cc'}
+                                        checked={paymentMethod === 'delivery'}
                                         color="secondary"
                                         size="small"
                                     />
                                   }
-                                  sx={{mb: '0.5rem'}}
+                                  sx={{mb: '.5rem'}}
                                   onChange={handlePaymentMethodChange}
                               />
-                            </>
-                            }
 
-                            <Typography fontWeight="600" mb={2}>
-                              {localStrings.paymentMethodsForPickup}
-                            </Typography>
-
-
-                            {paymentMethod !== 'cc' &&
-                            <FormGroup>
-                              {getPaymentsOnline().map((item, key) =>
-                                  <FormControlLabel key={key}
-                                                    control={
-                                                      <Checkbox
-                                                          checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
-                                                          onChange={(event) => {
-                                                            //alert("checked " + event.target.checked);
-                                                            if (event.target.checked) {
-                                                              setExpectedPaymentMethods([...expectedPaymentMethods, item])
-                                                            } else {
-                                                              let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
-                                                              setExpectedPaymentMethods(filter)
-                                                            }
-                                                          }}
-                                                      />
-                                                    }
-                                                    label={item.name}/>
-                              )}
-                            </FormGroup>
-                            }
-
-                            {paymentMethod === 'cc' &&
-                            <>
-                              {isPaymentSystemPay() &&
+                              {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
                               <>
-                                {!loading &&
-                                <KRPayment
-                                    paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
-                                    publicKey={getSystemPublicKey()}
-                                    endPoint={getSystemEndPoint()}
-                                    email={getEmailCustomer(values)}
-                                    amount={getOrderAmount()}
-                                    currency={contextData.brand.config.currency}
-                                    errorCallBack={message => setCheckoutError(message)}
-                                    brandId={contextData.brand.id}
-                                    text={getSubmitText(values)}
-                                    disabled={
-                                      isPaymentDisabled(values)
+                                <br/>
+                                <FormControlLabel
+                                    name="cc"
+                                    label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                    control={
+                                      <Radio
+                                          checked={paymentMethod === 'cc'}
+                                          color="secondary"
+                                          size="small"
+                                      />
                                     }
-                                    checkingPayCallBack={() => setPayLoading(true)}
+                                    sx={{mb: '0.5rem'}}
+                                    onChange={handlePaymentMethodChange}
                                 />
-                                }
-
-                                {isPaymentDisabled(values) && !loading &&
-                                <Button
-                                    style={{textTransform: "none"}}
-                                    variant="contained" color="primary" type="submit" fullWidth
-                                    disabled
-                                >
-                                  {getSubmitText(values)}
-                                </Button>
-                                }
                               </>
                               }
-                              {isPaymentStripe() &&
-                              <div
-                                  style={
-                                    {
-                                      border: '1px solid #C4CCD5',
-                                      borderRadius: "5px",
-                                      padding: '9px'
-                                    }
-                                  }
-                              >
-                                <CardElement
-                                    id="card-element"
 
-                                    //onComplete={}
-                                    onReady={() => {
+                              <Typography fontWeight="600" mb={2}>
+                                {localStrings.paymentMethodsForPickup}
+                              </Typography>
 
-                                      //setPaymentCardValid(true);
-                                      console.log("Card ready")
-                                    }}
 
-                                    onChange={(event) => {
+                              {paymentMethod !== 'cc' &&
+                              <FormGroup>
+                                {getPaymentsOnline().map((item, key) =>
+                                    <FormControlLabel key={key}
+                                                      control={
+                                                        <Checkbox
+                                                            checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
+                                                            onChange={(event) => {
+                                                              //alert("checked " + event.target.checked);
+                                                              if (event.target.checked) {
+                                                                setExpectedPaymentMethods([...expectedPaymentMethods, item])
+                                                              } else {
+                                                                let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
+                                                                setExpectedPaymentMethods(filter)
+                                                              }
+                                                            }}
+                                                        />
+                                                      }
+                                                      label={item.name}/>
+                                )}
+                              </FormGroup>
+                              }
 
-                                      if (event.complete) {
-                                        setPaymentCardValid(true);
-                                      } else if (event.error) {
-                                        setPaymentCardValid(false);
+                              {paymentMethod === 'cc' &&
+                              <>
+                                {isPaymentSystemPay() &&
+                                <>
+                                  {!loading &&
+                                  <KRPayment
+                                      paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
+                                      publicKey={getSystemPublicKey()}
+                                      endPoint={getSystemEndPoint()}
+                                      email={getEmailCustomer(values)}
+                                      amount={getOrderAmount()}
+                                      currency={contextData.brand.config.currency}
+                                      errorCallBack={message => setCheckoutError(message)}
+                                      brandId={contextData.brand.id}
+                                      text={getSubmitText(values)}
+                                      disabled={
+                                        isPaymentDisabled(values)
                                       }
-                                    }}
+                                      checkingPayCallBack={() => setPayLoading(true)}
+                                  />
+                                  }
 
-                                    options={{
-                                      style: {
-                                        base: {
-                                          fontSize: '14px',
-                                          color: '#424770',
-                                          '::placeholder': {
-                                            color: '#aab7c4',
+                                  {isPaymentDisabled(values) && !loading &&
+                                  <Button
+                                      style={{textTransform: "none"}}
+                                      variant="contained" color="primary" type="submit" fullWidth
+                                      disabled
+                                  >
+                                    {getSubmitText(values)}
+                                  </Button>
+                                  }
+                                </>
+                                }
+                                {isPaymentStripe() &&
+                                <div
+                                    style={
+                                      {
+                                        border: '1px solid #C4CCD5',
+                                        borderRadius: "5px",
+                                        padding: '9px'
+                                      }
+                                    }
+                                >
+                                  <CardElement
+                                      id="card-element"
+
+                                      //onComplete={}
+                                      onReady={() => {
+
+                                        //setPaymentCardValid(true);
+                                        console.log("Card ready")
+                                      }}
+
+                                      onChange={(event) => {
+
+                                        if (event.complete) {
+                                          setPaymentCardValid(true);
+                                        } else if (event.error) {
+                                          setPaymentCardValid(false);
+                                        }
+                                      }}
+
+                                      options={{
+                                        style: {
+                                          base: {
+                                            fontSize: '14px',
+                                            color: '#424770',
+                                            '::placeholder': {
+                                              color: '#aab7c4',
+                                            },
+                                          },
+                                          invalid: {
+                                            color: '#9e2146',
                                           },
                                         },
-                                        invalid: {
-                                          color: '#9e2146',
-                                        },
-                                      },
-                                    }}/>
-                              </div>
+                                      }}/>
+                                </div>
+                                }
+                              </>
                               }
                             </>
                             }
@@ -1583,6 +1624,24 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                           </Card1>
                         </>
+                        }
+
+
+                        {dbUser &&
+                        currentBrand()?.config?.loyaltyConfig?.useLoyalty &&
+                        dbUser?.loyaltyPoints >= currentBrand()?.config?.loyaltyConfig?.minPointSpend &&
+                        (!orderInCreation.discounts || orderInCreation.discounts.length === 0) &&
+                        <Card1 sx={{mb: '2rem'}}>
+
+                          <Button
+                              style={{textTransform: "none"}}
+                              variant="contained" color="primary"
+                              fullWidth
+                              onClick={spendPoints}
+                          >
+                            {localStrings.formatString(localStrings.useLoyaltyPoints, maxPointsToSpend, saveAmountWithPoint.toString() + ' ' + getBrandCurrency(currentBrand()))}
+                          </Button>
+                        </Card1>
                         }
 
 

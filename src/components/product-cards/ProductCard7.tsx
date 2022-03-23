@@ -38,7 +38,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   modeOrder
 }) => {
 
-  const {getOrderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, setGlobalDialog} = useAuth();
   let product = products.find(p => p.id === item.productId);
   let imgUrl = "/assets/images/Icon_Sandwich.png";
   //alert("product " + product)
@@ -140,7 +140,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
               padding: '4px',
               ml: '12px',
             }}
-            onClick={() => deleteItemInCart(getOrderInCreation, setOrderInCreation, item.uuid)}
+            onClick={() => deleteItemInCart(setGlobalDialog, getOrderInCreation, setOrderInCreation, item.uuid)}
           >
             <Close fontSize="small" />
           </IconButton>
@@ -201,7 +201,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 // size="none"
                 // borderColor="primary.light"
                 sx={{p: '5px'}}
-                onClick={() => increaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid)}
+                onClick={async () => await increaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid)}
             >
               <Add fontSize="small"/>
             </Button>

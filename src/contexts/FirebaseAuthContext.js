@@ -1062,7 +1062,7 @@ export const AuthProvider = ({ children }) => {
             })
             dealToAdd = applyDealPrice(dealToAdd);
             //dealToAdd = applyDealPrice(dealToAdd);
-            orderInCreationClone = addDealToCart(dealToAdd, () => orderInCreationClone, null, true)
+            orderInCreationClone = addDealToCart(setGlobalDialog, dealToAdd, () => orderInCreationClone, null, true)
             computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
             if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
               const newPrice = computePriceDetail(orderInCreationClone);
@@ -1149,7 +1149,8 @@ export const AuthProvider = ({ children }) => {
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
     if (getDbUser() && currentBrand()) {
-      await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
+      //await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
+      processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
     }
 
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,

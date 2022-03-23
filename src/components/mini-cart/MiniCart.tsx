@@ -58,7 +58,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
   const { palette } = useTheme()
   const { state, dispatch } = useAppContext()
   const { cartList } = state.cart
-  const { getOrderInCreation, setOrderInCreation} = useAuth();
+  const { getOrderInCreation, setOrderInCreation, setGlobalDialog} = useAuth();
   const [itemNumber, setItemNumber] = useState(0);
   const [currency, setcurrency] = useState("");
 
@@ -195,6 +195,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             </FlexBox>
         )}
 
+          {/*<p>{JSON.stringify(getOrderInCreation()?.discounts || [])}</p>*/}
+
         {(getOrderInCreation()?.discounts || []).map((discountItem, key) =>
 
             <FlexBox
@@ -204,6 +206,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 borderBottom={`1px solid ${palette.divider}`}
                 key={key}
             >
+
               <BazarAvatar
                   src={"/assets/images/discount.png"}
                   mx={2}
@@ -256,13 +259,13 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                   width: '32px',
                   borderRadius: '300px',
                 }}
-                onClick={() => {
+                onClick={async () => {
                   if (item.type === TYPE_DEAL) {
-                    increaseDealCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    increaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                   else {
                     //alert("increaseCartQte")
-                    increaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    await increaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                 }}
               >
@@ -288,10 +291,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 disabled={itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal)}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    decreaseDealCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    decreaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                   else {
-                    decreaseCartQte(getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
                   }
                 }}
                 disabled={item.quantity === 1}
@@ -375,10 +378,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
               size="small"
               onClick={() => {
                 if (item.type === TYPE_DEAL) {
-                  deleteDealInCart(getOrderInCreation, setOrderInCreation, item.uuid)
+                  deleteDealInCart(setGlobalDialog, getOrderInCreation, setOrderInCreation, item.uuid)
                 }
                 if (item.type === TYPE_PRODUCT) {
-                  deleteItemInCart(getOrderInCreation, setOrderInCreation, item.uuid)
+                  deleteItemInCart(setGlobalDialog, getOrderInCreation, setOrderInCreation, item.uuid)
                 }
               }}
             >
