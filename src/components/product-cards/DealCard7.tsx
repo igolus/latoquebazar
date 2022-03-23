@@ -38,7 +38,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
 }) => {
 
   const item = deal.deal;
-  const {getOrderInCreation, setOrderInCreation} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, setGlobalDialog} = useAuth();
   let imgUrl = "/assets/images/Icon_Sandwich.png";
   if (deal.productAndSkusLines && deal.productAndSkusLines.length === 1) {
     const singleProductLine = deal.productAndSkusLines[0];
@@ -192,7 +192,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // borderColor="primary.light"
                 //disabled={item.quantity === 0}
                 sx={{p: '5px'}}
-                onClick={() => decreaseDealCartQte(getOrderInCreation(), setOrderInCreation, deal.uuid)}
+                onClick={() => decreaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, deal.uuid)}
             >
               <Remove fontSize="small"/>
             </Button>
@@ -209,7 +209,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 // size="none"
                 // borderColor="primary.light"
                 sx={{p: '5px'}}
-                onClick={() => increaseDealCartQte(getOrderInCreation(), setOrderInCreation, deal.uuid)}
+                onClick={() => increaseDealCartQte(setGlobalDialog,getOrderInCreation(), setOrderInCreation, deal.uuid)}
             >
               <Add fontSize="small"/>
             </Button>
