@@ -124,6 +124,24 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
         }
     }
 
+    function getApplyCodeText() {
+        if (getOrderInCreation() && getOrderInCreation().discounts) {
+            const discPoints = getOrderInCreation().discounts.find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+            if (discPoints) {
+                return localStrings.cannotApplyCouponCodeWithLoyalty;
+            }
+        }
+        return dbUser ? localStrings.applyCouponCode : localStrings.connectApplyCouponCode;
+    }
+
+    function containsDiscPoints() {
+        if (getOrderInCreation() && getOrderInCreation().discounts) {
+            const discPoints = getOrderInCreation().discounts.find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+            return discPoints
+        }
+        return null;
+    }
+
     return (
         <div style={{marginTop:0}}>
 
@@ -271,9 +289,10 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                                 </Grid>
 
                                 <Button variant="contained" color="primary" type="submit" fullWidth
+                                        disabled={containsDiscPoints()}
                                         //style={{margin: "10px"}}
                                 >
-                                    {dbUser ? localStrings.applyCouponCode : localStrings.connectApplyCouponCode}
+                                    {getApplyCodeText()}
                                 </Button>
                         </form>
                     )}

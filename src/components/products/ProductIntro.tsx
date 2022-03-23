@@ -357,7 +357,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                 router.push("/cart");
                                             }
                                         } else {
-                                            let uuid = addToCartOrder(productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation, setOrderInCreation, addToast);
                                             if (addCallBack) {
                                                 addCallBack(uuid);
                                             }
