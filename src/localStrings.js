@@ -160,7 +160,7 @@ let localStrings = new LocalizedStrings({
         modifyMyAccount: "Modifier mon compte",
         homePageTitle: "Accueil",
         infoContactPageTitle: "Informations utiles",
-        shopPageTitle: "Voir la carte",
+        shopPageTitle: "Commander",
         profilePageTitle: "Mon compte",
         contactInfoPageTitle: "Infos utiles",
         openingAndLocation: "Emplacements et horaires",
