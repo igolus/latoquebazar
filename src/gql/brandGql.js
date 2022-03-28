@@ -117,7 +117,6 @@ export const updateGetBrandStripPrivateKeyCache = async (brandId, privateKey) =>
     //}
 }
 
-
 export const getAllBrandsQuery = () => {
 
     var debug = `
