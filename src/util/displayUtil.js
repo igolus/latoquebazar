@@ -338,19 +338,41 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
     let origins =  establishment.lat + "," + establishment.lng;
     let destinations =  lat + "," + lng;
 
+
+
     let res = await axios.get(config.distanceUrl + '?origins='+
         origins + '&destinations=' + destinations + '&key=' + config.googleKey);
-
+    let distanceInfo;
     if (res && res.data && res.data.rows && res.data.rows.length > 0) {
         //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
-        let distanceInfo =
+        distanceInfo =
             {
                 distance: res.data.rows[0].elements[0].distance?.value,
                 duration: res.data.rows[0].elements[0].duration?.value,
             }
-        return distanceInfo;
     }
-    return null;
+    if (establishment.deliveryZones && establishment.deliveryZones.length > 0) {
+        distanceInfo.zones = [];
+        for (let i = 0; i < establishment.deliveryZones.length; i++) {
+            const deliveryZone = establishment.deliveryZones[i];
+            origins =  deliveryZone.lat + "," + deliveryZone.lng;
+            res = await axios.get(config.distanceUrl + '?origins='+
+                origins + '&destinations=' + destinations + '&key=' + config.googleKey);
+            if (res && res.data && res.data.rows && res.data.rows.length > 0) {
+                //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
+                distanceInfo.zones.push(
+                    {
+                        zoneId: deliveryZone.uuid,
+                        name: deliveryZone.name,
+                        distance: res.data.rows[0].elements[0].distance?.value,
+                        duration: res.data.rows[0].elements[0].duration?.value,
+                    }
+                )
+            }
+        }
+    }
+
+    return distanceInfo;
 }
 
 export const getDistanceWithFetch = async (lat1, lng1, lat2, lng2) => {

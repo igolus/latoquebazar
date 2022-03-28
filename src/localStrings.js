@@ -62,6 +62,7 @@ let localStrings = new LocalizedStrings({
         couponNotValidAnymoreTitle: "Coupon invalide",
 
         invalidCouponConsumed: "Vous avez déjà consommé ce coupon !",
+        invalidCouponBadEsta: "Ce coupon n'est pas valide pour l'etablissement selectioné !",
         invalidCouponTooSoon: "Ce coupon n'est pas encore valide !",
         invalidCouponTooLate: "Ce coupon n'est plus valide !",
         invalidCouponPrice: "Votre panier n'atteinds pas la somme minimale requise de {0} {1}",
@@ -100,6 +101,7 @@ let localStrings = new LocalizedStrings({
         unavailableDay: "Indisponible pour le {0}",
         deliveryUnable: "Indisponible pour {0}",
         bookingTimeUnable: "Indisponible pour pour le moment",
+        deliveryZone: "Indisponible dans cette zone de livraison",
         bookingSameDay: "La date de commande et la date de retrait/livraison doivent être égales",
 
         deliveryDistanceMin: "La distance jusqu'à l'établissement doit être supérieure à {0} kms",

@@ -644,7 +644,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     })
   }
 
-  function updateDeliveryAdress(address, lat, lng, id, name, customerDeliveryInformation, distance) {
+  function updateDeliveryAdress(address, lat, lng, id, name, customerDeliveryInformation, distance, zoneId) {
     //alert("updateDeliveryAdress " + distance);
 
     setOrderInCreation({
@@ -656,7 +656,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         id: id,
         name: name,
         customerDeliveryInformation: customerDeliveryInformation,
-        distance: distance
+        distance: distance,
+        zoneId: zoneId,
       },
     })
   }
@@ -697,10 +698,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           (maxDistanceReached) => {
             setMaxDistanceReached(maxDistanceReached);
           },
-          setDistanceInfo, currentEstablishment);
-      // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
-      // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
-      //     setGlobalDialog, setRedirectPageGlobal, distInfo)
+          setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
     }
     return distInfo;
   }
@@ -1120,8 +1118,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                               <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
                                               title={maxDistanceReached ?
                                                   localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                              content={localStrings.formatString(localStrings.distanceOnly,
-                                                  (distanceInfo.distance / 1000))}
+                                              // content={localStrings.formatString(localStrings.distanceOnly,
+                                              //     (distanceInfo.distance / 1000))}
                               />
                             </Box>
                             }
@@ -1183,7 +1181,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             item.name,
                                             //item.additionalInformation,
                                             item.customerDeliveryInformation || "",
-                                            distInfo?.distance
+                                            distInfo?.distance,
+                                            distInfo.deliveryZoneId
                                         );
                                       }}
                                   />
@@ -1241,7 +1240,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                               setMaxDistanceReached(maxDistanceReached);
 
                                             },
-                                            setDistanceInfo, currentEstablishment);
+                                            setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
                                         updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
                                         //resetCustomerDeliveryInformation();
                                         // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
