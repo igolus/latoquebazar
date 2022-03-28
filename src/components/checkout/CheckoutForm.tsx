@@ -50,7 +50,14 @@ import {cloneDeep} from "@apollo/client/utilities";
 import {uuid} from "uuidv4";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
-import {addOrderToCustomer, bulkDeleteOrderMutation, createOrderMutation, getOrderByIdQuery} from '../../gql/orderGql'
+import {
+  addOrderToCustomer,
+  bulkDeleteOrderMutation,
+  createOrderMutation,
+  getOrderByIdQuery
+} from '../../gql/orderGql'
+import {addErrorMutation} from '../../gql/errorGql'
+
 import {green} from "@material-ui/core/colors";
 import {addDiscountToCart, addToCartOrder, getCartItems} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
@@ -69,6 +76,8 @@ import MdRender from "@component/MdRender";
 import * as ga from '../../../lib/ga'
 import CloseIcon from "@material-ui/icons/Close";
 import UpSellDeal from "@component/products/UpSellDeal";
+import {gql} from "@apollo/client";
+import {Base64} from 'js-base64';
 
 const config = require('../../conf/config.json')
 
@@ -332,15 +341,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   const handleFormSubmit = async (values: any, transactionId: string, uuidvalue: string) => {
-
+    let errorOccured;
     setLoading(true);
     let orderId = 0;
-
+    let dataOrder;
     const currentBrand = contextData.brand;
     try {
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null,2))
 
-      let dataOrder = cloneDeep(getOrderInCreation());
+      dataOrder = cloneDeep(getOrderInCreation());
 
       if (transactionId) {
         dataOrder.paymentTransactionId = transactionId;
@@ -444,13 +453,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         return !itemsIdToDelete.includes(item.extRef)
       })
 
-      // alert("dataOrder.order.deals.length " + dataOrder.order.deals.length)
-      // alert("dataOrder.order.items.length " + dataOrder.order.items.length)
-
-      //let createBookingSlotOccupancy = false;
       if (dataOrder.bookingSlot) {
-        //createBookingSlotOccupancy = true;
-        //dataOrder.bookingSlot = {...getOrderInCreation().bookingSlot}
         delete dataOrder.bookingSlot.available;
         delete dataOrder.bookingSlot.full;
         delete dataOrder.bookingSlot.closed;
@@ -502,6 +505,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         dataOrder.discounts.forEach(discount => {
               delete discount.uuid;
               delete discount.initialPricingValue;
+              delete discount.restrictionsApplied;
             }
         )
       }
@@ -617,11 +621,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     }
     catch (err) {
       console.log(err);
+      errorOccured = err;
       alert(err.message)
     }
     finally {
       setLoading(false);
       //setLoading(false);
+    }
+    if (errorOccured) {
+      let query = addErrorMutation(currentBrand.id,
+          Base64.encodeURI(JSON.stringify({
+            error: errorOccured.message,
+            //customer: errorOccured.message,
+            order: dataOrder
+          })));
+
+      await executeMutationUtil(query)
     }
     if (orderId != 0) {
       router.push('/confirmed/confirmedOrder?orderId=' + orderId)
