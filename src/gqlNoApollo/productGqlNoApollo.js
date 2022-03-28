@@ -70,6 +70,7 @@ const common = `
         day
         service
       }
+      deliveryZones
       startDate
       endDate
       startTime

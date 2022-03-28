@@ -17,18 +17,41 @@ export function setDistanceAndCheckNoCall(distanceInfo, setMaxDistanceReached, m
     setDistanceInfo(distanceInfo)
 }
 
-export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached, setDistanceInfo, currentEstablishment) {
+export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
+                                    setDistanceInfo, currentEstablishment, orderInCreation, setOrderInCreation) {
     //alert("setDistanceAndCheck " + value)
     if (!distanceInfo) {
         return;
     }
     let maxDist = getMaxDistanceDelivery(currentEstablishment());
+    let zones = distanceInfo.zones;
 
-    let distKm = distanceInfo.distance / 1000;
-    let maxDistReached = distKm > maxDist;
-    setMaxDistanceReached(maxDistReached);
+    let inZone = false;
+    let deliveryZoneId;
+    for (let i = 0; i < zones.length; i++) {
+        const zone = zones[i];
+        let distKm = zone.distance / 1000;
+        if (distKm <= maxDist) {
+            inZone = true;
+            deliveryZoneId = zone.zoneId
+            // setOrderInCreation({
+            //     ...orderInCreation,
+            //     deliveryZoneId: zone.zoneId
+            // })
+            setDistanceInfo(zone);
+            break;
+        }
+        let maxDistReached = distKm > maxDist;
+        setMaxDistanceReached(maxDistReached);
+    }
+    distanceInfo.deliveryZoneId = deliveryZoneId
+    setMaxDistanceReached(!inZone);
+    //return deliveryZoneId;
+    // let distKm = distanceInfo.distance / 1000;
+    // let maxDistReached = distKm > maxDist;
+    // setMaxDistanceReached(maxDistReached);
     //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
-    setDistanceInfo(distanceInfo);
+
     //alert("distanceInfo " + JSON.stringify(distanceInfo));
 
 }
@@ -39,7 +62,7 @@ function AdressCheck({closeCallBack}) {
     const [distanceInfo, setDistanceInfo] = useState(null);
     const [maxDistanceReached, setMaxDistanceReached] = useState(false);
 
-    const {currentEstablishment, getOrderInCreation, setOrderInCreation} = useAuth();
+    const {currentEstablishment, getOrderInCreation, setOrderInCreation, setOrderInCreationNoLogic} = useAuth();
 
     return(
         <>
@@ -54,10 +77,10 @@ function AdressCheck({closeCallBack}) {
                     <Alert severity={maxDistanceReached ? "warning" : "success"} style={{marginBottom: 2}}>
                         {maxDistanceReached ?
                             localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                        {
-                            localStrings.formatString(localStrings.distanceOnly,
-                                (distanceInfo.distance / 1000))
-                        }
+                        {/*{*/}
+                        {/*    localStrings.formatString(localStrings.distanceOnly,*/}
+                        {/*        (distanceInfo.distance / 1000))*/}
+                        {/*}*/}
 
                     </Alert>
                 </Box>
@@ -82,7 +105,7 @@ function AdressCheck({closeCallBack}) {
                                                 if (currentEstablishment()) {
                                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
                                                     setDistanceAndCheck(distInfo, setMaxDistanceReached,
-                                                        setDistanceInfo, currentEstablishment);
+                                                        setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
                                                 }
                                             }}/>
                 </Box>

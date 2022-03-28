@@ -31,6 +31,15 @@ const common = `
   }
   offlinePaymentMethods
   onlinePaymentMethods
+  deliveryZones {
+    uuid
+    name
+    address
+    placeId
+    distance
+    lat
+    lng
+  }
   serviceSetting {
     slotDuration
     lunchDinnerSeparator

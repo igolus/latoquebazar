@@ -14,6 +14,7 @@ const common = `
       day
       service
     }
+    establishmentIds
     couponCodes
     startDate
     endDate
@@ -22,6 +23,31 @@ const common = `
     minOrderAmount
     maxPerOrder
     maxPerCustomer
+  }
+  restrictionsList {
+      establishmentId
+      dow {
+        day
+        service
+      }
+      deliveryZones
+      startDate
+      endDate
+      startTime
+      endTime
+      
+      startBookingTime
+      endBookingTime
+      bookingAndDeliverySameDay
+      
+      serviceTypes
+      minOrderAmount
+      maxPerOrder
+      maxPerCustomer
+      maxOrderAmount
+      minDeliveryDistance
+      maxDeliveryDistance
+      description
   }
   pricingEffect
   pricingValue
