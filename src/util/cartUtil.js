@@ -680,6 +680,7 @@ export function buildProductAndSkusNoCheckOrderInCreation(product) {
 export const RESTRICTION_DOW = "dow";
 export const RESTRICTION_BOOKING_TIME = "bookingTime";
 export const RESTRICTION_SAME_DAY = "sameDay";
+export const RESTRICTION_DELIVERY_ZONE = "deliveryZone";
 export const RESTRICTION_UNAVAILABLE = "unavailable";
 export const RESTRICTION_DELIVERY = "delivery";
 export const RESTRICTION_DISTANCE = "distance";
@@ -1026,8 +1027,16 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
 }
 
 
+export function getRestrictionToApply(item, currentEstablishment) {
+    let restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === currentEstablishment().id);
+    if (!restrictionToApply) {
+        restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === null);
+    }
+    return restrictionToApply;
+}
+
 export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch) {
-    let countMatching = 9;
+    let countMatching = 10;
 
     if (!currentEstablishment()) {
         return;
@@ -1046,9 +1055,26 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     if (!item.restrictionsList || item.restrictionsList.length === 0 ) {
         return;
     }
-    let restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === currentEstablishment().id);
-    if (!restrictionToApply) {
-        restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === null);
+    let restrictionToApply = getRestrictionToApply(item, currentEstablishment);
+
+    if (restrictionToApply && restrictionToApply?.deliveryZones
+        && restrictionToApply?.deliveryZones.length > 0) {
+        let zoneId = orderInCreation.deliveryAddress?.zoneId
+        let condition = !restrictionToApply?.deliveryZones.includes(zoneId);
+        if (invertMatch) {
+            condition = !condition;
+        }
+        if (condition) {
+            item.restrictionsApplied.push({
+                type: RESTRICTION_DELIVERY_ZONE,
+                description: RESTRICTION_DELIVERY_ZONE,
+                local: localStrings.deliveryZone,
+            })
+            countMatching --;
+        }
+    }
+    else {
+        countMatching --;
     }
 
 
@@ -1250,10 +1276,10 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                     local = localStrings.formatString(localStrings.dateMinMax,
                         restrictionStartMoment.locale("fr").calendar(),
                         restrictionEndMoment.locale("fr").calendar());
-                } else if (restrictionEndMoment) {
+                } else if (restrictionStartMoment) {
                     local = localStrings.formatString(localStrings.dateMin,
                         restrictionStartMoment.locale("fr").calendar());
-                } else if (restrictionStartMoment) {
+                } else if (restrictionEndMoment) {
                     local = localStrings.formatString(localStrings.dateMax,
                         restrictionEndMoment.locale("fr").calendar());
                 }
