@@ -1150,7 +1150,7 @@ export const AuthProvider = ({ children }) => {
 
     if (getDbUser() && currentBrand()) {
       //await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
-      processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
+      processOrderDiscount(orderInCreation);
     }
 
     let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
