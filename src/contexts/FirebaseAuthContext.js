@@ -1065,6 +1065,8 @@ export const AuthProvider = ({ children }) => {
             orderInCreationClone = addDealToCart(setGlobalDialog, dealToAdd, () => orderInCreationClone, null, true)
             computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
             if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
+              //let orderClone = cloneDeep(orderInCreationClone)
+              processOrderDiscount(orderInCreationClone);
               const newPrice = computePriceDetail(orderInCreationClone);
 
               if (newPrice.total < oldPrice.total) {
