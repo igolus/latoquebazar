@@ -926,6 +926,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           <DialogContent>
             {/*  <p>TEST</p>*/}
             <UpSellDeal
+                orderInCreation={getOrderInCreation()}
                 candidateDeal={dealCandidates[0]}
                 cancelCallBack={() => {
                   //setDialogDealProposalContent(false)

@@ -144,6 +144,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
         }
         catch (err) {
             alert(err);
+            console.log(err);
         }
     }
 

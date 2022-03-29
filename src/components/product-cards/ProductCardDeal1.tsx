@@ -294,20 +294,20 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                 />
               </Box>
               }
-              {priceDiff && selectedProductAndSku &&
-              <Box ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    icon={<LocalOfferIcon />}
-                    label={
-                      localStrings.formatString(localStrings.saveWithOffer,
-                          ((1 - (priceDiff /   parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                      )}
-                />
-              </Box>
-              }
+              {/*{priceDiff && selectedProductAndSku &&*/}
+              {/*<Box ml='3px' mt='6px' mr='3px'>*/}
+              {/*  <Chip*/}
+              {/*      className={classes.offerChip}*/}
+              {/*      color="primary"*/}
+              {/*      size="small"*/}
+              {/*      icon={<LocalOfferIcon />}*/}
+              {/*      label={*/}
+              {/*        localStrings.formatString(localStrings.saveWithOffer,*/}
+              {/*            ((1 - (priceDiff /   parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)*/}
+              {/*        )}*/}
+              {/*  />*/}
+              {/*</Box>*/}
+              {/*}*/}
 
               {priceBySkuId && selectedProductAndSku && priceBySkuId[selectedProductAndSku.sku.extRef] &&
               <Box ml='3px' mt='6px' mr='3px'>
