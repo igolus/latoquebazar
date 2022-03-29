@@ -165,7 +165,7 @@ export const getPriceDeal = (deal) => {
         return null;
     }
     if (!deal || !deal.lines) {
-        return 0;
+        return null;
     }
     let sum = 0;
     for (let i = 0; i < deal.lines.length; i++) {
