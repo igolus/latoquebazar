@@ -229,7 +229,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                   ml={2.5}
                   size="small"
                   onClick={() => {
-                    deleteDiscountInCart(getOrderInCreation, setOrderInCreation, discountItem.id)
+                    deleteDiscountInCart(getOrderInCreation(), setOrderInCreation, discountItem.id)
                   }}
               >
                 <Close fontSize="small" />

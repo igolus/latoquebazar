@@ -206,7 +206,7 @@ export const computePriceDetail = (orderInCreation) => {
     let taxDetail = {};
     (orderInCreation?.charges || []).forEach(charge => {
         totalCharge += charge.price;
-        nonDiscountedTotal += charge.price;
+        nonDiscountedTotal += charge.nonDiscountedPrice || charge.price;
     });
 
     orderInCreation?.order?.items.forEach(item => {
@@ -364,6 +364,7 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
                     {
                         zoneId: deliveryZone.uuid,
                         name: deliveryZone.name,
+                        maxDistance: deliveryZone.distance,
                         distance: res.data.rows[0].elements[0].distance?.value,
                         duration: res.data.rows[0].elements[0].duration?.value,
                     }

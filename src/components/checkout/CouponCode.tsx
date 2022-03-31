@@ -114,17 +114,6 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                 if (discount.invalidReason === ALREADY_CONSUMED) {
                     setInvalidReason(localStrings.invalidCouponConsumed)
                 }
-                // else if (discount.invalidReason === TOO_SOON) {
-                //     setInvalidReason(localStrings.invalidCouponTooSoon)
-                // }
-                // else if (discount.invalidReason === TOO_LATE) {
-                //     setInvalidReason(localStrings.invalidCouponTooLate)
-                // }
-                // else if (discount.invalidReason.startsWith(PRICE_LOWER)) {
-                //     let priceInfo = discount.invalidReason.split(",");
-                //     setInvalidReason(
-                //         localStrings.formatString(localStrings.invalidCouponPrice, priceInfo[1], currentBrand().config?.currency || "EUR"));
-                // }
                 else {
                     setWrongCode(values.couponCode);
                 }

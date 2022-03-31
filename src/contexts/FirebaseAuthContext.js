@@ -968,11 +968,13 @@ export const AuthProvider = ({ children }) => {
     })
   }
 
-  function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
+  async function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
     if (!brand?.config?.proposeDeal) {
       return null;
     }
-
+    if ( (orderInCreation?.discounts || []).find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0) ) {
+      return null;
+    }
     const oldPrice = computePriceDetail(orderInCreation);
     const deals = (state.contextData?.deals || []).filter(deal => deal.visible);
     let candidateDeals = [];
@@ -1066,7 +1068,7 @@ export const AuthProvider = ({ children }) => {
             computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
             if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
               //let orderClone = cloneDeep(orderInCreationClone)
-              processOrderDiscount(orderInCreationClone);
+              await processOrderDiscount(orderInCreationClone, null, null, null, null, null, null, true);
               const newPrice = computePriceDetail(orderInCreationClone);
 
               if (newPrice.total < oldPrice.total) {
@@ -1141,7 +1143,9 @@ export const AuthProvider = ({ children }) => {
 
   }
 
-  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply) => {
+  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal) => {
+    const oldOrder = getOrderInCreation();
+
     const getEstaFun = getEstaFunc || currentEstablishment
 
     const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, getOrderInCreation()?.deliveryMode)
@@ -1151,13 +1155,15 @@ export const AuthProvider = ({ children }) => {
         getBrandCurrency(currentBrand()), currentBrand()?.id);
 
     if (getDbUser() && currentBrand()) {
-      //await processOrderDiscount(orderInCreation, currentBrand().id, getDbUser()?.id, setGlobalDialog, setOrderInCreation);
-      processOrderDiscount(orderInCreation);
+      await processOrderDiscount(orderInCreation, currentBrand(), currentService, currentEstablishment, getDbUser()?.id, setGlobalDialog, null);
+      //await processOrderDiscount(orderInCreation, currentBrand().id, userId);
     }
 
-    let updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
-        getCurrency(), currentBrand(), prefferedDealToApply);
-
+    let updatedOrderMerge;
+    if (!doNotProposeDeal) {
+      updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
+          getCurrency(), currentBrand(), prefferedDealToApply);
+    }
     // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
     //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
     //   setDialogDealProposalContent(true);

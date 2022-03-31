@@ -174,17 +174,29 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     setPriceDetails(computePriceDetail(getOrderInCreation()))
   }, [getOrderInCreation])
 
-  useEffect(() => {
-    const checkRemains = async () => {
-      const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-      if (candidatesRemains && candidatesRemains.length === 0) {
-        setDialogDealProposalContent(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkRemains = async () => {
+  //     const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+  //     if (candidatesRemains && candidatesRemains.length === 0) {
+  //       setDialogDealProposalContent(false);
+  //     }
+  //   };
+  //
+  //   checkRemains()
+  //
+  // }, [orderInCreation])
 
-    checkRemains()
-
-  }, [orderInCreation])
+  // useEffect(() => {
+  //   const checkRemains = async () => {
+  //     const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+  //     if (candidatesRemains && candidatesRemains.length === 0) {
+  //       setDialogDealProposalContent(false);
+  //     }
+  //   };
+  //
+  //   checkRemains()
+  //
+  // }, [dealCandidates])
 
   // useEffect(() => {
   //   checkDealProposal(orderInCreation, currentEstablishment)
@@ -216,7 +228,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     const setAddMainLoad = async () => {
       if (
-          !selectedAddId && !getOrderInCreation()?.deliveryAddress?.address &&
+          !selectedAddId &&
           (dbUser || bookWithoutAccount) &&
           isDeliveryActive(currentEstablishment())) {
         await setAddMain()
@@ -488,6 +500,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         dataOrder.charges.forEach(charge => {
               delete charge.restrictionsList;
               delete charge.restrictionsApplied;
+              delete charge.nonDiscountedPrice;
               charge.price = parseFloat(charge.price.toFixed(2))
             }
         )
@@ -674,7 +687,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         distance: distance,
         zoneId: zoneId,
       },
-    })
+    }, false, null, null, null, true)
   }
 
   function updateCustomerDeliveryInformation(customerDeliveryInformation) {
@@ -689,7 +702,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function isDeliveryPriceDisabled() {
     let totalDiscounts = 0;
-    if (getOrderInCreation().discounts) {
+    if (getOrderInCreation() && getOrderInCreation().discounts) {
       getOrderInCreation().discounts.forEach(d => totalDiscounts += parseFloat(d.pricingOff))
     }
 
@@ -904,7 +917,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         {dealCandidates && dealCandidates.length > 0 &&
         <Dialog
             onClose={() => setDialogDealProposalContent(false)}
-            open={dialogDealProposalContent}
+            //open={dialogDealProposalContent}
             fullWidth>
           {/*<DialogContent className={classes.dialogContent}>*/}
           <DialogTitle sx={{ m: 0, p: 2 }}>

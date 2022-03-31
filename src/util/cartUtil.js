@@ -295,16 +295,21 @@ export function deleteDealInCart(setGlobalDialog, orderInCreation, setOrderInCre
 
 export function deleteDiscountInCart(orderInCreation, setOrderInCreation, id) {
     //alert("uuid " + uuid);
-    if (!orderInCreation || !orderInCreation().order) {
+    if (!orderInCreation || !orderInCreation.order) {
         return
     }
 
-    let discounts = orderInCreation().discounts || [];
+    let discounts = orderInCreation.discounts || [];
     let others = discounts.filter(discount => discount.id !== id);
-    setOrderInCreation({
-        ...orderInCreation(),
-        discounts: [...others]
-    });
+    if (setOrderInCreation) {
+        setOrderInCreation({
+            ...orderInCreation,
+            discounts: [...others]
+        });
+    }
+    else {
+        orderInCreation.discounts = [...others];
+    }
 }
 
 function sameItem(item, itemToAdd, optionsInit) {
@@ -515,6 +520,8 @@ function removeDiscountPoints(orderInCreation, setGlobalDialog) {
 }
 
 export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation, setOrderInCreation, addToast, prefferedDealToApply) {
+    await checkDealProposal(getOrderInCreation(), currentEstablishment);
+    
     if (!orderInCreation || !orderInCreation() || !productAndSku.product) {
         return;
     }
@@ -845,7 +852,8 @@ export function processOrderDiscountSync(orderInCreation) {
     }
 }
 
-export function processOrderDiscount(orderInCreation, brandId, userId, setGlobalDialog, setOrderInCreation, doNotCheckValidity) {
+export async function processOrderDiscount(orderInCreation, brand, currentService, currentEstablishment,
+                                           userId, setGlobalDialog, setOrderInCreation, doNotCheckValidity) {
     if (!orderInCreation) {
         return;
     }
@@ -854,24 +862,30 @@ export function processOrderDiscount(orderInCreation, brandId, userId, setGlobal
     console.log("orderInCreation.discounts " + JSON.stringify(discounts, null, 2))
     let totalPrice = computePriceDetail(orderInCreation);
 
-    // for (let i = 0; !doNotCheckValidity && i < discounts.length; i++) {
-    //     const discount = discounts[i];
-    //     if (discount.couponCodeValues && discount.couponCodeValues.length === 1) {
-    //         let res = await executeQueryUtil(getCouponCodeDiscount(brandId, userId,
-    //             discount.couponCodeValues[0], totalPrice.totalNonDiscounted || 0))
-    //         console.log("res coupon " + JSON.stringify(res, null, 2))
-    //         if (!res.data?.getCouponCodeDiscount?.valid) {
-    //             const couponDiscountItem = res.data?.getCouponCodeDiscount;
-    //             //alert("not valid");
-    //             setGlobalDialog(builAlertNoValidComponAnymoreComponent(discount.couponCodeValues[0]));
-    //             deleteDiscountInCart(() => orderInCreation, setOrderInCreation, couponDiscountItem.id)
-    //         }
-    //     }
-    // }
+    if (brand) {
+        for (let i = 0; !doNotCheckValidity && i < discounts.length; i++) {
+            const discount = discounts[i];
+            if (discount.couponCodeValues && discount.couponCodeValues.length === 1) {
+                let res = await executeQueryUtil(getCouponCodeDiscount(brand.id, userId,
+                    discount.couponCodeValues[0], totalPrice.totalNonDiscounted || 0))
+                console.log("res coupon " + JSON.stringify(res, null, 2))
+                discount.restrictionsApplied = [];
+                computeItemRestriction(discount, currentEstablishment, currentService,
+                    orderInCreation, getBrandCurrency(brand));
+                if (!res.data?.getCouponCodeDiscount?.valid || (discount.restrictionsApplied && discount.restrictionsApplied.length > 0)) {
+                    const couponDiscountItem = res.data?.getCouponCodeDiscount;
+                    //alert("not valid");
+                    setGlobalDialog(builAlertNoValidComponAnymoreComponent(discount.couponCodeValues[0]));
+                    deleteDiscountInCart(orderInCreation, setOrderInCreation, couponDiscountItem.id)
+                }
+            }
+        }
+    }
 
 
     let items = orderInCreation.order?.items || [];
     let deals = orderInCreation.order?.deals || [];
+    let charges = orderInCreation.charges || [];
     //revert price
     for (let j = 0; j < items.length; j++) {
         const item = items[j];
@@ -879,8 +893,16 @@ export function processOrderDiscount(orderInCreation, brandId, userId, setGlobal
         if (item.nonDiscountedPrice) {
             item.price = parseFloat(item.nonDiscountedPrice).toFixed(2)
         }
-
     }
+
+    for (let i = 0; i < charges.length; i++) {
+        const charge = charges[i];
+        if (charge.nonDiscountedPrice) {
+            charge.price = parseFloat(charge.nonDiscountedPrice).toFixed(2)
+        }
+    }
+
+
     //revert price
     for (let j = 0; j < deals.length; j++) {
         const deal = deals[j];
@@ -898,24 +920,6 @@ export function processOrderDiscount(orderInCreation, brandId, userId, setGlobal
         const discount = discounts[i];
         let totalDisc = 0;
         if (discount.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
-            // let remains = parseFloat(discount.pricingValue)
-            //
-            // for (let j = 0; j < items.length && remains > 0; j++) {
-            //     const item = items[j];
-            //     remains = applyDiscountOnItemFixed(item, discount, remains);
-            // }
-            //
-            // for (let j = 0; j < deals.length && remains > 0; j++) {
-            //     const deal = deals[j];
-            //     const productAndSkusLines = deal.productAndSkusLines;
-            //     for (let k = 0; k < productAndSkusLines.length; k++) {
-            //         const productAndSkusLine = productAndSkusLines[k];
-            //         remains = applyDiscountOnItemFixed(productAndSkusLine, discount, remains);
-            //     }
-            // }
-            // discount.pricingOff = discount.pricingValue.toFixed(2);
-            //
-            //
             const total = computePriceDetail(orderInCreation).total;
             if (!discount.initialPricingValue) {
                 discount.initialPricingValue = discount.pricingValue;
@@ -938,6 +942,18 @@ export function processOrderDiscount(orderInCreation, brandId, userId, setGlobal
                     totalDisc += applyDiscountOnItemPercentage(productAndSkusLine, discount) * deal.quantity;
                 }
             }
+
+            for (let i = 0; i < discounts.length; i++) {
+                const discount = discounts[i];
+                if (discount.loyaltyPointCost) {
+                    orderInCreation.charges.forEach(charge => {
+                        charge.nonDiscountedPrice = charge.price;
+                        let discountAppliedAmount = parseFloat(charge.price) * (parseFloat(discount.pricingValue) / 100);
+                        charge.price = (parseFloat(charge.price) - discountAppliedAmount);
+                        totalDisc += discountAppliedAmount;
+                    })
+                }
+            }
             discount.pricingOff = totalDisc.toFixed(2);
         // }
     }
@@ -947,28 +963,23 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     if (!brandId || !orderInCreation) {
         return;
     }
+    let priceDetailBefore = computePriceDetail(orderInCreation);
+    let totalBefore = priceDetailBefore.total;
     orderInCreation.charges = [];
     //alert("brandId " + brandId)
     let res = await executeQueryUtil(getChargesQuery(brandId));
     let chargeItems = res?.data?.getChargesByBrandId || [];
     let priceDetail = computePriceDetail(orderInCreation)
     //alert("processOrderCharge totalNoCharge " + priceDetail.totalNoCharge)
-    if (priceDetail.totalNoCharge === 0) {
-        return;
+    if (getItemNumberInCart(() => orderInCreation) == 0) {
+        return
     }
-
-    //alert("processOrderCharge3 " + chargeItems.length)
+    var chargeAdded = false;
     chargeItems.forEach(charge => {
         let chargeCopy = cloneDeep(charge);
-        //alert("computeItemRestriction charge")
         let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true);
-        //alert("unMatching " + unMatching)
-        //console.log("chargeCopy " + JSON.stringify(chargeCopy, null, 2))
-
 
         if (chargeCopy.restrictionsApplied.length > 0 && unMatching == 0) {
-            // alert("chargeCopy.restrictionsApplied " + chargeCopy.restrictionsApplied.length)
-            // alert("unMatching " + unMatching)
 
             if (chargeCopy.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
                 let percent = parseFloat(chargeCopy.pricingValue);
@@ -977,10 +988,30 @@ export async function processOrderCharge(currentEstablishment, currentService, o
             else if (chargeCopy.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
                 chargeCopy.price = parseFloat(chargeCopy.pricingValue);
             }
-            //alert("pushing charge ")
             orderInCreation.charges.push(chargeCopy);
+            chargeAdded = true
         }
     })
+    let discounts = orderInCreation.discounts || [];
+    let totalDiscForCharge = 0
+    // for (let i = 0; i < discounts.length; i++) {
+    //     const discount = discounts[i];
+    //     if (discount.loyaltyPointCost) {
+    //         orderInCreation.charges.forEach(charge => {
+    //             totalDiscForCharge += parseFloat(charge.price) * (parseFloat(discount.pricingValue) / 100);
+    //         })
+    //     }
+    // }
+
+    let orderInCreationClone = cloneDeep(orderInCreation);
+    //processOrderDiscount(orderInCreationClone)
+    let priceDetailAfter = computePriceDetail(orderInCreationClone);
+    let totalAfter = priceDetailAfter.total;
+    if (totalAfter !== totalBefore) {
+        let orderInCreationWithoutDisc = cloneDeep(removeDiscountPoints(orderInCreation, setGlobalDialog));
+        orderInCreation.discounts = orderInCreationWithoutDisc.discounts;
+    }
+    //return orderInCreation;
 
 }
 
@@ -1028,9 +1059,9 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
 
 
 export function getRestrictionToApply(item, currentEstablishment) {
-    let restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === currentEstablishment().id);
+    let restrictionToApply = (item.restrictionsList || []).find(restriction => restriction.establishmentId === currentEstablishment().id);
     if (!restrictionToApply) {
-        restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === null);
+        restrictionToApply = (item.restrictionsList || []).find(restriction => restriction.establishmentId === null);
     }
     return restrictionToApply;
 }
