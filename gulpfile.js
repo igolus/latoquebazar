@@ -170,6 +170,18 @@ function applyConfig(res, cb) {
 
 }
 
+function copyConfBhappy(cb) {
+    return gulp.src('./templatesGulp/config-bhappy.json')
+        .pipe(rename('config.json'))
+        .pipe(gulp.dest('./src/conf', {overwrite:true}))
+}
+
+function copyConfBrunchClub(cb) {
+    return gulp.src('./templatesGulp/config-bunchClub.json')
+        .pipe(rename('config.json'))
+        .pipe(gulp.dest('./src/conf', {overwrite:true}))
+}
+
 function generateConf(cb) {
     return gulp.src('.')
         .pipe(prompt.prompt([
@@ -221,6 +233,9 @@ function generateConf(cb) {
         }));
 
 }
+
+exports.copyConfBrunchClub = copyConfBrunchClub;
+exports.copyConfBhappy = copyConfBhappy;
 
 exports.uploadFtp = uploadFtp;
 exports.generateZip = generateZip;
