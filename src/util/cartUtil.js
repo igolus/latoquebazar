@@ -1028,9 +1028,9 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
 
 
 export function getRestrictionToApply(item, currentEstablishment) {
-    let restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === currentEstablishment().id);
+    let restrictionToApply = (item.restrictionsList || []).find(restriction => restriction.establishmentId === currentEstablishment().id);
     if (!restrictionToApply) {
-        restrictionToApply = item.restrictionsList.find(restriction => restriction.establishmentId === null);
+        restrictionToApply = (item.restrictionsList || []).find(restriction => restriction.establishmentId === null);
     }
     return restrictionToApply;
 }
