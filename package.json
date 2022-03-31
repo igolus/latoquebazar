@@ -12,7 +12,9 @@
     "start": "next start -p 3006",
     "size": "node --max_old_space_size=4096",
     "mergeInBranche": "node mergeInBranches.js",
-    "fix:prettier": "prettier --write ."
+    "fix:prettier": "prettier --write .",
+    "copyConfBhappy": "gulp copyConfBhappy",
+    "copyConfBrunchClub": "gulp copyConfBrunchClub"
   },
   "lint-staged": {
     "*.+(js|jsx)": [
