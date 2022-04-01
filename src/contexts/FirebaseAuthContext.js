@@ -612,7 +612,8 @@ export const AuthProvider = ({ children }) => {
               resetOrderInCreation();
             }
           } catch (err) {
-            alert("badParse")
+            alert("badParse");
+            console.log("badParseErr" + err);
             localStorage.removeItem(CART_KEY);
             resetOrderInCreation()
           }
@@ -1064,7 +1065,7 @@ export const AuthProvider = ({ children }) => {
             })
             dealToAdd = applyDealPrice(dealToAdd);
             //dealToAdd = applyDealPrice(dealToAdd);
-            orderInCreationClone = addDealToCart(setGlobalDialog, dealToAdd, () => orderInCreationClone, null, true)
+            orderInCreationClone = addDealToCart(setGlobalDialog, dealToAdd, orderInCreationClone, null, true)
             computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
             if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
               //let orderClone = cloneDeep(orderInCreationClone)
@@ -1152,23 +1153,17 @@ export const AuthProvider = ({ children }) => {
     processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
-        getBrandCurrency(currentBrand()), currentBrand()?.id);
+        getBrandCurrency(currentBrand()), currentBrand()?.id, (oldOrder.charges || []));
 
     if (getDbUser() && currentBrand()) {
       await processOrderDiscount(orderInCreation, currentBrand(), currentService, currentEstablishment, getDbUser()?.id, setGlobalDialog, null);
       //await processOrderDiscount(orderInCreation, currentBrand().id, userId);
     }
-
     let updatedOrderMerge;
     if (!doNotProposeDeal) {
       updatedOrderMerge = await processDealMerge(currentEstablishment, currentService, orderInCreation,
           getCurrency(), currentBrand(), prefferedDealToApply);
     }
-    // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
-    //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
-    //   setDialogDealProposalContent(true);
-    //   //console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
-    // }
 
     dispatch({
       type: ORDER_IN_CREATION,

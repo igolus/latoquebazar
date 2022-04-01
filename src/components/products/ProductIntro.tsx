@@ -83,7 +83,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
     const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment,
-        setGlobalDialog, setRedirectPageGlobal} = useAuth();
+        setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
 
     function firstOrCurrentEstablishment() {
@@ -357,7 +357,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                 router.push("/cart");
                                             }
                                         } else {
-                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                            //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku,
+                                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+
                                             if (addCallBack) {
                                                 addCallBack(uuid);
                                             }

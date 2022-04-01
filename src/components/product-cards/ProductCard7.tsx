@@ -197,9 +197,6 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 variant="outlined"
                 color="primary"
                 disabled={item.quantity === 0 || itemHaveRestriction(item) || itemRestrictionMax(item)}
-                // padding="5px"
-                // size="none"
-                // borderColor="primary.light"
                 sx={{p: '5px'}}
                 onClick={async () => await increaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid)}
             >

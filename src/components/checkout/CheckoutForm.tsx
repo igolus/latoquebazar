@@ -154,7 +154,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
     maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,setGlobalDialog,
-    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply} = useAuth();
+    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply, orderUpdating} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
 
   const loaded = React.useRef(false);
@@ -860,7 +860,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function selectDealProposal(selectedProductAndSku, deal) {
     //setPrefferedDealToApply(deal.canditae.deal);
-    addToCartOrder(setGlobalDialog, selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
+    addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null, deal.candidate.deal);
+    setDealCandidates([...dealCandidates].slice(1))
   }
 
   // async function reduceCandidates() {
@@ -917,7 +918,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         {dealCandidates && dealCandidates.length > 0 &&
         <Dialog
             onClose={() => setDialogDealProposalContent(false)}
-            //open={dialogDealProposalContent}
+            open={dialogDealProposalContent}
             fullWidth>
           {/*<DialogContent className={classes.dialogContent}>*/}
           <DialogTitle sx={{ m: 0, p: 2 }}>
@@ -1695,7 +1696,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 type="submit"
                                 //endIcon={<SaveIcon />}
                                 disabled={
-                                  isPaymentDisabled(values)
+                                  isPaymentDisabled(values) || orderUpdating
                                 }
                                 endIcon={loading ?
                                     <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}

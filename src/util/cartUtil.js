@@ -70,7 +70,6 @@ export function decreaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
     if (!itemToChange) {
         return;
     }
-
     orderInCreation = removeDiscountPoints(orderInCreation, setGlobalDialog);
 
     let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
@@ -112,6 +111,13 @@ export function decreaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
 
 export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid) {
     let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
+
+    if (!itemIoChange) {
+        return;
+    }
+
+    orderInCreation = removeDiscountPoints(orderInCreation, setGlobalDialog);
+
     let others = orderInCreation.order.deals.filter(deal => deal.uuid !== uuid);
     let added = orderInCreation.order.deals.find(itemOrder => itemOrder.uuid === uuid);
 
@@ -139,7 +145,7 @@ export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
 }
 
 
-export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid, contextData) {
+export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid) {
     //alert("uuid " + uuid)
     let itemToChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
     if (!itemToChange) {
@@ -186,8 +192,9 @@ export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCrea
     )
 }
 
-export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid, contextData) {
-
+export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation,
+                                      uuid, contextData, checkDealProposal, currentEstablishment) {
+    let discPointExists = isDiscPointExists(orderInCreation);
     orderInCreation = removeDiscountPoints(orderInCreation, setGlobalDialog);
     // alert("added " + JSON.stringify(added))
     let itemIoChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
@@ -201,13 +208,14 @@ export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrder
         deals = [...orderInCreation.order.deals]
     }
 
-    setOrderInCreation({
+    let newOrder = {
         ...orderInCreation,
         order: {
             items: [...others, {...itemIoChange}],
             deals: deals
         }
-    });
+    };
+    setOrderInCreation(newOrder);
 
     ga.gaAddToCart(
         added.extRef,
@@ -216,7 +224,9 @@ export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrder
         added.price,
     )
 
-
+    if (checkDealProposal && currentEstablishment && !discPointExists) {
+        checkDealProposal(newOrder, currentEstablishment);
+    }
 }
 
 function checkOrderInCreation (orderInCreation) {
@@ -266,7 +276,7 @@ export function deleteDealInCart(setGlobalDialog, orderInCreation, setOrderInCre
         return
     }
 
-    orderInCreation= removeDiscountPoints(orderInCreation, setGlobalDialog);
+    //orderInCreation= removeDiscountPoints(orderInCreation, setGlobalDialog);
 
 
     let items = [];
@@ -299,6 +309,8 @@ export function deleteDiscountInCart(orderInCreation, setOrderInCreation, id) {
         return
     }
 
+
+
     let discounts = orderInCreation.discounts || [];
     let others = discounts.filter(discount => discount.id !== id);
     if (setOrderInCreation) {
@@ -308,6 +320,7 @@ export function deleteDiscountInCart(orderInCreation, setOrderInCreation, id) {
         });
     }
     else {
+        revertDiscountedPrices(orderInCreation);
         orderInCreation.discounts = [...others];
     }
 }
@@ -366,10 +379,6 @@ export function selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, line
 }
 
 export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderInCreation, doNotUpdateOrder) {
-    // let dealToAdd = {
-    //     deal: {...deal},
-    //     creationTimestamp:moment().unix()
-    // }
     let newOrder;
     let dealToAdd = {...deal}
 
@@ -379,15 +388,15 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
     console.log("dealToAdd -" + JSON.stringify(dealToAdd, null, 2))
     dealToAdd.creationTimestamp = moment().unix();
     let items = [];
-    if (orderInCreation().order.items) {
-        items = [...orderInCreation().order.items]
+    if (orderInCreation.order.items) {
+        items = [...orderInCreation.order.items]
     }
 
     let existing = false;
     let productAndSkusLinesInit = (dealToAdd?.productAndSkusLines || []).sort((o1, o2) => o2.extRef < o2.extRef ? 1:0);
 
-    if (orderInCreation() && orderInCreation().order && orderInCreation().order.deals) {
-        existing = orderInCreation().order.deals.find(deal => {
+    if (orderInCreation && orderInCreation.order && orderInCreation.order.deals) {
+        existing = orderInCreation.order.deals.find(deal => {
             let productAndSkusLines =
                 deal.productAndSkusLines.sort((o1, o2) => o2.extRef < o2.extRef ? 1:0)
 
@@ -410,10 +419,10 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
     }
 
     if (existing) {
-        let others = orderInCreation().order.deals.filter(deal => deal.uuid !== existing.uuid);
+        let others = orderInCreation.order.deals.filter(deal => deal.uuid !== existing.uuid);
         existing.quantity ++;
         newOrder = {
-            ...orderInCreation(),
+            ...orderInCreation,
             order: {
                 items: items,
                 deals: [...others, existing],
@@ -427,7 +436,7 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
         return newOrder;
 
         //if (addToast) {
-            //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true});
+        //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true});
         //}
 
         //return;
@@ -435,19 +444,19 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
 
     dealToAdd.quantity = 1;
     dealToAdd.uuid = uuid();
-    if (orderInCreation().order.deals) {
+    if (orderInCreation.order.deals) {
         newOrder = {
-            ...orderInCreation(),
+            ...orderInCreation,
             order: {
                 items: items,
-                deals: [...orderInCreation().order.deals, dealToAdd],
+                deals: [...orderInCreation.order.deals, dealToAdd],
             }
         };
 
     }
     else {
         newOrder = {
-            ...orderInCreation(),
+            ...orderInCreation,
             order: {
                 items: items,
                 deals: [dealToAdd]
@@ -495,11 +504,15 @@ export function addDiscountToCart(discount, orderInCreation, setOrderInCreation)
     })
 }
 
-function removeDiscountPoints(orderInCreation, setGlobalDialog) {
+export function isDiscPointExists(orderInCreation) {
+    return (orderInCreation.discounts || []).find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+}
+
+export function removeDiscountPoints(orderInCreation, setGlobalDialog) {
     if (!orderInCreation.discounts) {
         return orderInCreation;
     }
-    let discPointExists = orderInCreation.discounts.find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+    let discPointExists = isDiscPointExists(orderInCreation);
     if (discPointExists) {
         setGlobalDialog(buildAlertDiscountPointRemovedComponent());
         return {
@@ -519,13 +532,13 @@ function removeDiscountPoints(orderInCreation, setGlobalDialog) {
     //
 }
 
-export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation, setOrderInCreation, addToast, prefferedDealToApply) {
-    await checkDealProposal(getOrderInCreation(), currentEstablishment);
-    
-    if (!orderInCreation || !orderInCreation() || !productAndSku.product) {
+export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
+                               setOrderInCreation, addToast, prefferedDealToApply, checkDealProposal, currentEstablishment) {
+    if (!orderInCreation || !productAndSku.product) {
         return;
     }
 
+    let discPointExists = isDiscPointExists(orderInCreation);
     orderInCreation = removeDiscountPoints(orderInCreation, setGlobalDialog);
 
     let itemToAdd = { ...productAndSku.sku}
@@ -542,22 +555,22 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation, 
 
     let existing;
 
-    if (orderInCreation() && orderInCreation()?.order && orderInCreation().order.items) {
-        existing = orderInCreation().order.items.find(item => {
+    if (orderInCreation && orderInCreation?.order && orderInCreation.order.items) {
+        existing = orderInCreation.order.items.find(item => {
             return sameItem(item, itemToAdd, optionsInit);
         })
     }
 
     let deals = [];
-    if (orderInCreation()?.order.deals) {
-        deals = [...orderInCreation().order.deals]
+    if (orderInCreation?.order.deals) {
+        deals = [...orderInCreation.order.deals]
     }
 
     if (existing) {
-        let others = orderInCreation()?.order.items.filter(item => item.uuid !== existing.uuid);
+        let others = orderInCreation?.order.items.filter(item => item.uuid !== existing.uuid);
         existing.quantity ++;
         setOrderInCreation({
-            ...orderInCreation(),
+            ...orderInCreation,
             order: {
                 items: [...others, existing],
                 deals: deals
@@ -575,25 +588,30 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation, 
         return;
     }
     itemToAdd.uuid = uuid();
-
-    if (orderInCreation()?.order.items) {
-        setOrderInCreation({
-            ...orderInCreation(),
+    let newOrder;
+    if (orderInCreation?.order.items) {
+        newOrder = {
+            ...orderInCreation,
             order: {
-                items: [...orderInCreation().order.items, itemToAdd],
+                items: [...orderInCreation.order.items, itemToAdd],
                 deals: deals
             }
-        }, null, null, null, prefferedDealToApply)
+        }
+
+        setOrderInCreation(newOrder , null, null, null, prefferedDealToApply)
     }
     else {
-        setOrderInCreation({
-            ...orderInCreation(),
+        newOrder = {
+            ...orderInCreation,
             order: {
                 items: [itemToAdd],
                 deals: deals
             }
-        }, null, null, null, prefferedDealToApply)
+        }
+
     }
+
+    setOrderInCreation(newOrder, null, null, null, prefferedDealToApply)
     if (addToast) {
         //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
     }
@@ -604,7 +622,12 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation, 
         productAndSku.sku.name,
         1,
         productAndSku.sku.price,
-        )
+    )
+
+    if (checkDealProposal && currentEstablishment && !discPointExists) {
+        checkDealProposal(newOrder, currentEstablishment);
+    }
+
     return itemToAdd.uuid;
 }
 
@@ -852,37 +875,7 @@ export function processOrderDiscountSync(orderInCreation) {
     }
 }
 
-export async function processOrderDiscount(orderInCreation, brand, currentService, currentEstablishment,
-                                           userId, setGlobalDialog, setOrderInCreation, doNotCheckValidity) {
-    if (!orderInCreation) {
-        return;
-    }
-
-    let discounts = orderInCreation.discounts || [];
-    console.log("orderInCreation.discounts " + JSON.stringify(discounts, null, 2))
-    let totalPrice = computePriceDetail(orderInCreation);
-
-    if (brand) {
-        for (let i = 0; !doNotCheckValidity && i < discounts.length; i++) {
-            const discount = discounts[i];
-            if (discount.couponCodeValues && discount.couponCodeValues.length === 1) {
-                let res = await executeQueryUtil(getCouponCodeDiscount(brand.id, userId,
-                    discount.couponCodeValues[0], totalPrice.totalNonDiscounted || 0))
-                console.log("res coupon " + JSON.stringify(res, null, 2))
-                discount.restrictionsApplied = [];
-                computeItemRestriction(discount, currentEstablishment, currentService,
-                    orderInCreation, getBrandCurrency(brand));
-                if (!res.data?.getCouponCodeDiscount?.valid || (discount.restrictionsApplied && discount.restrictionsApplied.length > 0)) {
-                    const couponDiscountItem = res.data?.getCouponCodeDiscount;
-                    //alert("not valid");
-                    setGlobalDialog(builAlertNoValidComponAnymoreComponent(discount.couponCodeValues[0]));
-                    deleteDiscountInCart(orderInCreation, setOrderInCreation, couponDiscountItem.id)
-                }
-            }
-        }
-    }
-
-
+export function revertDiscountedPrices(orderInCreation) {
     let items = orderInCreation.order?.items || [];
     let deals = orderInCreation.order?.deals || [];
     let charges = orderInCreation.charges || [];
@@ -895,6 +888,7 @@ export async function processOrderDiscount(orderInCreation, brand, currentServic
         }
     }
 
+    //revert price
     for (let i = 0; i < charges.length; i++) {
         const charge = charges[i];
         if (charge.nonDiscountedPrice) {
@@ -914,6 +908,41 @@ export async function processOrderDiscount(orderInCreation, brand, currentServic
             }
         }
     }
+}
+
+export function processOrderDiscount(orderInCreation, brand, currentService, currentEstablishment,
+                                           userId, setGlobalDialog, setOrderInCreation, doNotCheckValidity) {
+    if (!orderInCreation) {
+        return;
+    }
+
+    let discounts = orderInCreation.discounts || [];
+    console.log("orderInCreation.discounts " + JSON.stringify(discounts, null, 2))
+    let totalPrice = computePriceDetail(orderInCreation);
+
+    if (brand) {
+        for (let i = 0; !doNotCheckValidity && i < discounts.length; i++) {
+            const discount = discounts[i];
+            if (discount.couponCodeValues && discount.couponCodeValues.length === 1) {
+                //let res = await executeQueryUtil(getCouponCodeDiscount(brand.id, userId,
+                //     discount.couponCodeValues[0], totalPrice.totalNonDiscounted || 0))
+                // console.log("res coupon " + JSON.stringify(res, null, 2))
+                discount.restrictionsApplied = [];
+                computeItemRestriction(discount, currentEstablishment, currentService,
+                    orderInCreation, getBrandCurrency(brand));
+                if (discount.restrictionsApplied && discount.restrictionsApplied.length > 0) {
+                    //const couponDiscountItem = res.data?.getCouponCodeDiscount;
+                    //alert("not valid");
+                    setGlobalDialog(builAlertNoValidComponAnymoreComponent(discount.name));
+                    deleteDiscountInCart(orderInCreation, null, discount.id)
+                }
+            }
+        }
+    }
+    let items = orderInCreation.order?.items || [];
+    let deals = orderInCreation.order?.deals || [];
+
+    revertDiscountedPrices(orderInCreation);
 
 
     for (let i = 0; i < discounts.length; i++) {
@@ -959,7 +988,8 @@ export async function processOrderDiscount(orderInCreation, brand, currentServic
     }
 }
 
-export async function processOrderCharge(currentEstablishment, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal, currency, brandId) {
+export async function processOrderCharge(currentEstablishment, currentService, orderInCreation,
+                                         setGlobalDialog, setRedirectPageGlobal, currency, brandId, oldCharges) {
     if (!brandId || !orderInCreation) {
         return;
     }
@@ -974,7 +1004,8 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     if (getItemNumberInCart(() => orderInCreation) == 0) {
         return
     }
-    var chargeAdded = false;
+    //var chargeAdded = false;
+    let newCharges = [];
     chargeItems.forEach(charge => {
         let chargeCopy = cloneDeep(charge);
         let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true);
@@ -988,12 +1019,19 @@ export async function processOrderCharge(currentEstablishment, currentService, o
             else if (chargeCopy.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
                 chargeCopy.price = parseFloat(chargeCopy.pricingValue);
             }
-            orderInCreation.charges.push(chargeCopy);
-            chargeAdded = true
+            newCharges.push(chargeCopy)
+            //orderInCreation.charges.push(chargeCopy);
         }
     })
-    let discounts = orderInCreation.discounts || [];
-    let totalDiscForCharge = 0
+    let newChargePrice = newCharges.reduce((partialSum, a) => partialSum + a, 0);
+    let oldChargePrice = oldCharges.reduce((partialSum, a) => partialSum + a, 0);
+    if (newChargePrice !== oldChargePrice) {
+        let orderInCreationWithoutCharges = removeDiscountPoints(cloneDeep(orderInCreation), setGlobalDialog);
+        orderInCreation.discounts = orderInCreationWithoutCharges.discounts;
+    }
+    orderInCreation.charges = newCharges;
+    // let discounts = orderInCreation.discounts || [];
+    // let totalDiscForCharge = 0
     // for (let i = 0; i < discounts.length; i++) {
     //     const discount = discounts[i];
     //     if (discount.loyaltyPointCost) {
@@ -1003,14 +1041,14 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     //     }
     // }
 
-    let orderInCreationClone = cloneDeep(orderInCreation);
-    //processOrderDiscount(orderInCreationClone)
-    let priceDetailAfter = computePriceDetail(orderInCreationClone);
-    let totalAfter = priceDetailAfter.total;
-    if (totalAfter !== totalBefore) {
-        let orderInCreationWithoutDisc = cloneDeep(removeDiscountPoints(orderInCreation, setGlobalDialog));
-        orderInCreation.discounts = orderInCreationWithoutDisc.discounts;
-    }
+    // let orderInCreationClone = cloneDeep(orderInCreation);
+    // //processOrderDiscount(orderInCreationClone)
+    // let priceDetailAfter = computePriceDetail(orderInCreationClone);
+    // let totalAfter = priceDetailAfter.total;
+    // if (totalAfter !== totalBefore) {
+    //     let orderInCreationWithoutDisc = cloneDeep(removeDiscountPoints(orderInCreation, setGlobalDialog));
+    //     orderInCreation.discounts = orderInCreationWithoutDisc.discounts;
+    // }
     //return orderInCreation;
 
 }
@@ -1440,8 +1478,8 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
         })
     }
 
-    processOrderCharge(currentEstablishment, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
-        getBrandCurrency(brand), brand?.id)
+    // processOrderCharge(currentEstablishment, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+    //     getBrandCurrency(brand), brand?.id)
     //alert("allSkusWithProduct" + JSON.stringify(allSkusWithProduct))
     return allSkusWithProduct;
 }

@@ -89,7 +89,7 @@ function DealSelector({ deal, contextData }) {
     const [currentLine, setCurrentLine] = useState(0)
     const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
     const [skuRefs, setSkuRefs] = useState([])
-    const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
+    const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, resetOrderInCreation, setGlobalDialog} = useAuth();
 
     useEffect(() => {
         if (deal && deal.lines && deal.lines.length > 0 && deal.lines[currentLine] && deal.lines[currentLine].skus) {
@@ -136,7 +136,7 @@ function DealSelector({ deal, contextData }) {
     }
 
     function addMenuToCart() {
-        addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation, setOrderInCreation);
+        addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation);
         setDealEdit(null);
         router.push("/cart")
     }
