@@ -23,7 +23,7 @@ export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
     if (!distanceInfo) {
         return;
     }
-    let maxDist = getMaxDistanceDelivery(currentEstablishment());
+    //let maxDist = getMaxDistanceDelivery(currentEstablishment());
     let zones = distanceInfo.zones;
 
     let inZone = false;
@@ -31,29 +31,15 @@ export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
     for (let i = 0; i < zones.length; i++) {
         const zone = zones[i];
         let distKm = zone.distance / 1000;
-        if (distKm <= maxDist) {
+        if (distKm <= zone.maxDistance) {
             inZone = true;
             deliveryZoneId = zone.zoneId
-            // setOrderInCreation({
-            //     ...orderInCreation,
-            //     deliveryZoneId: zone.zoneId
-            // })
             setDistanceInfo(zone);
             break;
         }
-        let maxDistReached = distKm > maxDist;
-        setMaxDistanceReached(maxDistReached);
     }
     distanceInfo.deliveryZoneId = deliveryZoneId
     setMaxDistanceReached(!inZone);
-    //return deliveryZoneId;
-    // let distKm = distanceInfo.distance / 1000;
-    // let maxDistReached = distKm > maxDist;
-    // setMaxDistanceReached(maxDistReached);
-    //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
-
-    //alert("distanceInfo " + JSON.stringify(distanceInfo));
-
 }
 
 function AdressCheck({closeCallBack}) {

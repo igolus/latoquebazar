@@ -154,7 +154,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
     maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,setGlobalDialog,
-    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply} = useAuth();
+    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply, orderUpdating} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
 
   const loaded = React.useRef(false);
@@ -174,17 +174,29 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     setPriceDetails(computePriceDetail(getOrderInCreation()))
   }, [getOrderInCreation])
 
-  useEffect(() => {
-    const checkRemains = async () => {
-      const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-      if (candidatesRemains && candidatesRemains.length === 0) {
-        setDialogDealProposalContent(false);
-      }
-    };
+  // useEffect(() => {
+  //   const checkRemains = async () => {
+  //     const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+  //     if (candidatesRemains && candidatesRemains.length === 0) {
+  //       setDialogDealProposalContent(false);
+  //     }
+  //   };
+  //
+  //   checkRemains()
+  //
+  // }, [orderInCreation])
 
-    checkRemains()
-
-  }, [orderInCreation])
+  // useEffect(() => {
+  //   const checkRemains = async () => {
+  //     const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
+  //     if (candidatesRemains && candidatesRemains.length === 0) {
+  //       setDialogDealProposalContent(false);
+  //     }
+  //   };
+  //
+  //   checkRemains()
+  //
+  // }, [dealCandidates])
 
   // useEffect(() => {
   //   checkDealProposal(orderInCreation, currentEstablishment)
@@ -216,7 +228,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     const setAddMainLoad = async () => {
       if (
-          !selectedAddId && !getOrderInCreation()?.deliveryAddress?.address &&
+          !selectedAddId &&
           (dbUser || bookWithoutAccount) &&
           isDeliveryActive(currentEstablishment())) {
         await setAddMain()
@@ -488,6 +500,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         dataOrder.charges.forEach(charge => {
               delete charge.restrictionsList;
               delete charge.restrictionsApplied;
+              delete charge.nonDiscountedPrice;
               charge.price = parseFloat(charge.price.toFixed(2))
             }
         )
@@ -674,7 +687,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         distance: distance,
         zoneId: zoneId,
       },
-    })
+    }, false, null, null, null, true)
   }
 
   function updateCustomerDeliveryInformation(customerDeliveryInformation) {
@@ -689,7 +702,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function isDeliveryPriceDisabled() {
     let totalDiscounts = 0;
-    if (getOrderInCreation().discounts) {
+    if (getOrderInCreation() && getOrderInCreation().discounts) {
       getOrderInCreation().discounts.forEach(d => totalDiscounts += parseFloat(d.pricingOff))
     }
 
@@ -847,7 +860,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function selectDealProposal(selectedProductAndSku, deal) {
     //setPrefferedDealToApply(deal.canditae.deal);
-    addToCartOrder(setGlobalDialog, selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
+    addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null,
+        deal.candidate.deal, checkDealProposal, currentEstablishment);
+
+    //setDealCandidates([...dealCandidates].slice(1))
   }
 
   // async function reduceCandidates() {
@@ -1682,7 +1698,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 type="submit"
                                 //endIcon={<SaveIcon />}
                                 disabled={
-                                  isPaymentDisabled(values)
+                                  isPaymentDisabled(values) || orderUpdating
                                 }
                                 endIcon={loading ?
                                     <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}

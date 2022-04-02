@@ -194,7 +194,8 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment, setGlobalDialog, setRedirectPageGlobal} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment,
+    checkDealProposal, setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -410,7 +411,10 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                           if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                             //alert(selectedProductAndSku.sku.uuid)
                             //alert(JSON.stringify(selectedProductAndSku.sku));
-                            addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                            //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                            addToCartOrder(setGlobalDialog, selectedProductAndSku,
+                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+
                             //alert("uuid " + uuid);
                             // if (!selectedProductAndSku.sku.uuid) {
                             //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
@@ -440,7 +444,11 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                       sx={{ padding: '3px', ml:'5px', mr:'5px'}}
                       onClick={() => {
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                          let uuid = addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                          //let uuid = addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                          let uuid = addToCartOrder(setGlobalDialog, selectedProductAndSku,
+                              getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+
+
                           //alert("uuid " + uuid);
                           if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
                             let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
