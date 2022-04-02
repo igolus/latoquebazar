@@ -860,8 +860,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function selectDealProposal(selectedProductAndSku, deal) {
     //setPrefferedDealToApply(deal.canditae.deal);
-    addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null, deal.candidate.deal);
-    setDealCandidates([...dealCandidates].slice(1))
+    addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null,
+        deal.candidate.deal, checkDealProposal, currentEstablishment);
+
+    //setDealCandidates([...dealCandidates].slice(1))
   }
 
   // async function reduceCandidates() {

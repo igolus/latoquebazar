@@ -216,7 +216,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   useEffect(() => {
     let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
-        null, null, currentEstablishment, currentService, brand, setGlobalDialog, setRedirectPageGlobal);
+        null, null, currentEstablishment, currentService, brand);
     setProductAndSkus(productAndSkusRes);
     let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
       return parseFloat(a.sku.price) -  parseFloat(b.sku.price);

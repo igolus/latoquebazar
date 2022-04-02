@@ -25,7 +25,12 @@ import {getCurrentService} from "@component/form/BookingSlots";
 import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
 import Router from 'next/router'
 import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
-import {getContextDataApollo, sortChainList, updateBrandBase64HomPage} from "../nextUtil/propsBuilder";
+import {
+  getContextDataApollo,
+  sortChainList,
+  updateBrandBase64HomPage,
+  updateExtraPageBase64
+} from "../nextUtil/propsBuilder";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getProductsByIdQuery} from "../gql/productGql";
 import {getOptionListByOptionListIdQuery} from "../gql/productOptionListGql";
@@ -111,14 +116,6 @@ const initialAuthState = {
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
   switch (action.type) {
-      // case PREFFERED_DEAL_TO_APPLY: {
-      //   const { prefferedDealToApply } = action.payload;
-      //   return {
-      //     ...state,
-      //     prefferedDealToApply: prefferedDealToApply
-      //   };
-      // }
-
     case DEAL_CANDIDATES: {
       const { dealCandidates } = action.payload;
       return {
@@ -331,8 +328,6 @@ const AuthContext = createContext({
   setEstanavOpen: () => {},
 
   setDealCandidates: () => {},
-
-  // setPrefferedDealToApply: () => {}
 });
 
 const expireTimeSeconds = 1800;
@@ -368,9 +363,6 @@ export const AuthProvider = ({ children }) => {
     else {
       return;
     }
-
-    //contextCopy[dataType] = sortChainList(contextCopy[dataType])
-
     setContextDataAuth(contextCopy);
   }
 
@@ -415,8 +407,6 @@ export const AuthProvider = ({ children }) => {
     if (!reload) {
       return;
     }
-    // console.log("reloadContext " + JSON.stringify(reload))
-    // console.log("contextDataP " + contextDataParam)
     const id = reload.id;
     if (!id) {
       return;
@@ -424,8 +414,6 @@ export const AuthProvider = ({ children }) => {
     if (reload.dataType === productType) {
       if (reload.actionType === updateAction) {
         executeQueryUtilSync(getProductsByIdQuery(config.brandId, id)).then(res => {
-          // console.log("update product")
-          //console.log("res " + JSON.stringify(res));
           updateItem("products", res => {
             return ({
               ...res.data.getProductByProductId,
@@ -515,8 +503,15 @@ export const AuthProvider = ({ children }) => {
     // Create an scoped async function in the hook
     async function loadContextData() {
       const contextData = await getContextDataApollo();
+
+      let extraPages = contextData.extraPages || [];
+
+      for (let i = 0; i < extraPages.length; i++) {
+        let extraPage = extraPages[i];
+        updateExtraPageBase64(extraPage)
+      }
+
       setContextDataAuth(contextData);
-      //alert("load context !!!!")
       console.log("load context !!!!");
 
       const db = firebase.firestore();
@@ -532,17 +527,6 @@ export const AuthProvider = ({ children }) => {
     loadContextData();
   }, []);
 
-  // useEffect(async () => {
-  //   const interval = setInterval(async () => {
-  //     const contextData = await getContextDataApollo();
-  //     setContextData(contextData);
-  //     console.log("reload context !!!!")
-  //     // return contextData;
-  //   },  (parseInt(process.env.REVALIDATE_DATA_TIME) || 60) * 1000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  const [adressDialogOpen, setAdressDialogOpen] = useState(false)
   const [redirectPage, setRedirectPage] = useState(null);
 
   const classes = useStyles();
@@ -550,34 +534,11 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
   const { addToast } = useToasts();
 
-  // useEffect(() => {
-  //   // Create an scoped async function in the hook
-  //   async function loadContextData() {
-  //     if (!state.contextData) {
-  //       const data = await getStaticPropsUtil();
-  //       setContextData(data.props.contextData);
-  //     }
-  //   }    // Execute the created function directly
-  //   loadContextData();
-  // }, []);
-
   useEffect(() => {
     if(redirectPage ){
       Router.push(redirectPage)
     }
   }, [redirectPage])
-
-  // useEffect(() => {
-  //   let interval = setInterval(async () => {
-  //     const data = await getStaticPropsUtil();
-  //     setContextData(data.props.contextData);
-  //   }, 60000);
-  //
-  //   // returned function will be called on component unmount
-  //   return () => {
-  //     clearInterval(interval);
-  //   }
-  // }, [])
 
 
   useEffect(() => {
@@ -596,9 +557,7 @@ export const AuthProvider = ({ children }) => {
 
       if (localStorage.getItem(CART_KEY)) {
         let orderInCreationSource = encryptor.decrypt(localStorage.getItem(CART_KEY));
-        //let orderInCreationSource = localStorage.getItem(CART_KEY);
         if (!orderInCreationSource) {
-          //resetOrderInCreation()
           localStorage.removeItem(CART_KEY);
           resetOrderInCreation()
         }
@@ -606,6 +565,7 @@ export const AuthProvider = ({ children }) => {
           try {
             let orderInCreationParsed = JSON.parse(orderInCreationSource);
             if (orderInCreationParsed.updateDate && (moment().unix() - parseFloat(orderInCreationParsed.updateDate)) < expireTimeSeconds) {
+              console.log("orderInCreationParsed " + JSON.stringify(orderInCreationParsed, null, 2))
               await setOrderInCreation(orderInCreationParsed, true, null);
             }
             else {
@@ -613,6 +573,7 @@ export const AuthProvider = ({ children }) => {
             }
           } catch (err) {
             alert("badParse");
+            console.log(err);
             console.log("badParseErr" + err);
             localStorage.removeItem(CART_KEY);
             resetOrderInCreation()
@@ -632,8 +593,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(async () => {
 
     const brandId = state.brand ? state.brand.id : 0;
-    //alert("brandId " + brandId)
-
     if (brandId && state.dbUser) {
       let result = await executeQueryUtil(getCustomerOrdersOnlyIdQuery(brandId, state.dbUser.id));
       if (result && result.data) {
@@ -653,14 +612,7 @@ export const AuthProvider = ({ children }) => {
           orderCount: 0,
         }
       });
-    }
-
-    // if (!localStorage.getItem(DIST_INFO)) {
-    //   setAdressDialogOpen(true);
-    // }
-  }, [state.brand, state.dbUser]);
-
-
+  }}, [state.brand, state.dbUser]);
 
   const createUserWithEmailAndPassword = async (email, password) => {
     return firebase.auth().createUserWithEmailAndPassword(email, password);
@@ -673,14 +625,9 @@ export const AuthProvider = ({ children }) => {
 
   const sendEmailVerification = async (brand, establishment) => {
     var user = firebase.auth().currentUser;
-    //alert("user for sendEmailVerification " + user.email)
     if (user) {
       let link = await getActivationMailLink(user.email)
-      //alert("link " + link);
       console.log("link " + link);
-      //await sendMailMessage(brand, establishment, link, emailAddress);
-
-      //let link = await getResetMailLink(emailAddress);
       let message = localStrings.formatString(localStrings.emailTemplate.activateEmail, link, brand.brandName)
       await sendMailMessage(brand, establishment, message,
           localStrings.formatString(localStrings.emailTemplate.activateEmailSubject, brand.brandName),
@@ -749,18 +696,7 @@ export const AuthProvider = ({ children }) => {
         },
       }
     });
-
-    // dispatch({
-    //   type: ORDER_IN_CREATION,
-    //   payload: {
-    //     isAuthenticated: false,
-    //     user: null
-    //   }
-    // });
-
-
     currentUser()
-    //setLoginDone(false)
     return firebase.auth().signOut();
 
     dispatch({
@@ -900,7 +836,6 @@ export const AuthProvider = ({ children }) => {
       }
       await setEstablishment(estaToSet || estas[0]);
     }
-    //alert("dispatch brand " + JSON.stringify(brand))
     dispatch({
       type: BRAND,
       payload: {
@@ -948,15 +883,6 @@ export const AuthProvider = ({ children }) => {
   const CART_KEY = "orderInCreation";
 
   const getOrderInCreation = () => {
-    // if (state.orderInCreation.initial && localStorage)
-    // {
-    //   let storareOrder = localStorage.getItem(CART_KEY);
-    //   if (storareOrder) {
-    //     let orderFromStorage = JSON.parse(storareOrder);
-    //     setOrderInCreation(orderFromStorage);
-    //     return orderFromStorage;
-    //   }
-    // }
     return state.orderInCreation;
   }
 
@@ -1135,13 +1061,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     return updatedOrderMerge?.candidateDeals;
-
-    // if (updatedOrderMerge.candidateDeals && updatedOrderMerge.candidateDeals.length == 1 && getContextDataAuth()) {
-    //   setCandidateDeal(updatedOrderMerge.candidateDeals[0])
-    //   setDialogDealProposalContent(true);
-    //   console.log("updatedOrderMerge candidate " + JSON.stringify(updatedOrderMerge, null, 2))
-    // }
-
   }
 
   const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal) => {
@@ -1153,11 +1072,10 @@ export const AuthProvider = ({ children }) => {
     processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
-        getBrandCurrency(currentBrand()), currentBrand()?.id, (oldOrder.charges || []));
+        getBrandCurrency(currentBrand()), currentBrand()?.id, (oldOrder?.charges || []));
 
     if (getDbUser() && currentBrand()) {
-      await processOrderDiscount(orderInCreation, currentBrand(), currentService, currentEstablishment, getDbUser()?.id, setGlobalDialog, null);
-      //await processOrderDiscount(orderInCreation, currentBrand().id, userId);
+      orderInCreation = processOrderDiscount(orderInCreation, currentBrand(), currentService, currentEstablishment, getDbUser()?.id, setGlobalDialog, null);
     }
     let updatedOrderMerge;
     if (!doNotProposeDeal) {
@@ -1218,8 +1136,6 @@ export const AuthProvider = ({ children }) => {
           deliveryAddress: null,
           bookingSlot: null,
           additionalInfo: null,
-
-          //productAndSkusLines: []
         }
       }
     });
@@ -1234,15 +1150,6 @@ export const AuthProvider = ({ children }) => {
       }
     });
   }
-
-  // const setPrefferedDealToApply = (prefferedDealToApply) => {
-  //   dispatch({
-  //     type: PREFFERED_DEAL_TO_APPLY,
-  //     payload: {
-  //       prefferedDealToApply: prefferedDealToApply,
-  //     }
-  //   });
-  // }
 
   const setDealEdit = (dealEdit) => {
     dispatch({
@@ -1313,16 +1220,10 @@ export const AuthProvider = ({ children }) => {
           try {
 
             if (user) {
-              // Here you should extract the complete user profile to make it available in your entire app.
-              // The auth state only provides basic information.
-              //console.log("User unsubscribe" + JSON.stringify(user, null, 2))
-
               let token = await firebase.auth().currentUser.getIdToken(true)
               localStorage.setItem("authToken", token)
               localStorage.setItem("genTimeToken", moment().unix())
-              //alert("user " + JSON.stringify(user))
               executeQueryUtilSync(getSiteUserByIdQuery(getBrandId(), user.uid)).then(result => {
-                //alert("result.data.getSiteUser " + JSON.stringify(result.data.getSiteUser))
                 setDbUser(result.data.getSiteUser);
               });
 
@@ -1412,12 +1313,8 @@ export const AuthProvider = ({ children }) => {
             setEstanavOpen,
             setDealCandidates,
             contextDataState
-            // setPrefferedDealToApply,
           }}
       >
-
-        {/*<p>{JSON.stringify(candidateDeal || {})}</p>*/}
-
 
         {state.globalDialog &&
         <Dialog open={state.globalDialog} maxWidth="sm"
