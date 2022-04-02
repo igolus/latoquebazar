@@ -248,7 +248,8 @@ let localStrings = new LocalizedStrings({
         totalNoTax: "Total hors taxes",
         totalCharge: "Total frais",
         totalTax: "Total TVA",
-        savedCode: "Économie avec le code {0}",
+        savedCode: "Économie avec la promo: {0}",
+
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",
         totalFee: "Total frais",

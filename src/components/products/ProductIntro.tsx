@@ -83,7 +83,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
     const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment,
-        setGlobalDialog, setRedirectPageGlobal} = useAuth();
+        setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
 
     function firstOrCurrentEstablishment() {
@@ -101,8 +101,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
             if (skuIndex) {
                 setProductAndSku({
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand,
-                        setGlobalDialog, setRedirectPageGlobal)[skuIndex]
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[skuIndex]
                 });
             } else {
                 setProductAndSku({
@@ -118,8 +117,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     const initialProductAndSku = {
         ...buildProductAndSkus(product, null,
-            null, null, () => firstEsta, null, brand,
-            null, null)[0]
+            null, null, () => firstEsta, null, brand)[0]
     }
 
     const [productAndSku, setProductAndSku] = useState(initialProductAndSku);
@@ -226,13 +224,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 ...productAndSku.sku,
                                 productName: product.name
                             })
-                            // getProductSkuLength(product) > 1 ?
-                            //     formatProductAndSkuName({
-                            //         ...productAndSku.sku,
-                            //         productName: product.name
-                            //     })
-                            //     :
-                            //     product.name
                         }
                     </H1>
                     {!valid && !getFirstRestriction() &&
@@ -243,11 +234,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         />
                     </Box>
                     }
-                    {/*<p>{getFirstRestrictionDescription(productAndSku?.sku)}</p>*/}
                     {getFirstRestrictionDescription(productAndSku?.sku) &&
                     <AlertHtmlLocal severity="info"
                                     title={localStrings.restrictionApplies}
-                        // content={localStrings.info.connectToOrder}
                     >
                         <ReactMarkdown>{getFirstRestrictionDescription(productAndSku?.sku)}</ReactMarkdown>
                     </AlertHtmlLocal>
@@ -256,7 +245,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     {product.skus && getProductSkuLength(product) > 1 &&
                     <Box display="flex" justifyContent="left" flexWrap="wrap">
                         {buildProductAndSkus(product, getOrderInCreation, null, null,
-                            currentEstablishment, currentService, setGlobalDialog, setRedirectPageGlobal)
+                            currentEstablishment, currentService, brand)
                             .map((pandsku, key) =>
                                 <>
                                     {!getFirstRestrictionItem(productAndSku?.sku) &&
@@ -357,7 +346,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                 router.push("/cart");
                                             }
                                         } else {
-                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                            //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku,
+                                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+
                                             if (addCallBack) {
                                                 addCallBack(uuid);
                                             }

@@ -68,7 +68,7 @@ const DiscountCard7: React.FC<ProductCard7Props> = ({
                             padding: '4px',
                             ml: '12px',
                         }}
-                        onClick={() => deleteDiscountInCart(getOrderInCreation, setOrderInCreation, item.id)}
+                        onClick={() => deleteDiscountInCart(getOrderInCreation(), setOrderInCreation, item.id)}
                     >
                         <Close fontSize="small"/>
                     </IconButton>
