@@ -157,10 +157,14 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                 {/*}*/}
 
 
-                {width > WIDTH_DISPLAY_MOBILE && currentEstablishment() && currentEstablishment().phoneNumber ?
-                    mobileBox(currentEstablishment())
-                    :
-                    mobileBox(contextData?.establishments[0])
+                {width > WIDTH_DISPLAY_MOBILE &&
+                    <>
+                        {currentEstablishment() && currentEstablishment().phoneNumber ?
+                            mobileBox(currentEstablishment())
+                            :
+                            mobileBox(contextData?.establishments[0])
+                        }
+                    </>
                 }
 
                 <FlexBox alignItems="center" sx={{ display: { xs: 'none', md: 'flex' } }}>

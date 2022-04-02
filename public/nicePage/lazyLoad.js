@@ -1,6 +1,6 @@
 var checkNiceDiv = setInterval(function(){
     var my_div_width = document.getElementById('nicediv').offsetWidth; // find width
-    console.log("my_div_width " + my_div_width)
+  console.log("my_div_width " + my_div_width)
     if( my_div_width > 0) {
         clearInterval(checkNiceDiv);
         applyLazyLoad();

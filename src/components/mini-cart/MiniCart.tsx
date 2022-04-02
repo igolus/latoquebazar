@@ -58,7 +58,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
   const { palette } = useTheme()
   const { state, dispatch } = useAppContext()
   const { cartList } = state.cart
-  const { getOrderInCreation, setOrderInCreation, setGlobalDialog} = useAuth();
+  const { getOrderInCreation, setOrderInCreation, setGlobalDialog, checkDealProposal, currentEstablishment} = useAuth();
   const [itemNumber, setItemNumber] = useState(0);
   const [currency, setcurrency] = useState("");
 
@@ -229,7 +229,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                   ml={2.5}
                   size="small"
                   onClick={() => {
-                    deleteDiscountInCart(getOrderInCreation, setOrderInCreation, discountItem.id)
+                    deleteDiscountInCart(getOrderInCreation(), setOrderInCreation, discountItem.id)
                   }}
               >
                 <Close fontSize="small" />
@@ -265,7 +265,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                   }
                   else {
                     //alert("increaseCartQte")
-                    await increaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    await increaseCartQte(setGlobalDialog, getOrderInCreation(),
+                        setOrderInCreation, item.uuid, contextData, checkDealProposal, currentEstablishment)
                   }
                 }}
               >
@@ -291,10 +292,10 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                 disabled={itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal)}
                 onClick={() => {
                   if (item.type === TYPE_DEAL) {
-                    decreaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    decreaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid)
                   }
                   else {
-                    decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                    decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid)
                   }
                 }}
                 disabled={item.quantity === 1}

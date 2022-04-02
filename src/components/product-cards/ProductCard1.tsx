@@ -216,7 +216,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   useEffect(() => {
     let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
-        null, null, currentEstablishment, currentService, brand, setGlobalDialog, setRedirectPageGlobal);
+        null, null, currentEstablishment, currentService, brand);
     setProductAndSkus(productAndSkusRes);
     let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
       return parseFloat(a.sku.price) -  parseFloat(b.sku.price);
@@ -239,7 +239,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment, setGlobalDialog, setRedirectPageGlobal} = useAuth();
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment,
+    setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -558,7 +559,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               // console.log("remove " + JSON.stringify(selectedProductAndSku, null,2))
                               // console.log("getOrderInCreation() " + JSON.stringify(getOrderInCreation(), null,2))
                               if (selectedProductAndSku?.sku.uuid) {
-                                decreaseCartQte(getOrderInCreation(), setOrderInCreation, selectedProductAndSku?.sku.uuid)
+                                decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, selectedProductAndSku?.sku.uuid)
                               }
                             }}
                         >
@@ -577,7 +578,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
                                 //alert(selectedProductAndSku.sku.uuid)
                                 //alert(JSON.stringify(selectedProductAndSku.sku));
-                                addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                                addToCartOrder(setGlobalDialog, selectedProductAndSku,
+                                    getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
                                 //alert("uuid " + uuid);
                                 // if (!selectedProductAndSku.sku.uuid) {
                                 //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
@@ -604,7 +606,10 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       onClick={() => {
                         //alert("add To cart")
                         if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
-                          addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation, setOrderInCreation, addToast);
+                          //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                          addToCartOrder(setGlobalDialog, selectedProductAndSku,
+                              getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+
                           // alert("uuid " + uuid);
                           // let newPAndSku = {
                           //   ...selectedProductAndSku,
