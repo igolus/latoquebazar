@@ -3,6 +3,11 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        pendingPointsGain: "Vous gagnez {0} points avec cette commande",
+        use: "Utiliser",
+        useYouPoints: "Utilisez vos points",
+        useYouPointsDetail: "Vous possedez {0} points de fidelité (={1}). Vous pouvez utiliser vos points et économiser <strong>{1}</strong> avec cette commande",
+
         loyalty: "Fidelité",
         bravo: "Bravo",
         loyaltyPoints: "Mes points de fidelités",
@@ -16,7 +21,7 @@ let localStrings = new LocalizedStrings({
         discountsLoyaltyName: "-{0} avec vos {1} points de fidelités",
 
         discountPointRemoved: "Promotion desactivé",
-        discountPointRemovedDetail: "Votre promotion avec vos point de fidelité a été desactivé car le montant de votre panier change. Vous pouvez toujours réappliquer votre promotion",
+        discountPointRemovedDetail: "Votre promotion a été desactivée car le montant de votre panier a changé. Vous pouvez toujours réappliquer votre promotion sur votre nouveau panier",
 
         myMainInfo: "Mes informations principales",
         myRequirements: "Mes exigences",
@@ -249,6 +254,9 @@ let localStrings = new LocalizedStrings({
         totalCharge: "Total frais",
         totalTax: "Total TVA",
         savedCode: "Économie avec la promo: {0}",
+        couponCode: "code promo: {0}",
+        couponCodeSingle: "code promo",
+        pointsSave: "{0} points",
 
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",
