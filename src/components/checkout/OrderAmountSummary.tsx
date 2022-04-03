@@ -1,6 +1,6 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import {Button, Divider, Typography} from '@material-ui/core'
+import {Alert, Box, Button, Divider, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {
@@ -17,6 +17,9 @@ import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
 import CouponCode from "@component/checkout/CouponCode";
 import 'moment/locale/fr'
+import {success} from "@theme/themeColors";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import MdRender from "@component/MdRender";
 
 const config = require("../../conf/config.json");
 
@@ -53,28 +56,53 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
         setPriceDetails(computePriceDetail(getOrder()))
     }, [getOrderInCreation, orderSource])
 
-    function getUsedCode() {
-        if (getOrder()?.discounts && getOrder()?.discounts.length > 0 && getOrder()?.discounts[0].couponCodeValues) {
-            return getOrder()?.discounts[0].couponCodeValues[0];
+    // function getUsedCode() {
+    //     if (getOrder()?.discounts && getOrder()?.discounts.length > 0 && getOrder()?.discounts[0].couponCodeValues) {
+    //         return getOrder()?.discounts[0].couponCodeValues[0];
+    //     }
+    //     return "";
+    // }
+
+    function getDiscountText() {
+        if (getOrder()?.discounts && getOrder()?.discounts.length > 0) {
+            //alert(JSON.stringify(getOrder()?.discounts[0]))
+            if (getOrder()?.discounts[0].couponCodeValues) {
+                return localStrings.formatString(localStrings.couponCode, getOrder()?.discounts[0].couponCodeValues[0])
+            } else if (getOrder()?.discounts[0].loyaltyPointCost) {
+                return localStrings.formatString(localStrings.pointsSave, getOrder()?.discounts[0].loyaltyPointCost)
+            }
         }
         return "";
+    }
+
+    function formatPointsEarned() {
+        //if (currentBrand().config?.loyaltyConfig) {
+            if (getOrder()?.discounts && getOrder()?.discounts.length > 0 && getOrder()?.discounts[0].loyaltyPointCost) {
+                return localStrings.formatString(localStrings.pendingPointsGain, 0);
+            } else {
+                let conversion = currentBrand().config?.loyaltyConfig.loyaltyConversionEarn;
+                let totalPriceNoCharge = priceDetails.totalNoCharge;
+                let newPoints = Math.floor(totalPriceNoCharge * conversion)
+                return localStrings.formatString(localStrings.pendingPointsGain, newPoints);
+            }
+        //}
+        //return null;
     }
 
     return (
         <Card1 style={{position: 'sticky', top: TOP_STICKY}}>
             {/*{JSON.stringify(getOrder())}*/}
+            {modeOrdered &&
             <Typography fontWeight={fontWeight} mb={0} mt={.5}>
-                {modeOrdered ?
 
-                    (getRemainingToPay(getOrder()) === 0 ?
+                {getRemainingToPay(getOrder()) === 0 ?
                             localStrings.pricePaid
                             :
                             localStrings.formatString(localStrings.remainingToPay,
                                 getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()))
-                    )
-                    :
-                    localStrings.priceToPay}
+                }
             </Typography>
+            }
 
             {(getOrder()?.charges || []).map((chargeItem, key) =>
                 <>
@@ -102,33 +130,42 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             )}
 
             {/*<p>{JSON.stringify(priceDetails)}</p>*/}
-            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
-                <Typography color="grey.600">{localStrings.totalCharge}</Typography>
-                <FlexBox alignItems="flex-end">
-                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
-                        {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
-                    </Typography>
-                </FlexBox>
-            </FlexBox>
+            {/*<FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>*/}
+            {/*    <Typography color="grey.600">{localStrings.totalCharge}</Typography>*/}
+            {/*    <FlexBox alignItems="flex-end">*/}
+            {/*        <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">*/}
+            {/*            {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}*/}
+            {/*        </Typography>*/}
+            {/*    </FlexBox>*/}
+            {/*</FlexBox>*/}
 
 
 
-            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
-                <Typography color="grey.600">{localStrings.totalNoTax}</Typography>
-                <FlexBox alignItems="flex-end">
-                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
-                        {parseFloat(priceDetails.totalNoTax).toFixed(2)} {currency}
-                    </Typography>
-                </FlexBox>
-            </FlexBox>
-            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
-                <Typography color="grey.600">{localStrings.totalFee}</Typography>
-                <FlexBox alignItems="flex-end">
-                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
-                        {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}
-                    </Typography>
-                </FlexBox>
-            </FlexBox>
+            {/*<FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>*/}
+            {/*    <Typography color="grey.600">{localStrings.totalNoTax}</Typography>*/}
+            {/*    <FlexBox alignItems="flex-end">*/}
+            {/*        <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">*/}
+            {/*            {parseFloat(priceDetails.totalNoTax).toFixed(2)} {currency}*/}
+            {/*        </Typography>*/}
+            {/*    </FlexBox>*/}
+            {/*</FlexBox>*/}
+            {/*<FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>*/}
+            {/*    <Typography color="grey.600">{localStrings.totalFee}</Typography>*/}
+            {/*    <FlexBox alignItems="flex-end">*/}
+            {/*        <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">*/}
+            {/*            {parseFloat(priceDetails.totalCharge).toFixed(2)} {currency}*/}
+            {/*        </Typography>*/}
+            {/*    </FlexBox>*/}
+            {/*</FlexBox>*/}
+            {/*<FlexBox justifyContent="space-between" alignItems="center" mb={0}>*/}
+            {/*    <Typography color="grey.600">{localStrings.totalTax}</Typography>*/}
+            {/*    <FlexBox alignItems="flex-end">*/}
+            {/*        <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">*/}
+            {/*            {parseFloat(priceDetails.totalNoCharge - priceDetails.totalNoTax).toFixed(2)} {currency}*/}
+            {/*        </Typography>*/}
+            {/*    </FlexBox>*/}
+            {/*</FlexBox>*/}
+
             <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
                 <Typography color="grey.600">{localStrings.totalTax}</Typography>
                 <FlexBox alignItems="flex-end">
@@ -141,10 +178,12 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
             {priceDetails.totalNonDiscounted !== priceDetails.total &&
             <FlexBox justifyContent="space-between" alignItems="center" mb={0}>
-                <Typography color="grey.600">{localStrings.formatString(localStrings.savedCode, getUsedCode())}</Typography>
+                {/*<Typography color="grey.600">{getDiscountText()}</Typography>*/}
+                <Typography color="grey.600">{getDiscountText()}</Typography>
+
                 <FlexBox alignItems="flex-end">
-                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
-                        {parseFloat(priceDetails.totalNonDiscounted - priceDetails.total).toFixed(2)} {currency}
+                    <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1" color={"green"}>
+                        -{parseFloat(priceDetails.totalNonDiscounted - priceDetails.total).toFixed(2)} {currency}
                     </Typography>
                 </FlexBox>
             </FlexBox>
@@ -160,33 +199,60 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
 
             {/*<Divider sx={{mb: '1rem'}}/>*/}
+            <FlexBox justifyContent="space-between" alignItems="center" mb={0} mt={0}>
+                <Typography color="grey.600">{localStrings.totalTTC}</Typography>
+                <FlexBox alignItems="flex-end">
 
-            <Typography
-                fontSize="22px"
-                fontWeight={"600"}
-                lineHeight="1"
-                textAlign="right"
-                mb={1}
-            >
-                {parseFloat(priceDetails.total).toFixed(2)} {currency}
-            </Typography>
+                    {priceDetails.totalNonDiscounted !== priceDetails.total &&
+                    <Typography
+                        fontSize="22px"
+                        fontWeight="400"
+                        lineHeight="1"
+                        textAlign="right"
+                        mb={0}
+                        mr={1}
+                        style={{textDecoration: 'line-through'}}
+                    >
+                        {parseFloat(priceDetails.totalNonDiscounted).toFixed(2)} {currency + " "}
+                    </Typography>
+                    }
 
-            {priceDetails.totalNonDiscounted !== priceDetails.total &&
+                    <Typography
+                        fontSize="22px"
+                        fontWeight={"600"}
+                        //color={success[900]}
+                        lineHeight="1"
+                        textAlign="right"
+                        mb={0}
+                    >
+                        {parseFloat(priceDetails.total).toFixed(2)} {currency}
+                    </Typography>
+
+                </FlexBox>
+            </FlexBox>
+            {currentBrand()?.config?.loyaltyConfig &&
+
             <>
-            {/*<p>{JSON.stringify(getOrderInCreation()?.discounts || {})}</p>*/}
-
-                <Typography
-                    fontSize={fontSize}
-                    fontWeight="400"
-                    lineHeight="1"
-                    textAlign="right"
-                    mb={0}
-                    style={{textDecoration: 'line-through'}}
-                >
-                    {parseFloat(priceDetails.totalNonDiscounted).toFixed(2)} {currency}
-                </Typography>
+            <Alert severity="success">{formatPointsEarned()}</Alert>
+                {/*<Alert severity="success">toto</Alert>*/}
             </>
+            // <AlertHtmlLocal
+            //     severity="success"
+            //     // title={localStrings.bravo}
+            //     // content={config.alertOnSelectPickup}
+            // >
+            //     <MdRender content={formatPointsEarned()}/>
+            // </AlertHtmlLocal>
             }
+            {/*pendingPointsGain: "Avec cette commande vous obtenez <strong>{0}</strong> Point de fidelité",*/}
+            {/*<Box*/}
+            {/*    sx={{*/}
+            {/*        display: 'flex',*/}
+            {/*        flexDirection: 'row-reverse',*/}
+            {/*    }}*/}
+            {/*    >*/}
+
+            {/*</Box>*/}
 
 
 
