@@ -2,11 +2,13 @@ import React from 'react';
 import {Alert, AlertTitle} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
-function AlertHtmlLocal({severity, title, content, children}) {
+function AlertHtmlLocal({severity, title, content, children, marginBottom}) {
     return (
         <>
-        <Alert severity={severity} style={{marginBottom: 2}} variant="outlined" >
-            <AlertTitle style={{fontWeight:600, fontSize:"16px"}} textAlign="left">{title}</AlertTitle>
+        <Alert severity={severity} style={{marginBottom: marginBottom || 2}} variant="outlined" >
+            {title &&
+                <AlertTitle style={{fontWeight: 600, fontSize: "16px"}} textAlign="left">{title}</AlertTitle>
+            }
 
             {/*{content}*/}
             {content &&

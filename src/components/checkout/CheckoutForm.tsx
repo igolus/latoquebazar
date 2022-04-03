@@ -1662,23 +1662,48 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                         currentBrand()?.config?.loyaltyConfig?.useLoyalty &&
                         dbUser?.loyaltyPoints >= currentBrand()?.config?.loyaltyConfig?.minPointSpend &&
                         (!orderInCreation.discounts || orderInCreation.discounts.length === 0) &&
-                        <Card1 sx={{mb: '2rem'}}>
-
-                          <Button
-                              style={{textTransform: "none"}}
-                              variant="contained" color="primary"
-                              fullWidth
-                              onClick={spendPoints}
+                        <>
+                          <AlertHtmlLocal
+                              severity="success"
+                              title={localStrings.useYouPoints}
+                              // content={config.alertOnSelectPickup}
                           >
-                            {localStrings.formatString(localStrings.useLoyaltyPoints, maxPointsToSpend, saveAmountWithPoint.toString() + ' ' + getBrandCurrency(currentBrand()))}
-                          </Button>
-                        </Card1>
+                            <MdRender content = {localStrings.formatString(localStrings.useYouPointsDetail, maxPointsToSpend, saveAmountWithPoint.toString() + ' ' + getBrandCurrency(currentBrand()))}/>
+                            <Box
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'row-reverse',
+                                }}
+                            >
+                              <Button
+                                  style={{textTransform: "none"}}
+                                  variant="outlined" color="primary"
+                                  onClick={spendPoints}
+                              >
+                                {localStrings.use}
+                              </Button>
+                            </Box>
+
+                          </AlertHtmlLocal>
+
+                        {/*<Card1 sx={{mb: '2rem'}}>*/}
+
+                        {/*  <Button*/}
+                        {/*      style={{textTransform: "none"}}*/}
+                        {/*      variant="contained" color="primary"*/}
+                        {/*      fullWidth*/}
+                        {/*      onClick={spendPoints}*/}
+                        {/*  >*/}
+                        {/*    {localStrings.formatString(localStrings.useLoyaltyPoints, maxPointsToSpend, saveAmountWithPoint.toString() + ' ' + getBrandCurrency(currentBrand()))}*/}
+                        {/*  </Button>*/}
+                        {/*</Card1>*/}
+                        </>
                         }
 
 
 
                         {(dbUser || bookWithoutAccount) &&
-                        <Grid container spacing={6}>
+                        <Grid container spacing={6} mt={1}>
                           <Grid item sm={isPaymentSystemPayAndCCSelected() ? 12 : 6} xs={12}>
                             <Link href="/cart">
                               <Button

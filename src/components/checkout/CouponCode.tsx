@@ -260,7 +260,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                                         <TextField
                                             //className={classes.textField}
                                             name="couponCode"
-                                            label={localStrings.couponCode}
+                                            label={localStrings.couponCodeSingle}
                                             fullWidth
                                             sx={{mb: '1rem'}}
                                             onBlur={handleBlur}
