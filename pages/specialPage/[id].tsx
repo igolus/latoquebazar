@@ -30,7 +30,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const { id } = router.query
     let pageId = id;
-    const extraPage = (contextData?.extraPages || []).find(page => page.id === pageId);
+
 
     const {getContextDataAuth} = useAuth();
 
@@ -41,6 +41,8 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData}) => {
         }
         return contextData;
     }
+
+    const extraPage = (getContextData()?.extraPages || []).find(page => page.id === pageId);
 
     return (
         <>
