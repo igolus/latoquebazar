@@ -3,7 +3,7 @@ import SectionCategories from '@component/home-1/SectionCategories'
 import AppLayout from '@component/layout/AppLayout'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
-import React from "react";
+import React, {useEffect} from "react";
 import Section2 from "@component/home-1/Section2";
 
 import {Box} from "@material-ui/core";
@@ -12,6 +12,7 @@ import useWindowSize from "@hook/useWindowSize";
 import {WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
 import {mobileBox} from "@component/header/Header";
 import Navbar from "@component/navbar/Navbar";
+import {useRouter} from "next/router";
 
 export interface IndexPageProps {
     contextData?: any
@@ -19,6 +20,7 @@ export interface IndexPageProps {
 
 // let isMobile: boolean = (width <= 768);
 const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
+    const router = useRouter();
 
     const {currentEstablishment, getContextDataAuth, contextDataState} = useAuth();
 
@@ -35,9 +37,22 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
         }
         return getContextData().establishments[0];
     }
-    // useEffect(() => {
-    //     setContextData(contextData);
-    // }, [])
+
+    function click(inLink) {
+        if (inLink) {
+            router.push(inLink)
+        }
+    }
+
+    useEffect(() => {
+        for (let i = 0; i < 10; i++) {
+            let linkButt = document.getElementById("butlink_" + i);
+            if (linkButt) {
+                const inLink = linkButt.getAttribute("inLink");
+                linkButt.onclick = () => click(inLink);
+            }
+        }
+    }, [])
 
     const width = useWindowSize()
 
