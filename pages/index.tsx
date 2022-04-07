@@ -52,7 +52,7 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                 linkButt.onclick = () => click(inLink);
             }
         }
-    }, [])
+    }, [getContextDataAuth()])
 
     const width = useWindowSize()
 
