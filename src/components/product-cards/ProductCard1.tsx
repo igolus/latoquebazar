@@ -560,16 +560,19 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   sx={{ display: 'flex'}}
               >
                 <Box sx={{maxWidth: "100px"}} mr={1}>
+                  <Link href={buildProductDetailRef()}>
+                    <a>
+                      <Image
+                          style={{objectFit: "cover"}}
 
-                  <Image
-                      style={{objectFit: "cover"}}
-
-                      src={imgUrl}
-                      height={100}
-                      width={100}
-                      display="block"
-                      alt={product.name}
-                  />
+                          src={imgUrl}
+                          height={100}
+                          width={100}
+                          display="block"
+                          alt={product.name}
+                      />
+                    </a>
+                  </Link>
 
                   {/*<LazyImage*/}
                   {/*    objectFit="cover"*/}
