@@ -291,7 +291,7 @@ let localStrings = new LocalizedStrings({
         viewCart: "Voir le detail du panier",
         emptyBasket: "Votre panier est vide",
         cartItemNumber: "{0} produits dans le panier",
-        selectOptions: "Choisir les options",
+        selectOptions: "Options",
         deals: "Menu et offres",
         sortBy: "Trier par ",
         ourProducts: "Nos produits",
