@@ -31,13 +31,6 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
         return contextData;
     }
 
-    function firstOrCurrentEstablishment() {
-        if (currentEstablishment()) {
-            return currentEstablishment();
-        }
-        return getContextData().establishments[0];
-    }
-
     function click(inLink) {
         if (inLink) {
             router.push(inLink)
@@ -56,39 +49,16 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     const width = useWindowSize()
 
-    const config = require("../src/conf/config.json")
-
-    const extraPages = contextData?.extraPages;
-    let firstPage;
-    let secondPage;
-    let thirdPage;
-
-    if (extraPages && extraPages.length > 0) {
-        firstPage = extraPages.find(page => page.id === "1" && page.active);
-        secondPage = extraPages.find(page => page.id === "2" && page.active);
-        thirdPage = extraPages.find(page => page.id === "3" && page.active);
-    }
-    // function getContextDataOrInjected() {
-    //     return getContextData() || contextData;
-    // }
-
     return (
         <div>
 
 
             <AppLayout contextData={getContextData()}>
 
-                {/*<p className="bigFont">TOTO</p>*/}
-                {/*{getContextData()?.brand?.config?.carouselWebConfig &&*/}
-                {/*    <CarouselCompo contextData={getContextData()}/>*/}
-                {/*}*/}
-                {/*<p>{JSON.stringify(getContextData() || {})}</p>*/}
-
                 {getContextData()?.brand?.config?.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
                     <div>
                         <Navbar contextData={getContextData()}/>
                         <div className="text-container" dangerouslySetInnerHTML={{ __html: getContextData()?.brand?.config.customHomePageSource }} />
-                        {/*<InnerHTML html={getContextData()?.brand?.config.customHomePageSource}/>*/}
                     </div>
                     :
                     <>
@@ -97,43 +67,6 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                         }
                     </>
                 }
-
-
-                {/*{width <= WIDTH_DISPLAY_MOBILE &&*/}
-                {/*    <Box display="flex" justifyContent='space-evenly' p={1} m={1}>*/}
-                {/*        {firstPage &&*/}
-                {/*        <Box>*/}
-                {/*            <Link href={"/specialPage/" + firstPage.id}>*/}
-                {/*                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
-                {/*                    {firstPage.title}*/}
-                {/*                </Button>*/}
-                {/*            </Link>*/}
-                {/*        </Box>*/}
-                {/*        }*/}
-
-                {/*        {secondPage &&*/}
-                {/*        <Box>*/}
-                {/*            <Link href={"/specialPage/'" + secondPage.id}>*/}
-                {/*                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
-                {/*                    {secondPage.title}*/}
-                {/*                </Button>*/}
-                {/*            </Link>*/}
-                {/*        </Box>*/}
-                {/*        }*/}
-
-                {/*        {thirdPage &&*/}
-                {/*        <Box>*/}
-                {/*            <Link href={"/specialPage/'" + thirdPage.id}>*/}
-                {/*                <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
-                {/*                    {thirdPage.title}*/}
-                {/*                </Button>*/}
-                {/*            </Link>*/}
-                {/*        </Box>*/}
-                {/*        }*/}
-
-                {/*    </Box>*/}
-                {/*}*/}
-
 
                 {getContextData()?.brand?.config?.starWebProducts &&
                     <Section2 contextData={getContextData()}/>

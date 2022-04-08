@@ -12,7 +12,7 @@ import Link from 'next/link'
 import React, {Fragment, useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
 import ProductIntro from '../products/ProductIntro'
-import {ORDER_DELIVERY_MODE_DELIVERY, SEP} from "../../util/constants";
+import {ORDER_DELIVERY_MODE_DELIVERY, SEP, WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import {
   addToCartOrder,
   buildProductAndSkus,
@@ -25,6 +25,8 @@ import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
 import {cloneDeep} from "@apollo/client/utilities";
+import useWindowSize from "@hook/useWindowSize";
+import Image from "@component/BazarImage";
 
 export interface ProductCard1Props {
   className?: string
@@ -42,6 +44,7 @@ export interface ProductCard1Props {
   options: any,
   currency: string
   currentService: any
+  fullView: boolean
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -205,12 +208,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      options,
                                                      currency,
                                                      currentService,
+                                                     fullView
                                                    }) => {
+
+  const width = useWindowSize()
 
   if (!product) {
     product = {
       name: title,
-
     }
   }
 
@@ -276,7 +281,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     }
     let length = getProductSkuLength(product)
 
-        //.skus.length;
+    //.skus.length;
     if (length === 1 && getUnavailability(product, currentEstablishment, selectedProductAndSku)) {
       return localStrings.unavailable;
     }
@@ -298,143 +303,31 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
 
-  return (
-      <BazarCard className={classes.root} hoverEffect={hoverEffect}>
-        <div className={classes.imageHolder}>
-          {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
-          <Box
-              display="flex"
-              flexWrap="wrap"
-              sx={{ position: 'absolute', zIndex:2, mr: '35px', mt:'4px'}}
-          >
-
-            {product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&
-            <Box ml='3px' mt='6px' mr='3px'>
-              <Chip
-                  className={classes.offerChip}
-                  color="secondary"
-                  size="small"
-                  label={localStrings.new}
-              />
-            </Box>
-            }
-
-            {/*{product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&*/}
-            {/*<Box ml='3px' mt='6px' mr='3px'>*/}
-            {/*  <Chip*/}
-            {/*      className={classes.offerChip}*/}
-            {/*      color="secondary"*/}
-            {/*      size="small"*/}
-            {/*      label={localStrings.new}*/}
-            {/*  />*/}
-            {/*</Box>*/}
-            {/*}*/}
-
-            {/*<p>{JSON.stringify(selectedProductAndSku?.sku || {})}</p>*/}
-
-            {isProductUnavailableInDelivery(selectedProductAndSku) &&
-            <Box ml='3px' mt='6px' mr='3px'>
-              <Chip
-                  className={classes.offerChip}
-                  color="primary"
-                  size="small"
-                  label={localStrings.unavailableInDelivery}
-              />
-            </Box>
-
-            }
-
-            {/*{selectedProductAndSku?.sku?.restrictionsApplied &&*/}
-            {/*selectedProductAndSku?.sku?.restrictionsApplied*/}
-            {/*    .filter(item => item.type === RESTRICTION_DELIVERY)*/}
-            {/*    .map((restriction, key) =>*/}
-            {/*    <Box key={key} ml='3px' mt='6px' mr='3px'>*/}
-            {/*      <Chip*/}
-            {/*          className={classes.offerChip}*/}
-            {/*          color="primary"*/}
-            {/*          size="small"*/}
-            {/*          label={restriction.local}*/}
-            {/*      />*/}
-            {/*    </Box>*/}
-            {/*)}*/}
-
-            {product.tags && product.tags.map((tag, key) =>
-                <Box key={key} ml='3px' mt='6px' mr='3px'>
-                  {tag.color ?
-                      <Chip
-                          sx={{backgroundColor: tag.color, color: 'white'}}
-                          className={classes.offerChip}
-                          size="small"
-                          label={tag.tag}
-                      />
-                      :
-                      <Chip
-                          className={classes.offerChip}
-                          color={"primary"}
-                          size="small"
-                          label={tag.tag}
-                      />
-                  }
-                </Box>
-            )}
-          </Box>
-
-          <div className="extra-icons">
-            <IconButton sx={{ p: '6px' }} onClick={toggleDialog}>
-              <RemoveRedEye color="secondary" fontSize="small" />
-            </IconButton>
-          </div>
-
-          <Link href={buildProductDetailRef()} >
-            <a>
-
-
-
-              <LazyImage
-                  objectFit="cover"
-                  priority={true}
-                  // transition="transform .7s ease !important"
-                  // sx={{
-                  //   //filter: grayscale(100%);
-                  //   transition: 'transform .7s ease !important',
-                  //   transform: 'scale(1.0)',
-                  //   objectFit: 'cover',
-                  // }}
-                  src={url}
-                  width="100%"
-                  height="100%"
-                  layout="responsive"
-                  alt={product.name}
-              />
-
-            </a>
-          </Link>
-        </div>
-
-        <div className={classes.details}>
-          {/*{productAndSkus && productAndSkus.length > 1 &&*/}
-          {/*<div style={{ width: '100%' }}>*/}
-          {/*  <Box display="flex" justifyContent="center" m={1}>*/}
-          {/*    {productAndSkus.map((productAndSkuItem, key) =>*/}
-          {/*        <Box key={key}>*/}
-          {/*          /!*<BazarButton>grande</BazarButton>*!/*/}
-          {/*          <BazarButton*/}
-          {/*              onClick={() => {*/}
-          {/*                setSelectedProductSku(productAndSkuItem)*/}
-          {/*                setSelectedSkuIndex(key)*/}
-          {/*              }}*/}
-          {/*              variant="contained"*/}
-          {/*              color={selectedProductAndSku?.sku.extRef === productAndSkuItem.sku.extRef ? "primary" : undefined}*/}
-          {/*              sx={{ padding: "3px", mr: "8px", ml: "8px"}}>*/}
-          {/*            {productAndSkuItem.sku.name}*/}
-          {/*          </BazarButton>*/}
-          {/*        </Box>*/}
-          {/*    )}*/}
-          {/*  </Box>*/}
-          {/*</div>*/}
-          {/*}*/}
-
+  function getProductPresentationAndInteration() {
+    return (
+        <Box>
+          {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
+              <Box key={key} ml='3px' mt='6px' mr='3px'>
+                {tag.color ?
+                    <Chip
+                        sx={{backgroundColor: tag.color, color: 'white'}}
+                        //className={classes.offerChip}
+                        size="small"
+                        label={tag.tag}
+                    />
+                    :
+                    <Chip
+                        //className={classes.offerChip}
+                        color={"primary"}
+                        size="small"
+                        label={tag.tag}
+                    />
+                }
+              </Box>
+          )}
           <FlexBox>
+
+
             <Box flex="1 1 0" minWidth="0px" mr={1}>
               <Link href={`/product/detail/${id}`}>
                 <a>
@@ -468,30 +361,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 className="add-cart"
                 flexDirection="row"
                 alignItems="center"
-                //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
-                //width="65px"
             >
-              {/*<Button*/}
-              {/*    variant="outlined"*/}
-              {/*    color="primary"*/}
-              {/*    sx={{ padding: '3px', ml:'5px', mr:'5px'}}*/}
-              {/*    onClick={() => {*/}
-              {/*      if (!isProductAndSkuGetOption(selectedProductAndSku)) {*/}
-              {/*        addToCartOrder(selectedProductAndSku, orderInCreation, setOrderInCreation, addToast)*/}
-              {/*      }*/}
-              {/*      else {*/}
-              {/*        setOpen(true);*/}
-              {/*      }*/}
-              {/*    }}*/}
-              {/*>*/}
-              {/*  {isProductAndSkuGetOption(selectedProductAndSku) ?*/}
-              {/*      localStrings.selectOptions*/}
-              {/*      :*/}
-              {/*      <Add fontSize="small" />*/}
-              {/*  }*/}
-
-              {/*</Button>*/}
-
               {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
               getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
@@ -499,7 +369,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         <Button
                             variant="outlined"
                             color="primary"
-                            sx={{ padding: '3px', minWidth: '25px', ml:'5px', mr:'5px'}}
+                            sx={{padding: '3px', minWidth: '25px', ml: '5px', mr: '5px'}}
                             disabled={getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0}
                             onClick={() => {
                               // alert("remove" + selectedProductAndSku?.sku.uuid)
@@ -511,7 +381,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               }
                             }}
                         >
-                          <Remove fontSize="small" />
+                          <Remove fontSize="small"/>
                         </Button>
                         <Box color="text.primary" fontWeight="600">
                           {getQteInCart(selectedProductAndSku, getOrderInCreation())}
@@ -520,7 +390,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                             variant="outlined"
                             color="primary"
                             disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
-                            sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                            sx={{padding: '3px', ml: '5px', mr: '5px'}}
                             onClick={() => {
                               //alert("add")
                               if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
@@ -533,8 +403,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                 //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
                                 //   setSelectedProductSku(selectedWithUuid)
                                 // }
-                              }
-                              else {
+                              } else {
                                 setOpen(true);
                               }
                             }}
@@ -550,7 +419,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       variant="outlined"
                       color="primary"
                       disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
-                      sx={{ padding: '3px', ml:'5px', mr:'5px'}}
+                      sx={{padding: '3px', ml: '5px', mr: '5px'}}
                       onClick={() => {
                         //alert("add To cart")
                         if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
@@ -572,8 +441,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
                           //   setSelectedProductSku(selectedWithUuid)
                           // }
-                        }
-                        else {
+                        } else {
                           setOpen(true);
                         }
                       }}
@@ -595,6 +463,152 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
               }
             </FlexBox>
           </FlexBox>
+        </Box>
+    )
+  }
+
+  return (
+      <BazarCard className={classes.root} hoverEffect={hoverEffect}>
+        <div className={classes.imageHolder}>
+          {/*<p>{JSON.stringify(selectedProductAndSku)}</p>*/}
+          <Box
+              display="flex"
+              flexWrap="wrap"
+              sx={{position: 'absolute', zIndex: 2, mr: '35px', mt: '4px'}}
+          >
+
+            {product.newProduct && product.newProductExpireDate && !newProductExpired(product.newProductExpireDate) &&
+            <Box ml='3px' mt='6px' mr='3px'>
+              <Chip
+                  className={classes.offerChip}
+                  color="secondary"
+                  size="small"
+                  label={localStrings.new}
+              />
+            </Box>
+            }
+
+            {isProductUnavailableInDelivery(selectedProductAndSku) &&
+            <Box ml='3px' mt='6px' mr='3px'>
+              <Chip
+                  className={classes.offerChip}
+                  color="primary"
+                  size="small"
+                  label={localStrings.unavailableInDelivery}
+              />
+            </Box>
+            }
+
+            {(fullView || width > WIDTH_DISPLAY_MOBILE) && product.tags && product.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  {tag.color ?
+                      <Chip
+                          sx={{backgroundColor: tag.color, color: 'white'}}
+                          className={classes.offerChip}
+                          size="small"
+                          label={tag.tag}
+                      />
+                      :
+                      <Chip
+                          className={classes.offerChip}
+                          color={"primary"}
+                          size="small"
+                          label={tag.tag}
+                      />
+                  }
+                </Box>
+            )}
+          </Box>
+
+          {(fullView || width > WIDTH_DISPLAY_MOBILE) &&
+          <Link href={buildProductDetailRef()}>
+            <a>
+              <LazyImage
+                  objectFit="cover"
+                  priority={true}
+                  src={url}
+                  width="100%"
+                  height="100%"
+                  layout="responsive"
+                  alt={product.name}
+              />
+            </a>
+          </Link>
+          }
+        </div>
+
+        <div className={classes.details}>
+
+          {/*<Link href={buildProductDetailRef()}>*/}
+          {/*  <a>*/}
+          {/*    <Box sx={{maxWidth: "100px"}}>*/}
+          {/*    <LazyImage*/}
+          {/*        objectFit="cover"*/}
+          {/*        priority={true}*/}
+          {/*        src={url}*/}
+          {/*        width="100px"*/}
+          {/*        height="100px"*/}
+          {/*        layout="responsive"*/}
+          {/*        alt={product.name}*/}
+          {/*    />*/}
+          {/*    </Box>*/}
+          {/*  </a>*/}
+          {/*</Link>*/}
+
+          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) ?
+              <Box
+                  sx={{ display: 'flex'}}
+              >
+                <Box sx={{maxWidth: "100px"}} mr={1}>
+
+                  <Image
+                      style={{objectFit: "cover"}}
+
+                      src={imgUrl}
+                      height={100}
+                      width={100}
+                      display="block"
+                      alt={product.name}
+                  />
+
+                  {/*<LazyImage*/}
+                  {/*    objectFit="cover"*/}
+                  {/*    priority={true}*/}
+                  {/*    src={url}*/}
+                  {/*    width="100px"*/}
+                  {/*    height="100px"*/}
+                  {/*    layout="responsive"*/}
+                  {/*    alt={product.name}*/}
+                  {/*/>*/}
+                  {/*<Link href={buildProductDetailRef()}>*/}
+                  {/*  <a>*/}
+                  {/*    <LazyImage*/}
+                  {/*        objectFit="cover"*/}
+                  {/*        priority={true}*/}
+                  {/*        src={url}*/}
+                  {/*        width="100px"*/}
+                  {/*        height="100px"*/}
+                  {/*        layout="responsive"*/}
+                  {/*        alt={product.name}*/}
+                  {/*    />*/}
+                  {/*  </a>*/}
+                  {/*</Link>*/}
+                </Box>
+
+                <Box sx={{ flexGrow: 1 }}>
+                  {getProductPresentationAndInteration()}
+                </Box>
+
+              </Box>
+
+
+              :
+              <>
+                {getProductPresentationAndInteration()}
+              </>
+          }
+
+
         </div>
 
         <Dialog
@@ -621,17 +635,18 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               sku: {
                                 ...selectedProductAndSku.sku,
                                 uuid: uuid,
-                              }};
+                              }
+                            };
                             setSelectedProductSku(newPAndSku)
                             setOpen(false)
 
                           }}
             />
             <IconButton
-                sx={{ position: 'absolute', top: '0', right: '0' }}
+                sx={{position: 'absolute', top: '0', right: '0'}}
                 onClick={toggleDialog}
             >
-              <Close className="close" fontSize="small" color="primary" />
+              <Close className="close" fontSize="small" color="primary"/>
             </IconButton>
           </DialogContent>
         </Dialog>
