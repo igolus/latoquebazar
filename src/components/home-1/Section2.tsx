@@ -81,6 +81,7 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
                   {/*<p>{JSON.stringify(item)}</p>*/}
                   {item.type === TYPE_PRODUCT &&
                   <ProductCard1
+                          fullView
                     {...itemShop}
                     brand={contextData.brand}
                     product={item}
