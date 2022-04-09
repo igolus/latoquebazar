@@ -54,16 +54,14 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
           </H2>
         </FlexBox>
 
-        {/* {isTablet && ( */}
         <Box className="sidenav">
-          <Sidenav position="left" handle={<Menu fontSize="small" />}>
+          <Sidenav profileSideBar position="left" handle={<Menu fontSize="small" />}>
             <DashboardNavigationWrapper>
               <CustomerDashboardNavigation/>
 
             </DashboardNavigationWrapper>
           </Sidenav>
         </Box>
-        {/* )} */}
 
         {!isTablet && button}
       </FlexBox>

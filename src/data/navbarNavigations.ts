@@ -1,8 +1,48 @@
 import localStrings from "../localStrings";
+import {MenuItem} from "@material-ui/core";
+import Link from "next/link";
+import React from "react";
 
-const navbarNavigations = (dbUser, extraPages) => {
+const navbarNavigations = (dbUser, extraPages, profileSideBar) => {
 
   function getItems() {
+    if (profileSideBar) {
+
+
+      // <MenuItem>
+      //     <Link href={"/profile"}>
+      // {localStrings.myAccount}
+      // </Link>
+      // </MenuItem>
+      // <MenuItem>
+      // <Link href={"/orders"}>
+      // {localStrings.myOrders}
+      // </Link>
+      // </MenuItem>
+      // <MenuItem>
+      // <Link href={"/address"}>
+      //     {localStrings.myAddresses}
+      //     </Link>
+      //     </MenuItem>
+      //     <MenuItem onClick={handleLogout}>
+      //     {localStrings.logout}
+      //     </MenuItem>
+      return [
+        {
+          title: localStrings.myAccount,
+          url: '/profile',
+        },
+        {
+          title: localStrings.myOrders,
+          url: '/orders',
+        },
+        {
+          title: localStrings.myAddresses,
+          url: '/address',
+        },
+      ]
+    }
+
     return [
       {
         title: localStrings.homePageTitle,
@@ -37,7 +77,7 @@ const navbarNavigations = (dbUser, extraPages) => {
     } ;
   }
 
-  if (extraPages && extraPages.length > 0) {
+  if (!profileSideBar && extraPages && extraPages.length > 0) {
     let firstPage = extraPages.find(page => page.id === "1" && page.active);
     let secondPage = extraPages.find(page => page.id === "2" && page.active);
     let thirdPage = extraPages.find(page => page.id === "3" && page.active);
@@ -56,11 +96,13 @@ const navbarNavigations = (dbUser, extraPages) => {
     }
   }
   //if (dbUser) {
-  items.push({
-    title: localStrings.profilePageTitle,
-    url: '/profile',
-    regExpMatch: '\/orders|\/profile|\/address'
-  })
+  if (!profileSideBar) {
+    items.push({
+      title: localStrings.profilePageTitle,
+      url: '/profile',
+      regExpMatch: '\/orders|\/profile|\/address'
+    })
+  }
   return items;
 }
 
