@@ -387,13 +387,12 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 }
               </Box>
           )}
-          <FlexBox>
-
-
+          <FlexBox sx={{flexWrap: 'wrap'}}>
             <Box flex="1 1 0" minWidth="0px" mr={1}>
               <Link href={`/product/detail/${id}`}>
                 <a>
                   <H3
+                      sx={{overflowWrap: "anywhere"}}
                       className="title"
                       fontSize="14px"
                       textAlign="left"
@@ -423,6 +422,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 className="add-cart"
                 flexDirection="row"
                 alignItems="center"
+                sx={{flexWrap: 'wrap'}}
             >
               {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
@@ -600,26 +600,13 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-
-          {/*<Link href={buildProductDetailRef()}>*/}
-          {/*  <a>*/}
-          {/*    <Box sx={{maxWidth: "100px"}}>*/}
-          {/*    <LazyImage*/}
-          {/*        objectFit="cover"*/}
-          {/*        priority={true}*/}
-          {/*        src={url}*/}
-          {/*        width="100px"*/}
-          {/*        height="100px"*/}
-          {/*        layout="responsive"*/}
-          {/*        alt={product.name}*/}
-          {/*    />*/}
-          {/*    </Box>*/}
-          {/*  </a>*/}
-          {/*</Link>*/}
-
           {(!fullView && width <= WIDTH_DISPLAY_MOBILE) ?
               <Box
-                  sx={{ display: 'flex'}}
+                  mr={.5}
+                  sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                  }}
               >
                 <Box sx={{maxWidth: "100px"}} mr={1}>
                   <Link href={buildProductDetailRef()}>
@@ -635,29 +622,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       />
                     </a>
                   </Link>
-
-                  {/*<LazyImage*/}
-                  {/*    objectFit="cover"*/}
-                  {/*    priority={true}*/}
-                  {/*    src={url}*/}
-                  {/*    width="100px"*/}
-                  {/*    height="100px"*/}
-                  {/*    layout="responsive"*/}
-                  {/*    alt={product.name}*/}
-                  {/*/>*/}
-                  {/*<Link href={buildProductDetailRef()}>*/}
-                  {/*  <a>*/}
-                  {/*    <LazyImage*/}
-                  {/*        objectFit="cover"*/}
-                  {/*        priority={true}*/}
-                  {/*        src={url}*/}
-                  {/*        width="100px"*/}
-                  {/*        height="100px"*/}
-                  {/*        layout="responsive"*/}
-                  {/*        alt={product.name}*/}
-                  {/*    />*/}
-                  {/*  </a>*/}
-                  {/*</Link>*/}
                 </Box>
 
                 <Box sx={{ flexGrow: 1 }}>

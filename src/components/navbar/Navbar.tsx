@@ -77,7 +77,7 @@ interface Nav {
     extLink?: boolean
 }
 
-const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
+const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData, }) => {
     const classes = useStyles()
     const {dbUser} = useAuth()
 
