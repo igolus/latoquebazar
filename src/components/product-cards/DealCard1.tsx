@@ -92,11 +92,11 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   details: {
     padding: '1rem',
 
-    '& .title, & .categories': {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
+    // '& .title, & .categories': {
+    //   whiteSpace: 'nowrap',
+    //   overflow: 'hidden',
+    //   textOverflow: 'ellipsis',
+    // },
 
     '& .icon-holder': {
       display: 'flex',
@@ -162,19 +162,28 @@ const DealCard1: React.FC<DealCard1Props> = ({
 
   function getDealPresentationAndInteration() {
     return (
-        <Box>
-          {!fullView && width <= WIDTH_DISPLAY_MOBILE && deal.tags && deal.tags.map((tag, key) =>
-              <Box key={key} ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    label={tag.tag}
-                />
-              </Box>
-          )}
         <FlexBox>
-          <Box flex="1 1 0" minWidth="0px" mr={1}>
+          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+          <Box sx={{maxWidth: "100px"}} mr={1}>
+            <Link href={buildProductDetailRef()}>
+              <a>
+                <Image
+                    style={{objectFit: "cover"}}
+
+                    src={url}
+                    height={100}
+                    width={100}
+                    display="block"
+                    alt={deal.name}
+                />
+              </a>
+            </Link>
+          </Box>
+          }
+
+
+
+          <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
             <Link href={buildProductDetailRef()}>
               <a>
                 <H3
@@ -198,13 +207,24 @@ const DealCard1: React.FC<DealCard1Props> = ({
               </Box>
             </FlexBox>
 
+            {!fullView && width <= WIDTH_DISPLAY_MOBILE && deal.tags && deal.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  <Chip
+                      className={classes.offerChip}
+                      color="primary"
+                      size="small"
+                      label={tag.tag}
+                  />
+                </Box>
+            )}
+
           </Box>
 
-          <FlexBox
+          <Box
               className="add-cart"
               flexDirection="row"
               alignItems="center"
-              justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
+              //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
               //width="65px"
           >
             <Link href={buildProductDetailRef()}>
@@ -217,9 +237,8 @@ const DealCard1: React.FC<DealCard1Props> = ({
                 {getFirstRestrictionItem(deal) || localStrings.choose}
               </Button>
             </Link>
-          </FlexBox>
+          </Box>
         </FlexBox>
-        </Box>
     );
   }
 
@@ -261,43 +280,8 @@ const DealCard1: React.FC<DealCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) ?
-              <Box
-                  mr={.5}
-                  sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                  }}
-              >
-                <Box sx={{maxWidth: "100px"}} mr={1}>
-                  <Link href={buildProductDetailRef()}>
-                    <a>
-                      <Image
-                          style={{objectFit: "cover"}}
-                          src={imgUrl}
-                          height={100}
-                          width={100}
-                          display="block"
-                          alt={deal.name}
-                      />
-                    </a>
-                  </Link>
-                </Box>
-
-                <Box sx={{flexGrow: 1}}>
-                  {getDealPresentationAndInteration()}
-                </Box>
-
-              </Box>
-
-
-              :
-              <>
-                {getDealPresentationAndInteration()}
-              </>
-          }
+          {getDealPresentationAndInteration()}
         </div>
-
       </BazarCard>
   )
 }
