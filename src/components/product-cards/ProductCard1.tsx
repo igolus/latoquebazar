@@ -107,11 +107,11 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   details: {
     padding: '1rem',
 
-    '& .title, & .categories': {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
+    // '& .title, & .categories': {
+    //   whiteSpace: 'nowrap',
+    //   overflow: 'hidden',
+    //   textOverflow: 'ellipsis',
+    // },
 
     '& .icon-holder': {
       display: 'flex',
@@ -305,32 +305,32 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
   function getProductPresentationAndInteration() {
     return (
-        <Box>
-          {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
-              <Box key={key} ml='3px' mt='6px' mr='3px'>
-                {tag.color ?
-                    <Chip
-                        sx={{backgroundColor: tag.color, color: 'white'}}
-                        //className={classes.offerChip}
-                        size="small"
-                        label={tag.tag}
-                    />
-                    :
-                    <Chip
-                        //className={classes.offerChip}
-                        color={"primary"}
-                        size="small"
-                        label={tag.tag}
-                    />
-                }
-              </Box>
-          )}
-          <FlexBox sx={{flexWrap: 'wrap'}}>
-            <Box flex="1 1 0" minWidth="0px" mr={1}>
+
+          <FlexBox>
+            {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+            <Box sx={{maxWidth: "100px"}} mr={1}>
+              <Link href={buildProductDetailRef()}>
+                <a>
+                  <Image
+                      style={{objectFit: "cover"}}
+
+                      src={imgUrl}
+                      height={100}
+                      width={100}
+                      display="block"
+                      alt={product.name}
+                  />
+                </a>
+              </Link>
+            </Box>
+            }
+
+            <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
+
+
               <Link href={`/product/detail/${id}`}>
                 <a>
                   <H3
-                      sx={{overflowWrap: "anywhere"}}
                       className="title"
                       fontSize="14px"
                       textAlign="left"
@@ -353,14 +353,33 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 </Box>
               </FlexBox>
               }
+
+              {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
+                  <Box key={key} ml='3px' mt='6px' mr='3px'>
+                    {tag.color ?
+                        <Chip
+                            sx={{backgroundColor: tag.color, color: 'white'}}
+                            //className={classes.offerChip}
+                            size="small"
+                            label={tag.tag}
+                        />
+                        :
+                        <Chip
+                            //className={classes.offerChip}
+                            color={"primary"}
+                            size="small"
+                            label={tag.tag}
+                        />
+                    }
+                  </Box>
+              )}
             </Box>
 
 
-            <FlexBox
+            <Box
                 className="add-cart"
                 flexDirection="row"
                 alignItems="center"
-                sx={{flexWrap: 'wrap'}}
             >
               {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
               !isProductAndSkuGetOption(selectedProductAndSku) &&
@@ -426,21 +445,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
                           addToCartOrder(setGlobalDialog, selectedProductAndSku,
                               getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
-
-                          // alert("uuid " + uuid);
-                          // let newPAndSku = {
-                          //   ...selectedProductAndSku,
-                          //   sku: {
-                          //     ...selectedProductAndSku.sku,
-                          //     uuid: uuid,
-                          //   }};
-                          // console.log("newPAndSku " + JSON.stringify(newPAndSku, null, 2));
-                          // setSelectedProductSku(newPAndSku)
-                          //
-                          // if (!selectedProductAndSku?.sku.uuid || getQteInCart(selectedProductAndSku, getOrderInCreation()) === 0) {
-                          //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku?.sku, uuid:uuid}}
-                          //   setSelectedProductSku(selectedWithUuid)
-                          // }
                         } else {
                           setOpen(true);
                         }
@@ -453,17 +457,10 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       {getAddToCartElement()}
                     </>
                     }
-                    {/*{selectedProductAndSku && isProductAndSkuGetOption(selectedProductAndSku) ?*/}
-                    {/*    (getFirstRestrictionItem() || localStrings.selectOptions)*/}
-                    {/*    :*/}
-                    {/*    getFirstRestrictionItem() || <Add fontSize="small" />*/}
-                    {/*}*/}
-
                   </Button>
               }
-            </FlexBox>
+            </Box>
           </FlexBox>
-        </Box>
     )
   }
 
@@ -538,44 +535,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) ?
-              <Box
-                  mr={.5}
-                  sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                  }}
-              >
-                <Box sx={{maxWidth: "100px"}} mr={1}>
-                  <Link href={buildProductDetailRef()}>
-                    <a>
-                      <Image
-                          style={{objectFit: "cover"}}
-
-                          src={imgUrl}
-                          height={100}
-                          width={100}
-                          display="block"
-                          alt={product.name}
-                      />
-                    </a>
-                  </Link>
-                </Box>
-
-                <Box sx={{ flexGrow: 1 }}>
-                  {getProductPresentationAndInteration()}
-                </Box>
-
-              </Box>
-
-
-              :
-              <>
-                {getProductPresentationAndInteration()}
-              </>
-          }
-
-
+            {getProductPresentationAndInteration()}
         </div>
 
         <Dialog

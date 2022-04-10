@@ -122,11 +122,11 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   details: {
     padding: '1rem',
 
-    '& .title, & .categories': {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
+    // '& .title, & .categories': {
+    //   whiteSpace: 'nowrap',
+    //   overflow: 'hidden',
+    //   textOverflow: 'ellipsis',
+    // },
 
     '& .icon-holder': {
       display: 'flex',
@@ -281,47 +281,25 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
   function getProductPresentationAndInteration() {
     return (
-        <Box>
-          {!fullView && width <= WIDTH_DISPLAY_MOBILE &&
-              <>
-                {product.tags && product.tags.map((tag, key) =>
-                    <Box key={key} ml='3px' mt='6px' mr='3px'>
-                      {tag.color ?
-                          <Chip
-                              sx={{backgroundColor: tag.color, color: 'white'}}
-                              className={classes.offerChip}
-                              size="small"
-                              label={tag.tag}
-                          />
-                          :
-                          <Chip
-                              className={classes.offerChip}
-                              color={"primary"}
-                              size="small"
-                              label={tag.tag}
-                          />
-                      }
-                    </Box>
-                )}
-                {priceDiff && selectedProductAndSku &&
-                <Box ml='3px' mt='6px' mr='3px'>
-                  <Chip
-                      className={classes.offerChip}
-                      color="primary"
-                      size="small"
-                      icon={<LocalOfferIcon/>}
-                      label={
-                        localStrings.formatString(localStrings.saveWithOffer,
-                            ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                        )}
-                  />
-                </Box>
-                }
-              </>
+        <FlexBox>
+          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+          <Box sx={{maxWidth: "100px"}} mr={1}>
+            <Image
+                style={{objectFit: "cover"}}
+                onClick={() => {
+                  selectedFromImg();
+                }}
+                src={url}
+                height={100}
+                width={100}
+                display="block"
+                alt={product.name}
+            />
+          </Box>
           }
 
-        <FlexBox>
-          <Box flex="1 1 0" minWidth="0px" mr={1}>
+
+          <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
             <H3
                 className="title"
                 fontSize="14px"
@@ -334,25 +312,64 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               {product.name}
             </H3>
 
+            {!fullView && width <= WIDTH_DISPLAY_MOBILE &&
+            <>
+              {product.tags && product.tags.map((tag, key) =>
+                  <Box key={key} ml='3px' mt='6px' mr='3px'>
+                    {tag.color ?
+                        <Chip
+                            sx={{backgroundColor: tag.color, color: 'white'}}
+                            className={classes.offerChip}
+                            size="small"
+                            label={tag.tag}
+                        />
+                        :
+                        <Chip
+                            className={classes.offerChip}
+                            color={"primary"}
+                            size="small"
+                            label={tag.tag}
+                        />
+                    }
+                  </Box>
+              )}
+              {priceDiff && selectedProductAndSku &&
+              <Box ml='3px' mt='6px' mr='3px'>
+                <Chip
+                    className={classes.offerChip}
+                    color="primary"
+                    size="small"
+                    icon={<LocalOfferIcon/>}
+                    label={
+                      localStrings.formatString(localStrings.saveWithOffer,
+                          ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                      )}
+                />
+              </Box>
+              }
+            </>
+            }
+
           </Box>
 
-          <FlexBox
+
+
+
+          <Box
               className="add-cart"
               flexDirection="row"
               alignItems="center"
-              justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
+              //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
               //width="65px"
           >
             <Button
-
-                //variant="outlined"
                 disabled={
                   (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) &&
                   isProductSelected() && productAndSkus && productAndSkus.length === 1}
                 color="primary"
                 //variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
                 variant={"outlined"}
-                sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "25px" : "0"}}
+                sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "35px" : "0"}}
                 onClick={() => {
                   if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1) {
                     selectCallBack ?
@@ -408,9 +425,8 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
             </Button>
 
 
-          </FlexBox>
+          </Box>
         </FlexBox>
-        </Box>
     )
   }
 
@@ -470,19 +486,6 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               </Box>
               }
 
-              {/*{priceBySkuId && selectedProductAndSku && priceBySkuId[selectedProductAndSku.sku.extRef] &&*/}
-              {/*<Box ml='3px' mt='6px' mr='3px'>*/}
-              {/*  <Chip*/}
-              {/*      className={classes.offerChip}*/}
-              {/*      color="primary"*/}
-              {/*      size="small"*/}
-              {/*      icon={<LocalOfferIcon />}*/}
-              {/*      label={getPercentDisplay()}*/}
-              {/*  />*/}
-              {/*</Box>*/}
-              {/*}*/}
-
-
             </Box>
 
             <div className="extra-icons">
@@ -511,37 +514,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
           </div>
 
           <div className={classes.details}>
-            {(!fullView && width <= WIDTH_DISPLAY_MOBILE) ?
-                <Box
-                    mr={.5}
-                    sx={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                    }}
-                >
-                  <Box sx={{maxWidth: "100px"}} mr={1}>
-                        <Image
-                            style={{objectFit: "cover"}}
-                            onClick={() => {
-                              selectedFromImg();
-                            }}
-                            src={url}
-                            height={100}
-                            width={100}
-                            display="block"
-                            alt={product.name}
-                        />
-                  </Box>
-
-                  <Box sx={{ flexGrow: 1 }}>
-                    {getProductPresentationAndInteration()}
-                  </Box>
-                </Box>
-                :
-                <>
-                  {getProductPresentationAndInteration()}
-                </>
-            }
+            {getProductPresentationAndInteration()}
           </div>
 
           <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
