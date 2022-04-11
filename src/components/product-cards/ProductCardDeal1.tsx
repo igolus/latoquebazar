@@ -281,6 +281,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
   function getProductPresentationAndInteration() {
     return (
+        <Box>
         <FlexBox>
           {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
           <Box sx={{maxWidth: "100px"}} mr={1}>
@@ -312,43 +313,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               {product.name}
             </H3>
 
-            {!fullView && width <= WIDTH_DISPLAY_MOBILE &&
-            <>
-              {product.tags && product.tags.map((tag, key) =>
-                  <Box key={key} ml='3px' mt='6px' mr='3px'>
-                    {tag.color ?
-                        <Chip
-                            sx={{backgroundColor: tag.color, color: 'white'}}
-                            className={classes.offerChip}
-                            size="small"
-                            label={tag.tag}
-                        />
-                        :
-                        <Chip
-                            className={classes.offerChip}
-                            color={"primary"}
-                            size="small"
-                            label={tag.tag}
-                        />
-                    }
-                  </Box>
-              )}
-              {priceDiff && selectedProductAndSku &&
-              <Box ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    icon={<LocalOfferIcon/>}
-                    label={
-                      localStrings.formatString(localStrings.saveWithOffer,
-                          ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                      )}
-                />
-              </Box>
-              }
-            </>
-            }
+
 
           </Box>
 
@@ -427,6 +392,45 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
           </Box>
         </FlexBox>
+
+          {!fullView && width <= WIDTH_DISPLAY_MOBILE &&
+          <Box>
+            {product.tags && product.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  {tag.color ?
+                      <Chip
+                          sx={{backgroundColor: tag.color, color: 'white'}}
+                          className={classes.offerChip}
+                          size="small"
+                          label={tag.tag}
+                      />
+                      :
+                      <Chip
+                          className={classes.offerChip}
+                          color={"primary"}
+                          size="small"
+                          label={tag.tag}
+                      />
+                  }
+                </Box>
+            )}
+            {priceDiff && selectedProductAndSku &&
+            <Box ml='3px' mt='6px' mr='3px'>
+              <Chip
+                  className={classes.offerChip}
+                  color="primary"
+                  size="small"
+                  icon={<LocalOfferIcon/>}
+                  label={
+                    localStrings.formatString(localStrings.saveWithOffer,
+                        ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                    )}
+              />
+            </Box>
+            }
+          </Box>
+          }
+        </Box>
     )
   }
 
@@ -471,7 +475,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               {/*  />*/}
               {/*</Box>*/}
               {/*}*/}
-              {!fullView && width <= WIDTH_DISPLAY_MOBILE && priceDiff && selectedProductAndSku &&
+              {(fullView || width > WIDTH_DISPLAY_MOBILE) && priceDiff && selectedProductAndSku &&
               <Box ml='3px' mt='6px' mr='3px'>
                 <Chip
                     className={classes.offerChip}
