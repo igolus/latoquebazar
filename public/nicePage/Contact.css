@@ -1,4 +1,4 @@
-.u-section-1 {
+ .u-section-1 {
   background-image: none;
   min-height: 1127px;
 }
@@ -29,7 +29,7 @@
 .u-section-1 .u-image-2 {
   width: 376px;
   height: 376px;
-  background-image: url("/nicePage/images/photo-1497034825429-c343d7c6a68f1.jpg");
+  background-image: url("images/photo-1497034825429-c343d7c6a68f1.jpg");
   background-position: 50% 0%;
   margin: -117px 0 0 auto;
 }
@@ -94,7 +94,7 @@
 }
 
 @media (max-width: 1199px) {
-  .u-section-1 {
+   .u-section-1 {
     min-height: 1147px;
   }
 
@@ -141,7 +141,7 @@
 }
 
 @media (max-width: 991px) {
-  .u-section-1 {
+   .u-section-1 {
     min-height: 1533px;
   }
 
@@ -201,7 +201,7 @@
 }
 
 @media (max-width: 575px) {
-  .u-section-1 {
+   .u-section-1 {
     min-height: 1262px;
   }
 
@@ -259,12 +259,4 @@
   .u-section-1 .u-text-2 {
     width: 300px;
   }
-}
-
-.u-section-2 .u-sheet-1 {
-  min-height: 500px;
-}
-
-.u-section-2 .u-custom-html-1 {
-  margin-bottom: 60px;
 }

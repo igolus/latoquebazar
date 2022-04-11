@@ -1,5 +1,5 @@
-.u-section-1 {
-  background-image: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("/nicePage/images/176119a9378d44d2eb58e1f975499856faa3b80e275beaadae40beba96e2f4ba3db8a58bd5fbbf327488d24605fe0170c37afd78bb52b29477237e_1280.jpg");
+ .u-section-1 {
+  background-image: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("images/176119a9378d44d2eb58e1f975499856faa3b80e275beaadae40beba96e2f4ba3db8a58bd5fbbf327488d24605fe0170c37afd78bb52b29477237e_1280.jpg");
   background-position: 50% 50%;
 }
 
@@ -42,7 +42,7 @@
 .u-section-1 .u-image-1 {
   width: 160px;
   height: 160px;
-  background-image: url("/nicePage/images/1564c45be66dda75eb2cd6c6ac2b4411688a470e61d95e87572951bc0e430b410e83f53a874bd6fd98d93480d23e88272cf6788d358655db07efd4_1280.jpg");
+  background-image: url("images/1564c45be66dda75eb2cd6c6ac2b4411688a470e61d95e87572951bc0e430b410e83f53a874bd6fd98d93480d23e88272cf6788d358655db07efd4_1280.jpg");
   background-position: 50% 50%;
   margin: 24px auto;
 }
@@ -60,7 +60,7 @@
 .u-section-1 .u-image-2 {
   width: 160px;
   height: 160px;
-  background-image: url("/nicePage/images/c081406e3803250666a86010b5b68ccaa88d674b6aab9975c0f4354f8454dacc1e2f493c2848fd882af9af10e43fdf9733e4aa9dc4567a85ccbbcd_1280.jpg");
+  background-image: url("images/c081406e3803250666a86010b5b68ccaa88d674b6aab9975c0f4354f8454dacc1e2f493c2848fd882af9af10e43fdf9733e4aa9dc4567a85ccbbcd_1280.jpg");
   background-position: 50% 50%;
   margin: 24px auto;
 }
@@ -78,7 +78,7 @@
 .u-section-1 .u-image-3 {
   width: 160px;
   height: 160px;
-  background-image: url("/nicePage/images/5638ceb9815a5b22626d5646f484c1b0719dd564c1b8b6e04b67f96f93e47f9685763e0f6e068ddc7e71c99df3e7ac9ebee512d91a7f3bb2a451c0_1280.jpg");
+  background-image: url("images/5638ceb9815a5b22626d5646f484c1b0719dd564c1b8b6e04b67f96f93e47f9685763e0f6e068ddc7e71c99df3e7ac9ebee512d91a7f3bb2a451c0_1280.jpg");
   background-position: 50% 50%;
   margin: 24px auto;
 }
@@ -218,9 +218,7 @@
     height: 90px;
     margin-left: 8px;
   }
-}
-
-.u-section-2 .u-sheet-1 {
+}.u-section-2 .u-sheet-1 {
   min-height: 1203px;
 }
 
@@ -247,7 +245,7 @@
   width: 247px;
   height: 247px;
   object-position: 100% 0%;
-  background-image: url("/nicePage/images/7ab76b0fa4ce3b502f1c7faf8ec6f124aaf89b36f71f2f6e88a2c181e7dbc3bf27f0623e45139f19476a42c948307e6fc3032ec44b94f98bf3cea4_1280.jpg");
+  background-image: url("images/7ab76b0fa4ce3b502f1c7faf8ec6f124aaf89b36f71f2f6e88a2c181e7dbc3bf27f0623e45139f19476a42c948307e6fc3032ec44b94f98bf3cea4_1280.jpg");
   background-position: 50% 50%;
   box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
   margin: 50px auto 0 0;
@@ -261,7 +259,7 @@
 
 .u-section-2 .u-image-2 {
   min-height: 454px;
-  background-image: url("/nicePage/images/371088db724ed7d8a0bf19aa9c63eea5b7002f00fcc4812e2784eb4a8b0f3639ec59e2bdafeba1136f8d56fa9813b02a815f8566102b7b72051d81_1280.jpg");
+  background-image: url("images/371088db724ed7d8a0bf19aa9c63eea5b7002f00fcc4812e2784eb4a8b0f3639ec59e2bdafeba1136f8d56fa9813b02a815f8566102b7b72051d81_1280.jpg");
   background-position: 50% 50%;
 }
 
@@ -311,7 +309,7 @@
 
 .u-section-2 .u-image-3 {
   min-height: 350px;
-  background-image: url("/nicePage/images/maxresdefault.jpg");
+  background-image: url("images/maxresdefault.jpg");
   background-position: 50% 50%;
 }
 
@@ -337,7 +335,7 @@
   width: 347px;
   height: 347px;
   object-position: 100% 0%;
-  background-image: url("/nicePage/images/a6b330086c76dbc6728f4a20f00179ba971979ebc144d0426ada684c35a25ed9008ff28f6c6934d176b3f338749251d7648d664db374d191a3367e_1280.jpg");
+  background-image: url("images/a6b330086c76dbc6728f4a20f00179ba971979ebc144d0426ada684c35a25ed9008ff28f6c6934d176b3f338749251d7648d664db374d191a3367e_1280.jpg");
   background-position: 50% 50%;
   margin: 11px 60px 0 auto;
 }
@@ -528,10 +526,8 @@
     height: 320px;
     margin-right: 0;
   }
-}
-
-.u-section-3 {
-  background-image: url("/nicePage/images/-min1.jpg");
+} .u-section-3 {
+  background-image: url("images/-min1.jpg");
   background-position: 50% 50%;
 }
 
@@ -543,7 +539,7 @@
   width: 218px;
   height: 218px;
   box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
-  background-image: url("/nicePage/images/laToqueLogo.png");
+  background-image: url("images/laToqueLogo.png");
   background-position: 50% 50%;
   margin: 128px 248px 0 auto;
 }
@@ -712,9 +708,7 @@
     left: 9px;
     bottom: 0;
   }
-}
-
-.u-section-4 {
+} .u-section-4 {
   background-image: linear-gradient(#f2f2f2, white);
 }
 
@@ -809,9 +803,7 @@
   .u-section-4 .u-layout-wrap-1 {
     width: 340px;
   }
-}
-
-.u-section-5 {
+} .u-section-5 {
   background-image: none;
   min-height: 895px;
 }
@@ -845,7 +837,7 @@
 }
 
 @media (max-width: 1199px) {
-  .u-section-5 {
+   .u-section-5 {
     min-height: 823px;
   }
 
@@ -870,7 +862,7 @@
 }
 
 @media (max-width: 991px) {
-  .u-section-5 {
+   .u-section-5 {
     min-height: 732px;
   }
 
@@ -911,7 +903,7 @@
 }
 
 @media (max-width: 575px) {
-  .u-section-5 {
+   .u-section-5 {
     min-height: 512px;
   }
 
