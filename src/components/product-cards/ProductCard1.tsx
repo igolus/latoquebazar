@@ -306,85 +306,86 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   function getProductPresentationAndInteration() {
     return (
 
-          <FlexBox>
-            {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
-            <Box sx={{maxWidth: "100px"}} mr={1}>
-              <Link href={buildProductDetailRef()}>
-                <a>
-                  <Image
-                      style={{objectFit: "cover"}}
+        <FlexBox>
+          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+          <Box sx={{maxWidth: "100px"}} mr={1}>
+            <Link href={buildProductDetailRef()}>
+              <a>
+                <Image
+                    style={{objectFit: "cover"}}
 
-                      src={imgUrl}
-                      height={100}
-                      width={100}
-                      display="block"
-                      alt={product.name}
-                  />
-                </a>
-              </Link>
-            </Box>
+                    src={imgUrl}
+                    height={100}
+                    width={100}
+                    display="block"
+                    alt={product.name}
+                />
+              </a>
+            </Link>
+          </Box>
+          }
+
+          <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
+
+
+            <Link href={`/product/detail/${id}`}>
+              <a>
+                <H3
+                    className="title"
+                    fontSize="14px"
+                    textAlign="left"
+                    fontWeight="600"
+                    color="text.secondary"
+                    mb={1}
+                    title={product.name}
+                >
+                  {product.name}
+                </H3>
+
+
+              </a>
+            </Link>
+
+            {selectedProductAndSku && selectedProductAndSku?.sku.price &&
+            <FlexBox alignItems="center" mt={0.5}>
+              <Box pr={1} fontWeight="600" color="primary.main">
+                {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
+              </Box>
+            </FlexBox>
             }
 
-            <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
-
-
-              <Link href={`/product/detail/${id}`}>
-                <a>
-                  <H3
-                      className="title"
-                      fontSize="14px"
-                      textAlign="left"
-                      fontWeight="600"
-                      color="text.secondary"
-                      mb={1}
-                      title={product.name}
-                  >
-                    {product.name}
-                  </H3>
-
-
-                </a>
-              </Link>
-
-              {selectedProductAndSku && selectedProductAndSku?.sku.price &&
-              <FlexBox alignItems="center" mt={0.5}>
-                <Box pr={1} fontWeight="600" color="primary.main">
-                  {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
+            {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='20px' mr='3px'>
+                  {tag.color ?
+                      <Chip
+                          sx={{backgroundColor: tag.color, color: 'white'}}
+                          //className={classes.offerChip}
+                          size="small"
+                          label={tag.tag}
+                      />
+                      :
+                      <Chip
+                          //className={classes.offerChip}
+                          color={"primary"}
+                          size="small"
+                          label={tag.tag}
+                      />
+                  }
                 </Box>
-              </FlexBox>
-              }
-
-              {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
-                  <Box key={key} ml='3px' mt='6px' mr='3px'>
-                    {tag.color ?
-                        <Chip
-                            sx={{backgroundColor: tag.color, color: 'white'}}
-                            //className={classes.offerChip}
-                            size="small"
-                            label={tag.tag}
-                        />
-                        :
-                        <Chip
-                            //className={classes.offerChip}
-                            color={"primary"}
-                            size="small"
-                            label={tag.tag}
-                        />
-                    }
-                  </Box>
-              )}
-            </Box>
+            )}
+          </Box>
 
 
-            <Box
-                className="add-cart"
-                flexDirection="row"
-                alignItems="center"
-            >
-              {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
-              !isProductAndSkuGetOption(selectedProductAndSku) &&
-              getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
-                      <Fragment>
+          <FlexBox
+              className="add-cart"
+              flexDirection="row"
+              alignItems="center"
+          >
+            {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
+            !isProductAndSkuGetOption(selectedProductAndSku) &&
+            getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
+                    <Fragment>
+                      <Box>
                         <Button
                             variant="outlined"
                             color="primary"
@@ -402,9 +403,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         >
                           <Remove fontSize="small"/>
                         </Button>
-                        <Box color="text.primary" fontWeight="600">
-                          {getQteInCart(selectedProductAndSku, getOrderInCreation())}
-                        </Box>
+                      </Box>
+                      <Box color="text.primary" fontWeight="600">
+                        {getQteInCart(selectedProductAndSku, getOrderInCreation())}
+                      </Box>
+                      <Box>
                         <Button
                             variant="outlined"
                             color="primary"
@@ -430,37 +433,38 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           {getAddToCartElement()}
 
                         </Button>
+                      </Box>
 
-                      </Fragment>
-                  )
-                  :
-                  <Button
-                      variant="outlined"
-                      color="primary"
-                      disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
-                      sx={{padding: '3px', ml: '5px', mr: '5px'}}
-                      onClick={() => {
-                        //alert("add To cart")
-                        if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
-                          //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
-                          addToCartOrder(setGlobalDialog, selectedProductAndSku,
-                              getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
-                        } else {
-                          setOpen(true);
-                        }
-                      }}
-                  >
-                    {selectedProductAndSku &&
-                    <>
+                    </Fragment>
+                )
+                :
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
+                    sx={{padding: '3px', ml: '5px', mr: '5px'}}
+                    onClick={() => {
+                      //alert("add To cart")
+                      if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
+                        //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                        addToCartOrder(setGlobalDialog, selectedProductAndSku,
+                            getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                      } else {
+                        setOpen(true);
+                      }
+                    }}
+                >
+                  {selectedProductAndSku &&
+                  <>
 
-                      {/*{JSON.stringify(selectedProductAndSku)}*/}
-                      {getAddToCartElement()}
-                    </>
-                    }
-                  </Button>
-              }
-            </Box>
+                    {/*{JSON.stringify(selectedProductAndSku)}*/}
+                    {getAddToCartElement()}
+                  </>
+                  }
+                </Button>
+            }
           </FlexBox>
+        </FlexBox>
     )
   }
 
@@ -535,7 +539,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-            {getProductPresentationAndInteration()}
+          {getProductPresentationAndInteration()}
         </div>
 
         <Dialog
