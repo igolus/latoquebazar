@@ -226,16 +226,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
       return parseFloat(a.sku.price) -  parseFloat(b.sku.price);
     })
-    // alert("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2))
-    // console.log("minPriceSkus " + JSON.stringify(minPriceSkus, null, 2) )
-
     let selected = productAndSkusRes && productAndSkusRes.length > 0 ? minPriceSkus[0] : null;
-
-    //alert("selected " + JSON.stringify(selected || {}));
     setSelectedProductSku(selected)
     let indexCheapest = productAndSkusRes.findIndex( pandsku => pandsku.sku.extRef === selected.sku.extRef)
-    // alert("indexCheapest " + indexCheapest)
-    //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
     setSelectedSkuIndex(indexCheapest)
   }, [product])
 
@@ -248,12 +241,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
     setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
-
-
-  // const { state, dispatch } = useAppContext()
-  // const cartItem: CartItem | undefined = state.cart.cartList.find(
-  //     (item) => item.id === id
-  // )
 
   const toggleDialog = useCallback(() => {
     setOpen((open) => !open)
@@ -313,136 +300,92 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
       return localStrings.choose;
     }
     return (<Add fontSize="small"/>)
-
-    // if (isProductAndSkuGetOption(selectedProductAndSku)) {
-    //   if (product.skus.length > 0) {
-    //     if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
-    //     {
-    //       return localStrings.unavailable;
-    //     }
-    //     return localStrings.selectOptions;
-    //   }
-    //   else {
-    //     if (product.skus.length === 1 && isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
-    //       return localStrings.unavailable;
-    //     }
-    //     if (product.skus.length > 1) {
-    //       if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
-    //       {
-    //         return localStrings.unavailable;
-    //       }
-    //       return localStrings.selectOptions;
-    //     }
-    //
-    //
-    //   }
-    //   // else {
-    //     // if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
-    //     //   return localStrings.choose;
-    //     // }
-    //     return localStrings.selectOptions;
-    //   // }
-    // }
-    // else {
-    //   if (isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment)) {
-    //     return localStrings.unavailable;
-    //   }
-    //   else {
-    //     if (getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) {
-    //       return localStrings.choose;
-    //     }
-    //     return (<Add fontSize="small"/>)
-    //   }
-    // }
-
-    // return (isProductAndSkuGetOption(selectedProductAndSku) || getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0) ?
-    //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable : localStrings.selectOptions
-    //     :
-    //     isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) ? localStrings.unavailable :
-    //         <Add fontSize="small"/>;
   }
 
 
   function getProductPresentationAndInteration() {
     return (
 
-          <FlexBox>
-              <Link href={buildProductDetailRef()}>
-                <a>
-                  <Image
-                      style={{objectFit: "cover"}}
+        <FlexBox>
+          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+          <Box sx={{maxWidth: "100px"}} mr={1}>
+            <Link href={buildProductDetailRef()}>
+              <a>
+                <Image
+                    style={{objectFit: "cover"}}
 
-                      src={imgUrl}
-                      height={100}
-                      width={100}
-                      display="block"
-                      alt={product.name}
-                  />
-                </a>
-              </Link>
-            </Box>
+                    src={imgUrl}
+                    height={100}
+                    width={100}
+                    display="block"
+                    alt={product.name}
+                />
+              </a>
+            </Link>
+          </Box>
+          }
+
+          <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
+
+
+            <Link href={`/product/detail/${id}`}>
+              <a>
+                <H3
+                    className="title"
+                    fontSize="14px"
+                    textAlign="left"
+                    fontWeight="600"
+                    color="text.secondary"
+                    mb={1}
+                    title={product.name}
+                >
+                  {product.name}
+                </H3>
+
+
+              </a>
+            </Link>
+
+            {selectedProductAndSku && selectedProductAndSku?.sku.price &&
+            <FlexBox alignItems="center" mt={0.5}>
+              <Box pr={1} fontWeight="600" color="primary.main">
+                {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
+              </Box>
+            </FlexBox>
             }
 
-            <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
-
-
-              <Link href={`/product/detail/${id}`}>
-                <a>
-                  <H3
-                      className="title"
-                      fontSize="14px"
-                      textAlign="left"
-                      fontWeight="600"
-                      color="text.secondary"
-                      mb={1}
-                      title={product.name}
-                  >
-                    {product.name}
-                  </H3>
-
-
-                </a>
-              </Link>
-
-              {selectedProductAndSku && selectedProductAndSku?.sku.price &&
-              <FlexBox alignItems="center" mt={0.5}>
-                <Box pr={1} fontWeight="600" color="primary.main">
-                  {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
+            {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='20px' mr='3px'>
+                  {tag.color ?
+                      <Chip
+                          sx={{backgroundColor: tag.color, color: 'white'}}
+                          //className={classes.offerChip}
+                          size="small"
+                          label={tag.tag}
+                      />
+                      :
+                      <Chip
+                          //className={classes.offerChip}
+                          color={"primary"}
+                          size="small"
+                          label={tag.tag}
+                      />
+                  }
                 </Box>
-              </FlexBox>
-              }
-
-              {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
-                  <Box key={key} ml='3px' mt='6px' mr='3px'>
-                    {tag.color ?
-                        <Chip
-                            sx={{backgroundColor: tag.color, color: 'white'}}
-                            //className={classes.offerChip}
-                            size="small"
-                            label={tag.tag}
-                        />
-                        :
-                        <Chip
-                            //className={classes.offerChip}
-                            color={"primary"}
-                            size="small"
-                            label={tag.tag}
-                        />
-                    }
-                  </Box>
-              )}
-            </Box>
+            )}
+          </Box>
 
 
-            <Box
-                className="add-cart"
-                flexDirection="row"
-                alignItems="center"
-            >
-              {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
-              !isProductAndSkuGetOption(selectedProductAndSku) &&
-              getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
-                      <Fragment>
+          <FlexBox
+              className="add-cart"
+              flexDirection="row"
+              alignItems="center"
+          >
+            {selectedProductAndSku && selectedProductAndSku.sku && productAndSkus && productAndSkus.length === 1 &&
+            !isProductAndSkuGetOption(selectedProductAndSku) &&
+            getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0 ? (
+                    <Fragment>
+                      <Box>
                         <Button
                             variant="outlined"
                             color="primary"
@@ -460,9 +403,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                         >
                           <Remove fontSize="small"/>
                         </Button>
-                        <Box color="text.primary" fontWeight="600">
-                          {getQteInCart(selectedProductAndSku, getOrderInCreation())}
-                        </Box>
+                      </Box>
+                      <Box color="text.primary" fontWeight="600">
+                        {getQteInCart(selectedProductAndSku, getOrderInCreation())}
+                      </Box>
+                      <Box>
                         <Button
                             variant="outlined"
                             color="primary"
@@ -488,37 +433,38 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                           {getAddToCartElement()}
 
                         </Button>
+                      </Box>
 
-                      </Fragment>
-                  )
-                  :
-                  <Button
-                      variant="outlined"
-                      color="primary"
-                      disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
-                      sx={{padding: '3px', ml: '5px', mr: '5px'}}
-                      onClick={() => {
-                        //alert("add To cart")
-                        if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
-                          //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
-                          addToCartOrder(setGlobalDialog, selectedProductAndSku,
-                              getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
-                        } else {
-                          setOpen(true);
-                        }
-                      }}
-                  >
-                    {selectedProductAndSku &&
-                    <>
+                    </Fragment>
+                )
+                :
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
+                    sx={{padding: '3px', ml: '5px', mr: '5px'}}
+                    onClick={() => {
+                      //alert("add To cart")
+                      if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
+                        //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                        addToCartOrder(setGlobalDialog, selectedProductAndSku,
+                            getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                      } else {
+                        setOpen(true);
+                      }
+                    }}
+                >
+                  {selectedProductAndSku &&
+                  <>
 
-                      {/*{JSON.stringify(selectedProductAndSku)}*/}
-                      {getAddToCartElement()}
-                    </>
-                    }
-                  </Button>
-              }
-            </Box>
+                    {/*{JSON.stringify(selectedProductAndSku)}*/}
+                    {getAddToCartElement()}
+                  </>
+                  }
+                </Button>
+            }
           </FlexBox>
+        </FlexBox>
     )
   }
 
@@ -593,7 +539,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         </div>
 
         <div className={classes.details}>
-            {getProductPresentationAndInteration()}
+          {getProductPresentationAndInteration()}
         </div>
 
         <Dialog
@@ -647,3 +593,6 @@ ProductCard1.defaultProps = {
 }
 
 export default ProductCard1
+
+            {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+            <Box sx={{maxWidth: "100px"}} mr={1}>
