@@ -593,6 +593,3 @@ ProductCard1.defaultProps = {
 }
 
 export default ProductCard1
-
-            {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
-            <Box sx={{maxWidth: "100px"}} mr={1}>
