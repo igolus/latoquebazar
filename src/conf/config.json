@@ -1,5 +1,5 @@
 {
-  "graphQlUrl": "http://localhost:5001/latoqueprod/us-central1/graphQlApi",
+  "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
   "brandId": "TivVlOvOjzVXwjzL6NFR",
   "appName": "L'Ovive",
   "siteUrl": "https://lovive.vercel.app/",
