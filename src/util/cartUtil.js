@@ -585,6 +585,9 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
             1,
             productAndSku.sku.price,
         )
+        if (checkDealProposal && currentEstablishment && !discPointExists) {
+            checkDealProposal(newOrder, currentEstablishment);
+        }
         return;
     }
     itemToAdd.uuid = uuid();
