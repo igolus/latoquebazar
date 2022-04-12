@@ -569,13 +569,14 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
     if (existing) {
         let others = orderInCreation?.order.items.filter(item => item.uuid !== existing.uuid);
         existing.quantity ++;
-        setOrderInCreation({
+        let newOrder = {
             ...orderInCreation,
             order: {
                 items: [...others, existing],
                 deals: deals
             }
-        }, null, null, null, prefferedDealToApply)
+        };
+        setOrderInCreation(newOrder, null, null, null, prefferedDealToApply)
         if (addToast) {
             //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
         }
