@@ -910,7 +910,7 @@ export const AuthProvider = ({ children }) => {
 
 
       if (dealToCheck.lines && dealToCheck.lines.length > 0) {
-        let itemsInCart = cloneDeep(orderInCreation.order.items);
+        let itemsInCart = cloneDeep(orderInCreation?.order?.items || []);
         let itemsForDeal = [];
         const lines = cloneDeep(dealToCheck.lines);
         let matchingRemains = lines.length;
