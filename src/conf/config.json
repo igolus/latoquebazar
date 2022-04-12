@@ -2,7 +2,7 @@
   "graphQlUrl": "http://localhost:5001/latoqueprod/us-central1/graphQlApi",
   "brandId": "TivVlOvOjzVXwjzL6NFR",
   "appName": "L'Ovive",
-  "siteUrl": "https://commandes.by-bhappy.com/",
+  "siteUrl": "https://lovive.vercel.app/",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/sendMail",
