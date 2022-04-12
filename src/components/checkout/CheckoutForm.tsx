@@ -253,7 +253,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   useEffect(() => {
     if (currentEstablishment() &&
-        isDeliveryPriceDisabled() && orderInCreation.deliveryMode !== ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
+        isDeliveryPriceDisabled() && !orderInCreation.deliveryMode) {
       setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
     }
   }, [orderInCreation])
