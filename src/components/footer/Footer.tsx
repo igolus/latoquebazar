@@ -73,7 +73,7 @@ const Footer = ({contextData}) => {
 
                   <Box py={0.6} color="grey.500">
                     {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().address ?
-                        firstOrCurrentEstablishment().address : contextData?.establishments[0].address }
+                        firstOrCurrentEstablishment().address : contextData?.establishments[0]?.address }
                   </Box>
                   <Box py={0.6} color="grey.500">
                     {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().contactMail ?
