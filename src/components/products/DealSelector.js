@@ -24,7 +24,6 @@ import {
 } from "../../util/constants";
 
 export function applyDealPrice(deal) {
-
     if (deal.deal.lines.length !== deal.productAndSkusLines.length) {
         return null;
     }
@@ -39,11 +38,17 @@ export function applyDealPrice(deal) {
         let line = lines[i]
         line.quantity = 1;
         let productAndSkusLine = productAndSkusLines[i];
+        let priceLineF = parseFloat(line.pricingValue);
+        // if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE && line.pricingValue === "100") {
+        //     line.pricingValue = 0;
+        //     continue;
+        // }
+
         if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
             line.pricingValue = "";
             continue;
         }
-        let priceLineF = parseFloat(line.pricingValue);
+
         let priceProduct = parseFloat(productAndSkusLine.price);
         if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
             line.pricingValue = priceProduct;

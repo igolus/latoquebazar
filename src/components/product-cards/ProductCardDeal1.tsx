@@ -334,7 +334,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                 color="primary"
                 //variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
                 variant={"outlined"}
-                sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "35px" : "0"}}
+                sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "50px" : "0"}}
                 onClick={() => {
                   if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1) {
                     selectCallBack ?
@@ -414,17 +414,19 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   }
                 </Box>
             )}
-            {priceDiff && selectedProductAndSku &&
+            <p>{priceDiff}</p>
+            {priceDiff>=0 && selectedProductAndSku &&
             <Box ml='3px' mt='6px' mr='3px'>
               <Chip
                   className={classes.offerChip}
                   color="primary"
                   size="small"
                   icon={<LocalOfferIcon/>}
-                  label={
-                    localStrings.formatString(localStrings.saveWithOffer,
-                        ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                    )}
+                  label={getPercentDisplay()}
+                  // label={
+                  //   localStrings.formatString(localStrings.saveWithOffer,
+                  //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                  //   )}
               />
             </Box>
             }
@@ -445,7 +447,7 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                 flexWrap="wrap"
                 sx={{position: 'absolute', zIndex: 999, mr: '35px', mt: '4px'}}
             >
-              {!fullView && width <= WIDTH_DISPLAY_MOBILE && product.tags && product.tags.map((tag, key) =>
+              {(fullView || width > WIDTH_DISPLAY_MOBILE) && product.tags && product.tags.map((tag, key) =>
                   <Box key={key} ml='3px' mt='6px' mr='3px'>
                     {tag.color ?
                         <Chip
@@ -475,17 +477,18 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               {/*  />*/}
               {/*</Box>*/}
               {/*}*/}
-              {(fullView || width > WIDTH_DISPLAY_MOBILE) && priceDiff && selectedProductAndSku &&
+              {(fullView || width > WIDTH_DISPLAY_MOBILE) && priceDiff>=0 && selectedProductAndSku &&
               <Box ml='3px' mt='6px' mr='3px'>
                 <Chip
                     className={classes.offerChip}
                     color="primary"
                     size="small"
                     icon={<LocalOfferIcon/>}
-                    label={
-                      localStrings.formatString(localStrings.saveWithOffer,
-                          ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                      )}
+                    label={getPercentDisplay()}
+                    // label={
+                    //   localStrings.formatString(localStrings.saveWithOffer,
+                    //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                    //   )}
                 />
               </Box>
               }
