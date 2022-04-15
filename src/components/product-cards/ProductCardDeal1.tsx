@@ -414,7 +414,6 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   }
                 </Box>
             )}
-            <p>{priceDiff}</p>
             {priceDiff>=0 && selectedProductAndSku &&
             <Box ml='3px' mt='6px' mr='3px'>
               <Chip
