@@ -145,8 +145,10 @@ export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
 }
 
 
-export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid) {
+export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid,
+                                checkDealProposal, currentEstablishment) {
     //alert("uuid " + uuid)
+    let discPointExists = isDiscPointExists(orderInCreation);
     let itemToChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
     if (!itemToChange) {
         //alert("no itemToChange ")
@@ -176,13 +178,14 @@ export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCrea
     }
 
     itemToChange.quantity--;
-    setOrderInCreation({
+    let newOrder = {
         ...orderInCreation,
         order: {
             items: [...others, {...itemToChange}],
             deals: deals
         }
-    });
+    };
+    setOrderInCreation(newOrder);
 
     ga.gaRemoveFromCart(
         removed.extRef,
@@ -190,6 +193,10 @@ export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCrea
         1,
         removed.price,
     )
+
+    if (checkDealProposal && currentEstablishment && !discPointExists) {
+        checkDealProposal(newOrder, currentEstablishment);
+    }
 }
 
 export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation,
