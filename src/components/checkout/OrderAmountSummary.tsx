@@ -233,7 +233,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {currentBrand()?.config?.loyaltyConfig &&
 
             <>
-            <Alert severity="success">{formatPointsEarned()}</Alert>
+            <Alert severity="success" sx={{marginBottom:1}}>{formatPointsEarned()}</Alert>
                 {/*<Alert severity="success">toto</Alert>*/}
             </>
             // <AlertHtmlLocal
