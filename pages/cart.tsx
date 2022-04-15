@@ -98,7 +98,10 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 
 
             <Grid item lg={4} md={4} xs={12}>
-              <OrderAmountSummary currency={getBrandCurrency(getContextData()?.brand)} hideDetail contextData={getContextData()}/>
+              <OrderAmountSummary
+                  hideCoupon
+                  currency={getBrandCurrency(getContextData()?.brand)}
+                  hideDetail contextData={getContextData()}/>
             </Grid>
           </Grid>
         </CheckoutNavLayout>
