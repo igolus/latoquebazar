@@ -12,6 +12,8 @@ import React from 'react'
 import FlexBox from '../FlexBox'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
+import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
+import useWindowSize from "@hook/useWindowSize";
 
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
   link: {
@@ -29,6 +31,8 @@ const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
 }))
 
 const Footer = ({contextData}) => {
+  const width = useWindowSize()
+
   const classes = useStyles()
   const { currentEstablishment } = useAuth();
   const logoUrl = contextData ? contextData.brand?.logoUrl : null;
@@ -41,6 +45,7 @@ const Footer = ({contextData}) => {
     return contextData?.establishments[0];
   }
 
+  //
   return (
       <footer>
         <Box bgcolor="#0c0e30">
@@ -145,7 +150,7 @@ const Footer = ({contextData}) => {
                   flexDirection: 'row-reverse',
                   mb: 0,
                   bgcolor: "#0c0e30",
-
+                  marginBottom: width <= WIDTH_DISPLAY_MOBILE ? "55px" : 0,
                 }}
             >
               <Box mr={2}>
