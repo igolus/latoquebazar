@@ -14,5 +14,6 @@
   "defaultMapZoom": 16,
   "defaultMapLng": 7.1187851,
   "defaultMapLat": 43.5882147,
-  "itemPerPage": 200
+  "itemPerPage": 200,
+  
 }
