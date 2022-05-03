@@ -56,9 +56,9 @@ export function isDealValuable(candidateDeal, contextData) {
 function UpSellDeal({candidateDeal, contextData, currency, selectCallBack, cancelCallBack, orderInCreation}) {
     let allSkus = getSkusListsFromProducts(contextData?.products || []).data;
     let boxRef = React.createRef()
-    let skusToPropose = candidateDeal.candidate.deal.lines[candidateDeal.missingLineNumber].skus;
+    let skusToPropose = candidateDeal.candidate.deal.lines[candidateDeal.missingLineNumber].skus || [];
     let priceItemsWithoutDeal = candidateDeal.priceItemsWithoutDeal;
-    let skusInLine = skusToPropose.map(sku => sku.extRef);
+    let skusInLine = (skusToPropose).map(sku => sku.extRef);
 
     let priceDeal = getPriceDeal(candidateDeal.candidate.deal);
     let priceBySkuId = {};
@@ -98,23 +98,6 @@ function UpSellDeal({candidateDeal, contextData, currency, selectCallBack, cance
     }
 
     console.log("priceBySkuId " + JSON.stringify(priceBySkuId));
-
-
-    // const notSetproductAndSkusLines = candidateDeal.candidate.productAndSkusLines.find(pandsku => pandsku.notSet)
-    // console.log("No price deal " + notSetproductAndSkusLines)
-    // }
-    // else {
-    //     for (let i = 0; i < skusToPropose.length; i++) {
-    //         let skuToPropose = skusToPropose[i];
-    //         let skuProduct = allSkus.find(sku=>sku.extRef === skuToPropose.extRef)
-    //         let priceWithoutDeal = priceItemsWithoutDeal + parseFloat(skuProduct?.price || 0);
-    //         //let priceWithoutDeal = priceItemsWithoutDeal + parseFloat(skuToPropose.price);
-    //         if (priceWithoutDeal < priceDeal) {
-    //             skuExtRefToExclude.push(skuToPropose.extRef)
-    //         }
-    //         priceBySkuId[skuToPropose.extRef] = priceDeal;
-    //     }
-    // }
 
     skusInLine = skusInLine.filter(sku => !skuExtRefToExclude.includes(sku))
 
