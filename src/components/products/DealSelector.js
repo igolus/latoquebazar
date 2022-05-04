@@ -44,30 +44,35 @@ export function applyDealPrice(deal) {
         //     continue;
         // }
 
-        if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
-            line.pricingValue = "";
-            continue;
-        }
+        // if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
+        //     line.pricingValue = "";
+        //     continue;
+        // }
 
-        let priceProduct = parseFloat(productAndSkusLine.price);
+        let priceProduct = parseFloat(productAndSkusLine.price || 0);
+        // if (!line.initialPrice) {
+        //     line.initialPrice = parseFloat(productAndSkusLine.price);
+        // }
+
         if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
-            line.pricingValue = priceProduct;
+            line.pricingValueAfterDisc = priceProduct;
             continue;
         }
         else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
             productAndSkusLine.price = priceLineF;
-            line.pricingValue = parseFloat(priceLineF);
+            line.pricingValueAfterDisc = parseFloat(priceLineF);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
             productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
-            line.pricingValue = parseFloat(productAndSkusLine.price);
+            line.pricingValueAfterDisc = parseFloat(productAndSkusLine.price);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
             let factor = 1 - priceLineF / 100
             let priceComputed = (priceProduct * factor).toFixed(2);
             productAndSkusLine.price = priceComputed;
-            line.pricingValue = (priceProduct * factor);
+            line.pricingValueAfterDisc = priceComputed;
         }
+        line.pricingValueAfterDisc = parseFloat(line.pricingValueAfterDisc);
         productAndSkusLine.nonDiscountedPrice = productAndSkusLine.price.toString();
 
     }

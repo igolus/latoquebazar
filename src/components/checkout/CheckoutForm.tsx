@@ -228,6 +228,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     const setAddMainLoad = async () => {
       if (
+          (!getOrderInCreation().deliveryAddress ||
+              dbUser?.userProfileInfo?.address == getOrderInCreation().deliveryAddress?.address) &&
           !selectedAddId &&
           (dbUser || bookWithoutAccount) &&
           isDeliveryActive(currentEstablishment())) {
@@ -417,6 +419,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                 deal.deal.lines.forEach(line => {
                   delete line.quantity;
+                  delete line.pricingValueAfterDisc;
                   if (typeof line.pricingValue !== "string") {
                     line.pricingValue = line.pricingValue.toString()
                   }

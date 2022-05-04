@@ -203,7 +203,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
 
             <FlexBox alignItems="center" mt={0.5}>
               <Box pr={1} fontWeight="600" color="primary.main">
-                {getPriceDeal(deal).toFixed(2)} {currency}
+                {(getPriceDeal(deal) || 0).toFixed(2)} {currency}
               </Box>
             </FlexBox>
 
