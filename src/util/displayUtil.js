@@ -170,18 +170,22 @@ export const getPriceDeal = (deal) => {
     let sum = 0;
     for (let i = 0; i < deal.lines.length; i++) {
         const line = deal.lines[i];
-        if ( typeof line.pricingValue === "string") {
+        if (line.pricingValueAfterDisc || line.pricingValueAfterDisc == 0)
+        {
+            sum += line.pricingValueAfterDisc;
+        }
+        else if ( typeof line.pricingValueAfterDisc === "string") {
             if (line.pricingValue === "") {
                 return null;
             }
-            sum += parseFloat(line.pricingValue)
+            sum += parseFloat(line.pricingValueAfterDisc || line.pricingValue)
         }
         else {
-            sum += line.pricingValue
+            sum += parseFloat(line.pricingValue)
         }
     }
 
-    return sum;
+    return parseFloat(sum);
 }
 
 export const computePriceDetail = (orderInCreation) => {

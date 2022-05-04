@@ -14,7 +14,8 @@
     "mergeInBranche": "node mergeInBranches.js",
     "fix:prettier": "prettier --write .",
     "copyConfBhappy": "gulp copyConfBhappy",
-    "copyConfBrunchClub": "gulp copyConfBrunchClub"
+    "copyConfBrunchClub": "gulp copyConfBrunchClub",
+    "copyConfRenato": "gulp copyConfRenato"
   },
   "lint-staged": {
     "*.+(js|jsx)": [
