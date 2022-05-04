@@ -436,7 +436,6 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
 
 
   function enoughTimeForPreparation(slot) {
-
     let firstSlotInFuture = getFirstSlotInFuture();
     if (!firstSlotInFuture) {
       return false;
@@ -483,6 +482,11 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   }
 
   function isSlotUnavailable(value) {
+    if (currentEstablishment()?.serviceSetting?.orderSameDay) {
+      if (!value.startDate.isSame(moment(), 'day')) {
+        return true;
+      }
+    }
     return !enoughTimeForPreparation(value) || isSlotFull(value) || value.locked;
   }
 
@@ -596,7 +600,9 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
             }
 
             {
-              !allClosed() && timeSlots && timeSlots.allSlots.map((value, key) => {
+              !allClosed() && timeSlots &&
+                timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) != null &&
+                timeSlots.allSlots.map((value, key) => {
                     let format =
                         value.startDate.format('HH:mm')
                         + "-"
