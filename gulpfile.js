@@ -176,6 +176,12 @@ function copyConfBhappy(cb) {
         .pipe(gulp.dest('./src/conf', {overwrite:true}))
 }
 
+function copyConfRenato(cb) {
+    return gulp.src('./templatesGulp/config-renato.json')
+        .pipe(rename('config.json'))
+        .pipe(gulp.dest('./src/conf', {overwrite:true}))
+}
+
 function copyConfBrunchClub(cb) {
     return gulp.src('./templatesGulp/config-bunchClub.json')
         .pipe(rename('config.json'))
@@ -236,6 +242,7 @@ function generateConf(cb) {
 
 exports.copyConfBrunchClub = copyConfBrunchClub;
 exports.copyConfBhappy = copyConfBhappy;
+exports.copyConfRenato = copyConfRenato;
 
 exports.uploadFtp = uploadFtp;
 exports.generateZip = generateZip;
