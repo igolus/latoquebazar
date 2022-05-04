@@ -83,8 +83,6 @@ function UpSellDeal({candidateDeal, contextData, currency, selectCallBack, cance
         let candidateClone = cloneDeep(candidateDeal.candidate);
         candidateClone.productAndSkusLines[candidateDeal.missingLineNumber] = skuToPropose;
         candidateClone.deal.lines[candidateDeal.missingLineNumber] = candidateDeal.missingLine;
-
-
         candidateClone = applyDealPrice(candidateClone);
         let priceDealInSku = getPriceDeal(candidateClone.deal);
         if (pricingValuePercent) {

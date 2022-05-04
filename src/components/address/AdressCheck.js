@@ -33,8 +33,11 @@ export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
         let distKm = zone.distance / 1000;
         if (distKm <= zone.maxDistance) {
             inZone = true;
-            deliveryZoneId = zone.zoneId
-            setDistanceInfo(zone);
+            deliveryZoneId = zone.zoneId;
+            if (setDistanceInfo) {
+                setDistanceInfo(zone);
+            }
+
             break;
         }
     }
