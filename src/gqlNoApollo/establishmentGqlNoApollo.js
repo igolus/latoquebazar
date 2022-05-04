@@ -49,6 +49,7 @@ const common = `
     maxDistanceDelivery
     minimalDeliveryOrderPrice
     enableDelivery
+    orderSameDay
     printDeliveryOnCreate
     deliveryMenIds
     daySetting {
