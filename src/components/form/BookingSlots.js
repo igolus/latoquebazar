@@ -331,7 +331,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
         select(firstSlotAvail)
       }
     }
-  }, [currentBrand, timeSlots, orderInCreation])
+  }, [])
 
 
   useEffect(() => {
