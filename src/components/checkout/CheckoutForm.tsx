@@ -255,7 +255,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   useEffect(() => {
     if (currentEstablishment() &&
-        isDeliveryPriceDisabled() && !orderInCreation.deliveryMode || isDeliveryPriceDisabled()) {
+        isDeliveryPriceDisabled() && !orderInCreation?.deliveryMode && orderInCreation?.deliveryMode !== ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
       setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
     }
   }, [orderInCreation])
@@ -661,10 +661,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function setSelectedBookingSlot(bookingSlot) {
     //alert("setSelectedBookingSlot " + JSON.stringify(bookingSlot))
-    setOrderInCreation({
+    setOrderInCreationNoLogic({
       ...getOrderInCreation(),
       bookingSlot: bookingSlot,
-    })
+    });
+
+    //(orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal)
   }
 
   function setDeliveryMode(deliveryMode: string) {
