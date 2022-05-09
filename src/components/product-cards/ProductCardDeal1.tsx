@@ -235,7 +235,10 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
           options: productAndSku.options
         })
         :
-        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+        selectToDealEditOrder({
+          ...selectedProductAndSku,
+          options: productAndSku.options
+        }, dealEdit, setDealEdit, lineNumber)
     // selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
     setSelectedProductSku(productAndSku)
     //alert()
