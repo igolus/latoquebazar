@@ -869,20 +869,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
 
   function selectDealProposal(selectedProductAndSku, deal) {
-    //setPrefferedDealToApply(deal.canditae.deal);
     addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null,
         deal.candidate.deal, checkDealProposal, currentEstablishment);
-
-    //setDealCandidates([...dealCandidates].slice(1))
   }
-
-  // async function reduceCandidates() {
-  //   const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-  //   // const dealProposal = checkDealProposal();
-  //   // let candidatesRemains = [...dealCandidates].slice(1);
-  //   return candidatesRemains;
-  // }
-
 
   function formatPointsAppliedMessage() {
     return localStrings.formatString(localStrings.usedLoyaltyPoints, saveAmountWithPointSave + " " + getBrandCurrency(currentBrand()), maxPointsToSpendSave)
@@ -907,13 +896,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
-
         <Dialog open={manualAddressOutOfBound} maxWidth="sm">
           <DialogContent className={classes.dialogContent}>
             <AlertHtmlLocal
                 severity="warning"
                 title={localStrings.tooFarAddress}
-                // content={config.alertOnSelectPickup}
             >
             </AlertHtmlLocal>
           </DialogContent>
@@ -1662,17 +1649,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                       </FlexBox>
                                                     } />
                                 </Box>
-
-
-                                {/*<Checkbox defaultChecked />*/}
-                                {/*<Box>*/}
-                                {/*  <a href={"/cgv"} target="new">*/}
-                                {/*      {localStrings.seeCgvAccept}*/}
-                                {/*  </a>*/}
-                                {/*</Box>*/}
                               </FormGroup>
                             </Box>
-
                           </Card1>
                         </>
                         }
