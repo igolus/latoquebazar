@@ -413,6 +413,7 @@ let localStrings = new LocalizedStrings({
             maxDistanceReached: "L'adresse est en dehors de la zone",
             noItemInCart: "Aucun produits dans le panier",
             badContactInfo: "Information de contact invalides",
+            deliveryMinPrice: "Montant insufisant pour livraison",
             pleaseAcceptCgv: "Merci d'accepter les termes et conditions",
         },
 
