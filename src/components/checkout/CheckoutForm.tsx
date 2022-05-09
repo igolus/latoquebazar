@@ -255,7 +255,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   useEffect(() => {
     if (currentEstablishment() &&
-        isDeliveryPriceDisabled() && !orderInCreation.deliveryMode) {
+        isDeliveryPriceDisabled() && !orderInCreation.deliveryMode || isDeliveryPriceDisabled()) {
       setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
     }
   }, [orderInCreation])
@@ -759,6 +759,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     }
 
     if (!checkoutSchema(bookWithoutAccount).isValidSync(values)) {
+      return localStrings.check.badContactInfo;
+    }
+
+    if (isDeliveryPriceDisabled()) {
       return localStrings.check.badContactInfo;
     }
 
@@ -1726,7 +1730,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 type="submit"
                                 //endIcon={<SaveIcon />}
                                 disabled={
-                                  isPaymentDisabled(values) || orderUpdating
+                                  isPaymentDisabled(values) || orderUpdating || isDeliveryPriceDisabled()
                                 }
                                 endIcon={loading ?
                                     <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
