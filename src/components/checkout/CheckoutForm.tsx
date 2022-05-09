@@ -168,6 +168,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [saveAmountWithPointSave, setSaveAmountWithPointSave] = useState(0)
 
   const [pointsUsed, setPointsUsed] = useState(false);
+  const [manualAddressOutOfBound, setManualAddressOutOfBound] = useState(false);
   const [priceDetails, setPriceDetails] = useState(false);
 
   useEffect(() => {
@@ -907,6 +908,23 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   return (
       <>
 
+        <Dialog open={manualAddressOutOfBound} maxWidth="sm">
+          <DialogContent className={classes.dialogContent}>
+            <AlertHtmlLocal
+                severity="warning"
+                title={localStrings.tooFarAddress}
+                // content={config.alertOnSelectPickup}
+            >
+            </AlertHtmlLocal>
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setManualAddressOutOfBound(false)} color="primary">
+              {localStrings.IUnderstand}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Dialog open={pointsUsed} maxWidth="sm">
           <DialogContent className={classes.dialogContent}>
             <AlertHtmlLocal
@@ -1272,6 +1290,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                 setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
                                                 setSelectedAddId(null);
                                                 setCustomAddressSelected(false)
+                                                setManualAddressOutOfBound(true);
                                               }
                                               else {
                                                 setCustomAddressSelected(true)
@@ -1283,17 +1302,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             },
                                             setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
                                         updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
-                                        //resetCustomerDeliveryInformation();
-                                        // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
-                                        // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
-                                        //     setGlobalDialog, setRedirectPageGlobal, distInfo)
                                       } else {
                                         updateDeliveryAdress(label, lat, lng);
                                       }
-                                      //setAdressValue(label)
-                                      //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
-                                      //updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
-                                      //setAdressEditLock(true);
                                     }}/>
                               </Grid>
                             </Grid>
@@ -1694,18 +1705,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             </Box>
 
                           </AlertHtmlLocal>
-
-                        {/*<Card1 sx={{mb: '2rem'}}>*/}
-
-                        {/*  <Button*/}
-                        {/*      style={{textTransform: "none"}}*/}
-                        {/*      variant="contained" color="primary"*/}
-                        {/*      fullWidth*/}
-                        {/*      onClick={spendPoints}*/}
-                        {/*  >*/}
-                        {/*    {localStrings.formatString(localStrings.useLoyaltyPoints, maxPointsToSpend, saveAmountWithPoint.toString() + ' ' + getBrandCurrency(currentBrand()))}*/}
-                        {/*  </Button>*/}
-                        {/*</Card1>*/}
                         </>
                         }
 
