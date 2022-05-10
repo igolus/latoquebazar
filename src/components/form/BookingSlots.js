@@ -182,6 +182,7 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
           closed: isClosed(startDate, establishment),
           totalPreparionTime: slotOccupancy?.totalPreparationTime || 0,
           deliveryNumber: slotOccupancy?.deliveryNumber || 0,
+          locked: slotOccupancy?.locked
         })
         iterDate = moment(iterDate.add(slotDuration, 'minutes'));
       }

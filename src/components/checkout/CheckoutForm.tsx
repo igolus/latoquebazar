@@ -475,7 +475,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         delete dataOrder.bookingSlot.closed;
         delete dataOrder.bookingSlot.totalPreparionTime;
         delete dataOrder.bookingSlot.deliveryNumber;
-
+        delete dataOrder.bookingSlot.locked;
 
         dataOrder.bookingSlot.startDateIso = dataOrder.bookingSlot.startDate.format();
         dataOrder.bookingSlot.endDateIso = dataOrder.bookingSlot.endDate.format();
@@ -765,9 +765,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.badContactInfo;
     }
 
-    if (isDeliveryPriceDisabled()) {
-      return localStrings.check.badContactInfo;
-    }
+    // if (isDeliveryPriceDisabled()) {
+    //   return localStrings.check.deliveryMinPrice;
+    // }
 
     if (!cgvChecked) {
       return localStrings.check.pleaseAcceptCgv;
@@ -1709,7 +1709,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 type="submit"
                                 //endIcon={<SaveIcon />}
                                 disabled={
-                                  isPaymentDisabled(values) || orderUpdating || isDeliveryPriceDisabled()
+                                  isPaymentDisabled(values) || orderUpdating
                                 }
                                 endIcon={loading ?
                                     <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
