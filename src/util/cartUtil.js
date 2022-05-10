@@ -828,6 +828,13 @@ function applyDiscountOnItemPercentage(item, discount) {
     if (discount.pricingEffect === PRICING_EFFECT_PERCENTAGE && discount.pricingValue) {
         discountAppliedAmount = parseFloat(item.price) * (parseFloat(discount.pricingValue) / 100);
         item.price = (parseFloat(item.price) - discountAppliedAmount).toFixed(2);
+        let options = item.options;
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            option.nonDiscountedPrice = option.price;
+            let discountAppliedOptionAmount = parseFloat(option.price) * (parseFloat(discount.pricingValue) / 100);
+            option.price = (parseFloat(option.price) - discountAppliedOptionAmount).toFixed(2);
+        }
         item.discountApplied.push(discount.id);
     }
 
@@ -899,6 +906,13 @@ export function revertDiscountedPrices(orderInCreation) {
         if (item.nonDiscountedPrice) {
             item.price = parseFloat(item.nonDiscountedPrice).toFixed(2)
         }
+        let options = item.options;
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.nonDiscountedPrice) {
+                option.price = option.nonDiscountedPrice;
+            }
+        }
     }
 
     //revert price
@@ -919,6 +933,13 @@ export function revertDiscountedPrices(orderInCreation) {
             if (productAndSkusLine.nonDiscountedPrice) {
                 productAndSkusLine.price = parseFloat(productAndSkusLine.nonDiscountedPrice).toFixed(2)
             }
+            // let options = item.options;
+            // for (let i = 0; i < options.length; i++) {
+            //     const option = options[i];
+            //     if (option.nonDiscountedPrice) {
+            //         option.price = option.nonDiscountedPrice;
+            //     }
+            // }
         }
     }
     return orderInCreationClone;
