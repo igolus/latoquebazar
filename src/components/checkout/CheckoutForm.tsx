@@ -765,9 +765,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.badContactInfo;
     }
 
-    // if (isDeliveryPriceDisabled()) {
-    //   return localStrings.check.deliveryMinPrice;
-    // }
+    if (isDeliveryPriceDisabled() && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+      return localStrings.check.deliveryMinPrice;
+    }
 
     if (!cgvChecked) {
       return localStrings.check.pleaseAcceptCgv;
@@ -801,6 +801,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   function isPaymentDisabled(values) {
     return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0 && priceDetails.total > 0) ||
         !cgvChecked ||
+        (isDeliveryPriceDisabled() && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
         !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
         !getOrderInCreation().bookingSlot ||
         loading || getCartItems(getOrderInCreation).length == 0 ||
