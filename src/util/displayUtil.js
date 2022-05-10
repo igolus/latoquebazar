@@ -133,8 +133,9 @@ export const computeNonDiscountedTotalPriceValue = (itemSkuBooking, mul = 1) => 
     }
     let sum = parseFloat(itemSkuBooking.nonDiscountedPrice || itemSkuBooking.price);
     if (itemSkuBooking.options) {
-        itemSkuBooking.options.forEach(option => sum+= parseFloat(option.price))
+        itemSkuBooking.options.forEach(option => sum+= parseFloat(option.nonDiscountedPrice || option.price))
     }
+
     return (sum  * itemSkuBooking.quantity * mul);
 }
 
