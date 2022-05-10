@@ -40,7 +40,7 @@ export interface OrderAmountSummaryProps {
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
                                                                   modeOrdered,orderSource, contextData, hideCoupon}) => {
 
-    const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen} = useAuth();
+    const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen, dbUser} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
 
@@ -230,7 +230,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
                 </FlexBox>
             </FlexBox>
-            {currentBrand()?.config?.loyaltyConfig &&
+            {currentBrand()?.config?.loyaltyConfig && dbUser &&
 
             <>
             <Alert severity="success" sx={{marginBottom:1}}>{formatPointsEarned()}</Alert>
