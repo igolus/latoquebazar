@@ -41,13 +41,12 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   const {getOrderInCreation, setOrderInCreation, setGlobalDialog, checkDealProposal, currentEstablishment} = useAuth();
   let product = products.find(p => p.id === item.productId);
   let imgUrl = "/assets/images/Icon_Sandwich.png";
-  //alert("product " + product)
   if (!product) {
     //try to find with extRef in skus
     product = products.find(p => p.skus && p.skus.some(sku => sku.extRef === item.extRef));
   }
   //alert("product " + product)
-  if (product && product.files && product.files.length > 0) {
+  if (product && product.files && product.files.length > 0 && product.files[0].url) {
     imgUrl = product.files[0].url;
   }
 
@@ -65,16 +64,6 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
           />
           :
           <Link href={"/product/detail/" + product?.id}>
-
-            {/*<LazyImage*/}
-            {/*    objectFit="cover"*/}
-            {/*    src={imgUrl}*/}
-            {/*    width="100%"*/}
-            {/*    height="auto"*/}
-            {/*    layout="responsive"*/}
-            {/*    alt={product.name}*/}
-            {/*/>*/}
-
             <Image
                 style={{objectFit: "cover"}}
 
