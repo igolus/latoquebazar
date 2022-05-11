@@ -95,25 +95,13 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     function getContextData() {
         return contextData;
     }
-    // try {
-    //     params = new URLSearchParams(window.location.search)
-    // }
-    // catch(err) {
-    //
-    // }
 
     const router = useRouter();
-
-    //alert("orderId " + orderId);
     const [refreshing, setRefreshing] = useState(false);
     const [noStatus, setNoStatus] = useState(false);
 
     const {currentEstablishment, dbUser} = useAuth()
-    const stepIconList = [PackageBox, TruckFilled, Delivery]
-
-    const width = useWindowSize()
     const theme = useTheme()
-    const breakpoint = 350
     console.log(theme.breakpoints.up('md'))
 
     const [order, setOrder] = useState(null)
@@ -161,35 +149,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
         }
 
     }
-
-    function getStepOrder() {
-        if (!order) {
-            return 0;
-        }
-
-        if (ORDER_STATUS_DELIVERING === order.status) {
-            return 1;
-        }
-        if (ORDER_STATUS_FINISHED === order.status) {
-            return 2;
-        }
-        return 0
-
-    }
-
     function getImageStatus() {
-
-        // export const HUBRISE_ORDER_STATUS_NEW = "new";
-        // export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
-        // export const HUBRISE_ORDER_STATUS_ACCEPTED = "accepted";
-        // export const HUBRISE_ORDER_STATUS_IN_PREPARATION = "in_preparation";
-        // export const HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT= "awaiting_shipment";
-        // export const HUBRISE_ORDER_STATUS_AWAITING_COLLECTION= "awaiting_collection";
-        // export const HUBRISE_ORDER_STATUS_IN_DELIVERY= "in_delivery";
-        // export const HUBRISE_ORDER_STATUS_COMPLETED= "completed";
-        // export const HUBRISE_ORDER_STATUS_REJECTED= "rejected";
-        // export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
-        // export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
         switch (order?.status) {
             case HUBRISE_ORDER_STATUS_NEW:
             case HUBRISE_ORDER_STATUS_RECEIVED:
@@ -237,7 +197,6 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                         <>
                             <Box sx={{display: 'flex', justifyContent: 'center'}}>
                                 <Box m={5}>
-                                    {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
                                     <BazarImage width={120} height={120} src={getImageStatus()}/>
                                 </Box>
                             </Box>
@@ -286,7 +245,6 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                             {localStrings.deliveryMode}
                         </H5>
                         <Paragraph fontSize="14px" my="0px">
-                            {/*{JSON.stringify(order || {})}*/}
                             {formatOrderConsumingMode(order, localStrings)}
                         </Paragraph>
 
