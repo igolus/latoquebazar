@@ -29,8 +29,6 @@ const CarouselCompo:React.FC<CarouselCompoProps> = ({contextData}) => {
         <Navbar contextData={getContextData()}/>
 
         {carouselItems && carouselItems.length > 0 &&
-        // <Box bgcolor="white" mb={7.5}>
-        //   <Container sx={{py: '2rem'}}>
             <>
             {!carouselAsList ?
 

@@ -130,13 +130,14 @@ function ProductSelector({ productAndSku, options,
 
     //alert("optionListMatching " + JSON.stringify(optionListMatching))
     optionListMatching.forEach(optionList => {
-      let countSelect = productAndSku.options.filter(option => option.option_list_extRef === optionList.extRef).length;
+      let countSelect = productAndSku.options.filter(option => optionList.options.map(o => o.extRef).includes(option.ref)).length;
+      //let countSelect = productAndSku.options.filter(option => option.ref === optionList.extId).length;
       if (optionList.mandatory) {
         valid &= countSelect>0;
       }
-      valid &= countSelect >= optionList.minValue;
+      valid &= (countSelect >= optionList.minValue);
       if (optionList.maxValue != -1) {
-        valid &= countSelect <= optionList.maxValue;
+        valid &= (countSelect <= optionList.maxValue);
       }
     })
 

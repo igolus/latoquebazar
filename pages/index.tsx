@@ -92,68 +92,6 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
                         currentEstablishment() : contextData?.establishments[0])}
                     </Box>
 
-
-                    {/*<Box display="flex" justifyContent='space-evenly' p={1} m={1}>*/}
-
-                    {/*    {firstPage &&*/}
-                    {/*    <Box>*/}
-                    {/*        <Link href={"/specialPage/'" + firstPage.id}>*/}
-                    {/*            <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
-                    {/*                {firstPage.title}*/}
-                    {/*            </Button>*/}
-                    {/*        </Link>*/}
-                    {/*    </Box>*/}
-                    {/*    }*/}
-
-                    {/*    {secondPage &&*/}
-                    {/*    <Box>*/}
-                    {/*        <Link href={"/specialPage/'" + secondPage.id}>*/}
-                    {/*            <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
-                    {/*                {secondPage.title}*/}
-                    {/*            </Button>*/}
-                    {/*        </Link>*/}
-                    {/*    </Box>*/}
-                    {/*    }*/}
-
-                    {/*    {thirdPage &&*/}
-                    {/*    <Box>*/}
-                    {/*        <Link href={"/specialPage/'" + thirdPage.id}>*/}
-                    {/*            <Button color="primary" variant="contained" sx={{px: '2rem', textTransform: 'none'}}>*/}
-                    {/*                {thirdPage.title}*/}
-                    {/*            </Button>*/}
-                    {/*        </Link>*/}
-                    {/*    </Box>*/}
-                    {/*    }*/}
-
-                    {/*</Box>*/}
-
-
-                    {/*<Card1 sx={{mb: '2rem', mt:'2rem' }}>*/}
-                    {/*    <Typography  variant="h6" fontWeight="600" mb={4}>*/}
-                    {/*        {localStrings.place}*/}
-                    {/*    </Typography>*/}
-                    {/*    <MyMap*/}
-                    {/*        lat={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lat : null}*/}
-                    {/*        lng={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().lng : null}*/}
-                    {/*        name={firstOrCurrentEstablishment() ? firstOrCurrentEstablishment().establishmentName : null}*/}
-                    {/*        googleMapURL={"https://maps.googleapis.com/maps/api/js?key=" + config.googleKey + "&libraries=geometry,drawing,places"}*/}
-                    {/*        loadingElement={<div style={{ height: `100%` }} />}*/}
-                    {/*        containerElement={<div style={{ height: `400px` }} />}*/}
-                    {/*        mapElement={<div style={{ height: `100%` }} />}*/}
-                    {/*    />*/}
-
-                    {/*</Card1>*/}
-
-                    {/*<Card1 sx={{mb: '2rem'}}>*/}
-                    {/*    <Typography variant="h6" fontWeight="600" mb={4}>*/}
-                    {/*        {localStrings.openingHours}*/}
-                    {/*    </Typography>*/}
-                    {/*    <OpeningHours firstEsta={getContextData().establishments[0]}/>*/}
-                    {/*</Card1>*/}
-
-                    {/*<Card1 sx={{mb: '2rem'}}>*/}
-                    {/*    <ClosingDays firstEsta={getContextData().establishments[0]}/>*/}
-                    {/*</Card1>*/}
                 </div>
                 }
             </AppLayout>
