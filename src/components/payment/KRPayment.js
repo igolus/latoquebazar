@@ -31,6 +31,9 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
     }, [text, disabled, document.getElementById('myPaymentForm')])
 
     function updatePayButtonState(payButt) {
+        if (!payButt || !payButt.firstElementChild) {
+            return false;
+        }
         if (text) {
             payButt.firstElementChild.innerText = text;
         }
@@ -134,7 +137,7 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
             })
         /* show the payment form */
 
-    },  [getOrderAmount(getOrderInCreation)])
+    },  [getOrderAmount(getOrderInCreation), getOrderInCreation().deliveryMode])
 
 
     return (
