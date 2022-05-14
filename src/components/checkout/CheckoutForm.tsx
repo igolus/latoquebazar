@@ -674,7 +674,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryMode: deliveryMode,
-      bookingSlot: null,
+      //bookingSlot: null,
     })
   }
 
