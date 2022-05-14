@@ -1126,7 +1126,7 @@ export const AuthProvider = ({ children }) => {
       type: ORDER_IN_CREATION,
       payload: {
         orderInCreation: {
-          deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
+          //deliveryMode: ORDER_DELIVERY_MODE_DELIVERY,
           order: {
             items: [],
             deals: []
