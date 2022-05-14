@@ -48,6 +48,7 @@ export interface ProductIntroProps {
     currentService: any,
     disableFacebook: boolean,
     changeSelectionCallBack: any
+    initialItem: any
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -70,7 +71,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        lineNumber,
                                                        currentService,
                                                        disableFacebook,
-                                                       changeSelectionCallBack
+                                                       changeSelectionCallBack,
+                                                       initialItem
                                                    }) => {
 
     if (!product) {
@@ -98,15 +100,29 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         // alert("firstOrCurrentEstablishment " + firstOrCurrentEstablishment())
         if (firstOrCurrentEstablishment() && brand) {
             // alert("firstOrCurrentEstablishment ")
+            let productAndSkuBuilt;
             if (skuIndex) {
-                setProductAndSku({
+                productAndSkuBuilt = {
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[skuIndex]
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, initialItem)[skuIndex]
+                };
+                if (initialItem) {
+                    productAndSkuBuilt.options = [...initialItem.options]
+                }
+                setProductAndSku({
+                    ...productAndSkuBuilt
                 });
             } else {
-                setProductAndSku({
+
+                productAndSkuBuilt = {
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[0],
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, initialItem)[0]
+                };
+                if (initialItem) {
+                    productAndSkuBuilt.options = [...initialItem.options]
+                }
+                setProductAndSku({
+                    ...productAndSkuBuilt,
                     setGlobalDialog, setRedirectPageGlobal
                 });
             }
@@ -170,6 +186,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     }}
                 />
             </Dialog>
+
+            <p>{JSON.stringify(initialItem || {})}</p>
         <Box width="100%">
             {productAndSku ?
                 <Grid container spacing={3} justifyContent="space-around">
@@ -305,6 +323,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                      valid={valid}
                                      currency={currency}
                                      lineNumber={lineNumber}
+                                     initialItem={initialItem}
                     />
                     }
 

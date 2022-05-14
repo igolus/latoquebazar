@@ -1440,7 +1440,8 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     return countMatching;
 }
 
-export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment, currentService, brand) {
+export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment,
+                                    currentService, brand) {
     let allSkusWithProduct = [];
 
 

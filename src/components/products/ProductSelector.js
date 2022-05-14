@@ -44,10 +44,16 @@ function ProductSelector({ productAndSku, options,
                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
                            setterSkuEdit, currency, skuEdit,
                            setterValid,
-                           valid, lineNumber}) {
+                           valid, lineNumber, initialItem}) {
+
   const classes = useStyles();
   const {dealEdit} = useAuth();
 
+  useEffect(() => {
+    if (initialItem) {
+      productAndSku.options = [...initialItem.options]
+    }
+  }, [])
 
 
   useEffect(() => {
@@ -72,9 +78,13 @@ function ProductSelector({ productAndSku, options,
     }
   }
 
+  function getNewSkuBooking() {
+    return {...productAndSku};
+  }
+
   function handleChangeRadio(optionListComplete, optionList, ref, noCallSetter) {
     //alert("options " + value);
-    let itemSkuBookingNew = {...productAndSku}
+    let itemSkuBookingNew = getNewSkuBooking()
     let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extRef);
     let optionToSet = optionListComplete.find(optionComplete => optionComplete.ref == ref);
 
@@ -86,7 +96,7 @@ function ProductSelector({ productAndSku, options,
   }
 
   function handleChangeSelect(optionComplete, noCallSetter, itemSkuBooking) {
-    let itemSkuBookingNew = itemSkuBooking || {...productAndSku}
+    let itemSkuBookingNew = itemSkuBooking || getNewSkuBooking()
     let selected = itemSkuBookingNew.options.find(option => option.ref === optionComplete.ref);
     if (!selected) {
       itemSkuBookingNew.options = [...itemSkuBookingNew.options, optionComplete];
