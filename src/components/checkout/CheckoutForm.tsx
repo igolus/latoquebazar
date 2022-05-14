@@ -637,6 +637,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       deliveryMode: deliveryMode,
       bookingSlot: null,
     })
+    setPaymentMethod("delivery");
   }
 
   function updateDeliveryAdress(address, lat, lng, id, name, customerDeliveryInformation, distance, zoneId) {
