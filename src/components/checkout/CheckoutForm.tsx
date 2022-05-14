@@ -104,6 +104,12 @@ export interface CheckoutFormProps {
   noStripe: boolean
 }
 
+
+export function getOrderAmount(getOrderInCreation) {
+  let detailPrice = computePriceDetail(getOrderInCreation());
+  return parseFloat(detailPrice.total);
+}
+
 const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function removeGoogleMapScript() {
@@ -174,46 +180,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   useEffect(() => {
     setPriceDetails(computePriceDetail(getOrderInCreation()))
   }, [getOrderInCreation])
-
-  // useEffect(() => {
-  //   const checkRemains = async () => {
-  //     const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-  //     if (candidatesRemains && candidatesRemains.length === 0) {
-  //       setDialogDealProposalContent(false);
-  //     }
-  //   };
-  //
-  //   checkRemains()
-  //
-  // }, [orderInCreation])
-
-  // useEffect(() => {
-  //   const checkRemains = async () => {
-  //     const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-  //     if (candidatesRemains && candidatesRemains.length === 0) {
-  //       setDialogDealProposalContent(false);
-  //     }
-  //   };
-  //
-  //   checkRemains()
-  //
-  // }, [dealCandidates])
-
-  // useEffect(() => {
-  //   checkDealProposal(orderInCreation, currentEstablishment)
-  // }, [])
-
-  // useEffect(() => {
-  //   const candidatesRemains = await checkDealProposal(getOrderInCreation(), currentEstablishment);
-  //   // const dealProposal = checkDealProposal();
-  //   // let candidatesRemains = [...dealCandidates].slice(1);
-  //   if (candidatesRemains.len)
-  //   return candidatesRemains;
-  //   if (dealCandidates.length === 0) {
-  //     setDialogDealProposalContent(false);
-  //   }
-  // }, [dealCandidates])
-
 
   useEffect(() => {
     if (dealCandidates && dealCandidates.length > 0) {
@@ -336,10 +302,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         payment_method: paymentMethodReq.paymentMethod.id
       });
 
-      //alert(JSON.stringify(resPay))
       if (resPay.error) {
         setCheckoutError(resPay.error.message);
-        //alert("payment error " + resPay.error.message)
         return null;
       }
 
@@ -376,9 +340,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       //filerRestricted
       let itemsIdToDelete = [];
       let dealsIdToDelete = [];
-      //dataOrder.order.items.forEach(item => )
-
-
 
       if (dataOrder.order.items && dataOrder.order.items.length > 0) {
         dataOrder.order.items.forEach(item => {
@@ -674,7 +635,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryMode: deliveryMode,
-      //bookingSlot: null,
+      bookingSlot: null,
     })
   }
 
@@ -822,10 +783,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return currentBrand()?.config?.paymentWebConfig?.paymentType === PAYMENT_MODE_STRIPE
   }
 
-  function getOrderAmount() {
-    let detailPrice = computePriceDetail(getOrderInCreation());
-    return parseFloat(detailPrice.total);
-  }
 
   function getEmailCustomer(values) {
     if (bookWithoutAccount) {
@@ -1560,7 +1517,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       publicKey={getSystemPublicKey()}
                                       endPoint={getSystemEndPoint()}
                                       email={getEmailCustomer(values)}
-                                      amount={getOrderAmount()}
+                                      amount={getOrderAmount(getOrderInCreation)}
                                       currency={contextData.brand.config.currency}
                                       errorCallBack={message => setCheckoutError(message)}
                                       brandId={contextData.brand.id}
