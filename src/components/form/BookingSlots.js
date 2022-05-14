@@ -322,17 +322,20 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     return bookingSlotsOccupancy;
   }
 
-  useEffect(() => {
+  function selectFirstSlot() {
     if (allClosed()) {
       select(null)
-    }
-    else if (select && currentBrand() && timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
-      let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && !isSlotUnavailable(slot) && slotAlavailableInMode(slot) );
+    } else if (select && currentBrand() && timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
+      let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && !isSlotUnavailable(slot) && slotAlavailableInMode(slot));
       if (firstSlotAvail) {
         select(firstSlotAvail)
       }
     }
-  }, [])
+  }
+
+  useEffect(() => {
+    selectFirstSlot();
+  }, [getOrderInCreation().deliveryMode])
 
 
   useEffect(() => {
