@@ -285,7 +285,7 @@ const AddressEditor = ({back}) => {
 
                                     <Button  variant="contained" color="primary"
                                              style={{textTransform: "none"}}
-                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress}
+                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress || deliveryOut}
                                              type="submit">
                                         {getSubmitText()}
                                     </Button>
