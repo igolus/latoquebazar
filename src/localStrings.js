@@ -128,6 +128,7 @@ let localStrings = new LocalizedStrings({
 
         restrictionApplies: "Ce produit n'est pas toujours disponible",
         noAvail: "Désolé il n'y a plus de créneau disponible, essayez à un autre moment",
+        selectDeliveryModesToGetSlots: "Selectionner un mode de livraison pour afficher les creneaux.",
         shareOnFacebook: "Partager ce produit sur facebook",
         back: "Retour",
         poweredBy: "Site construit avec La toque magique",
