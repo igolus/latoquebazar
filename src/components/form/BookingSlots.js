@@ -574,7 +574,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           {/*</div>*/}
 
 
-          {timeSlots && (!timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) || timeSlots.allSlots.length === 0 ||
+          {getOrderInCreation().deliveryMode && timeSlots && (!timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) || timeSlots.allSlots.length === 0 ||
               timeSlots.allSlots.filter(value => slotInTime(value) && slotAlavailableInMode(value)).length == 0
           ) &&
 
@@ -588,6 +588,20 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           >
             <AlertHtmlLocal severity="warning" content={localStrings.noAvail}></AlertHtmlLocal>
           </Box>
+          }
+
+          {!getOrderInCreation().deliveryMode &&
+
+              <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  alignContent="flex-start"
+                  justifyContent="center"
+                  p={1}
+                  m={1}
+              >
+                <AlertHtmlLocal severity="warning" content={localStrings.selectDeliveryModesToGetSlots}></AlertHtmlLocal>
+              </Box>
           }
 
           <Box
