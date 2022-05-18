@@ -115,7 +115,7 @@ function ProductSelector({ productAndSku, options,
     if (optionList.maxValue === -1) {
       return true;
     }
-    let countSelect = productAndSku.options.filter(option => option.option_list_extRef === optionList.extRef).length;
+    let countSelect = productAndSku.options.filter(option => option.extRef === optionList.extRef).length;
     return isCheckSelect(optionComplete) || countSelect < optionList.maxValue;
   }
 
