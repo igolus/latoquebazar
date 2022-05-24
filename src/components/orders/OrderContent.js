@@ -70,6 +70,7 @@ function OrderContent({ order, contextData, modeConfirmed }) {
                                                  item={item}
                                                  modeOrder
                                                  currency={currency}
+                                                 contextData={contextData}
                                                  products={contextData ? contextData.products : []}/>)
                         }
                     })}

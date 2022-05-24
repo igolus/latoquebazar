@@ -37,6 +37,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
   return (
 
       <>
+        {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
         <CheckoutNavLayout
             title={localStrings.cart}
             description={localStrings.cartDesc}
@@ -60,7 +61,11 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
                   return(<DealCard7 key={key} deal={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
                 }
                 else if (item.type === TYPE_PRODUCT) {
-                  return(<ProductCard7 key={key} item={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
+                  return(<ProductCard7 key={key}
+                                       contextData={getContextData()}
+                                       item={item}
+                                       currency={currency}
+                                       products={getContextData() ? getContextData().products : []}/>)
                 }
               })}
 

@@ -214,10 +214,17 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     //     dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.extRef == selectedProductAndSku.sku.extRef)
   }
 
+  function getLines() {
+    if (!deal?.lines && !deal?.deal?.lines) {
+      return [];
+    }
+    return deal.lines || deal.deal.lines;
+  }
+
   function addToDeal (productAndSku) {
 
-    let pricingEffect = deal.lines[lineNumber].pricingEffect;
-    let pricingValue = deal.lines[lineNumber].pricingValue;
+    let pricingEffect = getLines()[lineNumber].pricingEffect;
+    let pricingValue = getLines()[lineNumber].pricingValue;
 
     if (pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
       productAndSku.sku.price = pricingValue;
@@ -239,7 +246,6 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
           ...selectedProductAndSku,
           options: productAndSku.options
         }, dealEdit, setDealEdit, lineNumber)
-    // selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
     setSelectedProductSku(productAndSku)
     //alert()
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
