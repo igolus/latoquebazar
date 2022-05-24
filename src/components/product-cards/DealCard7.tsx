@@ -70,7 +70,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                     </a>
                 </Link>
                 :
-                <Link href={"/product/detailDeal/" + deal.uuid}>
+                <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
                     <a>
                         <Image
                             src={imgUrl}
@@ -90,7 +90,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 width="100%"
             >
                 <>
-                    <Link href={"/product/detailDeal/" + deal.uuid}>
+                    <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
                         <a>
                             <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
                                 {item.name}
@@ -109,7 +109,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                         // <h1>{option.name}</h1>
                         <>
                             <FlexBox flexWrap="wrap" alignItems="center">
-                                <Link href={"/product/detailDeal/" + deal.uuid}>
+                                <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
                                     <a>
                                         <Span color="grey.600" fontSize="14px"  mr={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
                                             {formatProductAndSkuName(productAndSkusLine)}
@@ -202,7 +202,7 @@ const DealCard7: React.FC<DealCard7Props> = ({
                         <FlexBox alignItems="center">
                             {/*{item.options && item.options.length > 0 &&*/}
                             <Tooltip title={localStrings.editProductMenu}>
-                                <Link href={"/product/detailDeal/" + deal.uuid}>
+                                <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
                                     <a>
                                         <Button
                                             sx={{p: '5px', mr: '5px'}}

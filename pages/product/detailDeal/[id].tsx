@@ -47,10 +47,6 @@ const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     useEffect(() => {
         let dealFromDealList = (getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null;
-        if (dealFromDealList == null) {
-            //get it from getOrderInCreation
-            dealFromDealList = (getOrderInCreation()?.order?.deals || []).find(d => d.uuid === id);
-        }
         setSelectedDeal(dealFromDealList)
     }, [id])
 
@@ -66,10 +62,6 @@ const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
 
             {selectedDeal && (selectedDeal.description !== "" || selectedDeal.additionalInformation !== "") &&
             <>
-                {/*<p>{JSON.stringify(selectedDeal)}</p>*/}
-                {/*<p>{selectedDeal.description}</p>*/}
-                {/*<p>{selectedDeal.additionalInformation}</p>*/}
-
                 <StyledTabs
                     value={selectedOption}
                     onChange={handleOptionClick}
