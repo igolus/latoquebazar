@@ -372,17 +372,50 @@ export function selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, line
         dealEditClone.productAndSkusLines = [];
     }
 
-    // alert(JSON.stringify(...dealEditClone.productAndSkusLines.filter(sku => sku.lineNumber != lineNumber)));
-    // alert("TOTO");
-    // alert(lineNumber);
+    let indexReplace = dealEditClone.productAndSkusLines.findIndex(sku => sku.lineNumber === lineNumber);
+    let newproductAndSkusLines = [...dealEditClone.productAndSkusLines];
+    newproductAndSkusLines.splice(indexReplace, 1, itemToAdd);
+    if (indexReplace == -1) {
+        setDealEdit({
+            ...dealEdit,
+            productAndSkusLines: [
+                ...dealEditClone.productAndSkusLines.filter(sku => sku.lineNumber !== lineNumber),
+                itemToAdd,
+            ]
+        })
+    }
+    else {
+        setDealEdit({
+            ...dealEdit,
+            productAndSkusLines: newproductAndSkusLines
+        })
+    }
+}
 
-    setDealEdit({
-        ...dealEdit,
-        productAndSkusLines: [
-            ...dealEditClone.productAndSkusLines.filter(sku => sku.lineNumber !== lineNumber),
-            itemToAdd,
-        ]
-    })
+export function updateDealInCart(setGlobalDialog, deal, orderInCreation, setOrderInCreation, doNotUpdateOrder) {
+
+    let items = [];
+    if (orderInCreation.order.items) {
+        items = [...orderInCreation.order.items]
+    }
+
+    // console.log(JSON.stringify(orderInCreation, null, 2));
+    // console.log(JSON.stringify(initialItem, null, 2));
+    let itemToModify = (orderInCreation?.order?.deals || []).find(dealInCart =>  dealInCart.uuid === deal.uuid);
+    if (itemToModify) {
+        let indexProduct = (orderInCreation?.order?.deals || []).findIndex(dealInCart =>  dealInCart.uuid === deal.uuid);
+        let newDeals = [...orderInCreation?.order?.deals]
+        newDeals.splice(indexProduct, 1, deal);
+        let newOrder = {
+            ...orderInCreation,
+            order: {
+                items: items,
+                deals: newDeals,
+            }
+        };
+        setOrderInCreation(newOrder)
+
+    }
 }
 
 export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderInCreation, doNotUpdateOrder) {
@@ -441,12 +474,6 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
         }
 
         return newOrder;
-
-        //if (addToast) {
-        //addToast(localStrings.notif.dealAddedToCart, { appearance: 'success', autoDismiss: true});
-        //}
-
-        //return;
     }
 
     dealToAdd.quantity = 1;
@@ -537,6 +564,19 @@ export function removeDiscountPoints(orderInCreation, setGlobalDialog) {
     //     discounts: orderInCreation.discounts.filter(disc => !disc.loyaltyPointCost || disc.loyaltyPointCost === 0)
     // }, null, null, null, null)
     //
+}
+
+export function updateCartOrder(setGlobalDialog, productAndSku, initialItem, orderInCreation,
+                               setOrderInCreation, addToast, prefferedDealToApply, checkDealProposal, currentEstablishment) {
+    console.log(JSON.stringify(orderInCreation, null, 2));
+    console.log(JSON.stringify(initialItem, null, 2));
+    let uuidInitial = initialItem.uuid;
+    let itemToModify = (orderInCreation?.order?.items || []).find(item =>  item.uuid === uuidInitial);
+    if (itemToModify) {
+        //let indexProduct = (orderInCreation?.order?.items || []).findIndex(item =>  item.uuid === uuidInitial);
+        itemToModify.options = productAndSku.options;
+        setOrderInCreation(orderInCreation, null, null, null, prefferedDealToApply)
+    }
 }
 
 export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
@@ -1440,7 +1480,8 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     return countMatching;
 }
 
-export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment, currentService, brand) {
+export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment,
+                                    currentService, brand) {
     let allSkusWithProduct = [];
 
 

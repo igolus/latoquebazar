@@ -59,16 +59,13 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
     }
 
     const [allProducts, setAllProducts] = useState(contextData ? (getProductsAndDeals() || []) : []);
-    //const [allDeals, setAllDeals] = useState(contextData ? (contextData.deals || []) : []);
     const [productDisplay, setProductDisplay] = React.useState([]);
     const [maxPage, setMaxPage] = React.useState(0);
     const [page, setPage] = React.useState(1);
-    const {dealEdit} = useAuth();
 
     useEffect( () => {
         let filteredProduct = [];
         let productsLoaded = contextData ? (getProductsAndDeals() || []) : []
-        //alert("productsLoaded " + productsLoaded.length)
         if (query) {
             var index = elasticlunr();
             index.addField('category');
@@ -82,7 +79,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
             let search = index.search(query);
             let allRef = search.map(item => item.ref)
             filteredProduct = productsLoaded.filter(p => allRef.includes(p.id));
-            //alert("size search  " + filteredProduct.length)
         }
         else {
             if (category == ALL_CAT) {
@@ -133,9 +129,6 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
     return (
         <div>
-
-            {/*<p>{JSON.stringify(allProducts)}</p>*/}
-            {/*<p>{JSON.stringify(restrictedskuRefs)}</p>*/}
             <Grid container spacing={3} justifyContent="center" >
                 {productDisplay
                     .map((item, ind) => {
