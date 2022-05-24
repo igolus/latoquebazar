@@ -85,7 +85,7 @@ function ProductSelector({ productAndSku, options,
   function handleChangeRadio(optionListComplete, optionList, ref, noCallSetter) {
     //alert("options " + value);
     let itemSkuBookingNew = getNewSkuBooking()
-    let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extRef);
+    let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== (optionList.extRef || optionList.extId));
     let optionToSet = optionListComplete.find(optionComplete => optionComplete.ref == ref);
 
     itemSkuBookingNew.options = [...other, optionToSet];
@@ -113,7 +113,7 @@ function ProductSelector({ productAndSku, options,
   }
 
   function getValueRadio(optionList) {
-    let option = productAndSku.options.find(option => option.option_list_extRef === optionList.extRef);
+    let option = productAndSku.options.find(option => option.option_list_extRef === (optionList.extRef || optionList.extId));
     return option ? option.ref : null;
   }
 
