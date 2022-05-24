@@ -10,7 +10,7 @@ import FlexBox from '../FlexBox'
 import ReactMarkdown from 'react-markdown'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
-import {addToCartOrder, buildProductAndSkus} from '../../util/cartUtil'
+import {addToCartOrder, buildProductAndSkus, updateCartOrder} from '../../util/cartUtil'
 import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {
@@ -48,6 +48,7 @@ export interface ProductIntroProps {
     currentService: any,
     disableFacebook: boolean,
     changeSelectionCallBack: any
+    initialItem: any
 }
 
 const ProductIntro: React.FC<ProductIntroProps> = ({
@@ -70,7 +71,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        lineNumber,
                                                        currentService,
                                                        disableFacebook,
-                                                       changeSelectionCallBack
+                                                       changeSelectionCallBack,
+                                                       initialItem
                                                    }) => {
 
     if (!product) {
@@ -98,15 +100,29 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         // alert("firstOrCurrentEstablishment " + firstOrCurrentEstablishment())
         if (firstOrCurrentEstablishment() && brand) {
             // alert("firstOrCurrentEstablishment ")
+            let productAndSkuBuilt;
             if (skuIndex) {
-                setProductAndSku({
+                productAndSkuBuilt = {
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[skuIndex]
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, initialItem)[skuIndex]
+                };
+                if (initialItem) {
+                    productAndSkuBuilt.options = [...initialItem.options]
+                }
+                setProductAndSku({
+                    ...productAndSkuBuilt
                 });
             } else {
-                setProductAndSku({
+
+                productAndSkuBuilt = {
                     ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[0],
+                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, initialItem)[0]
+                };
+                if (initialItem) {
+                    productAndSkuBuilt.options = [...initialItem.options]
+                }
+                setProductAndSku({
+                    ...productAndSkuBuilt,
                     setGlobalDialog, setRedirectPageGlobal
                 });
             }
@@ -158,6 +174,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         }
     }
 
+    function getButtonText() {
+        if (initialItem) {
+            return localStrings.updateCart;
+        }
+        return localStrings.addToCart;
+    }
+
     return (
         <>
             <Dialog open={isViewerOpen}>
@@ -170,6 +193,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     }}
                 />
             </Dialog>
+
+            {/*<p>{JSON.stringify(initialItem || {})}</p>*/}
         <Box width="100%">
             {productAndSku ?
                 <Grid container spacing={3} justifyContent="space-around">
@@ -305,6 +330,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                      valid={valid}
                                      currency={currency}
                                      lineNumber={lineNumber}
+                                     initialItem={initialItem}
                     />
                     }
 
@@ -346,15 +372,24 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                 router.push("/cart");
                                             }
                                         } else {
-                                            //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
-                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku,
-                                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
-
-                                            if (addCallBack) {
-                                                addCallBack(uuid);
+                                            if (initialItem) {
+                                                updateCartOrder(setGlobalDialog, productAndSku, initialItem,
+                                                    getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment)
+                                                if (addCallBack) {
+                                                    addCallBack("nouuid");
+                                                }
                                             }
-                                            if (routeToCart) {
-                                                router.push("/cart");
+                                            else {
+                                                //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                                                let uuid = addToCartOrder(setGlobalDialog, productAndSku,
+                                                    getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+
+                                                if (addCallBack) {
+                                                    addCallBack(uuid);
+                                                }
+                                                if (routeToCart) {
+                                                    router.push("/cart");
+                                                }
                                             }
                                         }
                                     }}
@@ -362,7 +397,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     {isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ?
                                         localStrings.unavailable
                                         :
-                                        (addButtonText || (getFirstRestriction() || localStrings.addToCart))
+                                        (addButtonText || (getFirstRestriction() || getButtonText()))
                                     }
                                 </BazarButton>
                                 {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
