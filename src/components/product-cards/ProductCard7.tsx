@@ -118,6 +118,7 @@ export interface ProductCard7Props {
   item: any,
   currency: string
   modeOrder: boolean
+  contextData: any
 }
 
 const ProductCard7: React.FC<ProductCard7Props> = ({
