@@ -1,10 +1,11 @@
 import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
 import {Span, Tiny2} from '@component/Typography'
-import {Avatar, Button, Dialog, DialogContent, IconButton} from '@material-ui/core'
+import {Avatar, Button, Dialog, DialogContent, IconButton, Tooltip} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
+import EditIcon from '@material-ui/icons/Edit';
 import {Box} from '@material-ui/system'
 import Link from 'next/link'
 import React, {useState} from 'react'
@@ -78,13 +79,6 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   },
   details: {
     padding: '1rem',
-
-    // '& .title, & .categories': {
-    //   whiteSpace: 'nowrap',
-    //   overflow: 'hidden',
-    //   textOverflow: 'ellipsis',
-    // },
-
     '& .icon-holder': {
       display: 'flex',
       flexDirection: 'column',
@@ -106,6 +100,14 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
     backgroundColor:'rgba(0,0,30,0.4)'
   },
 }))
+
+
+function getStyleForUpdate(item: any) {
+  if (item.options && item.options.length > 0) {
+    return {objectFit: "cover", cursor:"pointer"};
+  }
+  return null;
+}
 
 export interface ProductCard7Props {
   id: string | number
@@ -147,9 +149,10 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   }
 
   const displayProductDetail =  () => {
-    setOpenProductDetail(true);
+    if (item.options && item.options.length > 0) {
+      setOpenProductDetail(true);
+    }
   }
-
 
   if (!imgUrl) {
     imgUrl = imgUrl;
@@ -171,18 +174,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                           product={product}
                           options={contextData.options}
                           currency={currency}
-                          addCallBack={(uuid) => {
-                            alert(uuid)
-                            // let newPAndSku = {
-                            //   ...selectedProductAndSku,
-                            //   sku: {
-                            //     ...selectedProductAndSku.sku,
-                            //     uuid: uuid,
-                            //   }
-                            // };
-                            // setSelectedProductSku(newPAndSku)
-                            // setOpen(false)
-
+                          addCallBack={() => {
+                            setOpenProductDetail(false)
                           }}
             />
             <IconButton
@@ -203,7 +196,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 // <Link href={"/product/detail/" + product?.id}>
                 <Image
                     onClick={displayProductDetail}
-                    style={{objectFit: "cover", cursor:"pointer"}}
+                    style={getStyleForUpdate(item)}
                     src={imgUrl}
                     height={140}
                     width={140}
@@ -219,8 +212,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 minWidth="0px"
                 width="100%"
             >
-              <Link href={"/product/detail/" + product?.id}>
-                <a>
+              {/*<Link href={"/product/detail/" + product?.id}>*/}
+                <div style={getStyleForUpdate(item)} onClick={displayProductDetail}>
                   <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
                     {formatProductAndSkuName(item)}
                   </Span>
@@ -229,8 +222,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                         {" " + parseFloat(item.price).toFixed(2) + " " + currency}
                       </Span>
                   }
-                </a>
-              </Link>
+                </div>
+              {/*</Link>*/}
               {/*{JSON.stringify(item.options)}*/}
               {
                   item.options && item.options.map((option, key) =>
@@ -305,6 +298,18 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
 
                 {!modeOrder &&
                     <FlexBox alignItems="center">
+                      {item.options && item.options.length > 0 &&
+                          <Tooltip title={localStrings.editOptions}>
+                            <Button
+                                sx={{p: '5px', mr: '5px'}}
+                                variant="outlined"
+                                color="primary"
+                                onClick={displayProductDetail}
+                            >
+                              <EditIcon fontSize="small"/>
+                            </Button>
+                          </Tooltip>
+                      }
                       <Button
                           variant="outlined"
                           color="primary"
@@ -330,8 +335,6 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                       >
                         <Add fontSize="small"/>
                       </Button>
-
-
                     </FlexBox>
                 }
               </FlexBox>

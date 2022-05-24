@@ -1,7 +1,7 @@
 {
   "graphQlUrl": "http://localhost:5001/latoque-b23f1/us-central1/graphQlApi",
-  "brandId": "KSfP69svg0MVJWLFqljM",
-  "appName": "Be Happy",
+  "brandId": "TivVlOvOjzVXwjzL6NFR",
+  "appName": "renato",
   "siteUrl": "https://commandes.by-bhappy.com/",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
@@ -15,5 +15,4 @@
   "defaultMapLng": 7.1187851,
   "defaultMapLat": 43.5882147,
   "itemPerPage": 200
-
 }

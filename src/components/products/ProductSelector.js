@@ -69,7 +69,7 @@ function ProductSelector({ productAndSku, options,
   function buildOption(optionList, option) {
     return {
       "option_list_name": optionList.extName,
-      "option_list_extRef": optionList.extRef,
+      "option_list_extRef": optionList.extRef || optionList.extId,
       "option_list_internal_name": optionList.name,
       "name": option.name || option.extName,
       "ref": option.extRef,
@@ -125,7 +125,11 @@ function ProductSelector({ productAndSku, options,
     if (optionList.maxValue === -1) {
       return true;
     }
-    let countSelect = productAndSku.options.filter(option => option.option_list_extRef === optionList.extRef).length;
+
+    // let count = productAndSku && productAndSku.options && productAndSku.options.filter(
+    //     option => option.ref === optionComplete.ref).length
+    //let countSelect = productAndSku.options.filter(option => option.extRef === optionList.extRef).length;
+    let countSelect = productAndSku.options.filter(option => option.option_list_extRef === (optionList.extRef || optionList.extId)).length;
     return isCheckSelect(optionComplete) || countSelect < optionList.maxValue;
   }
 

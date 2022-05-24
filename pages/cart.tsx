@@ -37,6 +37,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
   return (
 
       <>
+        {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
         <CheckoutNavLayout
             title={localStrings.cart}
             description={localStrings.cartDesc}

@@ -512,9 +512,18 @@ export const getCroppedStringSize = (value, size) => {
     return value.substring(0, size + "...");
 }
 
+export function getProductFromItem(item, products) {
+
+    if (!products || !item) {
+        return null;
+    }
+    let product = products.find(p => p.id === item.productId);
+    return product;
+}
+
 export function getImgUrlFromProducts(item, products) {
 
-    if (!products) {
+    if (!products || !item) {
         return null;
     }
     let defaultUrl = "/assets/images/Icon_Sandwich.png";

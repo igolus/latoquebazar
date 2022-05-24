@@ -3,6 +3,8 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        editOptions: "Changer les options",
+        editProductMenu: "Changer les produits",
         pendingPointsGain: "Vous gagnez {0} points avec cette commande",
         use: "Utiliser",
         useYouPoints: "Utilisez vos points",
@@ -344,6 +346,7 @@ let localStrings = new LocalizedStrings({
         bySigningTermsAndConditions: "En cochant cette case vous acceptez les termes et conditions",
         requiredField: "Le champ {0} est obligatoire",
         addToCart: "Ajouter au panier",
+        updateCart: "Modifier le panier",
         description: "Description",
         additionalInformation: "Information additionnelle",
         customerDeliveryInformation: "Information additionnelle pour la livraison",

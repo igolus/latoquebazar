@@ -7,7 +7,7 @@ import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import cloneDeep from "clone-deep";
 import {useRouter} from "next/router";
-import {addDealToCart} from "../../util/cartUtil";
+import {addDealToCart, updateDealInCart} from "../../util/cartUtil";
 import ProductDealCard1List from "@component/products/ProductDealCard1List";
 import {useToasts} from "react-toast-notifications";
 import {makeStyles} from "@material-ui/styles";
@@ -92,32 +92,54 @@ const useStyles = makeStyles((palette) => ({
 }))
 
 function DealSelector({ deal, contextData }) {
+
+    // let params = {};
+    // let openMiniCartDealAtStart;
+    // try {
+    //     params = new URLSearchParams(window.location.search)
+    //     openMiniCartDealAtStart = params.get("openMiniCartDealAtStart")
+    // }
+    // catch (err) {
+    //
+    // }
+
+    // useEffect(() => {
+    //   if (openMiniCartDealAtStart) {
+    //       setConfirmDealDialogOpen(true);
+    //   }
+    // }, [openMiniCartDealAtStart])
     const width = useWindowSize()
     const classes = useStyles();
     const router = useRouter()
     const {addToast} = useToasts()
     const [currentLine, setCurrentLine] = useState(0)
+    //const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
     const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
+    const [updateMode, setUpdateMode] = useState(false)
     const [skuRefs, setSkuRefs] = useState([])
     const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, resetOrderInCreation, setGlobalDialog} = useAuth();
 
     useEffect(() => {
-        if (deal && deal.lines && deal.lines.length > 0 && deal.lines[currentLine] && deal.lines[currentLine].skus) {
-            let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
+        if (deal && getLines().length > 0 && getLines()[currentLine] && getLines()[currentLine].skus) {
+            let skusInLine = getLines()[currentLine].skus.map(sku => sku.extRef)
             setSkuRefs(skusInLine);
         }
 
     }, [currentLine])
 
     useEffect(() => {
-        if (deal) {
+        if (deal.deal) {
+            setDealEdit(cloneDeep(deal));
+            setUpdateMode(true);
+        }
+        else if (deal) {
             setDealEdit({deal: cloneDeep(deal)})
         }
     }, [])
 
     useEffect( () => {
-        if (dealEdit && dealEdit.productAndSkusLines && deal.lines.length > 0 &&
-            deal.lines.length === dealEdit.productAndSkusLines.length) {
+        if (dealEdit && dealEdit.productAndSkusLines && getLines().length > 0 &&
+            getLines().length === dealEdit.productAndSkusLines.length) {
             setConfirmDealDialogOpen(true);
         }
     }, [dealEdit])
@@ -125,15 +147,29 @@ function DealSelector({ deal, contextData }) {
 
 
     function getStepperList() {
-        return deal && deal.lines && deal.lines.map((line, index) => {
-                return(
-                    {
-                        index: index,
-                        title: line.name,
-                        disabled: false
-                    })
-            }
-        );
+        if (deal && deal.lines) {
+            return deal.lines.map((line, index) => {
+                    return(
+                        {
+                            index: index,
+                            title: line.name,
+                            disabled: false
+                        })
+                }
+            );
+        }
+        if (deal && deal.deal && deal.deal.lines) {
+            return deal.deal.lines.map((line, index) => {
+                    return(
+                        {
+                            index: index,
+                            title: line.name,
+                            disabled: false
+                        })
+                }
+            );
+        }
+
     }
 
     const handleStepChange = (step) => {
@@ -145,24 +181,32 @@ function DealSelector({ deal, contextData }) {
             dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.lineNumber == currentLine)
     }
 
-    function addMenuToCart() {
-        addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation);
-        setDealEdit(null);
+    function addUpdateMenuToCart() {
+        if (updateMode) {
+            updateDealInCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation);
+        }
+        else {
+            addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation);
+        }
         router.push("/cart")
+        setDealEdit(null);
     }
 
     function cancelDeal() {
         setDealEdit(null);
-        resetOrderInCreation();
+        //resetOrderInCreation();
         router.push("/product/shop/all")
+    }
+
+    function getLines() {
+        if (!deal?.lines && !deal?.deal?.lines) {
+            return [];
+        }
+        return deal.lines || deal.deal.lines;
     }
 
     return (
         <div>
-            {/*<p>{deal && deal.lines? deal.lines.length : 0}</p>*/}
-            {/*<p>{dealEdit && dealEdit.productAndSkusLines ? dealEdit.productAndSkusLines.length: 0}</p>*/}
-
-
             <Dialog
                 BackdropProps={{
                     classes: {
@@ -176,6 +220,7 @@ function DealSelector({ deal, contextData }) {
                 <DialogTitle>{localStrings.contentDeal}</DialogTitle>
                 <DialogContent className={classes.dialogContent}>
                     <MiniCartDeal contextData={contextData}
+                                  updateMode={updateMode}
                                   setterLine={setCurrentLine}
                                   closeCallBack={() => setConfirmDealDialogOpen(false)}/>
                 </DialogContent>
@@ -196,18 +241,13 @@ function DealSelector({ deal, contextData }) {
                         color="primary"
                         onClick={() => {
                             setConfirmDealDialogOpen(false);
-                            addMenuToCart();
+                            addUpdateMenuToCart();
                         }}
                     >
-                        {localStrings.addMenuToCart}
+                        {updateMode ? localStrings.updateCart : localStrings.addMenuToCart}
                     </Button>
                 </DialogActions>
             </Dialog>
-
-            {/*<h1>{currentLine}</h1>*/}
-            {/*<p>{JSON.stringify(dealEdit)}</p>*/}
-            {/*<p>{JSON.stringify(skuRefs)}</p>*/}
-            {/*<p>{dealEdit ? JSON.stringify(dealEdit.productAndSkusLines) : ""}</p>*/}
             <Box mb={3}>
                 <Grid container spacing={3}>
                     <Grid item lg={12} md={12} xs={12}>
@@ -243,12 +283,12 @@ function DealSelector({ deal, contextData }) {
                             </Box>
 
                             <Box p={1} >
-                                {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length === deal.lines.length &&
-                                <Button variant="contained" color="primary" onClick={addMenuToCart}>
+                                {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length === getLines().length &&
+                                <Button variant="contained" color="primary" onClick={addUpdateMenuToCart}>
                                     {localStrings.addMenuToCart}
                                 </Button>
                                 }
-                                {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length !== deal.lines.length &&
+                                {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length !== getLines().length &&
                                 isProductSelectedInLine() &&
                                 <BazarButton variant="contained" color="primary" onClick={() => setCurrentLine(currentLine + 1)}>
                                     {localStrings.next}

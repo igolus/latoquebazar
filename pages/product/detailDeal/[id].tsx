@@ -31,7 +31,7 @@ export interface ProductDetailsProps {
 const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const [selectedOption, setSelectedOption] = useState(0)
-    const {getContextDataAuth} = useAuth();
+    const {getContextDataAuth, getOrderInCreation} = useAuth();
 
     function getContextData() {
         if (getContextDataAuth() && getContextDataAuth().deals.find(d => d.id === id)) {
@@ -46,7 +46,12 @@ const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
     const { id } = router.query
 
     useEffect(() => {
-        setSelectedDeal((getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null)
+        let dealFromDealList = (getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null;
+        if (dealFromDealList == null) {
+            //get it from getOrderInCreation
+            dealFromDealList = (getOrderInCreation()?.order?.deals || []).find(d => d.uuid === id);
+        }
+        setSelectedDeal(dealFromDealList)
     }, [id])
 
     const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: number) => {
