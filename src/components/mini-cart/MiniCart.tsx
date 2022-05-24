@@ -336,7 +336,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                 />
                             </div>
                             :
-                            <Link href={"/product/detailDeal/" + item.uuid}>
+                            <Link href={"/product/detailDealUpdate?uuid=" + item.uuid}>
                                 <a>
                                     <BazarAvatar
                                         src={getImgUrlFromProducts(item, contextData?.products)}
@@ -360,7 +360,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                     </H5>
                                 </div>
                                 :
-                                <Link href={"/product/detailDeal/" + item.uuid}>
+                                <Link href={"/product/detailDealUpdate?uuid=" + item.uuid}>
                                     <a>
                                         <H5 className="title" fontSize="14px" style={{
                                             textDecoration:
