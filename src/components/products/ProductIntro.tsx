@@ -243,9 +243,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         </Box>
                                     ))}
                                 </FlexBox>
+                                {width <= WIDTH_DISPLAY_MOBILE && productAndSku?.sku?.optionListExtIds && productAndSku?.sku?.optionListExtIds.length > 0 &&
 
-                                {width <= WIDTH_DISPLAY_MOBILE &&
                                     <FlexBox justifyContent="center" mb={1} mt={1}>
+
                                         {/*<Box ml={2} mt={"16px"}>*/}
                                         <a href="#selector">
                                         <BazarButton
