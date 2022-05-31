@@ -103,7 +103,7 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
 
 
 function getStyleForUpdate(item: any) {
-  if (item.options && item.options.length > 0) {
+  if (item.optionListExtIds && item.optionListExtIds.length > 0) {
     return {objectFit: "cover", cursor:"pointer"};
   }
   return null;
@@ -150,7 +150,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
   }
 
   const displayProductDetail =  () => {
-    if (item.options && item.options.length > 0) {
+    if (item.optionListExtIds && item.optionListExtIds.length > 0) {
       setOpenProductDetail(true);
     }
   }
@@ -299,7 +299,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
 
                 {!modeOrder &&
                     <FlexBox alignItems="center">
-                      {item.options && item.options.length > 0 &&
+                      {/*<p>{JSON.stringify(item)}</p>*/}
+                      {item.optionListExtIds && item.optionListExtIds.length > 0 &&
                           <Tooltip title={localStrings.editOptions}>
                             <Button
                                 sx={{p: '5px', mr: '5px'}}
