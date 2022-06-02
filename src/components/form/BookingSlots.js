@@ -153,9 +153,13 @@ export const getCurrentService = (establishment, startDate, deliveryMode) => {
   return null;
 }
 
+function getSlotDuration(establishment) {
+  return establishment.serviceSetting.slotDuration || 20;
+}
+
 export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
   if (startDate) {
-    let slotDuration = establishment.serviceSetting.slotDuration || 20;
+    let slotDuration = getSlotDuration(establishment);
     let offset = getOffset(deliveryMode, establishment);
     let daySettings = getWeekDaySettingsFromDate(moment(startDate).add(offset, 'minutes'), establishment, null, orderInCreation().deliveryMode).filter(item => {
       return !item.deliveryMode || item.deliveryMode === deliveryMode
@@ -427,8 +431,10 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     else if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
       minimalSlotDiff = currentEstablishmentOrFirst().serviceSetting.minimalSlotNumberBookingNoDelivery
     }
-
-    return  timeSlots.allSlots.indexOf(slot) - timeSlots.allSlots.indexOf(firstSlotInFuture) >= minimalSlotDiff;
+    let slotDuration = getSlotDuration(currentEstablishmentOrFirst());
+    //let minTime =
+    return moment().diff(slot, 'minutes') > minimalSlotDiff * slotDuration
+    //return  timeSlots.allSlots.indexOf(slot) - timeSlots.allSlots.indexOf(firstSlotInFuture) >= minimalSlotDiff;
 
     //}
 
