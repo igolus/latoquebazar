@@ -154,6 +154,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const router = useRouter()
   const [selectedSlotKey, setSelectedSlotKey] = useState(null);
   const [adressValue, setAdressValue] = useState("");
+  const [adressSearch, setAdressSearch] = useState(false);
   const [adressEditLock, setAdressEditLock] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -1212,7 +1213,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             {(!dbUser || !useMyAdress) &&
                             <Grid container spacing={3}>
                               {/*<Box display="flex" p={1}>*/}
-                              <Grid item xs={12} lg={12} ml={2} mr={2}>
+                              <Grid item xs={adressSearch ? 10 : 12} lg={adressSearch ? 10 : 12} ml={adressSearch ? 0 : 2} mr={adressSearch ? 0 : 2}>
                                 <GoogleMapsAutocomplete
                                     //ref={autocomp}
                                     borderColor={customAddressSelected && "primary.main"}
@@ -1222,7 +1223,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         localStrings.fillAddressDeliveryConnected : localStrings.fillAddressDelivery}
                                     noKeyKnown
                                     required
-                                    setterValueSource={setAdressValue}
+                                    setterValueSource={(value) => {
+                                      setAdressSearch(true);
+                                      setAdressValue(value);
+                                    }}
                                     valueSource={adressValue}
                                     disabled={adressEditLock}
                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
@@ -1233,7 +1237,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         setDistanceAndCheck(distInfo,
                                             (maxDistanceReached) => {
                                               if (maxDistanceReached) {
-                                                setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
+                                                //setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
                                                 setSelectedAddId(null);
                                                 setCustomAddressSelected(false)
                                                 setManualAddressOutOfBound(true);
@@ -1241,10 +1245,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                               else {
                                                 setCustomAddressSelected(true)
                                                 setSelectedAddId(null);
-
                                               }
                                               setMaxDistanceReached(maxDistanceReached);
-
+                                              setAdressSearch(false);
                                             },
                                             setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
                                         updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
@@ -1253,6 +1256,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       }
                                     }}/>
                               </Grid>
+                              {adressSearch &&
+                                  <Grid item xs={2} lg={2} >
+                                    <CircularProgress className={classes.buttonProgress}/>
+                                  </Grid>
+                              }
                             </Grid>
                             }
 
