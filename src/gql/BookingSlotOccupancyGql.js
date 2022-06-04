@@ -10,6 +10,7 @@ const common = `
   excludedDeliveryNumber
   maxDelivery
   locked
+  deliveryMode
 `
 
 export const createUpdateBookingSlotOccupancyMutation = (brandId, establishmentId, data) => {

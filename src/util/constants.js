@@ -49,7 +49,7 @@ export const SITE_USER_COLLECTION = 'siteUsers';
 export const STAT_COLLECTION = 'stats';
 export const ORDER_COLLECTION = 'orders';
 export const DELIVERY_COLLECTION = 'deliveries';
-export const BOOKING_SLOT_OCCUPAMCY_COLLECTION = 'bookingSlotsOccupancy';
+export const BOOKING_SLOT_OCCUPANCY_COLLECTION = 'bookingSlotsOccupancy';
 
 export const DELIVERY_STATUS_NOT_STARTED = 'notStarted';
 export const DELIVERY_STATUS_ON_GOING = 'ongoing';
