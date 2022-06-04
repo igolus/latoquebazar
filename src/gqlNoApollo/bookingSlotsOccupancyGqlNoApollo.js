@@ -12,6 +12,7 @@ const common = `
     excludedDeliveryNumber
     maxDelivery
     locked
+    deliveryMode
 `
 
 export const getBookingSlotsOccupancyQueryNoApollo = async (brandId, establishmentId) => {
