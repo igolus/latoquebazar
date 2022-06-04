@@ -357,14 +357,9 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
 
   useEffect(async () => {
     const interval = setInterval(async () => {
-
       let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
           moment(), deliveryMode);
       setTimeSlots(timeSlotsData);
-      // if (currentEstablishmentOrFirst()) {
-      //   let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
-      //   setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
-      // }
     }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 120000);
     return () => clearInterval(interval);
   }, []);
