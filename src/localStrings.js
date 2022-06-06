@@ -13,7 +13,7 @@ let localStrings = new LocalizedStrings({
         loyalty: "Fidelité",
         bravo: "Bravo",
         loyaltyPoints: "Mes points de fidelités",
-        loyaltyPointsEarned: "Felicitation Vous avez cumulé {0} points de fidelités",
+        loyaltyPointsEarned: "Felicitation Vous avez cumulé {0} points de fidelité",
         loyaltyPointsSpent: "Vous avez depensé {0} points de fidelités",
         loyaltyPointNumber: "{0} points",
         loyaltyRemainsToSpent: "Plus que {0} points pour pouvoir en profiter !!",
