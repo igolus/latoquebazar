@@ -629,7 +629,7 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
             //addToast(localStrings.notif.productAddedToCart, { appearance: 'success', autoDismiss: true });
         }
         ga.gaAddToCart(
-            productAndSku.sku.id,
+            productAndSku.sku.id || productAndSku.sku.extRef,
             productAndSku.sku.name,
             1,
             productAndSku.sku.price,
@@ -671,7 +671,7 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
     }
 
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
-    pixelAddToCart(brand, productAndSku.sku)
+    pixelAddToCart(brand, productAndSku)
     ga.gaAddToCart(
         productAndSku.sku.id,
         productAndSku.sku.name,
