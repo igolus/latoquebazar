@@ -78,6 +78,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import UpSellDeal from "@component/products/UpSellDeal";
 import {gql} from "@apollo/client";
 import {Base64} from 'js-base64';
+import {pixelInitiateCheckout, pixelPurchaseContent} from "../../util/faceBookPixelUtil";
 
 const config = require('../../conf/config.json')
 
@@ -177,6 +178,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [pointsUsed, setPointsUsed] = useState(false);
   const [manualAddressOutOfBound, setManualAddressOutOfBound] = useState(false);
   const [priceDetails, setPriceDetails] = useState(false);
+
+  useEffect(() => {
+    pixelInitiateCheckout(currentBrand(), getOrderInCreation())
+  }, [])
 
   useEffect(() => {
     setPriceDetails(computePriceDetail(getOrderInCreation()))
@@ -593,7 +598,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       }
 
       ga.gaPurchase(result.data.addOrder);
-
+      pixelPurchaseContent(currentBrand, result.data.addOrder);
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null, 2))
       increaseOrderCount();
       resetOrderInCreation();
