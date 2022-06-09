@@ -22,6 +22,8 @@ const common = `
     currency
     siteUrl
     googleKey
+    facebookPixelId
+    analyticsGoogleId
     starWebProducts
     signagePage
     loginImg

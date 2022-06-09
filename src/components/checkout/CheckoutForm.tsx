@@ -830,7 +830,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function selectDealProposal(selectedProductAndSku, deal) {
     addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null,
-        deal.candidate.deal, checkDealProposal, currentEstablishment);
+        deal.candidate.deal, checkDealProposal, currentEstablishment, currentBrand());
   }
 
   function formatPointsAppliedMessage() {
