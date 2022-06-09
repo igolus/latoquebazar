@@ -57,6 +57,14 @@ const DealCard7: React.FC<DealCard7Props> = ({
         imgUrl = imgUrl;
     }
 
+    function getPricingValueDeal(key) {
+        if (deal.deal.lines[key].pricingValueAfterDisc != null) {
+            return deal.deal.lines[key].pricingValueAfterDisc;
+        }
+        return parseFloat(
+            deal.deal.lines[key].pricingValue)
+    }
+
     return (
         <ProductCard7Style>
             {/*<p>{JSON.stringify(deal)}</p>*/}
@@ -90,39 +98,53 @@ const DealCard7: React.FC<DealCard7Props> = ({
                 width="100%"
             >
                 <>
-                    <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
-                        <a>
-                            <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
-                                {item.name}
-                            </Span>
-                        </a>
-                    </Link>
+                    {deal.deal.dealNotSelectable ?
+                        <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
+                            {item.name}
+                        </Span>
+                        :
+                        <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
+                            <a>
+                                <Span className="title" fontWeight="600" fontSize="18px" mb={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
+                                    {item.name}
+                                </Span>
+                            </a>
+                        </Link>
+                    }
+
                     {!itemHaveRestriction(item) &&
                         <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
                             {" " + getPriceDeal(item).toFixed(2) + " " + currency}
                         </Span>
                     }
                 </>
-                {/*{JSON.stringify(item.options)}*/}
+                {/*{JSON.stringify(deal)}*/}
                 {
                     deal.productAndSkusLines && deal.productAndSkusLines.map((productAndSkusLine, key) =>
                         // <h1>{option.name}</h1>
                         <>
                             <FlexBox flexWrap="wrap" alignItems="center">
-                                <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
-                                    <a>
-                                        <Span color="grey.600" fontSize="14px"  mr={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
-                                            {formatProductAndSkuName(productAndSkusLine)}
-                                        </Span>
-                                    </a>
-                                </Link>
+                                {deal.deal.dealNotSelectable ?
+                                    <Span color="grey.600" fontSize="14px"  mr={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
+                                        {formatProductAndSkuName(productAndSkusLine)}
+                                    </Span>
+                                    :
+                                    <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
+                                        <a>
+                                            <Span color="grey.600" fontSize="14px"  mr={1} style={{ textDecoration : itemHaveRestriction(item) ? 'line-through' : 'none'}}>
+                                                {formatProductAndSkuName(productAndSkusLine)}
+                                            </Span>
+                                        </a>
+                                    </Link>
+                                }
+
                                 {!itemHaveRestriction(item) &&
                                     <>
                                         <Span color="grey.600" fontSize="14px" mr={1}>
-                                            {parseFloat(deal.deal.lines[key].pricingValue).toFixed(2) + " " + currency} x {deal.quantity}
+                                            {getPricingValueDeal(key).toFixed(2) + " " + currency} x {deal.quantity}
                                         </Span>
                                         <Span color="grey.600" fontSize="14px" color="primary.main" mr={2}>
-                                            {(parseFloat(deal.deal.lines[key].pricingValue) * deal.quantity).toFixed(2) + " " + currency}
+                                            {(getPricingValueDeal(key) * deal.quantity).toFixed(2) + " " + currency}
                                         </Span>
                                     </>
                                 }
@@ -201,19 +223,25 @@ const DealCard7: React.FC<DealCard7Props> = ({
                     {!modeOrder &&
                         <FlexBox alignItems="center">
                             {/*{item.options && item.options.length > 0 &&*/}
-                            <Tooltip title={localStrings.editProductMenu}>
-                                <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
-                                    <a>
-                                        <Button
-                                            sx={{p: '5px', mr: '5px'}}
-                                            variant="outlined"
-                                            color="primary"
-                                        >
-                                            <EditIcon fontSize="small"/>
-                                        </Button>
-                                    </a>
-                                </Link>
-                            </Tooltip>
+
+                            {!deal.deal.dealNotSelectable &&
+                                <Tooltip title={localStrings.editProductMenu}>
+                                    <Link href={"/product/detailDealUpdate?uuid=" + deal.uuid}>
+                                        <a>
+                                            <Button
+                                                sx={{p: '5px', mr: '5px'}}
+                                                variant="outlined"
+                                                color="primary"
+                                            >
+                                                <EditIcon fontSize="small"/>
+                                            </Button>
+                                        </a>
+                                    </Link>
+                                </Tooltip>
+
+                            }
+
+
                             {/*}*/}
 
 

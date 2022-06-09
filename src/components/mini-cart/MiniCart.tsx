@@ -336,8 +336,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                 />
                             </div>
                             :
-                            <Link href={"/product/detailDealUpdate?uuid=" + item.uuid}>
-                                <a>
+                            <>
+                                {item.deal.dealNotSelectable ?
                                     <BazarAvatar
                                         src={getImgUrlFromProducts(item, contextData?.products)}
                                         mx={2}
@@ -345,8 +345,32 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                         height={76}
                                         width={76}
                                     />
-                                </a>
-                            </Link>
+                                    :
+                                    <>
+                                        {item.deal.dealNotSelectable ?
+                                            <BazarAvatar
+                                                src={getImgUrlFromProducts(item, contextData?.products)}
+                                                mx={2}
+                                                alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
+                                                height={76}
+                                                width={76}
+                                            />
+                                            :
+                                            <Link href={"/product/detailDealUpdate?uuid=" + item.uuid}>
+                                                <a>
+                                                    <BazarAvatar
+                                                        src={getImgUrlFromProducts(item, contextData?.products)}
+                                                        mx={2}
+                                                        alt={item.type === TYPE_PRODUCT ? formatProductAndSkuName(item) : item.deal.name}
+                                                        height={76}
+                                                        width={76}
+                                                    />
+                                                </a>
+                                            </Link>
+                                        }
+                                    </>
+                                }
+                            </>
                         }
 
                         <Box flex="1 1 0">
@@ -360,16 +384,27 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                     </H5>
                                 </div>
                                 :
-                                <Link href={"/product/detailDealUpdate?uuid=" + item.uuid}>
-                                    <a>
+                                <>
+                                {item.deal.dealNotSelectable ?
                                         <H5 className="title" fontSize="14px" style={{
                                             textDecoration:
                                                 itemHaveRestriction(item.deal) ? 'line-through' : 'none'
                                         }}>
                                             {item.deal.name}
                                         </H5>
-                                    </a>
-                                </Link>
+                                        :
+                                        <Link href={"/product/detailDealUpdate?uuid=" + item.uuid}>
+                                            <a>
+                                                <H5 className="title" fontSize="14px" style={{
+                                                    textDecoration:
+                                                        itemHaveRestriction(item.deal) ? 'line-through' : 'none'
+                                                }}>
+                                                    {item.deal.name}
+                                                </H5>
+                                            </a>
+                                        </Link>
+                                }
+                                </>
                             }
                             {!itemHaveRestriction(item.type === TYPE_PRODUCT ? item : item.deal) &&
                                 <>
