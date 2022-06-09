@@ -285,12 +285,12 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                 }}
                                 onClick={async () => {
                                     if (item.type === TYPE_DEAL) {
-                                        increaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, contextData)
+                                        increaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid, currentBrand())
                                     }
                                     else {
                                         //alert("increaseCartQte")
                                         await increaseCartQte(setGlobalDialog, getOrderInCreation(),
-                                            setOrderInCreation, item.uuid, contextData, checkDealProposal, currentEstablishment)
+                                            setOrderInCreation, item.uuid, contextData, checkDealProposal, currentEstablishment, currentBrand())
                                     }
                                 }}
                             >
