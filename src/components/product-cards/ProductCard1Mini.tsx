@@ -194,7 +194,7 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment,
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment,currentBrand,
     checkDealProposal, setGlobalDialog, setRedirectPageGlobal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
@@ -414,7 +414,8 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                             //alert(JSON.stringify(selectedProductAndSku.sku));
                             //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
                             addToCartOrder(setGlobalDialog, selectedProductAndSku,
-                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                                getOrderInCreation(), setOrderInCreation, addToast, null,
+                                checkDealProposal, currentEstablishment, currentBrand());
 
                             //alert("uuid " + uuid);
                             // if (!selectedProductAndSku.sku.uuid) {
@@ -447,7 +448,8 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                         if (!isProductAndSkuGetOption(selectedProductAndSku)) {
                           //let uuid = addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
                           let uuid = addToCartOrder(setGlobalDialog, selectedProductAndSku,
-                              getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                              getOrderInCreation(), setOrderInCreation, addToast, null,
+                              checkDealProposal, currentEstablishment, currentBrand());
 
 
                           //alert("uuid " + uuid);

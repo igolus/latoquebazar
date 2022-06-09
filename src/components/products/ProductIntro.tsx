@@ -88,7 +88,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         imgUrl = (product.files || []).map(file => file.url);
     }
 
-    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment,
+    const {setOrderInCreation, getOrderInCreation, dealEdit, currentEstablishment, currentBrand,
         setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
 
@@ -403,8 +403,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                         }
                                                         else {
                                                             //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
-                                                            let uuid = addToCartOrder(setGlobalDialog, productAndSku,
-                                                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                                                            let uuid = addToCartOrder(setGlobalDialog,
+                                                                productAndSku,
+                                                                getOrderInCreation(), setOrderInCreation, addToast, null,
+                                                                checkDealProposal, currentEstablishment, currentBrand());
 
                                                             if (addCallBack) {
                                                                 addCallBack(uuid);

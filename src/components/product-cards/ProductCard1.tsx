@@ -237,7 +237,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [open, setOpen] = useState(false);
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment,
+  const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand,
     setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
@@ -420,7 +420,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                 //alert(selectedProductAndSku.sku.uuid)
                                 //alert(JSON.stringify(selectedProductAndSku.sku));
                                 addToCartOrder(setGlobalDialog, selectedProductAndSku,
-                                    getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                                    getOrderInCreation(), setOrderInCreation, addToast, null,
+                                    checkDealProposal, currentEstablishment, currentBrand());
                                 //alert("uuid " + uuid);
                                 // if (!selectedProductAndSku.sku.uuid) {
                                 //   let selectedWithUuid = {...selectedProductAndSku, sku: {...selectedProductAndSku.sku, uuid:uuid}}
@@ -449,7 +450,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                       if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
                         //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
                         addToCartOrder(setGlobalDialog, selectedProductAndSku,
-                            getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment);
+                            getOrderInCreation(), setOrderInCreation, addToast, null,
+                            checkDealProposal, currentEstablishment, currentBrand());
                       } else {
                         setOpen(true);
                       }

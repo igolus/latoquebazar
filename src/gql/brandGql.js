@@ -20,6 +20,8 @@ const common = `
     currency
     siteUrl
     googleKey
+    facebookPixelId
+    analyticsGoogleId
     starWebProducts
     proposeDeal
     loginImg
