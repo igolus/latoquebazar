@@ -6,10 +6,12 @@ import Head from 'next/head'
 import Router, {useRouter} from 'next/router'
 import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import React, {Fragment, useEffect} from 'react'
+import React, {Fragment, useEffect, useState} from 'react'
 import {ToastProvider} from "react-toast-notifications";
 import * as ga from '../lib/ga'
 import "../global.css";
+import {getBrandByIdQueryNoApollo} from "../src/gqlNoApollo/brandGqlNoApollo";
+import config from "../src/conf/config.json";
 
 export const cache = createCache({ key: 'css', prepend: true })
 
@@ -22,12 +24,34 @@ nProgress.configure({ showSpinner: false })
 
 const App = ({ Component, pageProps}: any) => {
     const Layout = Component.layout || Fragment
+    //const [brandConfig, setBrandConfig] = useState(null);
+    const [analyticsGoogleId, setAnalyticsGoogleId] = useState(null);
+    const [facebookPixelId, setFacebookPixelId] = useState(null);
 
     const router = useRouter()
 
+    // useEffect(() => {
+    //     if (process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS) {
+    //         //alert("useEffect App")
+    //         const handleRouteChange = (url: string) => {
+    //             //alert("handleRouteChange")
+    //             ga.pageview(url)
+    //         }
+    //         //When the component is mounted, subscribe to router changes
+    //         //and log those page views
+    //         router.events.on('routeChangeComplete', handleRouteChange)
+    //
+    //         // If the component is unmounted, unsubscribe
+    //         // from the event with the `off` method
+    //         return () => {
+    //             router.events.off('routeChangeComplete', handleRouteChange)
+    //         }
+    //     }
+    // }, [router.events])
+
     useEffect(() => {
-        if (process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS) {
-            //alert("useEffect App")
+        if (analyticsGoogleId) {
+            //alert("analyticsGoogleId " + analyticsGoogleId)
             const handleRouteChange = (url: string) => {
                 //alert("handleRouteChange")
                 ga.pageview(url)
@@ -42,7 +66,35 @@ const App = ({ Component, pageProps}: any) => {
                 router.events.off('routeChangeComplete', handleRouteChange)
             }
         }
-    }, [router.events])
+    })
+
+    useEffect(() => {
+        if (facebookPixelId) {
+            console.log("facebookPixelId " + facebookPixelId)
+            import('react-facebook-pixel')
+                .then((x) => x.default)
+                .then((ReactPixel) => {
+                    ReactPixel.init(facebookPixelId) // facebookPixelId
+                    ReactPixel.pageView()
+                    router.events.on('routeChangeComplete', () => {
+                        ReactPixel.pageView()
+                    })
+                })
+            return null;
+        }
+
+    }, [router.events, facebookPixelId, analyticsGoogleId])
+
+    useEffect(() => {
+        // declare the data fetching function
+        const getBrand = async () => {
+            const resBrand = await getBrandByIdQueryNoApollo(config.brandId);
+            setAnalyticsGoogleId(resBrand?.getBrand?.config?.analyticsGoogleId)
+            setFacebookPixelId(resBrand?.getBrand?.config?.facebookPixelId)
+        }
+        getBrand()
+            .catch(console.error);
+    }, [])
 
     useEffect(async () => {
         // Remove the server-side injected CSS.
@@ -54,7 +106,7 @@ const App = ({ Component, pageProps}: any) => {
 
     return (
         // <div>
-            <CacheProvider value={cache}>
+        <CacheProvider value={cache}>
             <Head>
                 <Head>
                     {/*{contextData?.brand.iconUrl &&*/}
@@ -91,19 +143,19 @@ const App = ({ Component, pageProps}: any) => {
             {/*<AppProvider>*/}
 
 
-                <ToastProvider placement="bottom-left">
-                    <MuiTheme>
+            <ToastProvider placement="bottom-left">
+                <MuiTheme>
                     <AuthProvider>
 
 
-                            <Layout>
-                                <Component {...pageProps} />
-                            </Layout>
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
 
 
                     </AuthProvider>
-                    </MuiTheme>
-                </ToastProvider>
+                </MuiTheme>
+            </ToastProvider>
             {/*</AppProvider>*/}
 
         </CacheProvider>

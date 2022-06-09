@@ -22,6 +22,7 @@ import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getChargesQuery} from "../gql/chargesGql";
 import {getCouponCodeDiscount} from "../gql/productDiscountGql";
 import * as ga from '../../lib/ga'
+import {pixelAddToCart} from "./faceBookPixelUtil";
 
 const { uuid } = require('uuidv4');
 
@@ -580,7 +581,7 @@ export function updateCartOrder(setGlobalDialog, productAndSku, initialItem, ord
 }
 
 export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
-                               setOrderInCreation, addToast, prefferedDealToApply, checkDealProposal, currentEstablishment) {
+                               setOrderInCreation, addToast, prefferedDealToApply, checkDealProposal, currentEstablishment, brand) {
     if (!orderInCreation || !productAndSku.product) {
         return;
     }
@@ -633,6 +634,8 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
             1,
             productAndSku.sku.price,
         )
+
+        pixelAddToCart(brand, productAndSku)
         if (checkDealProposal && currentEstablishment && !discPointExists) {
             checkDealProposal(newOrder, currentEstablishment);
         }
@@ -668,6 +671,7 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
     }
 
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
+    pixelAddToCart(brand, productAndSku.sku)
     ga.gaAddToCart(
         productAndSku.sku.id,
         productAndSku.sku.name,
