@@ -28,6 +28,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {grey} from '../../theme/themeColors'
 import useWindowSize from "@hook/useWindowSize";
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
+import {pixelViewContent} from "../../util/faceBookPixelUtil";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -99,11 +100,9 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         return firstEsta;
     }
 
+
     useEffect(() => {
-        // alert("skuIndex " + skuIndex);
-        // alert("firstOrCurrentEstablishment " + firstOrCurrentEstablishment())
         if (firstOrCurrentEstablishment() && brand) {
-            // alert("firstOrCurrentEstablishment ")
             let productAndSkuBuilt;
             if (skuIndex) {
                 productAndSkuBuilt = {
@@ -147,6 +146,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     const [isViewerOpen, setIsViewerOpen] = useState(false)
     const [currentImage, setCurrentImage] = useState(0)
     const router = useRouter()
+
+    useEffect(() => {
+        pixelViewContent(brand, productAndSku);
+    }, [productAndSku])
 
     const handleImageClick = (ind: number) => () => {
         setSelectedImage(ind)
