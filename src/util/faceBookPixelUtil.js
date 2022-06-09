@@ -19,11 +19,11 @@ export const pixelAddToCart = (brand, productAndSku) => {
     callReactPixel(brand, ReactPixel => {
         ReactPixel.track('AddToCart', {
             content_type: 'product',
-            content_ids: [productAndSku.sku.id],
+            content_ids: [productAndSku.sku.id || productAndSku.sku.extRef],
             content_name: productAndSku.sku.name,
-            content_category: 'Shoes',
-            value: 0.50,
-            currency: 'USD'
+            content_category: productAndSku.product.category.category,
+            value: parseFloat(productAndSku.sku.price),
+            currency: 'EUR'
         });
     });
 }
