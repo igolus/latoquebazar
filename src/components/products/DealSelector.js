@@ -93,21 +93,6 @@ const useStyles = makeStyles((palette) => ({
 
 function DealSelector({ deal, contextData }) {
 
-    // let params = {};
-    // let openMiniCartDealAtStart;
-    // try {
-    //     params = new URLSearchParams(window.location.search)
-    //     openMiniCartDealAtStart = params.get("openMiniCartDealAtStart")
-    // }
-    // catch (err) {
-    //
-    // }
-
-    // useEffect(() => {
-    //   if (openMiniCartDealAtStart) {
-    //       setConfirmDealDialogOpen(true);
-    //   }
-    // }, [openMiniCartDealAtStart])
     const width = useWindowSize()
     const classes = useStyles();
     const router = useRouter()
@@ -117,7 +102,8 @@ function DealSelector({ deal, contextData }) {
     const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
     const [updateMode, setUpdateMode] = useState(false)
     const [skuRefs, setSkuRefs] = useState([])
-    const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, resetOrderInCreation, setGlobalDialog} = useAuth();
+    const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, currentBrand,
+        resetOrderInCreation, setGlobalDialog} = useAuth();
 
     useEffect(() => {
         if (deal && getLines().length > 0 && getLines()[currentLine] && getLines()[currentLine].skus) {
@@ -183,10 +169,10 @@ function DealSelector({ deal, contextData }) {
 
     function addUpdateMenuToCart() {
         if (updateMode) {
-            updateDealInCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation);
+            updateDealInCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation, false, currentBrand());
         }
         else {
-            addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation);
+            addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation, false, currentBrand());
         }
         router.push("/cart")
         setDealEdit(null);

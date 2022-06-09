@@ -333,7 +333,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                           disabled={item.quantity === 0 || itemHaveRestriction(item) || itemRestrictionMax(item)}
                           sx={{p: '5px'}}
                           onClick={async () => await increaseCartQte(setGlobalDialog, getOrderInCreation(),
-                              setOrderInCreation, item.uuid, null, checkDealProposal, currentEstablishment)}
+                              setOrderInCreation, item.uuid, null, checkDealProposal, currentEstablishment, currentBrand())}
                       >
                         <Add fontSize="small"/>
                       </Button>

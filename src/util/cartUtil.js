@@ -22,7 +22,7 @@ import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getChargesQuery} from "../gql/chargesGql";
 import {getCouponCodeDiscount} from "../gql/productDiscountGql";
 import * as ga from '../../lib/ga'
-import {pixelAddToCart} from "./faceBookPixelUtil";
+import {pixelAddDealToCart, pixelAddToCart, pixelAddToCartData} from "./faceBookPixelUtil";
 
 const { uuid } = require('uuidv4');
 
@@ -110,7 +110,7 @@ export function decreaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
     )
 }
 
-export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid) {
+export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid, brand) {
     let itemIoChange = orderInCreation.order.deals.find(deal => deal.uuid === uuid);
 
     if (!itemIoChange) {
@@ -143,6 +143,11 @@ export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
         1,
         added.price,
     )
+
+    pixelAddToCartData(brand, added.extRef,
+        added.name,
+        1,
+        added.price);
 }
 
 
@@ -201,7 +206,7 @@ export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCrea
 }
 
 export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation,
-                                      uuid, contextData, checkDealProposal, currentEstablishment) {
+                                      uuid, contextData, checkDealProposal, currentEstablishment, brand) {
     let discPointExists = isDiscPointExists(orderInCreation);
     orderInCreation = removeDiscountPoints(orderInCreation, setGlobalDialog);
     // alert("added " + JSON.stringify(added))
@@ -231,6 +236,13 @@ export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrder
         1,
         added.price,
     )
+
+    pixelAddToCartData(brand, added.extRef,
+        added.name,
+        1,
+        added.price,);
+
+
 
     if (checkDealProposal && currentEstablishment && !discPointExists) {
         checkDealProposal(newOrder, currentEstablishment);
@@ -419,7 +431,7 @@ export function updateDealInCart(setGlobalDialog, deal, orderInCreation, setOrde
     }
 }
 
-export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderInCreation, doNotUpdateOrder) {
+export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderInCreation, doNotUpdateOrder, brand) {
     let newOrder;
     let dealToAdd = {...deal}
 
@@ -518,6 +530,8 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
         1,
         price,
     )
+
+    pixelAddDealToCart(brand, deal);
 
     if (newOrder && !doNotUpdateOrder) {
         setOrderInCreation(newOrder)
@@ -671,13 +685,15 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
     }
 
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
-    pixelAddToCart(brand, productAndSku)
+
     ga.gaAddToCart(
         productAndSku.sku.id,
         productAndSku.sku.name,
         1,
         productAndSku.sku.price,
     )
+
+    pixelAddToCart(brand, productAndSku)
 
     if (checkDealProposal && currentEstablishment && !discPointExists) {
         checkDealProposal(newOrder, currentEstablishment);
