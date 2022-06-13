@@ -6,25 +6,16 @@ import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import MiniCart from '@component/mini-cart/MiniCart'
 import GrocerySearchBox from '@component/search-box/GrocerySearchBox'
 import Login from '@component/sessions/Login'
-import { useAppContext } from '@context/app/AppContext'
-import {
-  Badge,
-  Box,
-  Container,
-  Dialog,
-  Drawer,
-  IconButton,
-  useMediaQuery,
-  useTheme,
-} from '@material-ui/core'
+import {useAppContext} from '@context/app/AppContext'
+import {Badge, Box, Container, Dialog, Drawer, IconButton, useMediaQuery, useTheme,} from '@material-ui/core'
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown'
 import PersonOutline from '@material-ui/icons/PersonOutline'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
-import { layoutConstant } from '../../util/constants'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
+import {layoutConstant} from '../../util/constants'
 import clsx from 'clsx'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 
 type GroceryHeaderProps = {
   className?: string

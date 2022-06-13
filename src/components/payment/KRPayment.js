@@ -4,6 +4,7 @@ import useAuth from "@hook/useAuth";
 import axios from "axios";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {uuid} from "uuidv4";
+import {getOrderAmount} from "@component/checkout/CheckoutForm";
 
 const config = require('../../conf/config.json');
 
@@ -30,6 +31,9 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
     }, [text, disabled, document.getElementById('myPaymentForm')])
 
     function updatePayButtonState(payButt) {
+        if (!payButt || !payButt.firstElementChild) {
+            return false;
+        }
         if (text) {
             payButt.firstElementChild.innerText = text;
         }
@@ -133,7 +137,7 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
             })
         /* show the payment form */
 
-    },  [getOrderInCreation()])
+    },  [getOrderAmount(getOrderInCreation), getOrderInCreation().deliveryMode])
 
 
     return (

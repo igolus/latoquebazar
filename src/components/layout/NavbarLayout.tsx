@@ -1,10 +1,7 @@
-import { Container } from '@material-ui/core'
+import {Container} from '@material-ui/core'
 import React from 'react'
 import Navbar from '../navbar/Navbar'
 import AppLayout from './AppLayout'
-import {isBrandInBadStripStatus} from "../../util/displayUtil";
-import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import localStrings from "../../localStrings";
 
 const NavbarLayout: React.FC = ({ children ,
                                     contextData,

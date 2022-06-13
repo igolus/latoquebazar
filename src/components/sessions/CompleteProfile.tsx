@@ -12,11 +12,11 @@ import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {createSiteUserMutation} from "../../gql/siteUserGql";
-import {DIST_INFO} from "@component/address/AdressCheck";
 import {useToasts} from "react-toast-notifications";
 import parsePhoneNumber from "libphonenumber-js";
 import {makeStyles} from "@material-ui/styles";
 import {green} from "@material-ui/core/colors";
+import {pixelCompleteRegistration} from "../../util/faceBookPixelUtil";
 
 const fbStyle = {
   background: '#3B5998',
@@ -130,6 +130,7 @@ const CompleteProfile = ({closeCallBack}) => {
       closeCallBack();
     }
     addToast(localStrings.notif.accountCreated, { appearance: 'success', autoDismiss: true });
+    pixelCompleteRegistration(currentBrand())
     setSubmitOnGoing(false);
   }
 

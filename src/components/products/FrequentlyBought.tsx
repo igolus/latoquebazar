@@ -1,12 +1,12 @@
 import BazarButton from '@component/BazarButton'
 import FlexBox from '@component/FlexBox'
 import ProductCard8 from '@component/product-cards/ProductCard8'
-import { H2, H3, Span } from '@component/Typography'
+import {H2, H3, Span} from '@component/Typography'
 import productDatabase from '@data/product-database'
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
-import React, { Fragment } from 'react'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
+import React, {Fragment} from 'react'
 
 export interface FrequentlyBoughtProps {}
 

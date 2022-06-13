@@ -1,15 +1,19 @@
 import FlexBox from '@component/FlexBox'
-import { H2, H5 } from '@component/Typography'
+import {H2, H5} from '@component/Typography'
 import {Box, Button, CircularProgress, TextField} from '@material-ui/core'
-import { Rating } from '@material-ui/lab'
-import { useFormik } from 'formik'
+import {Rating} from '@material-ui/lab'
+import {useFormik} from 'formik'
 import React, {useEffect, useState} from 'react'
 import * as yup from 'yup'
 import ProductComment from './ProductComment'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
-import {createProductReviewMutation, getProductReviewsQuery, updateProductReviewMutation} from "../../gql/productReviewGql";
+import {
+    createProductReviewMutation,
+    getProductReviewsQuery,
+    updateProductReviewMutation
+} from "../../gql/productReviewGql";
 import {getProfileName} from "../../util/displayUtil";
 import BazarButton from "@component/BazarButton";
 import {makeStyles} from "@material-ui/styles";

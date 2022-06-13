@@ -1,15 +1,15 @@
 import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
 import Sidenav from '@component/sidenav/Sidenav'
-import { Button, Container, IconButton, Typography } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {Button, Container, IconButton, Typography} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 import Menu from '@material-ui/icons/Menu'
-import { keyframes } from '@material-ui/styled-engine'
-import { Box } from '@material-ui/system'
+import {keyframes} from '@material-ui/styled-engine'
+import {Box} from '@material-ui/system'
 import clsx from 'clsx'
 import debounce from 'lodash/debounce'
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
-import { Link as Scroll } from 'react-scroll'
+import React, {Fragment, useCallback, useEffect, useState} from 'react'
+import {Link as Scroll} from 'react-scroll'
 
 const headerHeight = 72
 

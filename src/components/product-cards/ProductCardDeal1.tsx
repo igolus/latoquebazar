@@ -10,27 +10,26 @@ import {MuiThemeProps} from '@theme/theme'
 import React, {useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
 import {
-  PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE, PRICING_EFFECT_PERCENTAGE_OFF, PRICING_EFFECT_PRICE,
-  PRICING_EFFECT_PRICE_OFF,
-  PRICING_EFFECT_UNCHANGED,
-  SEP
+  PRICING_EFFECT_FIXED_PRICE,
+  PRICING_EFFECT_PERCENTAGE,
+  PRICING_EFFECT_PRICE,
+  WIDTH_DISPLAY_MOBILE
 } from "../../util/constants";
 import {
-  buildProductAndSkus,
   buildProductAndSkusNoCheckOrderInCreation,
   isProductAndSkuGetOption,
   selectToDealEditOrder
 } from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import ProductIntro from "@component/products/ProductIntro";
 import {Close} from "@material-ui/icons";
-import BazarButton from "@component/BazarButton";
 import {isProductUnavailable, isProductUnavailableInEstablishment} from "@component/product-cards/ProductCard1";
-import {functions} from "firebase";
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import useWindowSize from "@hook/useWindowSize";
+import Link from "next/link";
+import Image from "@component/BazarImage";
 
 export interface ProductCardDeal1Props {
   className?: string
@@ -53,6 +52,7 @@ export interface ProductCardDeal1Props {
   priceDiff: number,
   priceBySkuId: any,
   priceItemsWithoutDeal: number
+  fullView: boolean
 }
 
 const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
@@ -122,11 +122,11 @@ const useStyles = makeStyles(({ palette, ...theme }: MuiThemeProps) => ({
   details: {
     padding: '1rem',
 
-    '& .title, & .categories': {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
+    // '& .title, & .categories': {
+    //   whiteSpace: 'nowrap',
+    //   overflow: 'hidden',
+    //   textOverflow: 'ellipsis',
+    // },
 
     '& .icon-holder': {
       display: 'flex',
@@ -162,8 +162,11 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                                                              selectCallBack,
                                                              priceDiff,
                                                              priceBySkuId,
-                                                             priceItemsWithoutDeal
+                                                             priceItemsWithoutDeal,
+                                                             fullView
                                                            }) => {
+
+  const width = useWindowSize()
 
   if (!product) {
     product = {
@@ -211,10 +214,17 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     //     dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.extRef == selectedProductAndSku.sku.extRef)
   }
 
+  function getLines() {
+    if (!deal?.lines && !deal?.deal?.lines) {
+      return [];
+    }
+    return deal.lines || deal.deal.lines;
+  }
+
   function addToDeal (productAndSku) {
 
-    let pricingEffect = deal.lines[lineNumber].pricingEffect;
-    let pricingValue = deal.lines[lineNumber].pricingValue;
+    let pricingEffect = getLines()[lineNumber].pricingEffect;
+    let pricingValue = getLines()[lineNumber].pricingValue;
 
     if (pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
       productAndSku.sku.price = pricingValue;
@@ -227,10 +237,15 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
       productAndSku.sku.price = (parseFloat(productAndSku.sku.price) * factor).toFixed(2);
     }
     selectCallBack ?
-        selectCallBack(selectedProductAndSku)
+        selectCallBack({
+          ...productAndSkus.find(item => item.sku.extRef == selectedProductAndSku.sku.extRef),
+          options: productAndSku.options
+        })
         :
-        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-    // selectToDealEditOrder(productAndSku, dealEdit, setDealEdit, lineNumber)
+        selectToDealEditOrder({
+          ...selectedProductAndSku,
+          options: productAndSku.options
+        }, dealEdit, setDealEdit, lineNumber)
     setSelectedProductSku(productAndSku)
     //alert()
     console.log("productAndSku " + JSON.stringify(productAndSku, null, 2))
@@ -259,18 +274,188 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
 
   }
 
+  function selectedFromImg() {
+    if (isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) {
+      return;
+    }
+    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
+      selectCallBack ?
+          selectCallBack(selectedProductAndSku)
+          :
+          selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+    } else {
+      setOpen(true);
+    }
+  }
+
+  function getProductPresentationAndInteration() {
+    return (
+        <Box>
+        <FlexBox>
+          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+          <Box sx={{maxWidth: "100px"}} mr={1}>
+            <Image
+                style={{objectFit: "cover"}}
+                onClick={() => {
+                  selectedFromImg();
+                }}
+                src={url}
+                height={100}
+                width={100}
+                display="block"
+                alt={product.name}
+            />
+          </Box>
+          }
+
+
+          <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
+            <H3
+                className="title"
+                fontSize="14px"
+                textAlign="left"
+                fontWeight="600"
+                color="text.secondary"
+                mb={1}
+                title={product.name}
+            >
+              {product.name}
+            </H3>
+
+
+
+          </Box>
+
+
+
+
+          <Box
+              className="add-cart"
+              flexDirection="row"
+              alignItems="center"
+              //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
+              //width="65px"
+          >
+            <Button
+                disabled={
+                  (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) &&
+                  isProductSelected() && productAndSkus && productAndSkus.length === 1}
+                color="primary"
+                //variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
+                variant={"outlined"}
+                sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "50px" : "0"}}
+                onClick={() => {
+                  if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1) {
+                    selectCallBack ?
+                        selectCallBack(selectedProductAndSku)
+                        :
+                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+
+                    //selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                  }
+                  // else if (productAndSkus && productAndSkus.length > 1){
+                  else if (productAndSkus) {
+                    setOpen(true)
+                  }
+                }}
+            >
+              {isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 &&
+              localStrings.selectOptions
+              }
+              {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
+              <>
+                {productAndSkus && productAndSkus.length > 1 ?
+                    <>
+                      {localStrings.selectOptions}
+                    </>
+                    :
+                    <>
+                      {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                      <CheckBoxIcon/>
+                      }
+                    </>
+                }
+              </>
+              }
+              {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
+              <>
+                {productAndSkus && productAndSkus.length > 1 ?
+                    <>
+                      {localStrings.selectOptions}
+                    </>
+                    :
+                    <>
+                      {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                      localStrings.choose
+                        // <CheckBoxOutlineBlankIcon />
+                      }
+                    </>
+
+                }
+              </>
+
+              }
+
+            </Button>
+
+
+          </Box>
+        </FlexBox>
+
+          {!fullView && width <= WIDTH_DISPLAY_MOBILE &&
+          <Box>
+            {product.tags && product.tags.map((tag, key) =>
+                <Box key={key} ml='3px' mt='6px' mr='3px'>
+                  {tag.color ?
+                      <Chip
+                          sx={{backgroundColor: tag.color, color: 'white'}}
+                          className={classes.offerChip}
+                          size="small"
+                          label={tag.tag}
+                      />
+                      :
+                      <Chip
+                          className={classes.offerChip}
+                          color={"primary"}
+                          size="small"
+                          label={tag.tag}
+                      />
+                  }
+                </Box>
+            )}
+            {priceDiff>=0 && selectedProductAndSku &&
+            <Box ml='3px' mt='6px' mr='3px'>
+              <Chip
+                  className={classes.offerChip}
+                  color="primary"
+                  size="small"
+                  icon={<LocalOfferIcon/>}
+                  label={getPercentDisplay()}
+                  // label={
+                  //   localStrings.formatString(localStrings.saveWithOffer,
+                  //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                  //   )}
+              />
+            </Box>
+            }
+          </Box>
+          }
+        </Box>
+    )
+  }
+
   return (
       <Box {...defaultProps}>
         {/*<p>{JSON.stringify(options)}</p>*/}
-        <BazarCard  className={classes.root} hoverEffect={hoverEffect}>
+        <BazarCard className={classes.root} hoverEffect={hoverEffect}>
           <div className={classes.imageHolder}>
 
             <Box
                 display="flex"
                 flexWrap="wrap"
-                sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}
+                sx={{position: 'absolute', zIndex: 999, mr: '35px', mt: '4px'}}
             >
-              {product.tags && product.tags.map((tag, key) =>
+              {(fullView || width > WIDTH_DISPLAY_MOBILE) && product.tags && product.tags.map((tag, key) =>
                   <Box key={key} ml='3px' mt='6px' mr='3px'>
                     {tag.color ?
                         <Chip
@@ -290,74 +475,45 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   </Box>
               )}
 
-              {isProductUnavailable(product, currentEstablishment, selectedProductAndSku) &&
+              {/*{isProductUnavailable(product, currentEstablishment, selectedProductAndSku) &&*/}
+              {/*<Box ml='3px' mt='6px' mr='3px'>*/}
+              {/*  <Chip*/}
+              {/*      className={classes.offerChip}*/}
+              {/*      color="primary"*/}
+              {/*      size="small"*/}
+              {/*      label={localStrings.unavailable}*/}
+              {/*  />*/}
+              {/*</Box>*/}
+              {/*}*/}
+              {(fullView || width > WIDTH_DISPLAY_MOBILE) && priceDiff>=0 && selectedProductAndSku &&
               <Box ml='3px' mt='6px' mr='3px'>
                 <Chip
                     className={classes.offerChip}
                     color="primary"
                     size="small"
-                    label={localStrings.unavailable}
-                />
-              </Box>
-              }
-              {priceDiff && selectedProductAndSku &&
-              <Box ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    icon={<LocalOfferIcon />}
-                    label={
-                      localStrings.formatString(localStrings.saveWithOffer,
-                          ((1 - (priceDiff /   parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                      )}
-                />
-              </Box>
-              }
-
-              {priceBySkuId && selectedProductAndSku && priceBySkuId[selectedProductAndSku.sku.extRef] &&
-              <Box ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    icon={<LocalOfferIcon />}
+                    icon={<LocalOfferIcon/>}
                     label={getPercentDisplay()}
+                    // label={
+                    //   localStrings.formatString(localStrings.saveWithOffer,
+                    //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                    //   )}
                 />
               </Box>
               }
-
 
             </Box>
 
             <div className="extra-icons">
-              <IconButton sx={{ p: '6px' }} onClick={toggleDialog}>
-                <RemoveRedEye color="secondary" fontSize="small" />
+              <IconButton sx={{p: '6px'}} onClick={toggleDialog}>
+                <RemoveRedEye color="secondary" fontSize="small"/>
               </IconButton>
             </div>
 
+            {(fullView || width > WIDTH_DISPLAY_MOBILE) &&
             <div className={classes.imageHolder}>
-              {/*<Box*/}
-              {/*    display="flex"*/}
-              {/*    flexWrap="wrap"*/}
-              {/*    sx={{ position: 'absolute', zIndex:999, mr: '35px', mt:'4px'}}*/}
-              {/*>*/}
-              {/*  */}
-              {/*</Box>*/}
               <LazyImage
                   onClick={() => {
-                    if (isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) {
-                      return;
-                    }
-                    if (!isProductAndSkuGetOption(selectedProductAndSku)) {
-                      selectCallBack ?
-                          selectCallBack(selectedProductAndSku)
-                          :
-                          selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                    }
-                    else {
-                      setOpen(true);
-                    }
+                    selectedFromImg();
                   }}
                   objectFit="cover"
                   src={url}
@@ -367,103 +523,13 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                   alt={product.name}
               />
             </div>
+            }
             {/*  </a>*/}
             {/*</Link>*/}
           </div>
 
           <div className={classes.details}>
-            <FlexBox>
-
-
-              <Box flex="1 1 0" minWidth="0px" mr={1}>
-                {/*<Link href={`/product/${id}`}>*/}
-                {/*  <a>*/}
-                <H3
-                    className="title"
-                    fontSize="14px"
-                    textAlign="left"
-                    fontWeight="600"
-                    color="text.secondary"
-                    mb={1}
-                    title={product.name}
-                >
-                  {product.name}
-                </H3>
-
-              </Box>
-
-              <FlexBox
-                  className="add-cart"
-                  flexDirection="row"
-                  alignItems="center"
-                  justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
-                  //width="65px"
-              >
-                <Button
-                    //variant="outlined"
-                    disabled={
-                      (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailable(product, currentEstablishment, selectedProductAndSku))&&
-                      isProductSelected() && productAndSkus && productAndSkus.length === 1}
-                    color="primary"
-                    variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
-                    sx={{ padding: '3px', ml:'5px', mr:'5px'}}
-                    onClick={() => {
-                      if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 ) {
-                        selectCallBack ?
-                            selectCallBack(selectedProductAndSku)
-                            :
-                            selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-
-                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                      }
-                      else if (productAndSkus && productAndSkus.length > 1){
-                        setOpen(true);
-                      }
-                    }}
-                >
-                  {isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 &&
-                  localStrings.selectOptions
-                  }
-                  {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
-                  <>
-                    {productAndSkus && productAndSkus.length > 1 ?
-                        <>
-                          {localStrings.selectOptions}
-                        </>
-                        :
-                        <>
-                          {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                            <CheckBoxIcon/>
-                          }
-                        </>
-                    }
-                  </>
-                  }
-                  {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
-                  <>
-                    {productAndSkus && productAndSkus.length > 1 ?
-                        <>
-                        {localStrings.selectOptions}
-                        </>
-                        :
-                        <>
-                          {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                            localStrings.choose
-                          // <CheckBoxOutlineBlankIcon />
-                          }
-                        </>
-
-                    }
-                  </>
-
-                  }
-
-                </Button>
-
-
-
-              </FlexBox>
-            </FlexBox>
+            {getProductPresentationAndInteration()}
           </div>
 
           <Dialog open={open} maxWidth={false} onClose={toggleDialog}>
@@ -481,16 +547,17 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                             currency={currency}
                             disableAdd={!isProductAndSkuGetOption(selectedProductAndSku)
                             && productAndSkus && productAndSkus.length === 1}
+                            changeSelectionCallBack={selected => setSelectedProductSku(selected)}
                   //addCallBack={() => setOpen(false)}
                             addToCartOrderCallBack={addToDeal}
                             addButtonText={localStrings.select}
                             lineNumber={lineNumber}
               />
               <IconButton
-                  sx={{ position: 'absolute', top: '0', right: '0' }}
+                  sx={{position: 'absolute', top: '0', right: '0'}}
                   onClick={toggleDialog}
               >
-                <Close className="close" fontSize="small" color="primary" />
+                <Close className="close" fontSize="small" color="primary"/>
               </IconButton>
             </DialogContent>
           </Dialog>

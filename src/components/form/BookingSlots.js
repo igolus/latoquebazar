@@ -5,16 +5,22 @@ import {ArrowBackIos, ArrowForwardIos} from '@material-ui/icons';
 import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
 import {
+  BOOKING_SLOT_OCCUPANCY_COLLECTION,
+  BRAND_COLLECTION, ESTABLISHMENT_COLLECTION,
   ORDER_DELIVERY_MODE_ALL,
   ORDER_DELIVERY_MODE_DELIVERY,
-  ORDER_DELIVERY_MODE_PICKUP_ON_SPOT
+  ORDER_DELIVERY_MODE_PICKUP_ON_SPOT, RELOAD_COLLECTION
 } from "../../util/constants";
-import {Button, IconButton, Typography} from "@material-ui/core";
+import {IconButton, Typography} from "@material-ui/core";
 import {computePriceDetail, firstOrCurrentEstablishment} from "../../util/displayUtil";
 import Grid from "@material-ui/core/Grid";
 import BazarButton from "@component/BazarButton";
 import {getBookingSlotsOccupancyQueryNoApollo} from "../../gqlNoApollo/bookingSlotsOccupancyGqlNoApollo";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import firebase from "../../lib/firebase";
+import config from "../../conf/config.json";
+import {reloadId} from "@context/FirebaseAuthContext";
+import {useCollectionData} from "react-firebase-hooks/firestore";
 
 const setHourFromString = (momentDate, hourSt) => {
   let hourSplit = hourSt.split(':');
@@ -104,13 +110,14 @@ function getOffset(deliveryMode, establishment) {
 }
 
 
-function getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy) {
+function getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy, orderInCreation) {
   if (!getBookingSlotsOccupancy()) {
     return false;
   }
   let slot = getBookingSlotsOccupancy().find(item => {
     return item.startDate == startDate.unix() &&
-        item.endDate == endDate.unix()
+        item.endDate == endDate.unix() &&
+        item.deliveryMode == orderInCreation().deliveryMode
   })
   return slot;
 }
@@ -153,11 +160,15 @@ export const getCurrentService = (establishment, startDate, deliveryMode) => {
   return null;
 }
 
+function getSlotDuration(establishment) {
+  return establishment.serviceSetting.slotDuration || 20;
+}
+
 export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
   if (startDate) {
-    let slotDuration = establishment.serviceSetting.slotDuration || 20;
-    let offset = getOffset(deliveryMode, establishment);
-    let daySettings = getWeekDaySettingsFromDate(moment(startDate).add(offset, 'minutes'), establishment, null, orderInCreation().deliveryMode).filter(item => {
+    let slotDuration = getSlotDuration(establishment);
+    //let offset = getOffset(deliveryMode, establishment);
+    let daySettings = getWeekDaySettingsFromDate(moment(startDate), establishment, null, orderInCreation().deliveryMode).filter(item => {
       return !item.deliveryMode || item.deliveryMode === deliveryMode
     });
 
@@ -175,13 +186,14 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
       while (iterDate.isBefore(endServiceDate)) {
         let startDate = moment(iterDate);
         let endDate = moment(iterDate).add(slotDuration, 'minutes');
-        let slotOccupancy = getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy);
+        let slotOccupancy = getSlot(startDate, endDate, firstDaySetting, getBookingSlotsOccupancy, orderInCreation);
         allSlots.push({
           startDate: startDate,
           endDate: endDate,
           closed: isClosed(startDate, establishment),
           totalPreparionTime: slotOccupancy?.totalPreparationTime || 0,
           deliveryNumber: slotOccupancy?.deliveryNumber || 0,
+          locked: slotOccupancy?.locked
         })
         iterDate = moment(iterDate.add(slotDuration, 'minutes'));
       }
@@ -275,14 +287,47 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
 function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode,
                         selectedKeyParam, setterSelectedKey, brandId, disableNextDay}) {
 
-  //const [bookingSlotStartDate, setBookingSlotStartDate] = useState(startDateParam);
-
-  const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
-  const [offset, setOffset] = useState(null);
-  const [reload, setReload] = useState(true);
-  // const [slotSelected, setSlotSelected] = useState(false);
   const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation, currentBrand} = useAuth();
+
+  const currentEstablishmentOrFirst = () => {
+    return firstOrCurrentEstablishment(currentEstablishment, contextData);
+  }
+
+  const db = firebase.firestore();
+
+  const [bookingSlotsOccupancyData, loading, error] =
+      useCollectionData(
+          db.collection(BRAND_COLLECTION)
+              .doc(config.brandId)
+              .collection(ESTABLISHMENT_COLLECTION)
+              .doc(currentEstablishmentOrFirst().id)
+              .collection(BOOKING_SLOT_OCCUPANCY_COLLECTION)
+              .where('endDate', '>=', moment().unix())
+              //.where('endDate', '<=', getEndDateSeconds())
+          ,
+          {
+            snapshotListenOptions: { includeMetadataChanges: true },
+          }
+      );
+
+  // db.collection(BRAND_COLLECTION)
+  //     .doc(config.brandId)
+  //     .collection(ESTABLISHMENT_COLLECTION)
+  //     .doc(currentEstablishmentOrFirst().id)
+  //     .collection(BOOKING_SLOT_OCCUPANCY_COLLECTION)
+  //     .onSnapshot((doc) => {
+  //       //console.log(doc.data());
+  //     });
+
+  //const [bookingSlotStartDate, setBookingSlotStartDate] = useState(startDateParam);
+
+  //const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
+  //const [offset, setOffset] = useState(null);
+  const [reload, setReload] = useState(true);
+  const [timeSlots, setTimeSlots] = useState(null);
+  // const [slotSelected, setSlotSelected] = useState(false);
+
 
   const select = (value) => {
     if (selectCallBack) {
@@ -291,45 +336,53 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     }
   };
 
-  const currentEstablishmentOrFirst = () => {
-    return firstOrCurrentEstablishment(currentEstablishment, contextData);
-  }
+
+  // useEffect(() => {
+  //   let offset = getOffset(getOrderInCreation().deliveryMode, currentEstablishmentOrFirst());
+  //   setOffset(offset)
+  // }, [getOrderInCreation().deliveryMode])
+
+  // useEffect(async () => {
+  //   if (currentEstablishmentOrFirst()) {
+  //     let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
+  //     setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
+  //   }
+  // }, [currentEstablishmentOrFirst()])
 
   useEffect(() => {
-    let offset = getOffset(getOrderInCreation().deliveryMode, currentEstablishmentOrFirst());
-    setOffset(offset)
-  }, [getOrderInCreation().deliveryMode])
-
-  useEffect(async () => {
-    if (currentEstablishmentOrFirst()) {
-      let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
-      setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
-    }
-  }, [currentEstablishmentOrFirst()])
+    let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
+        moment(), deliveryMode);
+    setTimeSlots(timeSlotsData);
+  }, [getOrderInCreation().deliveryMode, deliveryMode, bookingSlotsOccupancyData])
 
   useEffect(async () => {
     const interval = setInterval(async () => {
-      if (currentEstablishmentOrFirst()) {
-        let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
-        setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
-      }
+      let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
+          moment(), deliveryMode);
+      setTimeSlots(timeSlotsData);
     }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 120000);
     return () => clearInterval(interval);
-  }, [currentEstablishment, orderInCreation]);
+  }, []);
 
   function getBookingSlotsOccupancy() {
-    return bookingSlotsOccupancy;
+    return bookingSlotsOccupancyData;
   }
 
-  useEffect(() => {
-    if (select && currentBrand() && timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
-      let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && slotAlavailableInMode(slot));
+  function selectFirstSlot() {
+    if (allClosed()) {
+      select(null)
+    } else if (select && currentBrand() && timeSlots && timeSlots.allSlots &&
+        timeSlots.allSlots.length > 0 && !orderInCreation.bookingSlot) {
+      let firstSlotAvail = timeSlots.allSlots.find(slot => slotInTime(slot) && !isSlotUnavailable(slot) && slotAlavailableInMode(slot));
       if (firstSlotAvail) {
         select(firstSlotAvail)
       }
-
     }
-  }, [currentBrand, timeSlots, orderInCreation])
+  }
+
+  useEffect(() => {
+    selectFirstSlot();
+  }, [getOrderInCreation().deliveryMode, getOrderInCreation().bookingSlot])
 
 
   useEffect(() => {
@@ -380,8 +433,6 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     return selected;
   }
 
-  let timeSlots = buildTimeSlots(currentEstablishmentOrFirst(), getBookingSlotsOccupancy, getOrderInCreation,
-      moment(), deliveryMode);
 
 
   function formatService(service) {
@@ -392,7 +443,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   }
 
   function allClosed() {
-    if (!timeSlots.allSlots || timeSlots.allSlots.length == 0) {
+    if (!timeSlots?.allSlots || timeSlots?.allSlots.length == 0) {
       return false;
     }
     let allClosed = true;
@@ -421,8 +472,11 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     else if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
       minimalSlotDiff = currentEstablishmentOrFirst().serviceSetting.minimalSlotNumberBookingNoDelivery
     }
-
-    return  timeSlots.allSlots.indexOf(slot) - timeSlots.allSlots.indexOf(firstSlotInFuture) >= minimalSlotDiff;
+    let slotDuration = getSlotDuration(currentEstablishmentOrFirst());
+    //let minTime =
+    let diffMinutes = slot.startDate.diff(moment(), 'minutes');
+    return diffMinutes > minimalSlotDiff * slotDuration
+    //return  timeSlots.allSlots.indexOf(slot) - timeSlots.allSlots.indexOf(firstSlotInFuture) >= minimalSlotDiff;
 
     //}
 
@@ -434,7 +488,6 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
 
 
   function enoughTimeForPreparation(slot) {
-
     let firstSlotInFuture = getFirstSlotInFuture();
     if (!firstSlotInFuture) {
       return false;
@@ -481,12 +534,17 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
   }
 
   function isSlotUnavailable(value) {
+    if (currentEstablishment()?.serviceSetting?.orderSameDay) {
+      if (!value.startDate.isSame(moment(), 'day')) {
+        return true;
+      }
+    }
     return !enoughTimeForPreparation(value) || isSlotFull(value) || value.locked;
   }
 
   function getSelectTimeSlotText() {
 
-    let timeSlotsAvail = timeSlots.allSlots.filter(slot => slotInTime(slot) && slotAlavailableInMode(slot));
+    let timeSlotsAvail = (timeSlots?.allSlots || []).filter(slot => slotInTime(slot) && slotAlavailableInMode(slot));
     let timeSlotSelected = orderInCreation.bookingSlot
 
     if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
@@ -515,7 +573,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
         {bookingSlotStartDate && reload &&
         // <>
         <div style={{ width: '100%' }}>
-          {/*<p>{JSON.stringify(bookingSlotStartDate)}</p>*/}
+          {/*<p>{JSON.stringify(bookingSlotsOccupancyData)}</p>*/}
 
           <Box
               display="flex"
@@ -564,7 +622,8 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           {/*</div>*/}
 
 
-          {timeSlots && (!timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) || timeSlots.allSlots.length === 0 ||
+          {getOrderInCreation().deliveryMode && timeSlots && timeSlots.allSlots &&
+              (!timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) || timeSlots.allSlots.length === 0 ||
               timeSlots.allSlots.filter(value => slotInTime(value) && slotAlavailableInMode(value)).length == 0
           ) &&
 
@@ -578,6 +637,20 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           >
             <AlertHtmlLocal severity="warning" content={localStrings.noAvail}></AlertHtmlLocal>
           </Box>
+          }
+
+          {!getOrderInCreation().deliveryMode &&
+
+              <Box
+                  display="flex"
+                  flexWrap="wrap"
+                  alignContent="flex-start"
+                  justifyContent="center"
+                  p={1}
+                  m={1}
+              >
+                <AlertHtmlLocal severity="warning" content={localStrings.selectDeliveryModesToGetSlots}></AlertHtmlLocal>
+              </Box>
           }
 
           <Box
@@ -594,7 +667,9 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
             }
 
             {
-              !allClosed() && timeSlots && timeSlots.allSlots.map((value, key) => {
+              !allClosed() && timeSlots && timeSlots.allSlots &&
+                timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) != null &&
+                timeSlots.allSlots.map((value, key) => {
                     let format =
                         value.startDate.format('HH:mm')
                         + "-"

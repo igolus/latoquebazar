@@ -1,7 +1,7 @@
 import {Box, Button, Drawer, IconButton} from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
+import {makeStyles} from '@material-ui/styles'
 import clsx from 'clsx'
-import React, { cloneElement, Fragment, useEffect, useState } from 'react'
+import React, {cloneElement, Fragment, useEffect, useState} from 'react'
 import Close from '@material-ui/icons/Close';
 import {useRouter} from "next/router";
 import navbarNavigations from "@data/navbarNavigations";
@@ -21,6 +21,7 @@ export interface SidenavProps {
   handle: React.ReactElement
   toggleSidenav?: () => void
   extraPages: any
+  profileSideBar: boolean
 }
 
 const Sidenav: React.FC<SidenavProps> = ({
@@ -29,7 +30,8 @@ const Sidenav: React.FC<SidenavProps> = ({
   width,
   handle,
   toggleSidenav,
-  extraPages
+  extraPages,
+  profileSideBar
 }) => {
   const [sidenavOpen, setSidenavOpen] = useState(open)
   const classes = useStyles()
@@ -69,7 +71,7 @@ const Sidenav: React.FC<SidenavProps> = ({
             </IconButton>
           </Box>
           <Box paddingX={2} paddingBottom={2}>
-            {navbarNavigations(dbUser, extraPages).map((nav, key) =>
+            {navbarNavigations(dbUser, extraPages, profileSideBar).map((nav, key) =>
                 <Box marginTop={1} key={key}>
                   <Link href={nav.url}>
                     <Button

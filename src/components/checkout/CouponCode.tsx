@@ -1,8 +1,8 @@
-import Card1, {Card2, Card3} from '@component/Card1'
-import {Button, Dialog, DialogActions, DialogContent, Grid, TextField, Typography} from '@material-ui/core'
+import {Card3} from '@component/Card1'
+import {Button, Dialog, DialogActions, DialogContent, Grid, TextField} from '@material-ui/core'
 import React, {useState} from 'react'
 import useAuth from "@hook/useAuth";
-import {computePriceDetail} from "../../util/displayUtil";
+import {computePriceDetail, getBrandCurrency} from "../../util/displayUtil";
 import {getCouponCodeDiscount} from "../../gql/productDiscountGql";
 import localStrings from "../../localStrings";
 import {Formik} from "formik";
@@ -10,7 +10,7 @@ import {executeQueryUtil} from "../../apolloClient/gqlUtil";
 import {makeStyles} from "@material-ui/styles";
 import {green} from "@material-ui/core/colors";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
-import {addDiscountToCart} from "../../util/cartUtil";
+import {addDiscountToCart, computeItemRestriction, getRestrictionToApply} from "../../util/cartUtil";
 import MdRender from "@component/MdRender";
 import {ALREADY_CONSUMED, PRICE_LOWER, TOO_LATE, TOO_SOON} from "../../util/constants";
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}) => {
 
     const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen, dbUser, setLoginDialogOpen,
-        setOrderInCreation} = useAuth();
+        setOrderInCreation, currentService} = useAuth();
     const [wrongCode, setWrongCode] = useState(null);
     const [invalidReason, setInvalidReason] = useState(null);
     const [couponAlreadyInUse, setCouponAlreadyInUse] = useState(false);
@@ -87,30 +87,42 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
             let res = await executeQueryUtil(getCouponCodeDiscount(currentBrand().id, dbUser?.id, values.couponCode, totalPrice.totalNonDiscounted || 0))
             let discount = res?.data?.getCouponCodeDiscount;
 
+            //alert(" !discount?.restrictions?.establishmentIds.includes(currentEstablishment().id) " +  !discount?.restrictions?.establishmentIds.includes(currentEstablishment().id))
+            if (discount?.restrictions?.establishmentIds &&
+                discount?.restrictions?.establishmentIds.length > 0 &&
+                !discount?.restrictions?.establishmentIds.includes(currentEstablishment().id)) {
+                setInvalidReason(localStrings.invalidCouponBadEsta)
+                return
+            }
+
             if (!discount) {
                 //alert("no discount")
                 setWrongCode(values.couponCode);
                 return;
             }
 
+            const restrictionToApply = getRestrictionToApply(discount, currentEstablishment)
+
+
+            const restriction =
+                computeItemRestriction(discount, currentEstablishment, currentService,
+                    getOrderInCreation(), getBrandCurrency(currentBrand()));
+
+
+
             if (!discount.valid) {
                 if (discount.invalidReason === ALREADY_CONSUMED) {
                     setInvalidReason(localStrings.invalidCouponConsumed)
                 }
-                else if (discount.invalidReason === TOO_SOON) {
-                    setInvalidReason(localStrings.invalidCouponTooSoon)
-                }
-                else if (discount.invalidReason === TOO_LATE) {
-                    setInvalidReason(localStrings.invalidCouponTooLate)
-                }
-                else if (discount.invalidReason.startsWith(PRICE_LOWER)) {
-                    let priceInfo = discount.invalidReason.split(",");
-                    setInvalidReason(
-                        localStrings.formatString(localStrings.invalidCouponPrice, priceInfo[1], currentBrand().config?.currency || "EUR"));
-                }
                 else {
                     setWrongCode(values.couponCode);
                 }
+                return;
+            }
+
+            console.log("restrictionsApplied " + JSON.stringify(discount.restrictionsApplied || {}))
+            if (discount.restrictionsApplied && discount.restrictionsApplied.length > 0) {
+                setInvalidReason(restrictionToApply.description);
                 return;
             }
 
@@ -121,7 +133,26 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
         }
         catch (err) {
             alert(err);
+            console.log(err);
         }
+    }
+
+    function getApplyCodeText() {
+        if (getOrderInCreation() && getOrderInCreation().discounts) {
+            const discPoints = getOrderInCreation().discounts.find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+            if (discPoints) {
+                return localStrings.cannotApplyCouponCodeWithLoyalty;
+            }
+        }
+        return dbUser ? localStrings.applyCouponCode : localStrings.connectApplyCouponCode;
+    }
+
+    function containsDiscPoints() {
+        if (getOrderInCreation() && getOrderInCreation().discounts) {
+            const discPoints = getOrderInCreation().discounts.find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+            return discPoints
+        }
+        return null;
     }
 
     return (
@@ -155,8 +186,8 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                     <AlertHtmlLocal
                         severity="error"
                         title={localStrings.warning}
-                        content={invalidReason}
                     >
+                        <MdRender content={invalidReason}></MdRender>
                     </AlertHtmlLocal>
                 </DialogContent>
 
@@ -205,32 +236,6 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
             </Dialog>
 
             <Card3>
-                {/*{wrongCode &&*/}
-                {/*<DialogContent className={classes.dialogContent}>*/}
-                {/*    <AlertHtmlLocal*/}
-                {/*        title={localStrings.warning}*/}
-                {/*        content={localStrings.formatString(localStrings.wrongCouponCode, wrongCode)}*/}
-                {/*    >*/}
-                {/*    </AlertHtmlLocal>*/}
-                {/*</DialogContent>*/}
-                {/*}*/}
-
-                {/*{wrongCode &&*/}
-                {/*<DialogContent className={classes.dialogContent}>*/}
-                {/*    <AlertHtmlLocal*/}
-                {/*        title={localStrings.warning}*/}
-                {/*        content={localStrings.formatString(localStrings.wrongCouponCode, wrongCode)}*/}
-                {/*    >*/}
-                {/*    </AlertHtmlLocal>*/}
-                {/*</DialogContent>*/}
-                {/*}*/}
-
-                {/*{JSON.stringify(orderSource || getOrderInCreation())}*/}
-                {/*<Typography fontWeight="600" mb={0} mt={1}>*/}
-                {/*    {localStrings.IHaveACouponCode}*/}
-                {/*</Typography>*/}
-
-                {/*<Divider sx={{mb: '1rem'}}/>*/}
                 <Formik
                     style={{marginTop: 0}}
                     initialValues={getInitialValues()}
@@ -255,7 +260,7 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                                         <TextField
                                             //className={classes.textField}
                                             name="couponCode"
-                                            label={localStrings.couponCode}
+                                            label={localStrings.couponCodeSingle}
                                             fullWidth
                                             sx={{mb: '1rem'}}
                                             onBlur={handleBlur}
@@ -271,9 +276,10 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
                                 </Grid>
 
                                 <Button variant="contained" color="primary" type="submit" fullWidth
+                                        disabled={containsDiscPoints()}
                                         //style={{margin: "10px"}}
                                 >
-                                    {dbUser ? localStrings.applyCouponCode : localStrings.connectApplyCouponCode}
+                                    {getApplyCodeText()}
                                 </Button>
                         </form>
                     )}

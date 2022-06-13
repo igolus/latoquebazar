@@ -5,11 +5,11 @@ import FlexBox from '@component/FlexBox'
 import Category from '@component/icons/Category'
 import NavLink from '@component/nav-link/NavLink'
 import navbarNavigations from '@data/navbarNavigations'
-import { Box, Container, MenuItem } from '@material-ui/core'
+import {Box, Container, MenuItem} from '@material-ui/core'
 import ArrowRight from '@material-ui/icons/ArrowRight'
 import ChevronRight from '@material-ui/icons/ChevronRight'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import React from 'react'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
@@ -77,7 +77,7 @@ interface Nav {
   extLink?: boolean
 }
 
-const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData}) => {
+const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData, }) => {
   const classes = useStyles()
   const {dbUser} = useAuth()
 

@@ -1,20 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TextField from '@material-ui/core/TextField';
-import { Autocomplete } from '@material-ui/core';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import {Autocomplete, IconButton, Tooltip} from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import parse from 'autosuggest-highlight/parse';
 import throttle from 'lodash/throttle';
-import { IconButton, Tooltip } from '@material-ui/core';
 import localStrings from '../../localStrings';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
-import useAuth from '../../hooks/useAuth';
-import {makeStyles, withStyles} from "@material-ui/styles";
+import {makeStyles} from "@material-ui/styles";
 import BazarTextField from "@component/BazarTextField";
-import {MuiThemeProps} from "@theme/theme";
-import {layoutConstant} from "../../util/constants";
-import placeholder from "lodash/fp/placeholder";
 
 const config = require("../../conf/config.json")
 

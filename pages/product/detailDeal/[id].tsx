@@ -1,13 +1,11 @@
 import NavbarLayout from '@component/layout/NavbarLayout'
-import {Box, Tab, Tabs} from '@material-ui/core'
-import {styled} from '@material-ui/core/styles'
+import {Box, Tab} from '@material-ui/core'
 import {useRouter} from "next/router";
 import React, {useEffect, useState} from 'react'
 import {GetStaticPaths, GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../../src/nextUtil/propsBuilder";
 import DealSelector from '../../../src/components/products/DealSelector'
 import useAuth from "@hook/useAuth";
-import {getProductsQueryNoApollo} from "../../../src/gqlNoApollo/productGqlNoApollo";
 import {getDealsQueryNoApollo} from "../../../src/gqlNoApollo/dealGqlNoApollo";
 import localStrings from "../../../src/localStrings";
 import ReactMarkdown from "react-markdown";
@@ -33,7 +31,7 @@ export interface ProductDetailsProps {
 const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
 
     const [selectedOption, setSelectedOption] = useState(0)
-    const {getContextDataAuth} = useAuth();
+    const {getContextDataAuth, getOrderInCreation} = useAuth();
 
     function getContextData() {
         if (getContextDataAuth() && getContextDataAuth().deals.find(d => d.id === id)) {
@@ -48,7 +46,8 @@ const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
     const { id } = router.query
 
     useEffect(() => {
-        setSelectedDeal((getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null)
+        let dealFromDealList = (getContextData() && getContextData().deals) ? getContextData().deals.find(d => d.id === id) : null;
+        setSelectedDeal(dealFromDealList)
     }, [id])
 
     const handleOptionClick = (_event: React.ChangeEvent<{}>, newValue: number) => {
@@ -63,10 +62,6 @@ const DealDetail:React.FC<ProductDetailsProps> = ({contextData}) => {
 
             {selectedDeal && (selectedDeal.description !== "" || selectedDeal.additionalInformation !== "") &&
             <>
-                {/*<p>{JSON.stringify(selectedDeal)}</p>*/}
-                {/*<p>{selectedDeal.description}</p>*/}
-                {/*<p>{selectedDeal.additionalInformation}</p>*/}
-
                 <StyledTabs
                     value={selectedOption}
                     onChange={handleOptionClick}

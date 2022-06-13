@@ -1,8 +1,8 @@
 import FlexBox from '@component/FlexBox'
-import { H2, H4, Paragraph } from '@component/Typography'
-import { Button, Container, Grid } from '@material-ui/core'
-import { Box } from '@material-ui/system'
-import React, { useState } from 'react'
+import {H2, H4, Paragraph} from '@component/Typography'
+import {Button, Container, Grid} from '@material-ui/core'
+import {Box} from '@material-ui/system'
+import React, {useState} from 'react'
 import PageCard from './PageCard'
 
 const Section3 = () => {

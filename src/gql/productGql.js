@@ -69,10 +69,16 @@ const common = `
         day
         service
       }
+      deliveryZones
       startDate
       endDate
       startTime
       endTime
+      
+      startBookingTime
+      endBookingTime
+      bookingAndDeliverySameDay
+      
       serviceTypes
       minOrderAmount
       maxPerOrder

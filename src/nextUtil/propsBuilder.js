@@ -6,9 +6,9 @@ import {getDealsQueryNoApollo} from "../gqlNoApollo/dealGqlNoApollo";
 import {getTagsQueryNoApollo} from "../gqlNoApollo/tagsGqlNoApollo";
 import {getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
 import {getExtraPagesQueryNoApollo} from "../gqlNoApollo/extraPagesGqlNoApollo";
+import {Base64} from 'js-base64';
 
 const Mustache = require("mustache");
-import {Base64} from 'js-base64';
 
 export async function getStaticPathsUtil() {
     return {
@@ -128,6 +128,20 @@ export function updateBrandBase64HomPage(brand) {
         }
     }
 }
+
+export function updateExtraPageBase64(extraPage) {
+    if (!extraPage || !extraPage.content) {
+        return;
+    }
+    extraPage.content = Base64.decode(extraPage.content);
+    if (extraPage.variablesValues) {
+        let variablesValuesObj = JSON.parse(Base64.decode(extraPage.variablesValues));
+        if (Object.keys(variablesValuesObj).length > 0) {
+            extraPage.content = Mustache.render( extraPage.content, variablesValuesObj);
+        }
+    }
+}
+
 
 export async function getStaticPropsUtil() {
     const config = require("../conf/config.json")

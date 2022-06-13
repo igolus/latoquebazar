@@ -1,23 +1,11 @@
 import React, {useEffect} from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  FormGroup,
-  RadioGroup, Typography,
-} from '@material-ui/core';
+import {Checkbox, Divider, FormControlLabel, FormGroup, RadioGroup, Typography,} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 //import ClipLoaderComponent from '../ClipLoaderComponent';
 import localStrings from '../../localStrings';
 import Radio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import {makeStyles} from "@material-ui/styles";
-import FlexBox from "@component/FlexBox";
 import useAuth from "@hook/useAuth";
 
 export const OPTION_LIST_SINGLE = "single";
@@ -56,10 +44,16 @@ function ProductSelector({ productAndSku, options,
                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
                            setterSkuEdit, currency, skuEdit,
                            setterValid,
-                           valid, lineNumber}) {
+                           valid, lineNumber, initialItem}) {
+
   const classes = useStyles();
   const {dealEdit} = useAuth();
 
+  useEffect(() => {
+    if (initialItem) {
+      productAndSku.options = [...initialItem.options]
+    }
+  }, [])
 
 
   useEffect(() => {
@@ -75,7 +69,7 @@ function ProductSelector({ productAndSku, options,
   function buildOption(optionList, option) {
     return {
       "option_list_name": optionList.extName,
-      "option_list_extRef": optionList.extRef,
+      "option_list_extRef": optionList.extRef || optionList.extId,
       "option_list_internal_name": optionList.name,
       "name": option.name || option.extName,
       "ref": option.extRef,
@@ -84,9 +78,13 @@ function ProductSelector({ productAndSku, options,
     }
   }
 
+  function getNewSkuBooking() {
+    return {...productAndSku};
+  }
+
   function handleChangeRadio(optionListComplete, optionList, ref, noCallSetter) {
     //alert("options " + value);
-    let itemSkuBookingNew = {...productAndSku}
+    let itemSkuBookingNew = getNewSkuBooking()
     let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extRef);
     let optionToSet = optionListComplete.find(optionComplete => optionComplete.ref == ref);
 
@@ -98,7 +96,7 @@ function ProductSelector({ productAndSku, options,
   }
 
   function handleChangeSelect(optionComplete, noCallSetter, itemSkuBooking) {
-    let itemSkuBookingNew = itemSkuBooking || {...productAndSku}
+    let itemSkuBookingNew = itemSkuBooking || getNewSkuBooking()
     let selected = itemSkuBookingNew.options.find(option => option.ref === optionComplete.ref);
     if (!selected) {
       itemSkuBookingNew.options = [...itemSkuBookingNew.options, optionComplete];
@@ -127,7 +125,11 @@ function ProductSelector({ productAndSku, options,
     if (optionList.maxValue === -1) {
       return true;
     }
-    let countSelect = productAndSku.options.filter(option => option.option_list_extRef === optionList.extRef).length;
+
+    // let count = productAndSku && productAndSku.options && productAndSku.options.filter(
+    //     option => option.ref === optionComplete.ref).length
+    //let countSelect = productAndSku.options.filter(option => option.extRef === optionList.extRef).length;
+    let countSelect = productAndSku.options.filter(option => option.option_list_extRef === (optionList.extRef || optionList.extId)).length;
     return isCheckSelect(optionComplete) || countSelect < optionList.maxValue;
   }
 
@@ -142,13 +144,14 @@ function ProductSelector({ productAndSku, options,
 
     //alert("optionListMatching " + JSON.stringify(optionListMatching))
     optionListMatching.forEach(optionList => {
-      let countSelect = productAndSku.options.filter(option => option.option_list_extRef === optionList.extRef).length;
+      let countSelect = productAndSku.options.filter(option => optionList.options.map(o => o.extRef).includes(option.ref)).length;
+      //let countSelect = productAndSku.options.filter(option => option.ref === optionList.extId).length;
       if (optionList.mandatory) {
         valid &= countSelect>0;
       }
-      valid &= countSelect >= optionList.minValue;
+      valid &= (countSelect >= optionList.minValue);
       if (optionList.maxValue != -1) {
-        valid &= countSelect <= optionList.maxValue;
+        valid &= (countSelect <= optionList.maxValue);
       }
     })
 
@@ -198,7 +201,7 @@ function ProductSelector({ productAndSku, options,
       let optionList = options
           .find(optionsList => optionsList.extId === optionId)
 
-      let optionListComplete = optionList.options.map(option => buildOption(optionList, option));
+      let optionListComplete = (optionList.options || []).map(option => buildOption(optionList, option));
       if (optionList.type === OPTION_LIST_SINGLE) {
         let fistDefault = optionListComplete.find(option => option.defaultSelected);
         //alert("fistDefault " + fistDefault)

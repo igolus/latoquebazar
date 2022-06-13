@@ -7,24 +7,23 @@ import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
 import cloneDeep from "clone-deep";
 import {useRouter} from "next/router";
-import {addDealToCart} from "../../util/cartUtil";
+import {addDealToCart, updateDealInCart} from "../../util/cartUtil";
 import ProductDealCard1List from "@component/products/ProductDealCard1List";
 import {useToasts} from "react-toast-notifications";
 import {makeStyles} from "@material-ui/styles";
 import MiniCartDeal from "@component/mini-cart/MiniCartDeal";
 import BazarButton from "@component/BazarButton";
 import theme from '@theme/theme'
-import { StickyContainer, Sticky } from 'react-sticky';
 import useWindowSize from "@hook/useWindowSize";
 import {
-    PRICING_EFFECT_FIXED_PRICE, PRICING_EFFECT_PERCENTAGE,
+    PRICING_EFFECT_FIXED_PRICE,
+    PRICING_EFFECT_PERCENTAGE,
     PRICING_EFFECT_PRICE,
     PRICING_EFFECT_UNCHANGED,
     WIDTH_DISPLAY_MOBILE
 } from "../../util/constants";
 
 export function applyDealPrice(deal) {
-
     if (deal.deal.lines.length !== deal.productAndSkusLines.length) {
         return null;
     }
@@ -39,30 +38,41 @@ export function applyDealPrice(deal) {
         let line = lines[i]
         line.quantity = 1;
         let productAndSkusLine = productAndSkusLines[i];
-        if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
-            line.pricingValue = "";
-            continue;
-        }
         let priceLineF = parseFloat(line.pricingValue);
-        let priceProduct = parseFloat(productAndSkusLine.price);
+        // if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE && line.pricingValue === "100") {
+        //     line.pricingValue = 0;
+        //     continue;
+        // }
+
+        // if (!productAndSkusLine.price && line.pricingEffect !== PRICING_EFFECT_FIXED_PRICE) {
+        //     line.pricingValue = "";
+        //     continue;
+        // }
+
+        let priceProduct = parseFloat(productAndSkusLine.price || 0);
+        // if (!line.initialPrice) {
+        //     line.initialPrice = parseFloat(productAndSkusLine.price);
+        // }
+
         if (line.pricingEffect === PRICING_EFFECT_UNCHANGED) {
-            line.pricingValue = priceProduct;
+            line.pricingValueAfterDisc = priceProduct;
             continue;
         }
         else if (line.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
             productAndSkusLine.price = priceLineF;
-            line.pricingValue = parseFloat(priceLineF);
+            line.pricingValueAfterDisc = parseFloat(priceLineF);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PRICE) {
             productAndSkusLine.price = Math.max(priceProduct -  priceLineF, 0).toFixed(2);
-            line.pricingValue = parseFloat(productAndSkusLine.price);
+            line.pricingValueAfterDisc = parseFloat(productAndSkusLine.price);
         }
         else if (line.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
             let factor = 1 - priceLineF / 100
             let priceComputed = (priceProduct * factor).toFixed(2);
             productAndSkusLine.price = priceComputed;
-            line.pricingValue = (priceProduct * factor);
+            line.pricingValueAfterDisc = priceComputed;
         }
+        line.pricingValueAfterDisc = parseFloat(line.pricingValueAfterDisc);
         productAndSkusLine.nonDiscountedPrice = productAndSkusLine.price.toString();
 
     }
@@ -82,32 +92,40 @@ const useStyles = makeStyles((palette) => ({
 }))
 
 function DealSelector({ deal, contextData }) {
+
     const width = useWindowSize()
     const classes = useStyles();
     const router = useRouter()
     const {addToast} = useToasts()
     const [currentLine, setCurrentLine] = useState(0)
+    //const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
     const [confirmDealDialogOpen, setConfirmDealDialogOpen] = useState(false)
+    const [updateMode, setUpdateMode] = useState(false)
     const [skuRefs, setSkuRefs] = useState([])
-    const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, resetOrderInCreation} = useAuth();
+    const {setDealEdit, dealEdit, getOrderInCreation, setOrderInCreation, currentBrand,
+        resetOrderInCreation, setGlobalDialog} = useAuth();
 
     useEffect(() => {
-        if (deal && deal.lines && deal.lines.length > 0 && deal.lines[currentLine] && deal.lines[currentLine].skus) {
-            let skusInLine = deal.lines[currentLine].skus.map(sku => sku.extRef)
+        if (deal && getLines().length > 0 && getLines()[currentLine] && getLines()[currentLine].skus) {
+            let skusInLine = getLines()[currentLine].skus.map(sku => sku.extRef)
             setSkuRefs(skusInLine);
         }
 
     }, [currentLine])
 
     useEffect(() => {
-        if (deal) {
+        if (deal.deal) {
+            setDealEdit(cloneDeep(deal));
+            setUpdateMode(true);
+        }
+        else if (deal) {
             setDealEdit({deal: cloneDeep(deal)})
         }
     }, [])
 
     useEffect( () => {
-        if (dealEdit && dealEdit.productAndSkusLines && deal.lines.length > 0 &&
-            deal.lines.length === dealEdit.productAndSkusLines.length) {
+        if (dealEdit && dealEdit.productAndSkusLines && getLines().length > 0 &&
+            getLines().length === dealEdit.productAndSkusLines.length) {
             setConfirmDealDialogOpen(true);
         }
     }, [dealEdit])
@@ -115,15 +133,29 @@ function DealSelector({ deal, contextData }) {
 
 
     function getStepperList() {
-        return deal && deal.lines && deal.lines.map((line, index) => {
-                return(
-                    {
-                        index: index,
-                        title: line.name,
-                        disabled: false
-                    })
-            }
-        );
+        if (deal && deal.lines) {
+            return deal.lines.map((line, index) => {
+                    return(
+                        {
+                            index: index,
+                            title: line.name,
+                            disabled: false
+                        })
+                }
+            );
+        }
+        if (deal && deal.deal && deal.deal.lines) {
+            return deal.deal.lines.map((line, index) => {
+                    return(
+                        {
+                            index: index,
+                            title: line.name,
+                            disabled: false
+                        })
+                }
+            );
+        }
+
     }
 
     const handleStepChange = (step) => {
@@ -135,24 +167,32 @@ function DealSelector({ deal, contextData }) {
             dealEdit.productAndSkusLines.some(productAndSkusLine => productAndSkusLine.lineNumber == currentLine)
     }
 
-    function addMenuToCart() {
-        addDealToCart(dealEdit, getOrderInCreation, setOrderInCreation);
-        setDealEdit(null);
+    function addUpdateMenuToCart() {
+        if (updateMode) {
+            updateDealInCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation, false, currentBrand());
+        }
+        else {
+            addDealToCart(setGlobalDialog, dealEdit, getOrderInCreation(), setOrderInCreation, false, currentBrand());
+        }
         router.push("/cart")
+        setDealEdit(null);
     }
 
     function cancelDeal() {
         setDealEdit(null);
-        resetOrderInCreation();
+        //resetOrderInCreation();
         router.push("/product/shop/all")
+    }
+
+    function getLines() {
+        if (!deal?.lines && !deal?.deal?.lines) {
+            return [];
+        }
+        return deal.lines || deal.deal.lines;
     }
 
     return (
         <div>
-            {/*<p>{deal && deal.lines? deal.lines.length : 0}</p>*/}
-            {/*<p>{dealEdit && dealEdit.productAndSkusLines ? dealEdit.productAndSkusLines.length: 0}</p>*/}
-
-
             <Dialog
                 BackdropProps={{
                     classes: {
@@ -166,6 +206,7 @@ function DealSelector({ deal, contextData }) {
                 <DialogTitle>{localStrings.contentDeal}</DialogTitle>
                 <DialogContent className={classes.dialogContent}>
                     <MiniCartDeal contextData={contextData}
+                                  updateMode={updateMode}
                                   setterLine={setCurrentLine}
                                   closeCallBack={() => setConfirmDealDialogOpen(false)}/>
                 </DialogContent>
@@ -186,18 +227,13 @@ function DealSelector({ deal, contextData }) {
                         color="primary"
                         onClick={() => {
                             setConfirmDealDialogOpen(false);
-                            addMenuToCart();
+                            addUpdateMenuToCart();
                         }}
                     >
-                        {localStrings.addMenuToCart}
+                        {updateMode ? localStrings.updateCart : localStrings.addMenuToCart}
                     </Button>
                 </DialogActions>
             </Dialog>
-
-            {/*<h1>{currentLine}</h1>*/}
-            {/*<p>{JSON.stringify(dealEdit)}</p>*/}
-            {/*<p>{JSON.stringify(skuRefs)}</p>*/}
-            {/*<p>{dealEdit ? JSON.stringify(dealEdit.productAndSkusLines) : ""}</p>*/}
             <Box mb={3}>
                 <Grid container spacing={3}>
                     <Grid item lg={12} md={12} xs={12}>
@@ -232,19 +268,22 @@ function DealSelector({ deal, contextData }) {
                                 </Button>
                             </Box>
 
-                            <Box p={1} >
-                                {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length === deal.lines.length &&
-                                <Button variant="contained" color="primary" onClick={addMenuToCart}>
-                                    {localStrings.addMenuToCart}
-                                </Button>
-                                }
-                                {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length !== deal.lines.length &&
-                                isProductSelectedInLine() &&
-                                <BazarButton variant="contained" color="primary" onClick={() => setCurrentLine(currentLine + 1)}>
-                                    {localStrings.next}
-                                </BazarButton>
-                                }
-                            </Box>
+                            {!updateMode &&
+                                <Box p={1}>
+                                    {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length === getLines().length &&
+                                        <Button variant="contained" color="primary" onClick={addUpdateMenuToCart}>
+                                            {localStrings.addMenuToCart}
+                                        </Button>
+                                    }
+                                    {dealEdit && dealEdit.productAndSkusLines && dealEdit.productAndSkusLines.length !== getLines().length &&
+                                        isProductSelectedInLine() &&
+                                        <BazarButton variant="contained" color="primary"
+                                                     onClick={() => setCurrentLine(currentLine + 1)}>
+                                            {localStrings.next}
+                                        </BazarButton>
+                                    }
+                                </Box>
+                            }
                         </Box>
                     </div>
                 </Grid>

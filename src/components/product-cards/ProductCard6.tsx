@@ -1,6 +1,6 @@
 import HoverBox from '@component/HoverBox'
 import LazyImage from '@component/LazyImage'
-import { Card, Chip } from '@material-ui/core'
+import {Card, Chip} from '@material-ui/core'
 import React from 'react'
 
 export interface ProductCard6Props {

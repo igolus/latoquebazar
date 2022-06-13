@@ -1,4 +1,4 @@
-import { request, gql } from 'graphql-request'
+import {gql, request} from 'graphql-request'
 import {TYPE_DEAL} from "../util/constants";
 
 const config = require('../conf/config.json')
@@ -36,10 +36,16 @@ const common = `
         day
         service
       }
+      deliveryZones
       startDate
       endDate
       startTime
       endTime
+      
+      startBookingTime
+      endBookingTime
+      bookingAndDeliverySameDay
+      
       serviceTypes
       minOrderAmount
       maxPerOrder

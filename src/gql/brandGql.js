@@ -20,6 +20,8 @@ const common = `
     currency
     siteUrl
     googleKey
+    facebookPixelId
+    analyticsGoogleId
     starWebProducts
     proposeDeal
     loginImg
@@ -47,9 +49,17 @@ const common = `
     }
     socialWebConfig {
       facebookUrl
+      googleMBUrl
+      googleMBCommentUrl
       twitterUrl
       instagramUrl
       enableShareOnFacebookButton
+    }
+    loyaltyConfig {
+      useLoyalty
+      loyaltyConversionEarn
+      loyaltyConversionSpend
+      minPointSpend
     }
     metaWebConfig {
       title
@@ -108,7 +118,6 @@ export const updateGetBrandStripPrivateKeyCache = async (brandId, privateKey) =>
     });
     //}
 }
-
 
 export const getAllBrandsQuery = () => {
 

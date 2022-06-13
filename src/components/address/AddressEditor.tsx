@@ -2,25 +2,24 @@ import Card1 from '@component/Card1'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import {Button, Divider, Grid, TextField, Typography} from '@material-ui/core'
 import Place from '@material-ui/icons/Place'
-import { Box } from '@material-ui/system'
-import { Formik } from 'formik'
+import {Box} from '@material-ui/system'
+import {Formik} from 'formik'
 import Link from 'next/link'
 import React, {useEffect, useState} from 'react'
 import * as yup from 'yup'
 import DashboardLayout from '../layout/CustomerDashboardLayout'
 import localStrings from "../../localStrings";
 import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
-import {getDeliveryDistanceWithFetch} from "../../util/displayUtil";
-import {setDistanceAndCheck} from "@component/address/AdressCheck";
-import {MODE_EDIT, ORDER_DELIVERY_MODE_PICKUP_ON_SPOT} from "../../util/constants";
 import useAuth from "@hook/useAuth";
-import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
-import {getOrderByIdQuery} from "../../gql/orderGql";
+import {executeMutationUtil} from "../../apolloClient/gqlUtil";
 import {cloneDeep} from "@apollo/client/utilities";
 import {updateSiteUserQuery} from "../../gql/siteUserGql";
 import {useRouter} from "next/router";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {uuid} from "uuidv4";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import {getDeliveryDistanceWithFetch} from "../../util/displayUtil";
+import {setDistanceAndCheck} from "@component/address/AdressCheck";
 
 const AddressEditor = ({back}) => {
 
@@ -40,6 +39,7 @@ const AddressEditor = ({back}) => {
 
     const [adressValue, setAdressValue] = useState("");
     const [loading, setLoading] = useState(false);
+    const [deliveryOut, setDeliveryOut] = useState(false);
     const [loadingAddress, setLoadingAddress] = useState(false);
     // const [distanceInfo, setDistanceInfo] = useState(null);
     // const [maxDistanceReached, setMaxDistanceReached] = useState(false);
@@ -191,6 +191,15 @@ const AddressEditor = ({back}) => {
                     />
 
                     <Card1>
+                        {deliveryOut &&
+                                <AlertHtmlLocal severity={"warning"}
+                                                title={localStrings.warning}
+                                                content={localStrings.tooFarAddress}
+                                                marginBottom={25}
+                                />
+                        }
+
+
                         <Formik
                             initialValues={initialValues(id, dbUser, adressInfo)}
 
@@ -208,20 +217,20 @@ const AddressEditor = ({back}) => {
                                         {/*<p>{JSON.stringify(values)}</p>*/}
                                         <Grid container spacing={3}>
                                             {id && id !== "main" &&
-                                            <Grid item md={12} xs={12}>
-                                                <TextField
-                                                    name="name"
-                                                    variant="outlined"
-                                                    label={localStrings.nameAddress}
-                                                    placeholder={localStrings.fillAddressName}
-                                                    fullWidth
-                                                    onBlur={handleBlur}
-                                                    onChange={handleChange}
-                                                    value={values.name}
-                                                    error={!!touched.name && !!errors.name}
-                                                    helperText={touched.name && errors.name}
-                                                />
-                                            </Grid>
+                                                <Grid item md={12} xs={12}>
+                                                    <TextField
+                                                        name="name"
+                                                        variant="outlined"
+                                                        label={localStrings.nameAddress}
+                                                        placeholder={localStrings.fillAddressName}
+                                                        fullWidth
+                                                        onBlur={handleBlur}
+                                                        onChange={handleChange}
+                                                        value={values.name}
+                                                        error={!!touched.name && !!errors.name}
+                                                        helperText={touched.name && errors.name}
+                                                    />
+                                                </Grid>
                                             }
                                             <Grid item md={12} xs={12}>
                                                 <GoogleMapsAutocomplete
@@ -235,18 +244,17 @@ const AddressEditor = ({back}) => {
                                                     //disabled={adressEditLock}
                                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
                                                         setLoadingAddress(true);
-                                                        // if (currentEstablishment()) {
-                                                        //     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                        //     setDistanceAndCheck(distInfo,
-                                                        //         (maxDistanceReached) => {
-                                                        //             setMaxDistanceReached(maxDistanceReached);
-                                                        //         },
-                                                        //         setDistanceInfo, currentEstablishment);
-                                                        // }
+                                                        if (currentEstablishment()) {
+                                                            let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                            setDistanceAndCheck(distInfo,
+                                                                (maxDistanceReached) => {
+                                                                    setDeliveryOut(maxDistanceReached)
+                                                                },
+                                                                null, currentEstablishment);
+                                                        }
                                                         //setAdressValue(label)
                                                         updateDeliveryAdress(label, lat, lng, placeId);
                                                         setLoadingAddress(false);
-                                                        //setAdressEditLock(true);
                                                     }}/>
                                             </Grid>
 
@@ -277,7 +285,7 @@ const AddressEditor = ({back}) => {
 
                                     <Button  variant="contained" color="primary"
                                              style={{textTransform: "none"}}
-                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress}
+                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress || deliveryOut}
                                              type="submit">
                                         {getSubmitText()}
                                     </Button>
@@ -328,9 +336,9 @@ const checkoutSchema = (id) => {
         })
     }
     return yup.object().shape({
-    //name: yup.string().required('required'),
-    //address: yup.string().required('required'),
-    // contact: yup.string().required('required'),
+        //name: yup.string().required('required'),
+        //address: yup.string().required('required'),
+        // contact: yup.string().required('required'),
     })
 }
 

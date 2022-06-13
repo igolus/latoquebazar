@@ -1,9 +1,9 @@
 import FlexBox from '@component/FlexBox'
 import ProductCard9 from '@component/product-cards/ProductCard9'
 import productDatabase from '@data/product-database'
-import { Pagination } from '@material-ui/core'
+import {Pagination} from '@material-ui/core'
 import React, {useState} from 'react'
-import { Span } from '../Typography'
+import {Span} from '../Typography'
 import {FilterProps} from "@component/products/ProductFilterCard";
 
 export interface ProductCard9ListProps {

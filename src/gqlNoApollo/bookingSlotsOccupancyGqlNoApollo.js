@@ -1,4 +1,4 @@
-import { request, gql } from 'graphql-request'
+import {gql, request} from 'graphql-request'
 
 const config = require('../conf/config.json')
 const common = `
@@ -12,6 +12,7 @@ const common = `
     excludedDeliveryNumber
     maxDelivery
     locked
+    deliveryMode
 `
 
 export const getBookingSlotsOccupancyQueryNoApollo = async (brandId, establishmentId) => {

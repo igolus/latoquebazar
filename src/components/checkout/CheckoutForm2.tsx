@@ -1,21 +1,13 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
 import LazyImage from '@component/LazyImage'
-import { H6, Paragraph } from '@component/Typography'
-import {
-  Avatar,
-  Button,
-  Card,
-  Grid,
-  MenuItem,
-  TextField,
-  Typography,
-} from '@material-ui/core'
-import { Box } from '@material-ui/system'
-import { format } from 'date-fns'
-import { Formik } from 'formik'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import {H6, Paragraph} from '@component/Typography'
+import {Avatar, Button, Card, Grid, MenuItem, TextField, Typography,} from '@material-ui/core'
+import {Box} from '@material-ui/system'
+import {format} from 'date-fns'
+import {Formik} from 'formik'
+import {useRouter} from 'next/router'
+import React, {useEffect, useState} from 'react'
 import * as yup from 'yup'
 
 type DateProps = {

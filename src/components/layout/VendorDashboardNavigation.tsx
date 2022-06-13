@@ -4,9 +4,9 @@ import Dashboard from '@material-ui/icons/Dashboard'
 import NoteAdd from '@material-ui/icons/NoteAdd'
 import Settings from '@material-ui/icons/Settings'
 import ShoppingCart from '@material-ui/icons/ShoppingCart'
-import { useRouter } from 'next/router'
+import {useRouter} from 'next/router'
 import React from 'react'
-import { DashboardNavigationWrapper, StyledDashboardNav } from './DashboardStyle'
+import {DashboardNavigationWrapper, StyledDashboardNav} from './DashboardStyle'
 
 const VendorDashboardNavigation = () => {
   const { pathname } = useRouter()

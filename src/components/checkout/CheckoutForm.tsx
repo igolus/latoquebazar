@@ -6,10 +6,12 @@ import {
   CircularProgress,
   Dialog,
   DialogActions,
-  DialogContent, DialogTitle,
+  DialogContent,
+  DialogTitle,
   FormControlLabel,
   FormGroup,
-  Grid, IconButton,
+  Grid,
+  IconButton,
   Radio,
   TextField,
   Typography,
@@ -27,7 +29,7 @@ import {
   ORDER_STATUS_NEW,
   PAYMENT_METHOD_SYSTEMPAY,
   PAYMENT_MODE_STRIPE,
-  PAYMENT_MODE_SYSTEM_PAY
+  PAYMENT_MODE_SYSTEM_PAY, PRICING_EFFECT_FIXED_PRICE
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -36,7 +38,7 @@ import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
 import {setDistanceAndCheck} from "@component/address/AdressCheck";
 import {
   computePriceDetail,
-  formatPaymentMethod,
+  formatPaymentMethod, getBrandCurrency,
   getDeliveryDistanceWithFetch,
   getProfileName,
   getSkusListsFromProducts,
@@ -48,9 +50,16 @@ import {cloneDeep} from "@apollo/client/utilities";
 import {uuid} from "uuidv4";
 import {executeMutationUtil, executeQueryUtil} from "../../apolloClient/gqlUtil";
 import AlertHtmlLocal from "../../components/alert/AlertHtmlLocal";
-import {addOrderToCustomer, bulkDeleteOrderMutation, createOrderMutation, getOrderByIdQuery} from '../../gql/orderGql'
+import {
+  addOrderToCustomer,
+  bulkDeleteOrderMutation,
+  createOrderMutation,
+  getOrderByIdQuery
+} from '../../gql/orderGql'
+import {addErrorMutation} from '../../gql/errorGql'
+
 import {green} from "@material-ui/core/colors";
-import {addToCartOrder, getCartItems} from "../../util/cartUtil";
+import {addDiscountToCart, addToCartOrder, getCartItems} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -67,6 +76,9 @@ import MdRender from "@component/MdRender";
 import * as ga from '../../../lib/ga'
 import CloseIcon from "@material-ui/icons/Close";
 import UpSellDeal from "@component/products/UpSellDeal";
+import {gql} from "@apollo/client";
+import {Base64} from 'js-base64';
+import {pixelInitiateCheckout, pixelPurchaseContent} from "../../util/faceBookPixelUtil";
 
 const config = require('../../conf/config.json')
 
@@ -91,6 +103,12 @@ const useStyles = makeStyles((theme) => ({
 export interface CheckoutFormProps {
   contextData: any
   noStripe: boolean
+}
+
+
+export function getOrderAmount(getOrderInCreation) {
+  let detailPrice = computePriceDetail(getOrderInCreation());
+  return parseFloat(detailPrice.total);
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
@@ -137,28 +155,40 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const router = useRouter()
   const [selectedSlotKey, setSelectedSlotKey] = useState(null);
   const [adressValue, setAdressValue] = useState("");
+  const [adressSearch, setAdressSearch] = useState(false);
   const [adressEditLock, setAdressEditLock] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
-    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,
-    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply} = useAuth();
+    maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,setGlobalDialog,
+    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply, orderUpdating} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
-  const {} = useAuth();
 
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
   const [expectedPaymentMethods, setExpectedPaymentMethods] = useState([])
   const [dialogDealProposalContent, setDialogDealProposalContent] = useState(false)
+  const [maxPointsToSpend, setMaxPointsToSpend] = useState(0)
+  const [saveAmountWithPoint, setSaveAmountWithPoint] = useState(0)
+
+  const [maxPointsToSpendSave, setMaxPointsToSpendSave] = useState(0)
+  const [saveAmountWithPointSave, setSaveAmountWithPointSave] = useState(0)
+
+  const [pointsUsed, setPointsUsed] = useState(false);
+  const [manualAddressOutOfBound, setManualAddressOutOfBound] = useState(false);
+  const [priceDetails, setPriceDetails] = useState(false);
 
   useEffect(() => {
-    checkDealProposal(orderInCreation, currentEstablishment)
+    pixelInitiateCheckout(currentBrand(), getOrderInCreation())
   }, [])
 
+  useEffect(() => {
+    setPriceDetails(computePriceDetail(getOrderInCreation()))
+  }, [getOrderInCreation])
 
   useEffect(() => {
-    if (dealCandidates.length > 0) {
+    if (dealCandidates && dealCandidates.length > 0) {
       setDialogDealProposalContent(true);
     }
     else {
@@ -171,6 +201,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
     const setAddMainLoad = async () => {
       if (
+          (!getOrderInCreation()?.deliveryAddress ||
+              dbUser?.userProfileInfo?.address == getOrderInCreation()?.deliveryAddress?.address) &&
           !selectedAddId &&
           (dbUser || bookWithoutAccount) &&
           isDeliveryActive(currentEstablishment())) {
@@ -191,22 +223,33 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     if (currentEstablishment()) {
       return currentEstablishment();
     }
-    return contextData.establishments[0];
+    return contextData?.establishments[0];
   }
 
   useEffect(() => {
     if (currentEstablishment() &&
-        isDeliveryPriceDisabled() && orderInCreation.deliveryMode !== ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
+        isDeliveryPriceDisabled() && !orderInCreation?.deliveryMode && orderInCreation?.deliveryMode !== ORDER_DELIVERY_MODE_PICKUP_ON_SPOT) {
       setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
     }
   }, [orderInCreation])
 
   useEffect(() => {
-    //removeGoogleMapScript()
-  }, [])
+    if (dbUser) {
+      let priceDetail = computePriceDetail(orderInCreation);
+      //let priceInPoints = getOrderInCreation().totalPrice;
+      const conversion = currentBrand()?.config?.loyaltyConfig?.loyaltyConversionSpend;
+      const pointOwned = dbUser.loyaltyPoints;
+      const priceInPoints = priceDetail.total * conversion
+      const maxPointToSpend = Math.min(Math.ceil(priceInPoints), pointOwned);
+      const saveAmount = Math.min(priceDetail.total, pointOwned / conversion);
+      setMaxPointsToSpend(maxPointToSpend);
+      setSaveAmountWithPoint(saveAmount);
+    }
+  }, [orderInCreation, dbUser])
 
+  function usePoints() {
 
-
+  }
 
   function buildOrderInformation() {
     let ret = "";
@@ -265,10 +308,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         payment_method: paymentMethodReq.paymentMethod.id
       });
 
-      //alert(JSON.stringify(resPay))
       if (resPay.error) {
         setCheckoutError(resPay.error.message);
-        //alert("payment error " + resPay.error.message)
         return null;
       }
 
@@ -285,15 +326,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   const handleFormSubmit = async (values: any, transactionId: string, uuidvalue: string) => {
-
+    let errorOccured;
     setLoading(true);
     let orderId = 0;
-
+    let dataOrder;
     const currentBrand = contextData.brand;
     try {
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null,2))
 
-      let dataOrder = cloneDeep(getOrderInCreation());
+      dataOrder = cloneDeep(getOrderInCreation());
 
       if (transactionId) {
         dataOrder.paymentTransactionId = transactionId;
@@ -305,9 +346,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       //filerRestricted
       let itemsIdToDelete = [];
       let dealsIdToDelete = [];
-      //dataOrder.order.items.forEach(item => )
-
-
 
       if (dataOrder.order.items && dataOrder.order.items.length > 0) {
         dataOrder.order.items.forEach(item => {
@@ -317,6 +355,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           delete item.productId;
           delete item.creationTimestamp;
           delete item.uuid;
+
+          delete item.canditeDeal;
+          delete item.takenFromCart;
+          delete item.lineIndex;
 
           (item.options || []).forEach(opt => {
             delete opt.defaultSelected
@@ -345,6 +387,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                 deal.deal.lines.forEach(line => {
                   delete line.quantity;
+                  delete line.pricingValueAfterDisc;
                   if (typeof line.pricingValue !== "string") {
                     line.pricingValue = line.pricingValue.toString()
                   }
@@ -359,6 +402,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   delete productAndSkusLine.creationTimestamp;
                   delete productAndSkusLine.restrictionsApplied;
                   delete productAndSkusLine.restrictionsList;
+                  delete productAndSkusLine.takenFromCart;
 
                   delete productAndSkusLine.restrictionsList;
                   (productAndSkusLine.options || []).forEach(opt => {
@@ -392,19 +436,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         return !itemsIdToDelete.includes(item.extRef)
       })
 
-      // alert("dataOrder.order.deals.length " + dataOrder.order.deals.length)
-      // alert("dataOrder.order.items.length " + dataOrder.order.items.length)
-
-      //let createBookingSlotOccupancy = false;
       if (dataOrder.bookingSlot) {
-        //createBookingSlotOccupancy = true;
-        //dataOrder.bookingSlot = {...getOrderInCreation().bookingSlot}
         delete dataOrder.bookingSlot.available;
         delete dataOrder.bookingSlot.full;
         delete dataOrder.bookingSlot.closed;
         delete dataOrder.bookingSlot.totalPreparionTime;
         delete dataOrder.bookingSlot.deliveryNumber;
-
+        delete dataOrder.bookingSlot.locked;
 
         dataOrder.bookingSlot.startDateIso = dataOrder.bookingSlot.startDate.format();
         dataOrder.bookingSlot.endDateIso = dataOrder.bookingSlot.endDate.format();
@@ -433,6 +471,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         dataOrder.charges.forEach(charge => {
               delete charge.restrictionsList;
               delete charge.restrictionsApplied;
+              delete charge.nonDiscountedPrice;
               charge.price = parseFloat(charge.price.toFixed(2))
             }
         )
@@ -446,9 +485,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         )
       }
 
-      if (dataOrder.order.discounts) {
-        dataOrder.order.discounts.forEach(discount => {
+      if (dataOrder.discounts) {
+        dataOrder.discounts.forEach(discount => {
               delete discount.uuid;
+              delete discount.initialPricingValue;
+              delete discount.restrictionsApplied;
             }
         )
       }
@@ -462,6 +503,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       dataOrder.totalPrice = parseFloat(detailPrice.total);
       dataOrder.totalNonDiscounted = parseFloat(detailPrice.totalNonDiscounted);
       dataOrder.totalPriceNoTax = parseFloat(detailPrice.totalNoTax);
+      dataOrder.totalPriceNoCharge = parseFloat(detailPrice.totalNoCharge);
       let taxDetailForOrder = [];
 
       Object.keys(detailPrice.taxDetail).forEach(key => {
@@ -547,10 +589,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           return;
         }
       }
-
-      // if (!dataOrder.customer && dbUser) {
-      //   dataOrder.customer = dbUser;
-      // }
       if (dataOrder.customer && dataOrder.customer.id && !bookWithoutAccount) {
         await executeMutationUtil(addOrderToCustomer(currentBrand.id, dataOrder.customer.id, {
           ...dataOrder,
@@ -560,18 +598,29 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       }
 
       ga.gaPurchase(result.data.addOrder);
-
+      pixelPurchaseContent(currentBrand, result.data.addOrder);
       console.log("orderInCreation " + JSON.stringify(getOrderInCreation(), null, 2))
       increaseOrderCount();
       resetOrderInCreation();
     }
     catch (err) {
       console.log(err);
+      errorOccured = err;
       alert(err.message)
     }
     finally {
       setLoading(false);
       //setLoading(false);
+    }
+    if (errorOccured) {
+      let query = addErrorMutation(currentBrand.id,
+          Base64.encodeURI(JSON.stringify({
+            error: errorOccured.message,
+            //customer: errorOccured.message,
+            order: dataOrder
+          })));
+
+      await executeMutationUtil(query)
     }
     if (orderId != 0) {
       router.push('/confirmed/confirmedOrder?orderId=' + orderId)
@@ -580,10 +629,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   function setSelectedBookingSlot(bookingSlot) {
     //alert("setSelectedBookingSlot " + JSON.stringify(bookingSlot))
-    setOrderInCreation({
+    setOrderInCreationNoLogic({
       ...getOrderInCreation(),
       bookingSlot: bookingSlot,
-    })
+    });
+
+    //(orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal)
   }
 
   function setDeliveryMode(deliveryMode: string) {
@@ -592,9 +643,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       deliveryMode: deliveryMode,
       bookingSlot: null,
     })
+    setPaymentMethod("delivery");
   }
 
-  function updateDeliveryAdress(address, lat, lng, id, name, customerDeliveryInformation, distance) {
+  function updateDeliveryAdress(address, lat, lng, id, name, customerDeliveryInformation, distance, zoneId) {
     //alert("updateDeliveryAdress " + distance);
 
     setOrderInCreation({
@@ -606,9 +658,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         id: id,
         name: name,
         customerDeliveryInformation: customerDeliveryInformation,
-        distance: distance
+        distance: distance,
+        zoneId: zoneId,
       },
-    })
+    }, false, null, null, null, true)
   }
 
   function updateCustomerDeliveryInformation(customerDeliveryInformation) {
@@ -621,46 +674,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     })
   }
 
-
-  function resetDeliveryAdress() {
-    //alert("resetDeliveryAdress")
-    setOrderInCreation({
-      ...getOrderInCreation(),
-      deliveryAddress: null,
-    })
-  }
-
-  function resetCustomerDeliveryInformation() {
-    //alert("resetDeliveryAdress")
-    setOrderInCreation({
-      ...getOrderInCreation(),
-      deliveryAddress: {
-        ...getOrderInCreation().deliveryAddress,
-        customerDeliveryInformation: null
-      },
-    })
-  }
-
-  function updateCustomer(customer) {
-    setOrderInCreation({
-      ...getOrderInCreation(),
-      customer: customer,
-    })
-  }
-
-  function getUserAdress() {
-    if (!dbUser || !dbUser.userProfileInfo || !dbUser.userProfileInfo.address) {
-      return null
-    }
-    return dbUser.userProfileInfo.address;
-  }
-
   function isDeliveryPriceDisabled() {
+    let totalDiscounts = 0;
+    if (getOrderInCreation() && getOrderInCreation().discounts) {
+      getOrderInCreation().discounts.forEach(d => totalDiscounts += parseFloat(d.pricingOff))
+    }
+
+
     return isDeliveryActive(currentEstablishment()) &&
         getOrderInCreation() &&
         currentEstablishment().serviceSetting &&
         currentEstablishment().serviceSetting.minimalDeliveryOrderPrice &&
-        computePriceDetail(getOrderInCreation()).total < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
+        computePriceDetail(getOrderInCreation()).total + totalDiscounts < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
   }
 
   const handlePaymentMethodChange = ({ target: { name } }: any) => {
@@ -675,10 +700,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           (maxDistanceReached) => {
             setMaxDistanceReached(maxDistanceReached);
           },
-          setDistanceInfo, currentEstablishment);
-      // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
-      // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
-      //     setGlobalDialog, setRedirectPageGlobal, distInfo)
+          setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
     }
     return distInfo;
   }
@@ -687,7 +709,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     // if (!paymentMethod) {
     //   return localStrings.check.noSelectPaymentMethod;
     // }
-    if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0) {
+    if (paymentMethod === "delivery"  && expectedPaymentMethods.length === 0 && priceDetails.total > 0) {
       return localStrings.check.noSelectPaymentMethod;
     }
 
@@ -711,8 +733,16 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.badContactInfo;
     }
 
+    if (isDeliveryPriceDisabled() && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+      return localStrings.check.deliveryMinPrice;
+    }
+
     if (!cgvChecked) {
       return localStrings.check.pleaseAcceptCgv;
+    }
+
+    if ( priceDetails?.total === 0) {
+      return localStrings.orderFree;
     }
 
     return paymentMethod === "cc" ?
@@ -737,8 +767,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function isPaymentDisabled(values) {
-    return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0) ||
+    return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0 && priceDetails.total > 0) ||
         !cgvChecked ||
+        (isDeliveryPriceDisabled() && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
         !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
         !getOrderInCreation().bookingSlot ||
         loading || getCartItems(getOrderInCreation).length == 0 ||
@@ -759,10 +790,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return currentBrand()?.config?.paymentWebConfig?.paymentType === PAYMENT_MODE_STRIPE
   }
 
-  function getOrderAmount() {
-    let detailPrice = computePriceDetail(getOrderInCreation());
-    return parseFloat(detailPrice.total);
-  }
 
   function getEmailCustomer(values) {
     if (bookWithoutAccount) {
@@ -807,12 +834,68 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
 
   function selectDealProposal(selectedProductAndSku, deal) {
-    //setPrefferedDealToApply(deal.canditae.deal);
-    addToCartOrder(selectedProductAndSku, () => orderInCreation, setOrderInCreation, null, deal.candidate.deal)
+    addToCartOrder(setGlobalDialog, selectedProductAndSku, orderInCreation, setOrderInCreation, null,
+        deal.candidate.deal, checkDealProposal, currentEstablishment, currentBrand());
+  }
+
+  function formatPointsAppliedMessage() {
+    return localStrings.formatString(localStrings.usedLoyaltyPoints, saveAmountWithPointSave + " " + getBrandCurrency(currentBrand()), maxPointsToSpendSave)
+  }
+
+  function spendPoints() {
+    const saveAmount = saveAmountWithPoint + " " + getBrandCurrency(currentBrand());
+    let discount = {
+      id: uuid(),
+      name: localStrings.formatString(localStrings.discountsLoyaltyName, saveAmount, maxPointsToSpend),
+      pricingEffect: PRICING_EFFECT_FIXED_PRICE,
+      pricingValue: saveAmountWithPoint,
+      loyaltyPointCost: maxPointsToSpend,
+    }
+    setMaxPointsToSpendSave(maxPointsToSpend);
+    setSaveAmountWithPointSave(saveAmountWithPoint);
+
+    addDiscountToCart(discount, getOrderInCreation, setOrderInCreation);
+
+    setPointsUsed(true);
   }
 
   return (
       <>
+        <Dialog open={manualAddressOutOfBound} maxWidth="sm">
+          <DialogContent className={classes.dialogContent}>
+            <AlertHtmlLocal
+                severity="warning"
+                title={localStrings.tooFarAddress}
+            >
+            </AlertHtmlLocal>
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setManualAddressOutOfBound(false)} color="primary">
+              {localStrings.IUnderstand}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={pointsUsed} maxWidth="sm">
+          <DialogContent className={classes.dialogContent}>
+            <AlertHtmlLocal
+                severity="success"
+                title={localStrings.bravo}
+                // content={config.alertOnSelectPickup}
+            >
+              <MdRender content = {formatPointsAppliedMessage()}/>
+            </AlertHtmlLocal>
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setPointsUsed(false)} color="primary">
+              {localStrings.IUnderstand}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+
         {dealCandidates && dealCandidates.length > 0 &&
         <Dialog
             onClose={() => setDialogDealProposalContent(false)}
@@ -838,16 +921,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           <DialogContent>
             {/*  <p>TEST</p>*/}
             <UpSellDeal
+                orderInCreation={getOrderInCreation()}
                 candidateDeal={dealCandidates[0]}
                 cancelCallBack={() => {
                   //setDialogDealProposalContent(false)
                   setDealCandidates([...dealCandidates].slice(1))
                 }}
                 selectCallBack={
-                  (selectedProductAndSku) => {
+                  async (selectedProductAndSku) => {
                     //setDialogDealProposalContent(false);
                     selectDealProposal(selectedProductAndSku, dealCandidates[0])
-                    setDealCandidates([...dealCandidates].slice(1));
+                    //await reduceCandidates();
+                    //setDealCandidates(newCandidates);
                   }
                 }
                 contextData={contextData}/>
@@ -1044,8 +1129,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                               <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
                                               title={maxDistanceReached ?
                                                   localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                              content={localStrings.formatString(localStrings.distanceOnly,
-                                                  (distanceInfo.distance / 1000))}
+                                              // content={localStrings.formatString(localStrings.distanceOnly,
+                                              //     (distanceInfo.distance / 1000))}
                               />
                             </Box>
                             }
@@ -1107,7 +1192,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             item.name,
                                             //item.additionalInformation,
                                             item.customerDeliveryInformation || "",
-                                            distInfo?.distance
+                                            distInfo?.distance,
+                                            distInfo.deliveryZoneId
                                         );
                                       }}
                                   />
@@ -1132,7 +1218,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             {(!dbUser || !useMyAdress) &&
                             <Grid container spacing={3}>
                               {/*<Box display="flex" p={1}>*/}
-                              <Grid item xs={12} lg={12} ml={2} mr={2}>
+                              <Grid item xs={adressSearch ? 10 : 12} lg={adressSearch ? 10 : 12} ml={adressSearch ? 0 : 2} mr={adressSearch ? 0 : 2}>
                                 <GoogleMapsAutocomplete
                                     //ref={autocomp}
                                     borderColor={customAddressSelected && "primary.main"}
@@ -1142,7 +1228,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         localStrings.fillAddressDeliveryConnected : localStrings.fillAddressDelivery}
                                     noKeyKnown
                                     required
-                                    setterValueSource={setAdressValue}
+                                    setterValueSource={(value) => {
+                                      setAdressSearch(true);
+                                      setAdressValue(value);
+                                    }}
                                     valueSource={adressValue}
                                     disabled={adressEditLock}
                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
@@ -1153,33 +1242,30 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         setDistanceAndCheck(distInfo,
                                             (maxDistanceReached) => {
                                               if (maxDistanceReached) {
-                                                setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
+                                                //setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
                                                 setSelectedAddId(null);
                                                 setCustomAddressSelected(false)
+                                                setManualAddressOutOfBound(true);
                                               }
                                               else {
                                                 setCustomAddressSelected(true)
                                                 setSelectedAddId(null);
-
                                               }
                                               setMaxDistanceReached(maxDistanceReached);
-
+                                              setAdressSearch(false);
                                             },
-                                            setDistanceInfo, currentEstablishment);
+                                            setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
                                         updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
-                                        //resetCustomerDeliveryInformation();
-                                        // const currentService = getCurrentService(currentEstablishment(), bookingSlotStartDate);
-                                        // processOrderInCreation(currentEstablishment, currentService, orderInCreation,
-                                        //     setGlobalDialog, setRedirectPageGlobal, distInfo)
                                       } else {
                                         updateDeliveryAdress(label, lat, lng);
                                       }
-                                      //setAdressValue(label)
-                                      //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
-                                      //updateDeliveryAdress(label, lat, lng, null, distInfo?.distance);
-                                      //setAdressEditLock(true);
                                     }}/>
                               </Grid>
+                              {adressSearch &&
+                                  <Grid item xs={2} lg={2} >
+                                    <CircularProgress className={classes.buttonProgress}/>
+                                  </Grid>
+                              }
                             </Grid>
                             }
 
@@ -1368,149 +1454,152 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             content={checkoutError.toString()}
                             />
                             }
-
-                            <Typography fontWeight="600" mb={2}>
-                              {localStrings.paymentMethod}
-                            </Typography>
-
-                            <FormControlLabel
-                                name="delivery"
-                                label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
-                                control={
-                                  <Radio
-                                      checked={paymentMethod === 'delivery'}
-                                      color="secondary"
-                                      size="small"
-                                  />
-                                }
-                                sx={{mb: '.5rem'}}
-                                onChange={handlePaymentMethodChange}
-                            />
-
-                            {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
+                            {priceDetails && priceDetails.total > 0 &&
                             <>
-                              <br/>
+                              <Typography fontWeight="600" mb={2}>
+                                {localStrings.paymentMethod}
+                              </Typography>
+
                               <FormControlLabel
-                                  name="cc"
-                                  label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                  name="delivery"
+                                  label={<Typography fontWeight="300">{localStrings.paymentDelivery}</Typography>}
                                   control={
                                     <Radio
-                                        checked={paymentMethod === 'cc'}
+                                        checked={paymentMethod === 'delivery'}
                                         color="secondary"
                                         size="small"
                                     />
                                   }
-                                  sx={{mb: '0.5rem'}}
+                                  sx={{mb: '.5rem'}}
                                   onChange={handlePaymentMethodChange}
                               />
-                            </>
-                            }
 
-                            <Typography fontWeight="600" mb={2}>
-                              {localStrings.paymentMethodsForPickup}
-                            </Typography>
-
-
-                            {paymentMethod !== 'cc' &&
-                            <FormGroup>
-                              {getPaymentsOnline().map((item, key) =>
-                                  <FormControlLabel key={key}
-                                                    control={
-                                                      <Checkbox
-                                                          checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
-                                                          onChange={(event) => {
-                                                            //alert("checked " + event.target.checked);
-                                                            if (event.target.checked) {
-                                                              setExpectedPaymentMethods([...expectedPaymentMethods, item])
-                                                            } else {
-                                                              let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
-                                                              setExpectedPaymentMethods(filter)
-                                                            }
-                                                          }}
-                                                      />
-                                                    }
-                                                    label={item.name}/>
-                              )}
-                            </FormGroup>
-                            }
-
-                            {paymentMethod === 'cc' &&
-                            <>
-                              {isPaymentSystemPay() &&
+                              {currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment &&
                               <>
-                                {!loading &&
-                                <KRPayment
-                                    paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
-                                    publicKey={getSystemPublicKey()}
-                                    endPoint={getSystemEndPoint()}
-                                    email={getEmailCustomer(values)}
-                                    amount={getOrderAmount()}
-                                    currency={contextData.brand.config.currency}
-                                    errorCallBack={message => setCheckoutError(message)}
-                                    brandId={contextData.brand.id}
-                                    text={getSubmitText(values)}
-                                    disabled={
-                                      isPaymentDisabled(values)
+                                <br/>
+                                <FormControlLabel
+                                    name="cc"
+                                    label={<Typography fontWeight="300">{localStrings.paymentCreditCard}</Typography>}
+                                    control={
+                                      <Radio
+                                          checked={paymentMethod === 'cc'}
+                                          color="secondary"
+                                          size="small"
+                                      />
                                     }
-                                    checkingPayCallBack={() => setPayLoading(true)}
+                                    sx={{mb: '0.5rem'}}
+                                    onChange={handlePaymentMethodChange}
                                 />
-                                }
-
-                                {isPaymentDisabled(values) && !loading &&
-                                <Button
-                                    style={{textTransform: "none"}}
-                                    variant="contained" color="primary" type="submit" fullWidth
-                                    disabled
-                                >
-                                  {getSubmitText(values)}
-                                </Button>
-                                }
                               </>
                               }
-                              {isPaymentStripe() &&
-                              <div
-                                  style={
-                                    {
-                                      border: '1px solid #C4CCD5',
-                                      borderRadius: "5px",
-                                      padding: '9px'
-                                    }
-                                  }
-                              >
-                                <CardElement
-                                    id="card-element"
 
-                                    //onComplete={}
-                                    onReady={() => {
+                              <Typography fontWeight="600" mb={2}>
+                                {localStrings.paymentMethodsForPickup}
+                              </Typography>
 
-                                      //setPaymentCardValid(true);
-                                      console.log("Card ready")
-                                    }}
 
-                                    onChange={(event) => {
+                              {paymentMethod !== 'cc' &&
+                              <FormGroup>
+                                {getPaymentsOnline().map((item, key) =>
+                                    <FormControlLabel key={key}
+                                                      control={
+                                                        <Checkbox
+                                                            checked={expectedPaymentMethods.map(p => p.valuePayment).includes(item.valuePayment)}
+                                                            onChange={(event) => {
+                                                              //alert("checked " + event.target.checked);
+                                                              if (event.target.checked) {
+                                                                setExpectedPaymentMethods([...expectedPaymentMethods, item])
+                                                              } else {
+                                                                let filter = expectedPaymentMethods.filter(p => p.valuePayment !== item.valuePayment);
+                                                                setExpectedPaymentMethods(filter)
+                                                              }
+                                                            }}
+                                                        />
+                                                      }
+                                                      label={item.name}/>
+                                )}
+                              </FormGroup>
+                              }
 
-                                      if (event.complete) {
-                                        setPaymentCardValid(true);
-                                      } else if (event.error) {
-                                        setPaymentCardValid(false);
+                              {paymentMethod === 'cc' &&
+                              <>
+                                {isPaymentSystemPay() &&
+                                <>
+                                  {!loading &&
+                                  <KRPayment
+                                      paidCallBack={async (transactionId, uuidvalue) => await handleFormSubmit(values, transactionId, uuidvalue)}
+                                      publicKey={getSystemPublicKey()}
+                                      endPoint={getSystemEndPoint()}
+                                      email={getEmailCustomer(values)}
+                                      amount={getOrderAmount(getOrderInCreation)}
+                                      currency={contextData.brand.config.currency}
+                                      errorCallBack={message => setCheckoutError(message)}
+                                      brandId={contextData.brand.id}
+                                      text={getSubmitText(values)}
+                                      disabled={
+                                        isPaymentDisabled(values)
                                       }
-                                    }}
+                                      checkingPayCallBack={() => setPayLoading(true)}
+                                  />
+                                  }
 
-                                    options={{
-                                      style: {
-                                        base: {
-                                          fontSize: '14px',
-                                          color: '#424770',
-                                          '::placeholder': {
-                                            color: '#aab7c4',
+                                  {isPaymentDisabled(values) && !loading &&
+                                  <Button
+                                      style={{textTransform: "none"}}
+                                      variant="contained" color="primary" type="submit" fullWidth
+                                      disabled
+                                  >
+                                    {getSubmitText(values)}
+                                  </Button>
+                                  }
+                                </>
+                                }
+                                {isPaymentStripe() &&
+                                <div
+                                    style={
+                                      {
+                                        border: '1px solid #C4CCD5',
+                                        borderRadius: "5px",
+                                        padding: '9px'
+                                      }
+                                    }
+                                >
+                                  <CardElement
+                                      id="card-element"
+
+                                      //onComplete={}
+                                      onReady={() => {
+
+                                        //setPaymentCardValid(true);
+                                        console.log("Card ready")
+                                      }}
+
+                                      onChange={(event) => {
+
+                                        if (event.complete) {
+                                          setPaymentCardValid(true);
+                                        } else if (event.error) {
+                                          setPaymentCardValid(false);
+                                        }
+                                      }}
+
+                                      options={{
+                                        style: {
+                                          base: {
+                                            fontSize: '14px',
+                                            color: '#424770',
+                                            '::placeholder': {
+                                              color: '#aab7c4',
+                                            },
+                                          },
+                                          invalid: {
+                                            color: '#9e2146',
                                           },
                                         },
-                                        invalid: {
-                                          color: '#9e2146',
-                                        },
-                                      },
-                                    }}/>
-                              </div>
+                                      }}/>
+                                </div>
+                                }
+                              </>
                               }
                             </>
                             }
@@ -1532,25 +1621,47 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                       </FlexBox>
                                                     } />
                                 </Box>
-
-
-                                {/*<Checkbox defaultChecked />*/}
-                                {/*<Box>*/}
-                                {/*  <a href={"/cgv"} target="new">*/}
-                                {/*      {localStrings.seeCgvAccept}*/}
-                                {/*  </a>*/}
-                                {/*</Box>*/}
                               </FormGroup>
                             </Box>
-
                           </Card1>
+                        </>
+                        }
+
+
+                        {dbUser &&
+                        currentBrand()?.config?.loyaltyConfig?.useLoyalty &&
+                        dbUser?.loyaltyPoints >= currentBrand()?.config?.loyaltyConfig?.minPointSpend &&
+                        (!orderInCreation.discounts || orderInCreation.discounts.length === 0) &&
+                        <>
+                          <AlertHtmlLocal
+                              severity="success"
+                              title={localStrings.useYouPoints}
+                              // content={config.alertOnSelectPickup}
+                          >
+                            <MdRender content = {localStrings.formatString(localStrings.useYouPointsDetail, maxPointsToSpend, saveAmountWithPoint.toString() + ' ' + getBrandCurrency(currentBrand()))}/>
+                            <Box
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'row-reverse',
+                                }}
+                            >
+                              <Button
+                                  style={{textTransform: "none"}}
+                                  variant="outlined" color="primary"
+                                  onClick={spendPoints}
+                              >
+                                {localStrings.use}
+                              </Button>
+                            </Box>
+
+                          </AlertHtmlLocal>
                         </>
                         }
 
 
 
                         {(dbUser || bookWithoutAccount) &&
-                        <Grid container spacing={6}>
+                        <Grid container spacing={6} mt={1}>
                           <Grid item sm={isPaymentSystemPayAndCCSelected() ? 12 : 6} xs={12}>
                             <Link href="/cart">
                               <Button
@@ -1570,7 +1681,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 type="submit"
                                 //endIcon={<SaveIcon />}
                                 disabled={
-                                  isPaymentDisabled(values)
+                                  isPaymentDisabled(values) || orderUpdating
                                 }
                                 endIcon={loading ?
                                     <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}

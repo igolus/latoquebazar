@@ -13,12 +13,15 @@ import {useRouter} from "next/router";
 // import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
 import useAuth from "@hook/useAuth";
 import {
+    firstOrCurrentEstablishment,
     formatOrderConsumingMode,
     formatOrderDeliveryDateSlot,
     getBrandCurrency,
     getTextStatus
 } from "../../util/displayUtil";
 import {
+    BOOKING_SLOT_OCCUPANCY_COLLECTION,
+    BRAND_COLLECTION, ESTABLISHMENT_COLLECTION,
     HUBRISE_ORDER_STATUS_ACCEPTED,
     HUBRISE_ORDER_STATUS_AWAITING_COLLECTION,
     HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT,
@@ -29,8 +32,9 @@ import {
     HUBRISE_ORDER_STATUS_IN_PREPARATION,
     HUBRISE_ORDER_STATUS_NEW,
     HUBRISE_ORDER_STATUS_RECEIVED,
-    HUBRISE_ORDER_STATUS_REJECTED,
-    ORDER_DELIVERY_MODE_DELIVERY, ORDER_STATUS_COMPLETE,
+    HUBRISE_ORDER_STATUS_REJECTED, ORDER_COLLECTION,
+    ORDER_DELIVERY_MODE_DELIVERY,
+    ORDER_STATUS_COMPLETE,
     ORDER_STATUS_DELIVERING,
     ORDER_STATUS_FINISHED
 } from "../../util/constants";
@@ -42,6 +46,10 @@ import localStrings from "../../localStrings";
 import OrderContent from "@component/orders/OrderContent";
 import {executeQueryUtil} from "../../apolloClient/gqlUtil";
 import {getOrderByIdQuery, getSiteUserOrderById} from "../../gql/orderGql";
+import {useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
+import config from "../../conf/config.json";
+import moment from "moment";
+import firebase from "../../lib/firebase";
 
 // const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
 //     flexDirection: 'row',
@@ -84,6 +92,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
+        //alert("id " + id)
         establishmentIdParam = params?.get("establishmentId");
         //alert("orderId " + id);
     }
@@ -91,104 +100,96 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
 
     }
 
+    const db = firebase.firestore();
+
+    const {currentEstablishment, dbUser} = useAuth()
+
+    const currentEstablishmentOrFirst = () => {
+        return firstOrCurrentEstablishment(currentEstablishment, contextData);
+    }
+
+    function getOrderId() {
+        try {
+            params = new URLSearchParams(window.location.search)
+            id = params?.get("orderId");
+            return id;
+        }
+        catch (error) {
+            //console.log("error")
+        }
+        return "0";
+        //return "46545";
+    }
+
+    const [order, loading, error] =
+        useDocumentData(
+            db.collection(BRAND_COLLECTION)
+                .doc(config.brandId)
+                .collection(ESTABLISHMENT_COLLECTION)
+                .doc(currentEstablishmentOrFirst().id)
+                .collection(ORDER_COLLECTION)
+                .doc(getOrderId())
+            //.where('endDate', '<=', getEndDateSeconds())
+            ,
+            {
+                snapshotListenOptions: { includeMetadataChanges: true },
+            }
+        );
+
     function getContextData() {
         return contextData;
     }
-    // try {
-    //     params = new URLSearchParams(window.location.search)
-    // }
-    // catch(err) {
-    //
-    // }
 
-    const router = useRouter();
 
-    //alert("orderId " + orderId);
-    const [refreshing, setRefreshing] = useState(false);
-    const [noStatus, setNoStatus] = useState(false);
-
-    const {currentEstablishment, dbUser} = useAuth()
-    const stepIconList = [PackageBox, TruckFilled, Delivery]
-
-    const width = useWindowSize()
     const theme = useTheme()
-    const breakpoint = 350
     console.log(theme.breakpoints.up('md'))
 
-    const [order, setOrder] = useState(null)
+    // const [order, setOrder] = useState(null)
 
-    useEffect(async() => {
-        await refresh();
-    }, [getContextData(), currentEstablishment(), dbUser])
+    // useEffect(async() => {
+    //     await refresh();
+    // }, [getContextData(), currentEstablishment(), dbUser])
 
 
-    async function refresh() {
-        try {
-            setRefreshing(true)
-            //alert("refresh")
-            if (getContextData() && getContextData().brand && (establishmentIdParam || currentEstablishment()) && id) {
-                let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id,
-                    establishmentIdParam || currentEstablishment().id, id));
-                let orderSet = null;
-                if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
-                    //alert( "result.data " + result.data)
-                    let order = result.data.getOrdersByOrderIdEstablishmentIdAndOrderId;
-                    setOrder(order);
-                    orderSet = order;
-                    setRefreshing(false)
-                }
-                else if (dbUser) {
-                    let result = await executeQueryUtil(getSiteUserOrderById(getContextData().brand.id, dbUser.id, id));
-                    if (result && result.data && result.data.getSiteUserOrderById) {
-                        let order = result.data.getSiteUserOrderById;
-                        setOrder(order);
-                        orderSet = order;
-                        setRefreshing(false);
-                        setNoStatus(true);
-                    }
-                }
-                if (orderSet == null) {
-                    router.push("/404");
-                }
-            }
-        }
-        catch (err) {
-            console.log(err)
-        }
-        finally {
-            setRefreshing(false)
-        }
-
-    }
-
-    function getStepOrder() {
-        if (!order) {
-            return 0;
-        }
-
-        if (ORDER_STATUS_DELIVERING === order.status) {
-            return 1;
-        }
-        if (ORDER_STATUS_FINISHED === order.status) {
-            return 2;
-        }
-        return 0
-
-    }
-
+    // async function refresh() {
+    //     try {
+    //         setRefreshing(true)
+    //         //alert("refresh")
+    //         if (getContextData() && getContextData().brand && (establishmentIdParam || currentEstablishment()) && id) {
+    //             let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id,
+    //                 establishmentIdParam || currentEstablishment().id, id));
+    //             let orderSet = null;
+    //             if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
+    //                 //alert( "result.data " + result.data)
+    //                 let order = result.data.getOrdersByOrderIdEstablishmentIdAndOrderId;
+    //                 setOrder(order);
+    //                 orderSet = order;
+    //                 setRefreshing(false)
+    //             }
+    //             else if (dbUser) {
+    //                 let result = await executeQueryUtil(getSiteUserOrderById(getContextData().brand.id, dbUser.id, id));
+    //                 if (result && result.data && result.data.getSiteUserOrderById) {
+    //                     let order = result.data.getSiteUserOrderById;
+    //                     setOrder(order);
+    //                     orderSet = order;
+    //                     setRefreshing(false);
+    //                     setNoStatus(true);
+    //                 }
+    //             }
+    //             if (orderSet == null) {
+    //                 router.push("/404");
+    //             }
+    //         }
+    //     }
+    //     catch (err) {
+    //         console.log(err)
+    //     }
+    //     finally {
+    //         setRefreshing(false)
+    //     }
+    //
+    // }
     function getImageStatus() {
-
-        // export const HUBRISE_ORDER_STATUS_NEW = "new";
-        // export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
-        // export const HUBRISE_ORDER_STATUS_ACCEPTED = "accepted";
-        // export const HUBRISE_ORDER_STATUS_IN_PREPARATION = "in_preparation";
-        // export const HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT= "awaiting_shipment";
-        // export const HUBRISE_ORDER_STATUS_AWAITING_COLLECTION= "awaiting_collection";
-        // export const HUBRISE_ORDER_STATUS_IN_DELIVERY= "in_delivery";
-        // export const HUBRISE_ORDER_STATUS_COMPLETED= "completed";
-        // export const HUBRISE_ORDER_STATUS_REJECTED= "rejected";
-        // export const HUBRISE_ORDER_STATUS_CANCELLED= "cancelled";
-        // export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
         switch (order?.status) {
             case HUBRISE_ORDER_STATUS_NEW:
             case HUBRISE_ORDER_STATUS_RECEIVED:
@@ -215,28 +216,23 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
             <DashboardPageHeader
                 title={localStrings.orderDetail}
                 icon={ShoppingBag}
-                button={
-                    <>
-                        {!noStatus &&
-                        <Button color="primary" variant="contained" onClick={refresh}>
-                            {localStrings.refresh}
-                        </Button>
-                        }
-                    </>
-                }
+                // button={
+                //     <>
+                //         {!noStatus &&
+                //         <Button color="primary" variant="contained" onClick={refresh}>
+                //             {localStrings.refresh}
+                //         </Button>
+                //         }
+                //     </>
+                // }
             />
 
-            {!noStatus &&
             <Card sx={{ p: '.2rem .2rem', mb: '0' }}>
-                {refreshing ?
-                    <ClipLoaderComponent/>
-                    :
-                    <div style={{width: '100%'}}>
-                        {isMobile && !noStatus &&
+                <div style={{width: '100%'}}>
+                    {isMobile && !noStatus &&
                         <>
                             <Box sx={{display: 'flex', justifyContent: 'center'}}>
                                 <Box m={5}>
-                                    {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
                                     <BazarImage width={120} height={120} src={getImageStatus()}/>
                                 </Box>
                             </Box>
@@ -252,8 +248,8 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                                 </Box>
                             </Box>
                         </>
-                        }
-                        {!isMobile && !noStatus &&
+                    }
+                    {!isMobile &&
                         <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
                             <Box m={5} justifyContent={"center"}>
                                 {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
@@ -268,12 +264,10 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                                 </H5>
                             </Box>
                         </Box>
-                        }
+                    }
 
-                    </div>
-                }
+                </div>
             </Card>
-            }
 
             <OrderContent order={order} contextData={getContextData()}/>
 
@@ -285,33 +279,32 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                             {localStrings.deliveryMode}
                         </H5>
                         <Paragraph fontSize="14px" my="0px">
-                            {/*{JSON.stringify(order || {})}*/}
                             {formatOrderConsumingMode(order, localStrings)}
                         </Paragraph>
 
                         {order &&
-                        order.status !== ORDER_STATUS_COMPLETE &&
-                        <>
-                            <H5 mt={0} mb={2} mt={2}>
-                                {order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? localStrings.deliveryHour
-                                    : localStrings.pickupHour}
-                            </H5>
-                            <Paragraph fontSize="14px" my="0px">
-                                {formatOrderDeliveryDateSlot(order)}
-                            </Paragraph>
-                        </>
+                            order.status !== ORDER_STATUS_COMPLETE &&
+                            <>
+                                <H5 mt={0} mb={2} mt={2}>
+                                    {order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? localStrings.deliveryHour
+                                        : localStrings.pickupHour}
+                                </H5>
+                                <Paragraph fontSize="14px" my="0px">
+                                    {formatOrderDeliveryDateSlot(order)}
+                                </Paragraph>
+                            </>
                         }
 
                         {order &&
-                        order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                        <>
-                            <H5 mt={0} mb={2} mt={2}>
-                                {localStrings.deliveryAdress}
-                            </H5>
-                            <Paragraph fontSize="14px" my="0px">
-                                {order?.deliveryAddress?.address}
-                            </Paragraph>
-                        </>
+                            order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                            <>
+                                <H5 mt={0} mb={2} mt={2}>
+                                    {localStrings.deliveryAdress}
+                                </H5>
+                                <Paragraph fontSize="14px" my="0px">
+                                    {order?.deliveryAddress?.address}
+                                </Paragraph>
+                            </>
                         }
 
                     </Card>

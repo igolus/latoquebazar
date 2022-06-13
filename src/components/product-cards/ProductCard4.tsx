@@ -1,9 +1,9 @@
 import BazarRating from '@component/BazarRating'
 import HoverBox from '@component/HoverBox'
 import LazyImage from '@component/LazyImage'
-import { H4, Small } from '@component/Typography'
-import { Box } from '@material-ui/core'
-import React, { CSSProperties } from 'react'
+import {H4, Small} from '@component/Typography'
+import {Box} from '@material-ui/core'
+import React, {CSSProperties} from 'react'
 import FlexBox from '../FlexBox'
 
 export interface ProductCard4Props {

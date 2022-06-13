@@ -1,4 +1,4 @@
-import { request, gql } from 'graphql-request'
+import {gql, request} from 'graphql-request'
 
 const config = require('../conf/config.json')
 
@@ -22,6 +22,8 @@ const common = `
     currency
     siteUrl
     googleKey
+    facebookPixelId
+    analyticsGoogleId
     starWebProducts
     signagePage
     loginImg
@@ -39,9 +41,17 @@ const common = `
     }
     socialWebConfig {
       facebookUrl
+      googleMBUrl
+      googleMBCommentUrl
       twitterUrl
       instagramUrl
       enableShareOnFacebookButton
+    }
+    loyaltyConfig {
+      useLoyalty
+      loyaltyConversionEarn
+      loyaltyConversionSpend
+      minPointSpend
     }
     metaWebConfig {
       title

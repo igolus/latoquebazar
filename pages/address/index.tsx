@@ -1,24 +1,24 @@
 import DashboardLayout from '@component/layout/CustomerDashboardLayout'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Divider,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow
+    Button,
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    Divider,
+    IconButton,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow
 } from '@material-ui/core'
 import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
 import Place from '@material-ui/icons/Place'
 import Link from 'next/link'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import useAuth from "@hook/useAuth";
 import localStrings from "../../src/localStrings";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
@@ -28,7 +28,6 @@ import {updateSiteUserQuery} from "../../src/gql/siteUserGql";
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../../src/nextUtil/propsBuilder";
 import {styled} from "@material-ui/styles";
-import {router} from "next/client";
 import {useRouter} from "next/router";
 
 // function TableContainer(props: { component: OverridableComponent<PaperTypeMap>, children: ReactNode }) {

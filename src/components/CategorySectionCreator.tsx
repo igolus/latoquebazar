@@ -1,5 +1,5 @@
-import { Box, Container } from '@material-ui/core'
-import React, { ReactNode } from 'react'
+import {Box, Container} from '@material-ui/core'
+import React, {ReactNode} from 'react'
 import CategorySectionHeader from './CategorySectionHeader'
 
 export interface CategorySectionCreatorProps {

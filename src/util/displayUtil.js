@@ -2,9 +2,11 @@ import {executeQueryUtil} from "../apolloClient/gqlUtil";
 import {getProductsQuery} from "../gql/productGql";
 import {
     getOrderDeliveryMode,
-    getOrderStatus, getPaymentMethods,
+    getOrderStatus,
+    getPaymentMethods,
     ORDER_DELIVERY_MODE_DELIVERY,
-    orderDeliveryMode, STRIPE_SUB_STATUS_ACTIVE, STRIPE_SUB_STATUS_TRIALING,
+    STRIPE_SUB_STATUS_ACTIVE,
+    STRIPE_SUB_STATUS_TRIALING,
     TYPE_DEAL,
     TYPE_PRODUCT
 } from "./constants";
@@ -13,6 +15,7 @@ import localStrings from "../localStrings";
 import axios from "axios";
 import {DINNER_PERIOD, LUNCH_PERIOD} from "@component/form/BookingSlots";
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
+
 const config = require('../conf/config.json')
 
 export const getSkusLists = async (brandId) => {
@@ -130,8 +133,9 @@ export const computeNonDiscountedTotalPriceValue = (itemSkuBooking, mul = 1) => 
     }
     let sum = parseFloat(itemSkuBooking.nonDiscountedPrice || itemSkuBooking.price);
     if (itemSkuBooking.options) {
-        itemSkuBooking.options.forEach(option => sum+= parseFloat(option.price))
+        itemSkuBooking.options.forEach(option => sum+= parseFloat(option.nonDiscountedPrice || option.price))
     }
+
     return (sum  * itemSkuBooking.quantity * mul);
 }
 
@@ -162,23 +166,27 @@ export const getPriceDeal = (deal) => {
         return null;
     }
     if (!deal || !deal.lines) {
-        return 0;
+        return null;
     }
     let sum = 0;
     for (let i = 0; i < deal.lines.length; i++) {
         const line = deal.lines[i];
-        if ( typeof line.pricingValue === "string") {
+        if (line.pricingValueAfterDisc || line.pricingValueAfterDisc == 0)
+        {
+            sum += line.pricingValueAfterDisc;
+        }
+        else if ( typeof line.pricingValueAfterDisc === "string") {
             if (line.pricingValue === "") {
                 return null;
             }
-            sum += parseFloat(line.pricingValue)
+            sum += parseFloat(line.pricingValueAfterDisc || line.pricingValue)
         }
         else {
-            sum += line.pricingValue
+            sum += parseFloat(line.pricingValue)
         }
     }
 
-    return sum;
+    return parseFloat(sum);
 }
 
 export const computePriceDetail = (orderInCreation) => {
@@ -203,7 +211,7 @@ export const computePriceDetail = (orderInCreation) => {
     let taxDetail = {};
     (orderInCreation?.charges || []).forEach(charge => {
         totalCharge += charge.price;
-        nonDiscountedTotal += charge.price;
+        nonDiscountedTotal += charge.nonDiscountedPrice || charge.price;
     });
 
     orderInCreation?.order?.items.forEach(item => {
@@ -335,19 +343,42 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
     let origins =  establishment.lat + "," + establishment.lng;
     let destinations =  lat + "," + lng;
 
+
+
     let res = await axios.get(config.distanceUrl + '?origins='+
         origins + '&destinations=' + destinations + '&key=' + config.googleKey);
-
+    let distanceInfo;
     if (res && res.data && res.data.rows && res.data.rows.length > 0) {
         //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
-        let distanceInfo =
+        distanceInfo =
             {
-                distance: res.data.rows[0].elements[0].distance.value,
-                duration: res.data.rows[0].elements[0].duration.value,
+                distance: res.data.rows[0].elements[0].distance?.value,
+                duration: res.data.rows[0].elements[0].duration?.value,
             }
-        return distanceInfo;
     }
-    return null;
+    if (establishment.deliveryZones && establishment.deliveryZones.length > 0) {
+        distanceInfo.zones = [];
+        for (let i = 0; i < establishment.deliveryZones.length; i++) {
+            const deliveryZone = establishment.deliveryZones[i];
+            origins =  deliveryZone.lat + "," + deliveryZone.lng;
+            res = await axios.get(config.distanceUrl + '?origins='+
+                origins + '&destinations=' + destinations + '&key=' + config.googleKey);
+            if (res && res.data && res.data.rows && res.data.rows.length > 0) {
+                //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
+                distanceInfo.zones.push(
+                    {
+                        zoneId: deliveryZone.uuid,
+                        name: deliveryZone.name,
+                        maxDistance: deliveryZone.distance,
+                        distance: res.data.rows[0].elements[0].distance?.value,
+                        duration: res.data.rows[0].elements[0].duration?.value,
+                    }
+                )
+            }
+        }
+    }
+
+    return distanceInfo;
 }
 
 export const getDistanceWithFetch = async (lat1, lng1, lat2, lng2) => {
@@ -481,13 +512,30 @@ export const getCroppedStringSize = (value, size) => {
     return value.substring(0, size + "...");
 }
 
+export function getProductFromItem(item, products) {
+
+    if (!products || !item) {
+        return null;
+    }
+    let product = products.find(p => p.id === item.productId);
+    return product;
+}
+
 export function getImgUrlFromProducts(item, products) {
 
-    if (!products) {
+    if (!products || !item) {
         return null;
     }
     let defaultUrl = "/assets/images/Icon_Sandwich.png";
     if (item.type === TYPE_DEAL) {
+
+        if (item.productAndSkusLines && item.productAndSkusLines.length === 1) {
+            const singleProductLine = item.productAndSkusLines[0];
+            let singleProduct = products.find(p => p.id === singleProductLine?.productId)
+            if (singleProduct) {
+                return singleProduct.files[0].url || defaultUrl;
+            }
+        }
         return getProductFirstImgUrl(item.deal) || defaultUrl;
     }
 
@@ -660,6 +708,5 @@ export const firstOrCurrentEstablishment = (currentEstablishment, contextData) =
     if (currentEstablishment()) {
         return currentEstablishment();
     }
-    return contextData.establishments[0];
+    return contextData?.establishments[0];
 }
-

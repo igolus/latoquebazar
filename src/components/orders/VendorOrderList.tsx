@@ -1,8 +1,8 @@
 import FlexBox from '@component/FlexBox'
 import TableRow from '@component/TableRow'
-import { H5 } from '@component/Typography'
-import { Pagination } from '@material-ui/core'
-import React, { Fragment } from 'react'
+import {H5} from '@component/Typography'
+import {Pagination} from '@material-ui/core'
+import React, {Fragment} from 'react'
 import OrderRow from './OrderRow'
 
 export interface VendorOrderListProps {}

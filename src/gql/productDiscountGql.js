@@ -1,5 +1,4 @@
 import {gql} from "@apollo/client";
-import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
   id
@@ -15,13 +14,40 @@ const common = `
       day
       service
     }
+    establishmentIds
     couponCodes
     startDate
     endDate
+    
     serviceTypes
     minOrderAmount
     maxPerOrder
     maxPerCustomer
+  }
+  restrictionsList {
+      establishmentId
+      dow {
+        day
+        service
+      }
+      deliveryZones
+      startDate
+      endDate
+      startTime
+      endTime
+      
+      startBookingTime
+      endBookingTime
+      bookingAndDeliverySameDay
+      
+      serviceTypes
+      minOrderAmount
+      maxPerOrder
+      maxPerCustomer
+      maxOrderAmount
+      minDeliveryDistance
+      maxDeliveryDistance
+      description
   }
   pricingEffect
   pricingValue

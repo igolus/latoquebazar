@@ -1,6 +1,6 @@
 import BazarCard from '@component/BazarCard'
 import NewArrival from '@component/icons/NewArrival'
-import { Grid } from '@material-ui/core'
+import {Grid} from '@material-ui/core'
 import React from 'react'
 import CategorySectionCreator from '../CategorySectionCreator'
 import ProductCard2 from '../product-cards/ProductCard2'

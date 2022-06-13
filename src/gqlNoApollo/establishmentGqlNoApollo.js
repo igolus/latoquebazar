@@ -1,4 +1,4 @@
-import { request, gql } from 'graphql-request'
+import {gql, request} from 'graphql-request'
 
 const config = require('../conf/config.json')
 const common = `
@@ -31,6 +31,15 @@ const common = `
   }
   offlinePaymentMethods
   onlinePaymentMethods
+  deliveryZones {
+    uuid
+    name
+    address
+    placeId
+    distance
+    lat
+    lng
+  }
   serviceSetting {
     slotDuration
     lunchDinnerSeparator
@@ -40,6 +49,7 @@ const common = `
     maxDistanceDelivery
     minimalDeliveryOrderPrice
     enableDelivery
+    orderSameDay
     printDeliveryOnCreate
     deliveryMenIds
     daySetting {

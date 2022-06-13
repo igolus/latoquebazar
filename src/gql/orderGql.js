@@ -3,6 +3,7 @@ import filterDataGql from "../apolloClient/gqlUtil";
 
 const common = `
   id
+  loyaltyPoints
   tempOrder
   creationDate
   orderNumber
@@ -82,6 +83,11 @@ const common = `
             startDate
             endDate
             startTime
+            
+            startBookingTime
+            endBookingTime
+            bookingAndDeliverySameDay
+            
             endTime
             serviceTypes
             minOrderAmount

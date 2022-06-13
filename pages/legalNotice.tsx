@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {GetStaticProps} from "next";
-import useAuth from "@hook/useAuth";
 import MdRender from "@component/MdRender";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import axios from "axios";
-import {Head} from "next/document";
 import localStrings from "../src/localStrings";
 import SeoHead from "@component/seo/SeoHead";
 

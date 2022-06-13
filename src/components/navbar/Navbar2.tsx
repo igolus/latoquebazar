@@ -2,10 +2,10 @@ import BazarCard from '@component/BazarCard'
 import FlexBox from '@component/FlexBox'
 import NavLink from '@component/nav-link/NavLink'
 import navbarNavigations from '@data/navbarNavigations'
-import { Box, Container, MenuItem } from '@material-ui/core'
+import {Box, Container, MenuItem} from '@material-ui/core'
 import ArrowRight from '@material-ui/icons/ArrowRight'
-import { makeStyles } from '@material-ui/styles'
-import { MuiThemeProps } from '@theme/theme'
+import {makeStyles} from '@material-ui/styles'
+import {MuiThemeProps} from '@theme/theme'
 import React from 'react'
 import useAuth from "@hook/useAuth";
 

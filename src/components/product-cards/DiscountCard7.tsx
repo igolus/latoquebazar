@@ -1,13 +1,11 @@
 import FlexBox from '@component/FlexBox'
 import {Span} from '@component/Typography'
-import {Avatar, Button, IconButton} from '@material-ui/core'
+import {Avatar, IconButton} from '@material-ui/core'
 import React from 'react'
 import ProductCard7Style from './ProductCard7Style'
 import localStrings from "../../localStrings";
 import MdRender from "@component/MdRender";
-import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
-import {deleteDealInCart, deleteDiscountInCart, increaseDealCartQte} from "../../util/cartUtil";
-import Add from "@material-ui/icons/Add";
+import {deleteDiscountInCart} from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import Close from "@material-ui/icons/Close";
 import {Box} from "@material-ui/system";
@@ -70,7 +68,7 @@ const DiscountCard7: React.FC<ProductCard7Props> = ({
                             padding: '4px',
                             ml: '12px',
                         }}
-                        onClick={() => deleteDiscountInCart(getOrderInCreation, setOrderInCreation, item.id)}
+                        onClick={() => deleteDiscountInCart(getOrderInCreation(), setOrderInCreation, item.id)}
                     >
                         <Close fontSize="small"/>
                     </IconButton>

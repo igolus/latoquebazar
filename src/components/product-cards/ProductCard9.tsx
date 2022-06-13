@@ -1,24 +1,16 @@
 import Image from '@component/BazarImage'
 import FlexBox from '@component/FlexBox'
 import ProductIntro from '@component/products/ProductIntro'
-import { H5, Span } from '@component/Typography'
-import {
-  Button,
-  Chip,
-  Dialog,
-  DialogContent,
-  Grid,
-  IconButton,
-  Rating,
-} from '@material-ui/core'
+import {H5, Span} from '@component/Typography'
+import {Button, Chip, Dialog, DialogContent, Grid, IconButton, Rating,} from '@material-ui/core'
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder'
 import Remove from '@material-ui/icons/Remove'
 import Visibility from '@material-ui/icons/Visibility'
-import { Box, CSSProperties } from '@material-ui/system'
+import {Box, CSSProperties} from '@material-ui/system'
 import Link from 'next/link'
-import React, { Fragment, useCallback, useState } from 'react'
+import React, {Fragment, useCallback, useState} from 'react'
 import ProductCard9Style from './ProductCard9Style'
 
 export interface ProductCard9Props {

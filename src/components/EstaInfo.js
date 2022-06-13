@@ -4,7 +4,6 @@ import {Container, Typography} from "@material-ui/core";
 import 'leaflet/dist/leaflet.css';
 import OpenStreetMap from "@component/map/OpenStreetMap";
 import localStrings from "../localStrings";
-import {isMobile} from "react-device-detect";
 import Card1 from "./Card1";
 import OpeningHours from "./OpeningHours";
 import ClosingDays from "./ClosingDays";

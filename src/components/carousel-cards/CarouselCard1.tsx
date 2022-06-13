@@ -1,6 +1,6 @@
 import BazarImage from '@component/BazarImage'
-import { Paragraph } from '@component/Typography'
-import { Box, Button, Grid, styled } from '@material-ui/core'
+import {Paragraph} from '@component/Typography'
+import {Box, Button, Grid, styled} from '@material-ui/core'
 import React from 'react'
 import Link from 'next/link'
 import MdRender from "@component/MdRender";
@@ -93,7 +93,6 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
 
     if (odd || width < WIDTH_DISPLAY_MOBILE) {
         return (
-            // <div style={{backgroundColor: 'red', width:'100%'}} >
                 <StyledBox>
                 <Grid container spacing={3} alignItems="center" justifyContent="center" mb={marginBottom || "0"}>
                     <Grid item className="grid-item" sm={imageUrl ? 5 : 12} xs={12}>
@@ -152,7 +151,6 @@ const CarouselCard1: React.FC<CarouselCard1Props> = ({imageUrl, title,
                     <Grid item sm={5} xs={12}>
                         <BazarImage
                             src={imageUrl}
-                            alt="apple-watch-1"
                             sx={{
                                 display: 'block',
                                 mx: 'auto',

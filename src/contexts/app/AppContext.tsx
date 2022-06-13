@@ -1,10 +1,6 @@
-import React, { createContext, useContext, useMemo, useReducer } from 'react'
+import React, {createContext, useContext, useMemo, useReducer} from 'react'
 // import { ContextDevTool } from "react-context-devtool";
-import {
-  initialState,
-  rootActionType,
-  rootReducer,
-} from '../../reducers/rootReducer'
+import {initialState, rootActionType, rootReducer,} from '../../reducers/rootReducer'
 
 interface ContextProps {
   state: typeof initialState

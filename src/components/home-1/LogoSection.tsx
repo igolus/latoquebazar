@@ -1,7 +1,7 @@
 import {Box} from '@material-ui/core'
 import React from 'react'
 import Image from "@component/BazarImage";
-import {isMobile, MobileView} from "react-device-detect";
+import {isMobile} from "react-device-detect";
 
 export interface Section2Props {
   contextData?: any

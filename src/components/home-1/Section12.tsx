@@ -4,9 +4,9 @@ import CreditCardVerified from '@component/icons/CreditCardVerified'
 import CustomerService from '@component/icons/CustomerService'
 import Shield from '@component/icons/Shield'
 import Truck from '@component/icons/Truck'
-import { Container, Grid } from '@material-ui/core'
+import {Container, Grid} from '@material-ui/core'
 import React from 'react'
-import { H4, Span } from '../Typography'
+import {H4, Span} from '../Typography'
 
 const Section12 = () => {
   return (

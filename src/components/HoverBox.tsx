@@ -1,5 +1,5 @@
-import { Box } from '@material-ui/core'
-import { styled } from '@material-ui/core/styles'
+import {Box} from '@material-ui/core'
+import {styled} from '@material-ui/core/styles'
 
 const HoverBox = styled(Box)({
   position: 'relative',

@@ -1,12 +1,12 @@
 import FlexBox from '@component/FlexBox'
 import Sidenav from '@component/sidenav/Sidenav'
-import { H2 } from '@component/Typography'
+import {H2} from '@component/Typography'
 import useWindowSize from '@hook/useWindowSize'
-import { styled } from '@material-ui/core/styles'
+import {styled} from '@material-ui/core/styles'
 import Menu from '@material-ui/icons/Menu'
-import { Box } from '@material-ui/system'
+import {Box} from '@material-ui/system'
 import React from 'react'
-import { DashboardNavigationWrapper } from './DashboardStyle'
+import {DashboardNavigationWrapper} from './DashboardStyle'
 import CustomerDashboardNavigation from "@component/layout/CustomerDashboardNavigation";
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -54,16 +54,14 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
           </H2>
         </FlexBox>
 
-        {/* {isTablet && ( */}
         <Box className="sidenav">
-          <Sidenav position="left" handle={<Menu fontSize="small" />}>
+          <Sidenav profileSideBar position="left" handle={<Menu fontSize="small" />}>
             <DashboardNavigationWrapper>
               <CustomerDashboardNavigation/>
 
             </DashboardNavigationWrapper>
           </Sidenav>
         </Box>
-        {/* )} */}
 
         {!isTablet && button}
       </FlexBox>

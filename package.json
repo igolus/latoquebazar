@@ -12,7 +12,10 @@
     "start": "next start -p 3006",
     "size": "node --max_old_space_size=4096",
     "mergeInBranche": "node mergeInBranches.js",
-    "fix:prettier": "prettier --write ."
+    "fix:prettier": "prettier --write .",
+    "copyConfBhappy": "gulp copyConfBhappy",
+    "copyConfBrunchClub": "gulp copyConfBrunchClub",
+    "copyConfRenato": "gulp copyConfRenato"
   },
   "lint-staged": {
     "*.+(js|jsx)": [
@@ -50,6 +53,7 @@
     "chart.js": "^3.3.2",
     "clone-deep": "^4.0.1",
     "clsx": "^1.1.1",
+    "dangerously-set-html-content": "^1.0.9",
     "date-fns": "^2.22.1",
     "elasticlunr": "^0.9.5",
     "firebase": "^7.17.1",
@@ -82,7 +86,8 @@
     "react-device-detect": "^1.17.0",
     "react-dom": "^17.0.2",
     "react-dropzone": "^11.3.2",
-    "react-firebase-hooks": "^4.0.1",
+    "react-facebook-pixel": "^1.0.4",
+    "react-firebase-hooks": "^2.2.0",
     "react-google-maps": "^9.4.5",
     "react-localization": "^1.0.17",
     "react-markdown": "^6.0.2",
@@ -100,7 +105,7 @@
     "simple-encryptor": "^4.0.0",
     "uuidv4": "^6.2.11",
     "vinyl-ftp": "^0.6.1",
-    "yarn": "^1.22.11",
+    "yarn": "^1.22.17",
     "yup": "^0.32.9"
   },
   "devDependencies": {
