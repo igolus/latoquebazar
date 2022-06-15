@@ -211,6 +211,11 @@ const common = `
       customerDeliveryInformation
   }
   additionalInfo
+  table {
+    id
+    name
+    capacity
+  }
   customer {
       id
       userProfileInfo {

@@ -34,7 +34,7 @@ const Footer = ({contextData}) => {
   const width = useWindowSize()
 
   const classes = useStyles()
-  const { currentEstablishment } = useAuth();
+  const { currentEstablishment, tableId } = useAuth();
   const logoUrl = contextData ? contextData.brand?.logoUrl : null;
   const brandName = contextData ? contextData.brand?.brandName : null;
 
@@ -60,55 +60,56 @@ const Footer = ({contextData}) => {
                   </Link>
 
                 </Grid>
+                {!tableId &&
+                    <Grid item lg={3} md={6} sm={6} xs={12}>
+                      <Box
+                          fontSize="25px"
+                          fontWeight="600"
+                          mb={2.5}
+                          lineHeight="1"
+                          color="white"
+                      >
+                        {localStrings.contactUs}
+                      </Box>
 
-                <Grid item lg={3} md={6} sm={6} xs={12}>
-                  <Box
-                      fontSize="25px"
-                      fontWeight="600"
-                      mb={2.5}
-                      lineHeight="1"
-                      color="white"
-                  >
-                    {localStrings.contactUs}
-                  </Box>
+                      <Box py={0.6} color="grey.500">
+                        {brandName}
+                      </Box>
 
-                  <Box py={0.6} color="grey.500">
-                    {brandName}
-                  </Box>
+                      <Box py={0.6} color="grey.500">
+                        {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().address ?
+                            firstOrCurrentEstablishment().address : contextData?.establishments[0]?.address}
+                      </Box>
+                      <Box py={0.6} color="grey.500">
+                        {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().contactMail ?
+                            <a href={"mailto:\"" + firstOrCurrentEstablishment().contactMail + "\""}>{firstOrCurrentEstablishment().contactMail}</a>
+                            :
+                            <a href={"mailto:\"" + contextData?.establishments[0]?.contactMail + "\""}>{contextData?.establishments[0]?.contactMail}</a>
+                        }
+                      </Box>
+                      <Box py={0.6} mb={2} color="grey.500">
+                        {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().phoneNumber ?
+                            <a href={"tel:\"" + firstOrCurrentEstablishment().phoneNumber + "\""}>{firstOrCurrentEstablishment().phoneNumber}</a>
+                            :
+                            <a href={"tel:\"" + contextData?.establishments[0]?.phoneNumber + "\""}>{contextData?.establishments[0]?.phoneNumber}</a>
+                        }
+                      </Box>
 
-                  <Box py={0.6} color="grey.500">
-                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().address ?
-                        firstOrCurrentEstablishment().address : contextData?.establishments[0]?.address }
-                  </Box>
-                  <Box py={0.6} color="grey.500">
-                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().contactMail ?
-                        <a href={"mailto:\"" + firstOrCurrentEstablishment().contactMail + "\""}>{firstOrCurrentEstablishment().contactMail}</a>
-                        :
-                        <a href={"mailto:\"" + contextData?.establishments[0]?.contactMail + "\""}>{contextData?.establishments[0]?.contactMail}</a>
-                    }
-                  </Box>
-                  <Box py={0.6} mb={2} color="grey.500">
-                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().phoneNumber ?
-                        <a href={"tel:\"" + firstOrCurrentEstablishment().phoneNumber + "\""}>{firstOrCurrentEstablishment().phoneNumber}</a>
-                        :
-                        <a href={"tel:\"" + contextData?.establishments[0]?.phoneNumber + "\""}>{contextData?.establishments[0]?.phoneNumber}</a>
-                    }
-                  </Box>
-
-                  {contextData?.brand?.config?.socialWebConfig?.googleMBCommentUrl &&
-                  <a
-                      href={contextData?.brand?.config?.socialWebConfig?.googleMBCommentUrl}
-                      target="_blank"
-                      rel="noreferrer noopenner"
-                  >
-                    <Box py={0.6} color="grey.500">
-                      {localStrings.leaveCommentOnGoogle}
-                    </Box>
-                  </a>
-                  }
+                      {contextData?.brand?.config?.socialWebConfig?.googleMBCommentUrl &&
+                          <a
+                              href={contextData?.brand?.config?.socialWebConfig?.googleMBCommentUrl}
+                              target="_blank"
+                              rel="noreferrer noopenner"
+                          >
+                            <Box py={0.6} color="grey.500">
+                              {localStrings.leaveCommentOnGoogle}
+                            </Box>
+                          </a>
+                      }
 
 
-                </Grid>
+                    </Grid>
+                }
 
                 <Grid item lg={5} md={6} sm={6} xs={12} alignItems="end">
                   <FlexBox className="flex" alignItems="flex-end" justifyContent="flex-end" mx={-0.625}>

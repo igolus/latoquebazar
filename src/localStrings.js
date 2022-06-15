@@ -3,6 +3,7 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        orderInProgress: "Commande",
         editOptions: "Changer les options",
         editProductMenu: "Changer les produits",
         pendingPointsGain: "Vous gagnez {0} points avec cette commande",

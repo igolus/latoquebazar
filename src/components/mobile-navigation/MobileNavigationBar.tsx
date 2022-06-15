@@ -1,4 +1,5 @@
 import CategoryOutlined from '@component/icons/CategoryOutline'
+import Food from '@component/icons/Food'
 import Home from '@component/icons/Home'
 import ShoppingBagOutlined from '@component/icons/ShoppingBagOutlined'
 import User2 from '@component/icons/User2'
@@ -55,11 +56,11 @@ const MobileNavigationBar = () => {
   const width = useWindowSize()
   const classes = useStyles()
   const { state } = useAppContext();
-  const { getOrderInCreation} = useAuth()
+  const { getOrderInCreation, tableId} = useAuth()
 
   return width <= WIDTH_DISPLAY_MOBILE ? (
     <Box className={classes.root}>
-      {list.map((item) => (
+      {list(tableId).map((item) => (
         <NavLink className={classes.link} href={item.href} key={item.title}>
           {item.title === localStrings.cart ? (
             <Badge badgeContent={getItemNumberInCart(getOrderInCreation)} color="primary">
@@ -76,10 +77,10 @@ const MobileNavigationBar = () => {
   ) : null
 }
 
-const list = [
+const list = (tableId) => [
   {
-    title: localStrings.home,
-    icon: Home,
+    title: tableId ? localStrings.orderInProgress : localStrings.home,
+    icon: tableId ? Food: Home,
     href: '/',
   },
   {

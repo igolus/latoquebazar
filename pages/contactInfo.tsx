@@ -8,7 +8,6 @@ import EstaInfo from "../src/components/EstaInfo"
 import {GetStaticProps} from "next";
 import localStrings from "../src/localStrings";
 
-// const config = require('../src/conf/config.json')
 export interface IndexPageProps {
     contextData?: any
 }
@@ -33,49 +32,13 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     const [selectedEsta, setSelectedEsta] = useState(firstOrCurrentEstablishment());
 
-    //const [currentTab, setCurrentTab] = useState(selectedEsta.id);
-
     const handleTabsChange = (event, value) => {
         let selected = (contextData.establishments || []).find(esta => esta.id === value);
         setSelectedEsta(selected)
     };
 
-    // const buildMap = () => {
-    //     return (<OpenStreetMap
-    //         styleDiv={{
-    //             width: "100%",
-    //             height: "300px"
-    //         }}
-    //         divName={"estaMap"}
-    //         selectedId={selectedEsta.id}
-    //         lat={selectedEsta.lat}
-    //         lng={selectedEsta.lng}
-    //         zoom={config.defaultMapZoom || 17}
-    //         markers={[
-    //             {
-    //                 lat: selectedEsta.lat,
-    //                 lng: selectedEsta.lng,
-    //                 name: selectedEsta.establishmentName,
-    //                 id: selectedEsta.id
-    //             }
-    //         ]}
-    //     />)
-    // }
-
-    // const config = require("../src/conf/config.json")
-    //
-    // function getSelectedEsta() {
-    //     let (contextData.establishments || []).find(esta => esta.id === sel)
-    // }
-
-    // const refDiv = useRef();
     return (
         <>
-            {/*<SeoHead*/}
-            {/*    metaDesc={localStrings.deliveryHourAndPlace}*/}
-            {/*    metaTitle={localStrings.deliveryHourAndPlaceDesc}*/}
-            {/*/>*/}
-
             <AppLayout contextData={contextData}
                        title={localStrings.deliveryHourAndPlaceDesc}
                        description={localStrings.deliveryHourAndPlaceDesc}

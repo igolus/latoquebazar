@@ -59,6 +59,7 @@ const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
 const CONTEXT_DATA = 'CONTEXT_DATA';
 const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 const DEAL_CANDIDATES = 'DEAL_CANDIDATES';
+const TABLE_ID = 'TABLE_ID';
 // const PREFFERED_DEAL_TO_APPLY = 'PREFFERED_DEAL_TO_APPLY';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
@@ -111,11 +112,20 @@ const initialAuthState = {
   estanavOpen: false,
   dealCandidates: [],
   prefferedDealToApply: null,
+  tableId:null,
 };
 
 const config = require('../conf/config.json');
 const reducer = (state, action) => {
   switch (action.type) {
+    case TABLE_ID: {
+      const { tableId } = action.payload;
+      return {
+        ...state,
+        tableId: tableId
+      };
+    }
+
     case DEAL_CANDIDATES: {
       const { dealCandidates } = action.payload;
       return {
@@ -328,6 +338,7 @@ const AuthContext = createContext({
   setEstanavOpen: () => {},
 
   setDealCandidates: () => {},
+  setTableId: () => {},
 });
 
 const expireTimeSeconds = 1800;
@@ -816,6 +827,20 @@ export const AuthProvider = ({ children }) => {
     if (!brand) {
       return
     }
+    let tableId;
+    let establishmentId;
+    let params = {};
+    try {
+      params = new URLSearchParams(window.location.search)
+      establishmentId = params?.get("establishmentId");
+      tableId = params?.get("tableId");
+    }
+    catch (err) {
+
+    }
+    if (tableId) {
+      setTableId(tableId)
+    }
     let res = await executeQueryUtil(establishmentsQuery(brand.id));
 
     //alert("res setBrand" + JSON.stringify(res))
@@ -828,10 +853,11 @@ export const AuthProvider = ({ children }) => {
           establishmentList: estas,
         }
       });
-      console.log("setEstablishment " + estas[0].id);
-      let estaToSet = estas[0];
+      //console.log("setEstablishment " + estas[0].id);
+      //alert("establishment " + estas.find(e=>e.id==establishmentId))
+      let estaToSet = estas.find(e=>e.id==establishmentId) || estas[0];
       let localEstId = localStorage.getItem(localStorageEstaKey);
-      if (localEstId) {
+      if (localEstId && !establishmentId) {
         estaToSet = estas.find(esta => esta.id === localEstId);
       }
       await setEstablishment(estaToSet || estas[0]);
@@ -1151,6 +1177,15 @@ export const AuthProvider = ({ children }) => {
     });
   }
 
+  const setTableId = (tableId) => {
+    dispatch({
+      type: TABLE_ID,
+      payload: {
+        tableId: tableId,
+      }
+    });
+  }
+
   const setDealEdit = (dealEdit) => {
     dispatch({
       type: DEAL_EDIT,
@@ -1312,6 +1347,7 @@ export const AuthProvider = ({ children }) => {
             getContextDataAuth,
             setEstanavOpen,
             setDealCandidates,
+            setTableId,
             contextDataState
           }}
       >

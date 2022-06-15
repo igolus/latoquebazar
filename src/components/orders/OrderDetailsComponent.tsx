@@ -1,16 +1,9 @@
-import Delivery from '@component/icons/Delivery'
-import PackageBox from '@component/icons/PackageBox'
-import TruckFilled from '@component/icons/TruckFilled'
 import DashboardPageHeader from '@component/layout/DashboardPageHeader'
 import {H2, H5, Paragraph} from '@component/Typography'
-import useWindowSize from '@hook/useWindowSize'
-import {Button, Card, Grid} from '@material-ui/core'
+import {Card, Grid} from '@material-ui/core'
 import ShoppingBag from '@material-ui/icons/ShoppingBag'
 import {Box, useTheme} from '@material-ui/system'
-import React, {useEffect, useState} from 'react'
-import {useRouter} from "next/router";
-// import {getOrderByIdQuery, getSiteUserOrderById} from "../../src/gql/orderGql";
-// import {executeQueryUtil} from "../../src/apolloClient/gqlUtil";
+import React from 'react'
 import useAuth from "@hook/useAuth";
 import {
     firstOrCurrentEstablishment,
@@ -20,8 +13,8 @@ import {
     getTextStatus
 } from "../../util/displayUtil";
 import {
-    BOOKING_SLOT_OCCUPANCY_COLLECTION,
-    BRAND_COLLECTION, ESTABLISHMENT_COLLECTION,
+    BRAND_COLLECTION,
+    ESTABLISHMENT_COLLECTION,
     HUBRISE_ORDER_STATUS_ACCEPTED,
     HUBRISE_ORDER_STATUS_AWAITING_COLLECTION,
     HUBRISE_ORDER_STATUS_AWAITING_SHIPMENT,
@@ -32,53 +25,20 @@ import {
     HUBRISE_ORDER_STATUS_IN_PREPARATION,
     HUBRISE_ORDER_STATUS_NEW,
     HUBRISE_ORDER_STATUS_RECEIVED,
-    HUBRISE_ORDER_STATUS_REJECTED, ORDER_COLLECTION,
+    HUBRISE_ORDER_STATUS_REJECTED,
+    ORDER_COLLECTION,
     ORDER_DELIVERY_MODE_DELIVERY,
-    ORDER_STATUS_COMPLETE,
-    ORDER_STATUS_DELIVERING,
-    ORDER_STATUS_FINISHED
+    ORDER_STATUS_COMPLETE
 } from "../../util/constants";
 import OrderAmountSummary from "@component/checkout/OrderAmountSummary";
-import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import BazarImage from "@component/BazarImage";
 import {isMobile} from "react-device-detect";
 import localStrings from "../../localStrings";
 import OrderContent from "@component/orders/OrderContent";
-import {executeQueryUtil} from "../../apolloClient/gqlUtil";
-import {getOrderByIdQuery, getSiteUserOrderById} from "../../gql/orderGql";
-import {useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
+import {useDocumentData} from "react-firebase-hooks/firestore";
 import config from "../../conf/config.json";
-import moment from "moment";
 import firebase from "../../lib/firebase";
 
-// const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     flexWrap: 'wrap',
-//     marginTop: '2rem',
-//     marginBottom: '2rem',
-//     [theme.breakpoints.down('sm')]: {
-//         flexDirection: 'column',
-//     },
-//
-//     '& .line': {
-//         // flex={width < breakpoint ? 'unset' : '1 1 0'}
-//         // height={width < breakpoint ? 50 : 4}
-//         // minWidth={width < breakpoint ? 4 : 50}
-//         // bgcolor={ind < statusIndex ? 'primary.main' : 'grey.300'}
-//         flex: '1 1 0',
-//         height: 4,
-//         minWidth: 50,
-//         [theme.breakpoints.down('sm')]: {
-//             flex: 'unset',
-//             height: 50,
-//             minWidth: 4,
-//         },
-//     },
-// }))
-//
-// type OrderStatus = 'packaging' | 'shipping' | 'delivering' | 'complete'
 
 export interface OrderDetailsProps {
     contextData?: any
@@ -92,9 +52,6 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
-        //alert("id " + id)
-        establishmentIdParam = params?.get("establishmentId");
-        //alert("orderId " + id);
     }
     catch (err) {
 
@@ -144,51 +101,6 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     const theme = useTheme()
     console.log(theme.breakpoints.up('md'))
 
-    // const [order, setOrder] = useState(null)
-
-    // useEffect(async() => {
-    //     await refresh();
-    // }, [getContextData(), currentEstablishment(), dbUser])
-
-
-    // async function refresh() {
-    //     try {
-    //         setRefreshing(true)
-    //         //alert("refresh")
-    //         if (getContextData() && getContextData().brand && (establishmentIdParam || currentEstablishment()) && id) {
-    //             let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id,
-    //                 establishmentIdParam || currentEstablishment().id, id));
-    //             let orderSet = null;
-    //             if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
-    //                 //alert( "result.data " + result.data)
-    //                 let order = result.data.getOrdersByOrderIdEstablishmentIdAndOrderId;
-    //                 setOrder(order);
-    //                 orderSet = order;
-    //                 setRefreshing(false)
-    //             }
-    //             else if (dbUser) {
-    //                 let result = await executeQueryUtil(getSiteUserOrderById(getContextData().brand.id, dbUser.id, id));
-    //                 if (result && result.data && result.data.getSiteUserOrderById) {
-    //                     let order = result.data.getSiteUserOrderById;
-    //                     setOrder(order);
-    //                     orderSet = order;
-    //                     setRefreshing(false);
-    //                     setNoStatus(true);
-    //                 }
-    //             }
-    //             if (orderSet == null) {
-    //                 router.push("/404");
-    //             }
-    //         }
-    //     }
-    //     catch (err) {
-    //         console.log(err)
-    //     }
-    //     finally {
-    //         setRefreshing(false)
-    //     }
-    //
-    // }
     function getImageStatus() {
         switch (order?.status) {
             case HUBRISE_ORDER_STATUS_NEW:
