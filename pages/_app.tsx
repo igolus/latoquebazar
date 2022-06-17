@@ -12,6 +12,8 @@ import * as ga from '../lib/ga'
 import "../global.css";
 import {getBrandByIdQueryNoApollo} from "../src/gqlNoApollo/brandGqlNoApollo";
 import config from "../src/conf/config.json";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 export const cache = createCache({ key: 'css', prepend: true })
 
