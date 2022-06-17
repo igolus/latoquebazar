@@ -175,7 +175,7 @@ const CustomMain:React.FC<CarouselCompoProps> = ({contextData}) => {
                      headerText={"Vos envies pleines de vie"}
                      actionText={"Comnandez maintenant"}
                      actionUrl={"/product/shop/all"}
-                    text={"B.Happy vous livre à domicile, sur votre lieu de travail"}
+                    text={"B.Happy vous livre à domicile ou sur votre lieu de travail"}
             />
             <Container>
                 <News
