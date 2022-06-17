@@ -9,10 +9,11 @@ import Section2 from "@component/home-1/Section2";
 import {Box} from "@material-ui/core";
 import useAuth from "@hook/useAuth";
 import useWindowSize from "@hook/useWindowSize";
-import {WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
+import {CUSTOM_HTML_HOME_COMPONENT, CUSTOM_HTML_SOURCE, WIDTH_DISPLAY_MOBILE} from "../src/util/constants";
 import {mobileBox} from "@component/header/Header";
 import Navbar from "@component/navbar/Navbar";
 import {useRouter} from "next/router";
+import CustomMain from "@component/CustomMain";
 
 export interface IndexPageProps {
     contextData?: any
@@ -49,24 +50,44 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
     const width = useWindowSize()
 
+    function getMainContent() {
+        if (getContextData()?.brand?.config?.useCustomHomePage === CUSTOM_HTML_SOURCE) {
+            return (
+                <div>
+                    <Navbar contextData={getContextData()}/>
+                    <div className="text-container" dangerouslySetInnerHTML={{ __html: getContextData()?.brand?.config.customHomePageSource }} />
+                </div>)
+        }
+        if (getContextData()?.brand?.config?.useCustomHomePage === CUSTOM_HTML_HOME_COMPONENT) {
+            return (
+                <div>
+                    <Navbar contextData={getContextData()}/>
+                    <CustomMain/>
+                </div>)
+        }
+        return (
+            <CarouselCompo contextData={getContextData()}/>
+        )
+    }
+
     return (
         <div>
 
 
             <AppLayout contextData={getContextData()}>
-
-                {getContextData()?.brand?.config?.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?
-                    <div>
-                        <Navbar contextData={getContextData()}/>
-                        <div className="text-container" dangerouslySetInnerHTML={{ __html: getContextData()?.brand?.config.customHomePageSource }} />
-                    </div>
-                    :
-                    <>
-                        {getContextData()?.brand?.config?.carouselWebConfig &&
-                            <CarouselCompo contextData={getContextData()}/>
-                        }
-                    </>
-                }
+                {getMainContent()}
+                {/*{getContextData()?.brand?.config?.useCustomHomePage && getContextData()?.brand?.config.customHomePageSource ?*/}
+                {/*    <div>*/}
+                {/*        <Navbar contextData={getContextData()}/>*/}
+                {/*        <div className="text-container" dangerouslySetInnerHTML={{ __html: getContextData()?.brand?.config.customHomePageSource }} />*/}
+                {/*    </div>*/}
+                {/*    :*/}
+                {/*    <>*/}
+                {/*        {getContextData()?.brand?.config?.carouselWebConfig &&*/}
+                {/*            <CarouselCompo contextData={getContextData()}/>*/}
+                {/*        }*/}
+                {/*    </>*/}
+                {/*}*/}
 
                 {getContextData()?.brand?.config?.starWebProducts &&
                     <Section2 contextData={getContextData()}/>
@@ -79,20 +100,20 @@ const IndexPage:React.FC<IndexPageProps> = ({contextData}) => {
 
 
                 {width <= WIDTH_DISPLAY_MOBILE &&
-                <div>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            p: 0,
-                            m: 0,
-                        }}
-                    >
-                    {mobileBox(currentEstablishment() && currentEstablishment().phoneNumber ?
-                        currentEstablishment() : contextData?.establishments[0])}
-                    </Box>
+                    <div>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                p: 0,
+                                m: 0,
+                            }}
+                        >
+                            {mobileBox(currentEstablishment() && currentEstablishment().phoneNumber ?
+                                currentEstablishment() : contextData?.establishments[0])}
+                        </Box>
 
-                </div>
+                    </div>
                 }
             </AppLayout>
         </div>

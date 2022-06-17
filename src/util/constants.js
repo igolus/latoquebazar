@@ -62,6 +62,11 @@ export const PAYMENT_MODE_STRIPE = "stripe";
 export const PAYMENT_MODE_SYSTEM_PAY = "systemPay";
 
 export const WIDTH_DISPLAY_MOBILE = 900;
+
+export const CUSTOM_PAGE_CAROUSEL = "carrousel";
+export const CUSTOM_HTML_SOURCE = "htmlSource";
+export const CUSTOM_HTML_HOME_COMPONENT = "homeComponent";
+
 // export const orderSource = [
 //   {
 //     name: localStrings.orderSourceOnline,
