@@ -177,17 +177,6 @@ const CustomMain:React.FC<CarouselCompoProps> = ({contextData}) => {
                      actionUrl={"/product/shop/all"}
                     text={"B.Happy vous livre à domicile, sur votre lieu de travail"}
             />
-            {/*<Box bgcolor={'secondary.main'}>*/}
-            {/*    <Container>*/}
-            {/*        <FeaturedProducts />*/}
-            {/*    </Container>*/}
-            {/*</Box>*/}
-            {/*<Container>*/}
-            {/*    <Spaces*/}
-            {/*        data={dataSpaces}*/}
-            {/*        mainTitle={"Nos points de ventes B.Happy"}*/}
-            {/*    />*/}
-            {/*</Container>*/}
             <Container>
                 <News
                     data={news}
