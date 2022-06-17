@@ -81,10 +81,10 @@ const Footer = ({contextData}) => {
                         firstOrCurrentEstablishment().address : contextData?.establishments[0]?.address }
                   </Box>
                   <Box py={0.6} color="grey.500">
-                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().contactMail ?
-                        <a href={"mailto:\"" + firstOrCurrentEstablishment().contactMail + "\""}>{firstOrCurrentEstablishment().contactMail}</a>
+                    {firstOrCurrentEstablishment() && firstOrCurrentEstablishment().contactEmail ?
+                        <a href={"mailto:\"" + firstOrCurrentEstablishment().contactEmail + "\""}>{firstOrCurrentEstablishment().contactEmail}</a>
                         :
-                        <a href={"mailto:\"" + contextData?.establishments[0]?.contactMail + "\""}>{contextData?.establishments[0]?.contactMail}</a>
+                        <a href={"mailto:\"" + contextData?.establishments[0]?.contactEmail + "\""}>{contextData?.establishments[0]?.contactEmail}</a>
                     }
                   </Box>
                   <Box py={0.6} mb={2} color="grey.500">
