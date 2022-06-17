@@ -1,5 +1,6 @@
 /src/conf/config.json merge=ours
 /src/config.js merge=ours
+/src/components/CustomMain.tsx merge=ours
 /public/iconApp.png merge=ours
 /public/nicePage/ merge=ours
 /public/nicePage/nicepage.css merge=ours

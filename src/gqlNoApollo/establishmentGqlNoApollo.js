@@ -8,6 +8,7 @@ const common = `
   city
   companyNumber
   phoneNumber
+  contactEmail
   establishmentName
   creationDate
   updateDate
