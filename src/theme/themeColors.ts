@@ -15,11 +15,11 @@ export const primary = {
   200: '#F8C7CF',
   300: '#F07D90',
   400: '#EC6178',
-  500: '#05506b',
-  600: '#033446',
-  700: '#011923',
+  500: '#D23F57',
+  600: '#E63E58',
+  700: '#E3364E',
   800: '#DF2E44',
-  900: '#05506b',
+  900: '#D91F33',
 }
 
 export const secondary = {
@@ -32,7 +32,7 @@ export const secondary = {
   700: '#101340',
   800: '#0e1138',
   900: '#0c0e30',
-  main: '#6b2005',
+  main: '#0F3460',
   dark: '#0c0e30',
 }
 
@@ -46,7 +46,7 @@ export const error = {
   700: '#FF4242',
   800: '#FF3939',
   900: '#FF2929',
-  main: '#05506b',
+  main: '#E94560',
 }
 
 export const success = {
