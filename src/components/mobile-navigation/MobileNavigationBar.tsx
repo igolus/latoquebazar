@@ -13,6 +13,10 @@ import React from 'react'
 import {getItemNumberInCart} from "../../util/cartUtil";
 import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
+import UserColor from "@component/icons/UserColor";
+import HomeColor from "@component/icons/HomeColor";
+import CategoryOutlinedColor from "@component/icons/CategoryOutlineColor";
+import ShoppingBagOutlinedColor from "@component/icons/ShoppingBagOutlinedColor";
 
 const useStyles = makeStyles(({ palette }: MuiThemeProps) => ({
   root: {
@@ -79,22 +83,22 @@ const MobileNavigationBar = () => {
 const list = [
   {
     title: localStrings.home,
-    icon: Home,
+    icon: HomeColor,
     href: '/',
   },
   {
     title: localStrings.categories,
-    icon: CategoryOutlined,
+    icon: CategoryOutlinedColor,
     href: '/mobile-category-nav',
   },
   {
     title: localStrings.cart,
-    icon: ShoppingBagOutlined,
+    icon: ShoppingBagOutlinedColor,
     href: '/cart',
   },
   {
     title: localStrings.account,
-    icon: User2,
+    icon: UserColor,
     href: '/profile',
   },
 ]
