@@ -5,6 +5,7 @@
 /public/nicePage/ merge=ours
 /public/nicePage/nicepage.css merge=ours
 /src/theme/theme.ts merge=ours
+/src/theme/themeColors.ts merge=ours
 /public/manifest-template.json merge=ours
 /public/favicon.ico merge=ours
 /public/robots.txt merge=ours
