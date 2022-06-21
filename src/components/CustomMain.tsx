@@ -157,25 +157,22 @@ const CustomMain:React.FC<CarouselCompoProps> = ({contextData}) => {
 
     function getImages() {
         return [
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F2021-11-24%2015_33_08-bhappy%20biot%20-%20Recherche%20Google.png?alt=media&token=f1fe6b39-3819-4d1c-b609-fe4f2d2532fd',
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F198033055_1154489058358700_9058593880535696371_n.jpg?alt=media&token=a706e3be-af2e-4de5-b828-f38d6047c71e',
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F68484694_668843586923252_8291025531286061056_n.jpg?alt=media&token=414ae7be-177c-4465-a3ea-dea150fef929',
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F217243132_1120285761833665_1700361320755800821_n.jpg?alt=media&token=fdaf7fd5-2aa1-429d-a555-0a3cf37ce60e',
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F257279162_1257852741355664_3386758678304916418_n.jpg?alt=media&token=7ba44bbb-8600-47a9-8845-6246060786fb',
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F94889403_865786167228992_7255894861981679616_n%20(1).jpg?alt=media&token=79c75177-f143-4b05-82c8-3cef91472766',
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/KSfP69svg0MVJWLFqljM%2Fmedias%2F83363453_801993553608254_5168303068340551680_n%20(1).jpg?alt=media&token=cdaf2e11-0dc4-49df-acd3-0ed2ec173405'
+            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2FIMG_9315.jpg?alt=media&token=67b66c64-3280-41f5-a0d7-c974f394b80c',
+            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2Fcb044402-621a-444f-93ba-25c25840a7fd.jpg?alt=media&token=c02b3ecd-bc0a-44c0-9e3e-d6e044aeb962',
+            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2Fphotoshoot_for_pizza_renato_renato_chicken_burger_2880x2304.JPG?alt=media&token=3446ad27-5dec-4e4a-98a4-7944b1d6f35b',
+            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2FPIZZA%20RENATO2021-3.jpg?alt=media&token=b34af79a-2039-421e-be3e-58d15f1499d3',
         ]
     }
 
     return (
         <>
             <HeroOne images={getImages()}
-                     headingOne={"Boulangerie, snack, restaurant"}
-                     headingOnePrimary={"B.Happy"}
-                     headerText={"Vos envies pleines de vie"}
+                     headingOne={"Pizza Renato Biot"}
+                     //headingOnePrimary={}
+                     headerText={"Livraison Gratuite & à Emporter | Pizzas & Burgers 7j/7 | Biot"}
                      actionText={"Comnandez maintenant"}
                      actionUrl={"/product/shop/all"}
-                    text={"B.Happy vous livre à domicile, sur votre lieu de travail"}
+                    text={"Pizza Renato, La Pizza Authentique, des recettes qui évoluent mais un savoir-faire qui reste authentique 🛵 🍕 👨‍🍳"}
             />
             {/*<Box bgcolor={'secondary.main'}>*/}
             {/*    <Container>*/}
@@ -188,20 +185,20 @@ const CustomMain:React.FC<CarouselCompoProps> = ({contextData}) => {
             {/*        mainTitle={"Nos points de ventes B.Happy"}*/}
             {/*    />*/}
             {/*</Container>*/}
-            <Container>
-                <News
-                    data={news}
-                    mainTitle={"Les bons plans B.Happy"}
-                    contentText={"Profitez des bons plans B.Happy"}
-                />
-            </Container>
+            {/*<Container>*/}
+            {/*    <News*/}
+            {/*        data={news}*/}
+            {/*        mainTitle={"Les bons plans B.Happy"}*/}
+            {/*        contentText={"Profitez des bons plans B.Happy"}*/}
+            {/*    />*/}
+            {/*</Container>*/}
 
-            <Container>
-                <Events
-                    data={locations}
-                    mainTitle={"Nos points de ventes B.Happy"}
-                />
-            </Container>
+            {/*<Container>*/}
+            {/*    <Events*/}
+            {/*        data={locations}*/}
+            {/*        mainTitle={"Nos points de ventes B.Happy"}*/}
+            {/*    />*/}
+            {/*</Container>*/}
             {/*<Container>*/}
             {/*    <LatestProducts*/}
             {/*        data={dataSpaces}*/}
