@@ -42,9 +42,11 @@ const HeroOne = ({images, headerText, headingOne,
                     }}
                 >
                     {headingOne} <br />
-                    <Typography color={'primary'} component={'span'} variant={'inherit'}>
-                        {headingOnePrimary}
-                    </Typography>
+                    {headingOnePrimary &&
+                        <Typography color={'primary'} component={'span'} variant={'inherit'}>
+                            {headingOnePrimary}
+                        </Typography>
+                    }
                 </Typography>
             </Box>
             {text &&
