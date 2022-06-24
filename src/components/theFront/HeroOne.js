@@ -12,7 +12,7 @@ import Container from './components/Container';
 import LazyImage from "@component/LazyImage";
 
 const HeroOne = ({images, headerText, headingOne,
-                     headingOnePrimary, text, actionText, actionUrl}) => {
+                     headingOnePrimary, text, actionText, actionUrl, colorHeading}) => {
     const theme = useTheme();
     const isMd = useMediaQuery(theme.breakpoints.up('md'), {
         defaultMatches: true,
@@ -36,14 +36,14 @@ const HeroOne = ({images, headerText, headingOne,
             <Box marginBottom={2}>
                 <Typography
                     variant="h3"
-                    color="text.primary"
+                    color={"text.primary"}
                     sx={{
                         fontWeight: 700,
                     }}
                 >
                     {headingOne} <br />
                     {headingOnePrimary &&
-                        <Typography color={'primary'} component={'span'} variant={'inherit'}>
+                        <Typography color={colorHeading || 'primary'} component={'span'} variant={'inherit'}>
                             {headingOnePrimary}
                         </Typography>
                     }
