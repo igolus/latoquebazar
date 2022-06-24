@@ -170,6 +170,7 @@ const CustomMain:React.FC<CarouselCompoProps> = ({contextData}) => {
     return (
         <>
             <HeroOne images={getImages()}
+                     colorHeading={"#125A73"}
                      headingOne={"Boulangerie, snack, restaurant"}
                      headingOnePrimary={"B.Happy"}
                      headerText={"Vos envies pleines de vie"}
