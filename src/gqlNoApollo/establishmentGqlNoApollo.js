@@ -66,6 +66,7 @@ const common = `
       maxDeliveryPerSlotPerMan
       numberOfDeliveryMan
       maxPreparationTimePerSlot
+      excludedPaymentMethods
     }
     closingSlots {
       uuid   
