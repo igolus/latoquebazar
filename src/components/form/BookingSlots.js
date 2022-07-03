@@ -164,7 +164,7 @@ function getSlotDuration(establishment) {
   return establishment.serviceSetting.slotDuration || 20;
 }
 
-export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode) => {
+export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInCreation, startDate, deliveryMode, excludedPaymentsSetter) => {
   if (startDate) {
     let slotDuration = getSlotDuration(establishment);
     //let offset = getOffset(deliveryMode, establishment);
@@ -176,6 +176,9 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
 
     if (daySettings && daySettings.length > 0) {
       let firstDaySetting = daySettings[0];
+      if (excludedPaymentsSetter) {
+        excludedPaymentsSetter(firstDaySetting.excludedPaymentMethods || []);
+      }
       if (firstDaySetting.slotDuration) {
         slotDuration = firstDaySetting.slotDuration
       }
@@ -285,7 +288,7 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
 }
 
 function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode,
-                        selectedKeyParam, setterSelectedKey, brandId, disableNextDay}) {
+                        selectedKeyParam, setterSelectedKey, brandId, disableNextDay, excludedPaymentsSetter}) {
 
   const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation, currentBrand} = useAuth();
@@ -351,14 +354,14 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
 
   useEffect(() => {
     let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
-        moment(), deliveryMode);
+        moment(), deliveryMode, excludedPaymentsSetter);
     setTimeSlots(timeSlotsData);
   }, [getOrderInCreation().deliveryMode, deliveryMode, bookingSlotsOccupancyData])
 
   useEffect(async () => {
     const interval = setInterval(async () => {
       let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
-          moment(), deliveryMode);
+          moment(), deliveryMode, excludedPaymentsSetter);
       setTimeSlots(timeSlotsData);
     }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 120000);
     return () => clearInterval(interval);
