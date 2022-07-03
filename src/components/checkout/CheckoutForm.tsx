@@ -178,6 +178,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [pointsUsed, setPointsUsed] = useState(false);
   const [manualAddressOutOfBound, setManualAddressOutOfBound] = useState(false);
   const [priceDetails, setPriceDetails] = useState(false);
+  const [excludedPayments, setExcludedPayments]=useState([]);
 
   useEffect(() => {
     pixelInitiateCheckout(currentBrand(), getOrderInCreation())
@@ -638,6 +639,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function setDeliveryMode(deliveryMode: string) {
+    setExpectedPaymentMethods([])
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryMode: deliveryMode,
@@ -758,7 +760,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     {
       return [];
     }
-    return currentEstablishment().offlinePaymentMethods.map(methodkey => {
+    return currentEstablishment().offlinePaymentMethods
+        .filter(item => !(excludedPayments || []).includes(item))
+        //.filter(item => false)
+        .map(methodkey => {
       return ({
         valuePayment: methodkey,
         name: formatPaymentMethod(methodkey, localStrings)
@@ -1084,32 +1089,38 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                               {localStrings.selectDeliveryMode}
                             </Typography>
                             {/*<p>{JSON.stringify(getOrderInCreation() || {})}</p>*/}
-                            {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
-                            <PresenterSelect
-                                icon={faMotorcycle}
-                                title={localStrings.delivery}
-                                subtitle={localStrings.deliverySubTitle}
-                                selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
-                                onCLickCallBack={() => {
-                                  //setSelectedBookingSlot({});
-                                  setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)
-                                }}
-                            />
-                            }
-
-                            <PresenterSelect
-                                icon={faShoppingBag}
-                                title={localStrings.clickAndCollect}
-                                subtitle={localStrings.clickAndCollectSubTitle}
-                                selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
-                                onCLickCallBack={() => {
-                                  //setSelectedBookingSlot({});
-                                  setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
-                                  if (config.alertOnSelectPickup) {
-                                    setPickupAlert(true)
+                            {getOrderInCreation() ?
+                                <>
+                                  {!isDeliveryPriceDisabled() && currentEstablishment()?.serviceSetting?.enableDelivery &&
+                                      <PresenterSelect
+                                          icon={faMotorcycle}
+                                          title={localStrings.delivery}
+                                          subtitle={localStrings.deliverySubTitle}
+                                          selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY}
+                                          onCLickCallBack={() => {
+                                            //setSelectedBookingSlot({});
+                                            setDeliveryMode(ORDER_DELIVERY_MODE_DELIVERY)
+                                          }}
+                                      />
                                   }
-                                }}
-                            />
+
+                                  <PresenterSelect
+                                      icon={faShoppingBag}
+                                      title={localStrings.clickAndCollect}
+                                      subtitle={localStrings.clickAndCollectSubTitle}
+                                      selected={getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_PICKUP_ON_SPOT}
+                                      onCLickCallBack={() => {
+                                        //setSelectedBookingSlot({});
+                                        setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT)
+                                        if (config.alertOnSelectPickup) {
+                                          setPickupAlert(true)
+                                        }
+                                      }}
+                                  />
+                                </>
+                                :
+                                <ClipLoaderComponent size={100}/>
+                            }
                           </>
                           <>
                           </>
@@ -1402,9 +1413,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                           </Box>
                           }
 
-
-
                           <BookingSlots
+                              excludedPaymentsSetter={setExcludedPayments}
                               contextData={contextData}
                               disableNextDay
                               startDateParam={moment()}
@@ -1500,6 +1510,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                               {paymentMethod !== 'cc' &&
                               <FormGroup>
+                                {/*<p>{JSON.stringify(excludedPayments)}</p>*/}
                                 {getPaymentsOnline().map((item, key) =>
                                     <FormControlLabel key={key}
                                                       control={
