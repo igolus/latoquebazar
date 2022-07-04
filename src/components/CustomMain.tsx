@@ -157,10 +157,10 @@ const CustomMain:React.FC<CarouselCompoProps> = ({contextData}) => {
 
     function getImages() {
         return [
-            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2FIMG_9315.jpg?alt=media&token=67b66c64-3280-41f5-a0d7-c974f394b80c',
             'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2Fcb044402-621a-444f-93ba-25c25840a7fd.jpg?alt=media&token=c02b3ecd-bc0a-44c0-9e3e-d6e044aeb962',
             'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2Fphotoshoot_for_pizza_renato_renato_chicken_burger_2880x2304.JPG?alt=media&token=3446ad27-5dec-4e4a-98a4-7944b1d6f35b',
             'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2FPIZZA%20RENATO2021-3.jpg?alt=media&token=b34af79a-2039-421e-be3e-58d15f1499d3',
+            'https://firebasestorage.googleapis.com/v0/b/latoqueprod.appspot.com/o/TivVlOvOjzVXwjzL6NFR%2Fmedias%2FIMG_9315.jpg?alt=media&token=67b66c64-3280-41f5-a0d7-c974f394b80c',
         ]
     }
 
