@@ -32,8 +32,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function displayWithPrice (name, price, currency) {
-  return name + " " + parseFloat(price).toFixed(2) + " " + currency;
+export function displayWithPrice (name, price, currency, optionDisabled) {
+  let display = name + " " + parseFloat(price).toFixed(2) + " " + currency;
+  if (optionDisabled) {
+    display += " " + localStrings.unavailable;
+  }
+  return display;
 }
 
 export function formatName(itemSkuBooking) {
@@ -47,7 +51,7 @@ function ProductSelector({ productAndSku, options,
                            valid, lineNumber, initialItem}) {
 
   const classes = useStyles();
-  const {dealEdit} = useAuth();
+  const {dealEdit, currentEstablishment} = useAuth();
 
   useEffect(() => {
     if (initialItem) {
@@ -74,7 +78,8 @@ function ProductSelector({ productAndSku, options,
       "name": option.name || option.extName,
       "ref": option.extRef,
       "price": option.price,
-      "defaultSelected": option.defaultSelected
+      "defaultSelected": option.defaultSelected,
+      "unavailableInEstablishmentIds": option.unavailableInEstablishmentIds
     }
   }
 
@@ -237,6 +242,10 @@ function ProductSelector({ productAndSku, options,
 
   }
 
+  function optionDisabled(optionComplete) {
+    return currentEstablishment() && (optionComplete.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
+  }
+
   function getSelector(optionList) {
     if (!optionList.options) {
       return;
@@ -265,9 +274,12 @@ function ProductSelector({ productAndSku, options,
                     display="flex"
                     flexDirection="column"
                 >
+
                   {optionListComplete.map((optionComplete, key) =>
-                      <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio />}
-                                         label={displayWithPrice(optionComplete.name, optionComplete.price, currency)} />
+                      <>
+                        <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio disabled={optionDisabled(optionComplete)}/>}
+                                           label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))} />
+                      </>
                   )}
                 </Box>
               </RadioGroup>
@@ -294,14 +306,16 @@ function ProductSelector({ productAndSku, options,
                 >
 
                   {optionListComplete.map((optionComplete, key) =>
-                      <FormControlLabel style={{marginRight:'20px'}}
-                                        control={<Checkbox value={optionComplete}
-                                            //defaultChecked={optionComplete.defaultSelected}
-                                                           disabled={!checkQuantity(optionList, optionComplete)}
-                                                           checked={isCheckSelect(optionComplete)}
-                                                           onChange={(event) => handleChangeSelect(optionComplete)} />}
-                                        label={displayWithPrice(optionComplete.name, optionComplete.price, currency)}
-                      />
+                      <>
+                        <FormControlLabel style={{marginRight:'20px'}}
+                                          control={<Checkbox value={optionComplete}
+                                              //defaultChecked={optionComplete.defaultSelected}
+                                                             disabled={optionDisabled(optionComplete) || !checkQuantity(optionList, optionComplete)}
+                                                             checked={isCheckSelect(optionComplete)}
+                                                             onChange={(event) => handleChangeSelect(optionComplete)} />}
+                                          label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))}
+                        />
+                      </>
                   )}
                 </Box>
               </FormGroup>
