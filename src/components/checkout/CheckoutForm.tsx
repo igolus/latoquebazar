@@ -464,6 +464,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
               delete item.optionListExtIds;
               delete item.restrictionsApplied;
               delete item.restrictionsList;
+
+              const options = item.options || [];
+              options.forEach(option => {
+                delete option.unavailableInEstablishmentIds;
+              })
             }
         )
       }

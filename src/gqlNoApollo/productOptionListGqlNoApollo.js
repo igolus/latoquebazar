@@ -25,6 +25,7 @@ const common = `
     extRef
     extName
     defaultSelected
+    unavailableInEstablishmentIds
     name
     price
   }
