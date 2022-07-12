@@ -907,8 +907,6 @@ export const AuthProvider = ({ children }) => {
     let candidateDeals = [];
     for (let j = 0; j < deals.length; j++) {
       const dealToCheck = deals[j];
-
-
       if (dealToCheck.lines && dealToCheck.lines.length > 0) {
         let itemsInCart = cloneDeep(orderInCreation?.order?.items || []);
         let itemsForDeal = [];
