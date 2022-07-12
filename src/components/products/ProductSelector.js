@@ -47,7 +47,7 @@ export function formatName(itemSkuBooking) {
 function ProductSelector({ productAndSku, options,
                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
                            setterSkuEdit, currency, skuEdit,
-                           setterValid,
+                           setterValid, setterInvalidIds,
                            valid, lineNumber, initialItem}) {
 
   const classes = useStyles();
@@ -131,16 +131,14 @@ function ProductSelector({ productAndSku, options,
       return true;
     }
 
-    // let count = productAndSku && productAndSku.options && productAndSku.options.filter(
-    //     option => option.ref === optionComplete.ref).length
-    //let countSelect = productAndSku.options.filter(option => option.extRef === optionList.extRef).length;
     let countSelect = productAndSku.options.filter(option => option.option_list_extRef === (optionList.extRef || optionList.extId)).length;
     return isCheckSelect(optionComplete) || countSelect < optionList.maxValue;
   }
 
   function checkValidity() {
 
-
+    let invalidsIds = [];
+    setterInvalidIds([])
     let valid = true;
     let optionListMatching = productAndSku && productAndSku.sku && productAndSku.sku.optionListExtIds ? productAndSku.sku.optionListExtIds.map(optionId => {
       return options
@@ -149,19 +147,34 @@ function ProductSelector({ productAndSku, options,
 
     //alert("optionListMatching " + JSON.stringify(optionListMatching))
     optionListMatching.forEach(optionList => {
+      //let optionValid = true;
       let countSelect = productAndSku.options.filter(option => optionList.options.map(o => o.extRef).includes(option.ref)).length;
       //let countSelect = productAndSku.options.filter(option => option.ref === optionList.extId).length;
       if (optionList.mandatory) {
-        valid &= countSelect>0;
+        let optionValid1 = countSelect>0;
+        valid &= optionValid1;
+        if (!optionValid1) {
+          invalidsIds.push(optionList.id)
+        }
       }
-      valid &= (countSelect >= optionList.minValue);
+
+      let optionValid2 = countSelect >= optionList.minValue;
+      if (!optionValid2) {
+        invalidsIds.push(optionList.id)
+      }
+      valid &= optionValid2
       if (optionList.maxValue != -1) {
-        valid &= (countSelect <= optionList.maxValue);
+        let optionValid3 = countSelect <= optionList.maxValue;
+        if (!optionValid3) {
+          invalidsIds.push(optionList.id)
+        }
+        valid &= optionValid3;
       }
     })
 
     //alert("isValid " + valid)
     setterValid(valid)
+    setterInvalidIds(invalidsIds)
   }
 
   function formatTitleOptionList(optionList) {
@@ -254,37 +267,30 @@ function ProductSelector({ productAndSku, options,
     let optionListComplete = optionList.options.map(option => buildOption(optionList, option))
 
     if (optionList.type === OPTION_LIST_SINGLE) {
-      // let fistDefault = optionListComplete.find(option => option.defaultSelected);
-      // alert("fistDefault " + fistDefault)
-      // if (fistDefault) {
-      //   handleChangeRadio(optionListComplete, optionList, fistDefault.ref)
-      // }
-
       return (
           <>
-            {/*<p>{JSON.stringify(optionList)}</p>*/}
-            <FormControl component="fieldset">
-              {/*<FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>*/}
+            <div id= {"selector" + optionList.id}>
+              {/*<p>{"selector" + optionList.id}</p>*/}
+              <FormControl component="fieldset">
+                <RadioGroup aria-label="gender"
+                            value={getValueRadio(optionList)}
+                            onChange={(event) => handleChangeRadio(optionListComplete, optionList, event.target.value)}>
 
-              <RadioGroup aria-label="gender"
-                          value={getValueRadio(optionList)}
-                          onChange={(event) => handleChangeRadio(optionListComplete, optionList, event.target.value)}>
+                  <Box
+                      display="flex"
+                      flexDirection="column"
+                  >
+                    {optionListComplete.map((optionComplete, key) =>
+                        <>
+                          <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio disabled={optionDisabled(optionComplete)}/>}
+                                             label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))} />
+                        </>
+                    )}
+                  </Box>
+                </RadioGroup>
 
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                >
-
-                  {optionListComplete.map((optionComplete, key) =>
-                      <>
-                        <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio disabled={optionDisabled(optionComplete)}/>}
-                                           label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))} />
-                      </>
-                  )}
-                </Box>
-              </RadioGroup>
-
-            </FormControl>
+              </FormControl>
+            </div>
           </>
       )
     }
@@ -295,32 +301,31 @@ function ProductSelector({ productAndSku, options,
       //if (optionList.type === OPTION_LIST_MULTIPLE) {
       return (
           <>
-            <FormControl component="fieldset" >
-              {/*<p>{JSON.stringify(options)}</p>*/}
-              {/*<p>{JSON.stringify(optionList)}</p>*/}
-              {/*<FormLabel component="legend">{formatTitleOptionList(optionList)}</FormLabel>*/}
-              <FormGroup>
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                >
+            <div id= {"selector" + optionList.id}>
+              {/*<p>{"selector" + optionList.id}</p>*/}
+              <FormControl component="fieldset" >
+                <FormGroup>
+                  <Box
+                      display="flex"
+                      flexDirection="column"
+                  >
 
-                  {optionListComplete.map((optionComplete, key) =>
-                      <>
-                        <FormControlLabel style={{marginRight:'20px'}}
-                                          control={<Checkbox value={optionComplete}
-                                              //defaultChecked={optionComplete.defaultSelected}
-                                                             disabled={optionDisabled(optionComplete) || !checkQuantity(optionList, optionComplete)}
-                                                             checked={isCheckSelect(optionComplete)}
-                                                             onChange={(event) => handleChangeSelect(optionComplete)} />}
-                                          label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))}
-                        />
-                      </>
-                  )}
-                </Box>
-              </FormGroup>
-            </FormControl>
-            {/*<Divider/>*/}
+                    {optionListComplete.map((optionComplete, key) =>
+                        <>
+                          <FormControlLabel style={{marginRight:'20px'}}
+                                            control={<Checkbox value={optionComplete}
+                                                //defaultChecked={optionComplete.defaultSelected}
+                                                               disabled={optionDisabled(optionComplete) || !checkQuantity(optionList, optionComplete)}
+                                                               checked={isCheckSelect(optionComplete)}
+                                                               onChange={(event) => handleChangeSelect(optionComplete)} />}
+                                            label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))}
+                          />
+                        </>
+                    )}
+                  </Box>
+                </FormGroup>
+              </FormControl>
+            </div>
           </>
       )
       //}
@@ -329,13 +334,7 @@ function ProductSelector({ productAndSku, options,
 
   return (
       <>
-        {/*productAndSku*/}
-        {/*<p>{JSON.stringify(options)}</p>*/}
-        {/*<p>{JSON.stringify(productAndSku)}</p>*/}
-        {/*<p>{JSON.stringify(dealEdit || {})}</p>*/}
         <Box
-            // mt={1}
-            // mb={1}
         >
           {productAndSku && productAndSku.sku && productAndSku?.sku?.optionListExtIds && productAndSku?.sku?.optionListExtIds.map((optionId, key) => {
             let optionListMatching = options
@@ -344,26 +343,24 @@ function ProductSelector({ productAndSku, options,
             //option
             if (optionListMatching) {
               return (
-                  <Box key={key}
-                       mb={1}
-                  >
-                    {/*{JSON.stringify(optionListMatching || {})}*/}
-                    <Box display="flex" flexDirection="column" p={1} m={1}>
-                      <Typography fontSize="14px" fontWeight="600" lineHeight="1">
-                        {formatTitleOptionList(optionListMatching)}
-                        {/*{optionListMatching.name}*/}
-                      </Typography>
+                  <div id= {"selector" + optionListMatching.id}>
+                    {/*<p>{"selector" + optionListMatching.id}</p>*/}
+                    <Box key={key}
+                         mb={1}
+                    >
+                      <Box display="flex" flexDirection="column" p={1} m={1}>
+                        <Typography fontSize="14px" fontWeight="600" lineHeight="1">
+                          {formatTitleOptionList(optionListMatching)}
+                        </Typography>
+                      </Box>
+                      <Divider sx={{ mb: '2px', borderColor: 'grey.300', padding: '0' }} />
+                      {getSelector(optionListMatching)}
                     </Box>
-
-                    <Divider sx={{ mb: '2px', borderColor: 'grey.300', padding: '0' }} />
-                    {getSelector(optionListMatching)}
-                  </Box>
+                  </div>
               )
             }
-
           })
           }
-
         </Box>
       </>
   );

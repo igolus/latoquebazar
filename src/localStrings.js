@@ -347,6 +347,7 @@ let localStrings = new LocalizedStrings({
         requiredField: "Le champ {0} est obligatoire",
         addToCart: "Ajouter au panier",
         updateCart: "Modifier le panier",
+        selectOptionsDetail: "Selectionner {0}",
         description: "Description",
         additionalInformation: "Information additionnelle",
         customerDeliveryInformation: "Information additionnelle pour la livraison",
