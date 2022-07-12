@@ -229,7 +229,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
 
             <Card sx={{ p: '.2rem .2rem', mb: '0' }}>
                 <div style={{width: '100%'}}>
-                    {isMobile && !noStatus &&
+                    {isMobile &&
                         <>
                             <Box sx={{display: 'flex', justifyContent: 'center'}}>
                                 <Box m={5}>
