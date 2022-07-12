@@ -960,7 +960,7 @@ export const AuthProvider = ({ children }) => {
           }
         }
         let dealClone = cloneDeep(dealToCheck);
-        if (matchingRemains === 0 && (!prefferedDealToApply || dealToCheck.id === prefferedDealToApply.id)) {
+        if (matchingRemains === 0 && !dealClone.upsellDeal &&(!prefferedDealToApply || dealToCheck.id === prefferedDealToApply.id)) {
           computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency);
           const restrictions = (dealClone.restrictionsApplied || [])
               .map(res => res.type).sort((a, b) => a.localeCompare(b));
