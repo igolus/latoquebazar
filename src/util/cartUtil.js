@@ -554,7 +554,7 @@ export function addDiscountToCart(discount, orderInCreation, setOrderInCreation)
 }
 
 export function isDiscPointExists(orderInCreation) {
-    return (orderInCreation.discounts || []).find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
+    return (orderInCreation?.discounts || []).find(disc => disc.loyaltyPointCost && disc.loyaltyPointCost > 0);
 }
 
 export function removeDiscountPoints(orderInCreation, setGlobalDialog) {

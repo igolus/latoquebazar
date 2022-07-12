@@ -404,7 +404,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   delete productAndSkusLine.restrictionsApplied;
                   delete productAndSkusLine.restrictionsList;
                   delete productAndSkusLine.takenFromCart;
-
+                  if (typeof productAndSkusLine.price !== "string") {
+                    productAndSkusLine.price = productAndSkusLine.price.toString()
+                  }
                   delete productAndSkusLine.restrictionsList;
                   (productAndSkusLine.options || []).forEach(opt => {
                     delete opt.defaultSelected

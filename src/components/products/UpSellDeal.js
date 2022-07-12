@@ -9,8 +9,12 @@ import {Button} from "@material-ui/core";
 import cloneDeep from "clone-deep";
 import {applyDealPrice} from "@component/products/DealSelector";
 import {PRICING_EFFECT_PERCENTAGE} from "../../util/constants";
+import ProductList from "@component/products/ProductList";
 
 export function isDealValuable(candidateDeal, contextData) {
+    if (candidateDeal.candidate?.deal?.upsellDeal) {
+        return true;
+    }
     if (!contextData) {
         return false;
     }
@@ -120,23 +124,27 @@ function UpSellDeal({candidateDeal, contextData, currency, selectCallBack, cance
         [candidateDeal]
     )
 
+    function getOfferMessage(priceDiff) {
+        //return "TEST"
+        if (candidateDeal.candidate.deal.upsellDeal) {
+            return candidateDeal.candidate.deal.lines[candidateDeal.missingLineNumber].name
+        }
+        if (priceDiff) {
+            return localStrings.formatString(localStrings.specialOffer
+                , candidateDeal.candidate.deal.name, priceDiff.toFixed(2) + " " + getBrandCurrency(contextData.brand));
+        }
+        return localStrings.formatString(localStrings.specialOfferNoSavePrice, candidateDeal.candidate.deal.name);
+
+    }
+
     return (
         <div ref={boxRef}>
             <Box width="100%" >
                 {/*<p>{JSON.stringify(skusInLine)}</p>*/}
                 {/*<p>{JSON.stringify(priceBySkuId)}</p>*/}
-
-                {priceDiff ?
-                    <H2 mb={2}>
-                        {localStrings.formatString(localStrings.specialOffer
-                            , candidateDeal.candidate.deal.name, priceDiff.toFixed(2) + " " + getBrandCurrency(contextData.brand))}
-                    </H2>
-                    :
-                    <H2 mb={2}>
-                        {localStrings.formatString(localStrings.specialOfferNoSavePrice, candidateDeal.candidate.deal.name)}
-                    </H2>
-                }
-
+                <H2 mb={2}>
+                    {getOfferMessage(priceDiff)}
+                </H2>
 
                 <ProductDealCard1List
                     xps={6}
