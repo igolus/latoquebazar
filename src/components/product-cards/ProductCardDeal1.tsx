@@ -30,6 +30,7 @@ import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import useWindowSize from "@hook/useWindowSize";
 import Link from "next/link";
 import Image from "@component/BazarImage";
+import cloneDeep from "clone-deep";
 
 export interface ProductCardDeal1Props {
   className?: string
@@ -288,157 +289,163 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
     }
   }
 
+  function getCheapestProductPrice() {
+    let skusClone = cloneDeep(product.skus);
+    skusClone.sort((a,b) => parseFloat(a.price) - parseFloat(b.price));
+    return parseFloat(skusClone[0].price).toFixed(2);
+  }
+
   function getProductPresentationAndInteration() {
     return (
         <Box>
-        <FlexBox>
-          {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
-          <Box sx={{maxWidth: "100px"}} mr={1}>
-            <Image
-                style={{objectFit: "cover"}}
-                onClick={() => {
-                  selectedFromImg();
-                }}
-                src={url}
-                height={100}
-                width={100}
-                display="block"
-                alt={product.name}
-            />
-          </Box>
-          }
-
-
-          <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
-            <H3
-                className="title"
-                fontSize="14px"
-                textAlign="left"
-                fontWeight="600"
-                color="text.secondary"
-                mb={1}
-                title={product.name}
-            >
-              {product.name}
-            </H3>
-
-
-
-          </Box>
-
-
-
-
-          <Box
-              className="add-cart"
-              flexDirection="row"
-              alignItems="center"
-              //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
-              //width="65px"
-          >
-            <Button
-                disabled={
-                  (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) &&
-                  isProductSelected() && productAndSkus && productAndSkus.length === 1}
-                color="primary"
-                //variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
-                variant={"outlined"}
-                sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "50px" : "0"}}
-                onClick={() => {
-                  if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1) {
-                    selectCallBack ?
-                        selectCallBack(selectedProductAndSku)
-                        :
-                        selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-
-                    //selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
-                  }
-                  // else if (productAndSkus && productAndSkus.length > 1){
-                  else if (productAndSkus) {
-                    setOpen(true)
-                  }
-                }}
-            >
-              {isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 &&
-              localStrings.selectOptions
-              }
-              {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
-              <>
-                {productAndSkus && productAndSkus.length > 1 ?
-                    <>
-                      {localStrings.selectOptions}
-                    </>
-                    :
-                    <>
-                      {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                      <CheckBoxIcon/>
-                      }
-                    </>
-                }
-              </>
-              }
-              {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
-              <>
-                {productAndSkus && productAndSkus.length > 1 ?
-                    <>
-                      {localStrings.selectOptions}
-                    </>
-                    :
-                    <>
-                      {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
-                      localStrings.choose
-                        // <CheckBoxOutlineBlankIcon />
-                      }
-                    </>
-
-                }
-              </>
-
-              }
-
-            </Button>
-
-
-          </Box>
-        </FlexBox>
-
-          {!fullView && width <= WIDTH_DISPLAY_MOBILE &&
-          <Box>
-            {product.tags && product.tags.map((tag, key) =>
-                <Box key={key} ml='3px' mt='6px' mr='3px'>
-                  {tag.color ?
-                      <Chip
-                          sx={{backgroundColor: tag.color, color: 'white'}}
-                          className={classes.offerChip}
-                          size="small"
-                          label={tag.tag}
-                      />
-                      :
-                      <Chip
-                          className={classes.offerChip}
-                          color={"primary"}
-                          size="small"
-                          label={tag.tag}
-                      />
-                  }
+          <FlexBox>
+            {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
+                <Box sx={{maxWidth: "100px"}} mr={1}>
+                  <Image
+                      style={{objectFit: "cover"}}
+                      onClick={() => {
+                        selectedFromImg();
+                      }}
+                      src={url}
+                      height={100}
+                      width={100}
+                      display="block"
+                      alt={product.name}
+                  />
                 </Box>
-            )}
-            {priceDiff>=0 && selectedProductAndSku &&
-            <Box ml='3px' mt='6px' mr='3px'>
-              <Chip
-                  className={classes.offerChip}
-                  color="primary"
-                  size="small"
-                  icon={<LocalOfferIcon/>}
-                  label={getPercentDisplay()}
-                  // label={
-                  //   localStrings.formatString(localStrings.saveWithOffer,
-                  //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                  //   )}
-              />
-            </Box>
             }
-          </Box>
+
+
+            <Box sx={{flexGrow:1}} minWidth="0px" mr={1}>
+              <H3
+                  className="title"
+                  fontSize="14px"
+                  textAlign="left"
+                  fontWeight="600"
+                  color="text.secondary"
+                  mb={1}
+                  title={product.name}
+              >
+                {product.name}
+              </H3>
+
+              {deal.upsellDeal && product.skus && product.skus.length > 0 &&
+                  <>
+                    {/*<p>{JSON.stringify(product)}</p>*/}
+                    <FlexBox alignItems="center" mt={0.5}>
+                      <Box pr={1} fontWeight="600" color="primary.main">
+                        {getCheapestProductPrice()} {currency}
+                        {/*{"17"} {currency}*/}
+                      </Box>
+                    </FlexBox>
+                  </>
+              }
+
+            </Box>
+            <Box
+                className="add-cart"
+                flexDirection="row"
+                alignItems="center"
+                //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
+                //width="65px"
+            >
+              <Button
+                  disabled={
+                      (!isProductAndSkuGetOption(selectedProductAndSku) || isProductUnavailable(product, currentEstablishment, selectedProductAndSku)) &&
+                      isProductSelected() && productAndSkus && productAndSkus.length === 1}
+                  color="primary"
+                  //variant={(isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus.length > 1) ? "outlined" : "text"}
+                  variant={"outlined"}
+                  sx={{padding: '3px', ml: '5px', mr: '5px', mt: !fullView && width <= WIDTH_DISPLAY_MOBILE ? "50px" : "0"}}
+                  onClick={() => {
+                    if (!isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1) {
+                      selectCallBack ?
+                          selectCallBack(selectedProductAndSku)
+                          :
+                          selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+
+                      //selectToDealEditOrder(selectedProductAndSku, dealEdit, setDealEdit, lineNumber)
+                    }
+                    // else if (productAndSkus && productAndSkus.length > 1){
+                    else if (productAndSkus) {
+                      setOpen(true)
+                    }
+                  }}
+              >
+                {isProductAndSkuGetOption(selectedProductAndSku) && productAndSkus && productAndSkus.length == 1 &&
+                    localStrings.selectOptions
+                }
+                {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && isProductSelected() &&
+                    <>
+                      {productAndSkus && productAndSkus.length > 1 ?
+                          <>
+                            {localStrings.selectOptions}
+                          </>
+                          :
+                          <>
+                            {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                                <CheckBoxIcon/>
+                            }
+                          </>
+                      }
+                    </>
+                }
+                {(!isProductAndSkuGetOption(selectedProductAndSku) || productAndSkus && productAndSkus.length > 1) && !isProductSelected() &&
+                    <>
+                      {productAndSkus && productAndSkus.length > 1 ?
+                          <>
+                            {localStrings.selectOptions}
+                          </>
+                          :
+                          <>
+                            {!isProductUnavailableInEstablishment(selectedProductAndSku, currentEstablishment) &&
+                                localStrings.choose
+                              // <CheckBoxOutlineBlankIcon />
+                            }
+                          </>
+
+                      }
+                    </>
+                }
+              </Button>
+            </Box>
+          </FlexBox>
+
+          {!fullView && width <= WIDTH_DISPLAY_MOBILE && !deal.upsellDeal &&
+              <Box>
+                {product.tags && product.tags.map((tag, key) =>
+                    <Box key={key} ml='3px' mt='6px' mr='3px'>
+                      {tag.color ?
+                          <Chip
+                              sx={{backgroundColor: tag.color, color: 'white'}}
+                              className={classes.offerChip}
+                              size="small"
+                              label={tag.tag}
+                          />
+                          :
+                          <Chip
+                              className={classes.offerChip}
+                              color={"primary"}
+                              size="small"
+                              label={tag.tag}
+                          />
+                      }
+                    </Box>
+                )}
+
+                {/*<p>{deal?.upsellDeal}</p>*/}
+                {priceDiff>=0 && selectedProductAndSku && !deal?.upsellDeal &&
+                    <Box ml='3px' mt='6px' mr='3px'>
+                      <Chip
+                          className={classes.offerChip}
+                          color="primary"
+                          size="small"
+                          icon={<LocalOfferIcon/>}
+                          label={getPercentDisplay()}
+                      />
+                    </Box>
+                }
+              </Box>
           }
         </Box>
     )
@@ -485,20 +492,20 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
               {/*  />*/}
               {/*</Box>*/}
               {/*}*/}
-              {(fullView || width > WIDTH_DISPLAY_MOBILE) && priceDiff>=0 && selectedProductAndSku &&
-              <Box ml='3px' mt='6px' mr='3px'>
-                <Chip
-                    className={classes.offerChip}
-                    color="primary"
-                    size="small"
-                    icon={<LocalOfferIcon/>}
-                    label={getPercentDisplay()}
-                    // label={
-                    //   localStrings.formatString(localStrings.saveWithOffer,
-                    //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
-                    //   )}
-                />
-              </Box>
+              {(fullView || width > WIDTH_DISPLAY_MOBILE) && priceDiff>=0 && selectedProductAndSku && !deal?.upsellDeal &&
+                  <Box ml='3px' mt='6px' mr='3px'>
+                    <Chip
+                        className={classes.offerChip}
+                        color="primary"
+                        size="small"
+                        icon={<LocalOfferIcon/>}
+                        label={getPercentDisplay()}
+                        // label={
+                        //   localStrings.formatString(localStrings.saveWithOffer,
+                        //       ((1 - (priceDiff / parseFloat(selectedProductAndSku.sku.price))) * 100).toFixed(0)
+                        //   )}
+                    />
+                  </Box>
               }
 
             </Box>
@@ -510,19 +517,19 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
             </div>
 
             {(fullView || width > WIDTH_DISPLAY_MOBILE) &&
-            <div className={classes.imageHolder}>
-              <LazyImage
-                  onClick={() => {
-                    selectedFromImg();
-                  }}
-                  objectFit="cover"
-                  src={url}
-                  width="100%"
-                  height="100%"
-                  layout="responsive"
-                  alt={product.name}
-              />
-            </div>
+                <div className={classes.imageHolder}>
+                  <LazyImage
+                      onClick={() => {
+                        selectedFromImg();
+                      }}
+                      objectFit="cover"
+                      src={url}
+                      width="100%"
+                      height="100%"
+                      layout="responsive"
+                      alt={product.name}
+                  />
+                </div>
             }
             {/*  </a>*/}
             {/*</Link>*/}
@@ -546,9 +553,8 @@ const ProductCardDeal1: React.FC<ProductCardDeal1Props> = ({
                             options={options}
                             currency={currency}
                             disableAdd={!isProductAndSkuGetOption(selectedProductAndSku)
-                            && productAndSkus && productAndSkus.length === 1}
+                                && productAndSkus && productAndSkus.length === 1}
                             changeSelectionCallBack={selected => setSelectedProductSku(selected)}
-                  //addCallBack={() => setOpen(false)}
                             addToCartOrderCallBack={addToDeal}
                             addButtonText={localStrings.select}
                             lineNumber={lineNumber}

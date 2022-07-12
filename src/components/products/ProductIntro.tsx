@@ -141,6 +141,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     const [productAndSku, setProductAndSku] = useState(initialProductAndSku);
     const [valid, setValid] = useState(true);
+    const [invalidIds, setInvalidIds] = useState([]);
     const {addToast} = useToasts()
     const [selectedImage, setSelectedImage] = useState(0)
     const [isViewerOpen, setIsViewerOpen] = useState(false)
@@ -181,11 +182,74 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         }
     }
 
-    function getButtonText() {
+    function getButtonText(addButtonText) {
         if (initialItem) {
             return localStrings.updateCart;
         }
-        return localStrings.addToCart;
+        if (invalidIds.length === 0) {
+            return addButtonText || localStrings.addToCart;
+        }
+        let firstMissingId = invalidIds[0];
+        let missingOption = options.find(option => option.id === firstMissingId);
+        return localStrings.formatString(localStrings.selectOptionsDetail, missingOption?.name);
+    }
+
+    function getAddButton() {
+        return <BazarButton
+            disabled={
+                // !valid ||
+                getFirstRestriction() ||
+                itemRestrictionMax(productAndSku?.sku) ||
+                isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment)
+            }
+            variant={isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ? "outlined" : "contained"}
+            color="primary"
+            sx={{
+                mt: '15px',
+                mb: '36px',
+                px: '1.75rem',
+                height: '40px',
+            }}
+            onClick={() => {
+                if (invalidIds.length > 0) {
+                    return;
+                }
+                if (addToCartOrderCallBack) {
+                    addToCartOrderCallBack(productAndSku);
+                    if (routeToCart) {
+                        router.push("/cart");
+                    }
+                } else {
+                    if (initialItem) {
+                        updateCartOrder(setGlobalDialog, productAndSku, initialItem,
+                            getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment)
+                        if (addCallBack) {
+                            addCallBack("nouuid");
+                        }
+                    } else {
+                        //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
+                        let uuid = addToCartOrder(setGlobalDialog,
+                            productAndSku,
+                            getOrderInCreation(), setOrderInCreation, addToast, null,
+                            checkDealProposal, currentEstablishment, currentBrand());
+
+                        if (addCallBack) {
+                            addCallBack(uuid);
+                        }
+                        if (routeToCart) {
+                            router.push("/cart");
+                        }
+                    }
+                }
+            }}
+        >
+            {isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ?
+                localStrings.unavailable
+                :
+                //(addButtonText || (getFirstRestriction() || getButtonText()))
+                (getFirstRestriction() || getButtonText(addButtonText))
+            }
+        </BazarButton>;
     }
 
     return (
@@ -201,7 +265,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 />
             </Dialog>
 
-            {/*<p>{JSON.stringify(initialItem || {})}</p>*/}
+            {/*<p>{JSON.stringify(invalidIds)}</p>*/}
             <Box width="100%">
                 {productAndSku ?
                     <Grid container spacing={1} justifyContent="space-around">
@@ -345,18 +409,18 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             <MdRender content={product.shortDescription}/>
 
                             {options && options.length > 0 && !getFirstRestriction() &&
-                                <div id= "selector">
+
                                     <ProductSelector options={options}
                                                      productAndSku={productAndSku}
                                                      setterSkuEdit={setProductAndSku}
                                                      skuEdit={productAndSku}
                                                      setterValid={setValid}
+                                                     setterInvalidIds={setInvalidIds}
                                                      valid={valid}
                                                      currency={currency}
                                                      lineNumber={lineNumber}
                                                      initialItem={initialItem}
                                     />
-                                </div>
                             }
 
                             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
@@ -366,7 +430,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                     position: 'sticky',
                                     bottom: '-20px',
                                     backgroundColor: grey["100"],
-                                }} >
+                                }}>
 
                                     <Box
                                         sx={{
@@ -375,58 +439,14 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         }}
                                     >
                                         <Box>
-                                            <BazarButton
-                                                disabled={
-                                                    !valid ||
-                                                    getFirstRestriction() ||
-                                                    itemRestrictionMax(productAndSku?.sku) ||
-                                                    isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment)
-                                                }
-                                                variant={isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ? "outlined" : "contained"}
-                                                color="primary"
-                                                sx={{
-                                                    mt: '15px',
-                                                    mb: '36px',
-                                                    px: '1.75rem',
-                                                    height: '40px',
-                                                }}
-                                                onClick={() => {
-                                                    if (addToCartOrderCallBack) {
-                                                        addToCartOrderCallBack(productAndSku);
-                                                        if (routeToCart) {
-                                                            router.push("/cart");
-                                                        }
-                                                    } else {
-                                                        if (initialItem) {
-                                                            updateCartOrder(setGlobalDialog, productAndSku, initialItem,
-                                                                getOrderInCreation(), setOrderInCreation, addToast, null, checkDealProposal, currentEstablishment)
-                                                            if (addCallBack) {
-                                                                addCallBack("nouuid");
-                                                            }
-                                                        }
-                                                        else {
-                                                            //let uuid = addToCartOrder(setGlobalDialog, productAndSku, getOrderInCreation(), setOrderInCreation, addToast);
-                                                            let uuid = addToCartOrder(setGlobalDialog,
-                                                                productAndSku,
-                                                                getOrderInCreation(), setOrderInCreation, addToast, null,
-                                                                checkDealProposal, currentEstablishment, currentBrand());
+                                            {invalidIds.length == 0 ?
+                                                getAddButton()
+                                                :
+                                                <a href={"#selector" + invalidIds[0]}>
+                                                    {getAddButton()}
+                                                </a>
+                                            }
 
-                                                            if (addCallBack) {
-                                                                addCallBack(uuid);
-                                                            }
-                                                            if (routeToCart) {
-                                                                router.push("/cart");
-                                                            }
-                                                        }
-                                                    }
-                                                }}
-                                            >
-                                                {isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ?
-                                                    localStrings.unavailable
-                                                    :
-                                                    (addButtonText || (getFirstRestriction() || getButtonText()))
-                                                }
-                                            </BazarButton>
                                             {/*<p>{JSON.stringify(productAndSku?.sku)}</p>*/}
                                         </Box>
 
@@ -434,7 +454,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         {faceBookShare && !disableFacebook && getUrl() &&
                                             <Box ml={2} mt={"16px"}>
                                                 <Tooltip title={localStrings.shareOnFacebook}>
-                                                    <FacebookShareButton url={getUrl()} >
+                                                    <FacebookShareButton url={getUrl()}>
                                                         <FacebookIcon size={38} round={false}/>
                                                     </FacebookShareButton>
                                                 </Tooltip>
