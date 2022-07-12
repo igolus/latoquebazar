@@ -1030,7 +1030,7 @@ export const AuthProvider = ({ children }) => {
               missingLine: missingLine,
               missingLineNumber: missingLineNumber,
               priceItemsWithoutDeal: priceItemsWithoutDeal
-            }), getContextDataAuth()) {
+            }, getContextDataAuth())) {
               candidateDeals.push({
                 candidate: dealCandidate,
                 missingLine: missingLine,
