@@ -183,10 +183,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
     function getButtonText(addButtonText) {
-        if (initialItem) {
-            return localStrings.updateCart;
-        }
         if (invalidIds.length === 0) {
+            if (initialItem) {
+                return localStrings.updateCart;
+            }
             return addButtonText || localStrings.addToCart;
         }
         let firstMissingId = invalidIds[0];
