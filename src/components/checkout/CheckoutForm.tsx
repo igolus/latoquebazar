@@ -162,7 +162,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const { setOrderInCreation, getOrderInCreation, currentEstablishment, currentBrand,
     dbUser, resetOrderInCreation, orderInCreation, increaseOrderCount, setOrderInCreationNoLogic,
     maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,setGlobalDialog,
-    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply, orderUpdating} = useAuth();
+    checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply, orderUpdating, setRefusedDeals, refusedDeals} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
 
   const loaded = React.useRef(false);
@@ -183,6 +183,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   useEffect(() => {
     pixelInitiateCheckout(currentBrand(), getOrderInCreation())
   }, [])
+
+  useEffect(() => {
+    setRefusedDeals([]);
+  }, [])
+
 
   useEffect(() => {
     setPriceDetails(computePriceDetail(getOrderInCreation()))
@@ -362,7 +367,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           delete item.lineIndex;
 
           (item.options || []).forEach(opt => {
-            delete opt.defaultSelected
+            delete opt.defaultSelected;
+            delete opt.noSelectOption;
           })
 
         });
@@ -409,7 +415,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   }
                   delete productAndSkusLine.restrictionsList;
                   (productAndSkusLine.options || []).forEach(opt => {
-                    delete opt.defaultSelected
+                    delete opt.defaultSelected;
+                    delete opt.noSelectOption;
                   })
                   // (productAndSkusLine.options || []).forEach(option =>
                   //   delete option.defaultSelected;
@@ -873,6 +880,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
+        {/*<p>{JSON.stringify(refusedDeals)}</p>*/}
         <Dialog open={manualAddressOutOfBound} maxWidth="sm">
           <DialogContent className={classes.dialogContent}>
             <AlertHtmlLocal
@@ -910,7 +918,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
         {dealCandidates && dealCandidates.length > 0 &&
         <Dialog
-            onClose={() => setDialogDealProposalContent(false)}
+            onClose={() => {
+              setRefusedDeals([...refusedDeals, ...
+                  dealCandidates[0].missingLine.skus
+              ]);
+              setDealCandidates([...dealCandidates].slice(1))
+            }}
             open={dialogDealProposalContent}
             fullWidth>
           {/*<DialogContent className={classes.dialogContent}>*/}
@@ -936,15 +949,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 orderInCreation={getOrderInCreation()}
                 candidateDeal={dealCandidates[0]}
                 cancelCallBack={() => {
-                  //setDialogDealProposalContent(false)
+                  setRefusedDeals([...refusedDeals, ...
+                    dealCandidates[0].missingLine.skus
+                  ]);
                   setDealCandidates([...dealCandidates].slice(1))
                 }}
                 selectCallBack={
                   async (selectedProductAndSku) => {
-                    //setDialogDealProposalContent(false);
                     selectDealProposal(selectedProductAndSku, dealCandidates[0])
-                    //await reduceCandidates();
-                    //setDealCandidates(newCandidates);
                   }
                 }
                 contextData={contextData}/>

@@ -59,6 +59,7 @@ const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
 const CONTEXT_DATA = 'CONTEXT_DATA';
 const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 const DEAL_CANDIDATES = 'DEAL_CANDIDATES';
+const REFUSED_DEALS = 'REFUSED_DEALS';
 // const PREFFERED_DEAL_TO_APPLY = 'PREFFERED_DEAL_TO_APPLY';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
@@ -110,6 +111,7 @@ const initialAuthState = {
   contextData: null,
   estanavOpen: false,
   dealCandidates: [],
+  refusedDeals: [],
   prefferedDealToApply: null,
 };
 
@@ -121,6 +123,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         dealCandidates: dealCandidates
+      };
+    }
+
+    case REFUSED_DEALS: {
+      const { refusedDeals } = action.payload;
+      return {
+        ...state,
+        refusedDeals: refusedDeals
       };
     }
 
@@ -328,6 +338,7 @@ const AuthContext = createContext({
   setEstanavOpen: () => {},
 
   setDealCandidates: () => {},
+  setRefusedDeals: () => {},
 });
 
 const expireTimeSeconds = 1800;
@@ -1055,7 +1066,11 @@ export const AuthProvider = ({ children }) => {
 
 
     if (updatedOrderMerge) {
-      setDealCandidates(updatedOrderMerge.candidateDeals)
+      // setDealCandidates(updatedOrderMerge.candidateDeals.filter(dc => !state.refusedDeals.find(rd => rd.uuid == dc.uuid
+      //     && rd.missingLineNumber == dc.missingLineNumber )))
+      let dealCandidateFilter = (updatedOrderMerge.candidateDeals || [])
+          .filter(dc => dc.missingLine.skus.filter(sku => !state.refusedDeals.map(d => d.extRef).includes(sku.extRef)).length > 0);
+      setDealCandidates(dealCandidateFilter)
     }
 
     return updatedOrderMerge?.candidateDeals;
@@ -1137,8 +1152,18 @@ export const AuthProvider = ({ children }) => {
         }
       }
     });
+    setRefusedDeals([]);
   }
 
+
+  const setRefusedDeals = (refusedDeals) => {
+    dispatch({
+      type: REFUSED_DEALS,
+      payload: {
+        refusedDeals: refusedDeals,
+      }
+    });
+  }
 
   const setDealCandidates = (dealCandidates) => {
     dispatch({
@@ -1310,6 +1335,7 @@ export const AuthProvider = ({ children }) => {
             getContextDataAuth,
             setEstanavOpen,
             setDealCandidates,
+            setRefusedDeals,
             contextDataState
           }}
       >

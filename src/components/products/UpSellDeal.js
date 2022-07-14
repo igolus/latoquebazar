@@ -171,11 +171,7 @@ function UpSellDeal({candidateDeal, contextData, currency, selectCallBack, cance
                         onClick={() => cancelCallBack && cancelCallBack()}
                     >
                         {localStrings.noThanks}
-
                     </Button>
-                    {/*<p>*/}
-                    {/*    <p>{JSON.stringify(candidateDeal)}</p>*/}
-                    {/*</p>*/}
                 </Box>
             </Box>
         </div>
