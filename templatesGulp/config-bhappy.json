@@ -11,6 +11,7 @@
   "paymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/payment/stripe/charge2",
   "systemPayTokenUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/servicepayment/systemPayToken",
   "systemPayValidatePaymentUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/servicepayment/systemPayValidatePayment",
+  "getMapByGeoPointUrl": "http://localhost:5001/latoque-b23f1/us-central1/getMapByGeoPoint",
   "defaultMapZoom": 16,
   "defaultMapLng": 7.1187851,
   "defaultMapLat": 43.5882147,

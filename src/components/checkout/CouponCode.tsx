@@ -102,13 +102,9 @@ const CouponCode:React.FC<OrderAmountSummaryProps> = ({orderSource, contextData}
             }
 
             const restrictionToApply = getRestrictionToApply(discount, currentEstablishment)
-
-
-            const restriction =
-                computeItemRestriction(discount, currentEstablishment, currentService,
-                    getOrderInCreation(), getBrandCurrency(currentBrand()));
-
-
+            // const restriction =
+            //     computeItemRestriction(discount, currentEstablishment, currentService,
+            //         getOrderInCreation(), getBrandCurrency(currentBrand()));
 
             if (!discount.valid) {
                 if (discount.invalidReason === ALREADY_CONSUMED) {

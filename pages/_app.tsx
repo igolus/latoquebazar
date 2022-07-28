@@ -14,6 +14,8 @@ import {getBrandByIdQueryNoApollo} from "../src/gqlNoApollo/brandGqlNoApollo";
 import config from "../src/conf/config.json";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import {GetStaticProps} from "next";
+import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 
 export const cache = createCache({ key: 'css', prepend: true })
 
@@ -24,7 +26,7 @@ Router.events.on('routeChangeError', () => nProgress.done())
 
 nProgress.configure({ showSpinner: false })
 
-const App = ({ Component, pageProps}: any) => {
+const App = ({ Component, pageProps, contextData}: any) => {
     const Layout = Component.layout || Fragment
     //const [brandConfig, setBrandConfig] = useState(null);
     const [analyticsGoogleId, setAnalyticsGoogleId] = useState(null);
@@ -147,14 +149,10 @@ const App = ({ Component, pageProps}: any) => {
 
             <ToastProvider placement="bottom-left">
                 <MuiTheme>
-                    <AuthProvider>
-
-
+                    <AuthProvider contextData={contextData}>
                         <Layout>
                             <Component {...pageProps} />
                         </Layout>
-
-
                     </AuthProvider>
                 </MuiTheme>
             </ToastProvider>
@@ -181,5 +179,10 @@ const App = ({ Component, pageProps}: any) => {
 //
 //   return { ...appProps }
 // }
+
+export const getStaticProps: GetStaticProps = async (context) => {
+    return await getStaticPropsUtil();
+}
+
 
 export default App
