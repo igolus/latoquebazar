@@ -25,6 +25,7 @@ import useAuth from "@hook/useAuth";
 import localStrings from "../../localStrings";
 import {useToasts} from "react-toast-notifications";
 import moment from "moment";
+import {getDeliveryZone} from "@context/FirebaseAuthContext";
 
 export interface ProductCard1MiniProps {
   className?: string
@@ -177,16 +178,20 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
   }
 
   useEffect(() => {
-    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
-        null, null, currentEstablishment, currentService, brand, setGlobalDialog, setRedirectPageGlobal);
-    setProductAndSkus(productAndSkusRes);
+    const fetchData = async () => {
+      let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId, currentEstablishment()?.id, getOrderInCreation())
+      let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
+          null, null, currentEstablishment, currentService, brand, zoneMap);
+      setProductAndSkus(productAndSkusRes);
 
-    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
+      let selected = productAndSkusRes && productAndSkusRes.length > 0 ? productAndSkusRes[0] : null;
 
-    //alert("selected " + JSON.stringify(selected || {}));
-    setSelectedProductSku(selected)
-    //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
-    setSelectedSkuIndex(0)
+      //alert("selected " + JSON.stringify(selected || {}));
+      setSelectedProductSku(selected)
+      //setSelectedProductSku(product && product.skus ? buildProductAndSkus1[0] : null)
+      setSelectedSkuIndex(0)
+    }
+    fetchData();
   }, [product])
 
   const {addToast} = useToasts();

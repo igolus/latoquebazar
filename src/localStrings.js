@@ -433,6 +433,7 @@ let localStrings = new LocalizedStrings({
             noMainAddDefined: "Votre adresse principale n'est pas définie",
             maxDistanceDelivery: "L'adresse sélectionnée est en dehors de la zone de livraison mais vous pouvez toujours commander en mode click and collect",
             maxDistanceDeliveryOk: "L'adresse sélectionnée est dans la zone de livraison",
+            maxDistanceDeliveryOkZone: "L'adresse sélectionnée est dans la zone de livraison ({0})",
             selectValidDeliveryAddressAndSchedule: "Sélectionner une adresse de livraison valide et un créneau de réservation",
             optionMandatory: "Merci de choisir les options requises",
             minimalPriceForDeliveryNoReached: "La livraison n'est disponible que pour un montant minimum de {0} €",

@@ -97,16 +97,16 @@ const ProfileEditor = ({contextData}) => {
                                             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                                                 {localStrings.mainInfo}
                                             </Typography>
-                                            {distanceInfo && isDeliveryActive(currentEstablishment()) &&
-                                            <Box p={1}>
-                                                <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
-                                                                title={maxDistanceReached ?
-                                                                    localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                                                content={localStrings.formatString(localStrings.distanceOnly,
-                                                                    (distanceInfo.distance / 1000))}
-                                                />
-                                            </Box>
-                                            }
+                                            {/*{distanceInfo && isDeliveryActive(currentEstablishment()) &&*/}
+                                            {/*<Box p={1}>*/}
+                                            {/*    <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}*/}
+                                            {/*                    title={maxDistanceReached ?*/}
+                                            {/*                        localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}*/}
+                                            {/*                    // content={localStrings.formatString(localStrings.distanceOnly,*/}
+                                            {/*                    //     (distanceInfo.distance / 1000))}*/}
+                                            {/*    />*/}
+                                            {/*</Box>*/}
+                                            {/*}*/}
 
                                             <FlexBox alignItems="flex-end" mb={3}>
 

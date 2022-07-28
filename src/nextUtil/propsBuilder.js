@@ -7,6 +7,8 @@ import {getTagsQueryNoApollo} from "../gqlNoApollo/tagsGqlNoApollo";
 import {getEstablishmentsQueryNoApollo} from "../gqlNoApollo/establishmentGqlNoApollo";
 import {getExtraPagesQueryNoApollo} from "../gqlNoApollo/extraPagesGqlNoApollo";
 import {Base64} from 'js-base64';
+import {getZoneMapListQueryNoApollo} from "../gqlNoApollo/zoneMapGqlNoApollo";
+import config from "../conf/config.json";
 
 const Mustache = require("mustache");
 
@@ -65,13 +67,24 @@ export async function getContextDataApollo() {
         establishments = resEstas.getEstablishmentByBrandId;
     }
 
+
+
     let extraPages = [];
     const resExtraPages = await getExtraPagesQueryNoApollo(config.brandId);
     if (resExtraPages.getExtraPages) {
         extraPages = resExtraPages.getExtraPages || [];
     }
 
-
+    let zoneMap = [];
+    for (let i = 0; i < establishments.length; i++) {
+        const establishment = establishments[i];
+        const resZoneMap = await getZoneMapListQueryNoApollo(config.brandId, establishment.id);
+        if (resZoneMap.getZones) {
+            zoneMap = zoneMap.concat(resZoneMap.getZones.map(z => {
+                return {...z, establishmentId: establishment.id}
+            }))
+        }
+    }
 
     return {
         products: products,
@@ -81,7 +94,8 @@ export async function getContextDataApollo() {
         options: options,
         tags: tags,
         establishments: establishments,
-        extraPages: extraPages
+        extraPages: extraPages,
+        zoneMap: zoneMap
     }
 }
 
@@ -207,6 +221,17 @@ export async function getStaticPropsUtil() {
         }
     })
 
+    // let zoneMap = [];
+    // for (let i = 0; i < establishments.length; i++) {
+    //     const establishment = establishments[i];
+    //     const resZoneMap = await getZoneMapListQueryNoApollo(config.brandId, establishment.id);
+    //     if (resZoneMap.getZones) {
+    //         zoneMap = zoneMap.concat(resZoneMap.getZones.map(z => {
+    //             return {...z, establishmentId: establishment.id}
+    //         }))
+    //     }
+    // }
+
     return {
         props: {
             contextData: {
@@ -217,7 +242,8 @@ export async function getStaticPropsUtil() {
                 options: options,
                 tags: tags,
                 establishments: establishments,
-                extraPages: extraPages
+                extraPages: extraPages,
+                //zoneMap: zoneMap
             },
         },
          //revalidate: parseInt(process.env.REVALIDATE_DATA_TIME) || 60,
