@@ -6,8 +6,10 @@ import Card1 from "@component/Card1";
 import {getDeliveryDistanceWithFetch, getMaxDistanceDelivery, isDeliveryActive} from "../../util/displayUtil";
 import useAuth from "@hook/useAuth";
 import Box from "@material-ui/core/Box";
+import axios from "axios";
 
 export const DIST_INFO = 'distInfo';
+const config = require('../../conf/config.json');
 
 export function setDistanceAndCheckNoCall(distanceInfo, setMaxDistanceReached, maxDist, setDistanceInfo) {
     let distKm = distanceInfo.distance / 1000;
@@ -17,14 +19,13 @@ export function setDistanceAndCheckNoCall(distanceInfo, setMaxDistanceReached, m
     setDistanceInfo(distanceInfo)
 }
 
-export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
-                                    setDistanceInfo, currentEstablishment, orderInCreation, setOrderInCreation) {
-    //alert("setDistanceAndCheck " + value)
+export async function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
+                                    setDistanceInfo, setZoneMap,
+                                    currentEstablishment, orderInCreation, setOrderInCreation, brandId, lat, lng) {
     if (!distanceInfo) {
         return;
     }
-    //let maxDist = getMaxDistanceDelivery(currentEstablishment());
-    let zones = distanceInfo.zones;
+    let zones = distanceInfo.zones || [];
 
     let inZone = false;
     let deliveryZoneId;
@@ -42,6 +43,18 @@ export function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
         }
     }
     distanceInfo.deliveryZoneId = deliveryZoneId
+
+    let res = await axios.get(config.getMapByGeoPointUrl + '?brandId='+ brandId
+        + '&establishmentId=' + currentEstablishment().id + '&lat=' + lat + '&lng=' + lng);
+
+    if (res.data && res.data.zone) {
+        setZoneMap(res.data.zone)
+        setMaxDistanceReached(false);
+        inZone = true;
+    }
+    else {
+        setZoneMap(null)
+    }
     setMaxDistanceReached(!inZone);
 }
 
@@ -93,7 +106,7 @@ function AdressCheck({closeCallBack}) {
 
                                                 if (currentEstablishment()) {
                                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                    setDistanceAndCheck(distInfo, setMaxDistanceReached,
+                                                    await setDistanceAndCheck(distInfo, setMaxDistanceReached,
                                                         setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
                                                 }
                                             }}/>

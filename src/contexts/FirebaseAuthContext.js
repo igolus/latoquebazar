@@ -38,6 +38,7 @@ import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
 import {isDealValuable} from "@component/products/UpSellDeal";
+// import axios from "axios";
 
 const CURRENCY = 'CURRENCY';
 const BOOKING_SLOT_START_DATE = 'BOOKING_SLOT_START_DATE';
@@ -59,11 +60,30 @@ const GLOBAL_DIALOG = 'GLOBAL_DIALOG';
 const CONTEXT_DATA = 'CONTEXT_DATA';
 const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 const DEAL_CANDIDATES = 'DEAL_CANDIDATES';
+const REFUSED_DEALS = 'REFUSED_DEALS';
 // const PREFFERED_DEAL_TO_APPLY = 'PREFFERED_DEAL_TO_APPLY';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
 var encryptor = require('simple-encryptor')(encKey);
+const config =  require('../conf/config.json');
+const axios = require('axios')
 
+export async function getDeliveryZone(brandId, establishmentId, orderInCreation) {
+
+  if (!establishmentId) {
+    return null;
+  }
+  if (orderInCreation.deliveryAddress && orderInCreation.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
+    let lng = orderInCreation.deliveryAddress.lng;
+    let lat = orderInCreation.deliveryAddress.lat;
+    let res = await axios.get(config.getMapByGeoPointUrl + '?brandId=' + brandId
+        + '&establishmentId=' + establishmentId + '&lat=' + lat + '&lng=' + lng);
+
+    return res.data?.zone;
+
+  }
+  return null;
+}
 
 // const useStyles = makeStyles(() => ({
 //   dialogContent: {
@@ -110,10 +130,10 @@ const initialAuthState = {
   contextData: null,
   estanavOpen: false,
   dealCandidates: [],
+  refusedDeals: [],
   prefferedDealToApply: null,
 };
 
-const config = require('../conf/config.json');
 const reducer = (state, action) => {
   switch (action.type) {
     case DEAL_CANDIDATES: {
@@ -121,6 +141,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         dealCandidates: dealCandidates
+      };
+    }
+
+    case REFUSED_DEALS: {
+      const { refusedDeals } = action.payload;
+      return {
+        ...state,
+        refusedDeals: refusedDeals
       };
     }
 
@@ -328,6 +356,7 @@ const AuthContext = createContext({
   setEstanavOpen: () => {},
 
   setDealCandidates: () => {},
+  setRefusedDeals: () => {},
 });
 
 const expireTimeSeconds = 1800;
@@ -344,7 +373,7 @@ const deleteAction= "delete";
 const createAction= "create";
 
 const localStorageEstaKey = "defaultEstaId";
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ contextData, children }) => {
   const [contextDataState, setContextDataState] = useState(null)
   const [candidateDeal, setCandidateDeal] = useState(null)
 
@@ -730,7 +759,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const getContextDataAuth = () => {
-    return state.contextData;
+    return state.contextData || contextData
   }
 
   const getDbUser = () => {
@@ -845,7 +874,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const currentEstablishment = () => {
-    return state.establishment;
+    return state.establishment || (getContextDataAuth()?.establishments && getContextDataAuth().establishments[0])
   }
 
   const setEstablishment = async (establishment) => {
@@ -894,6 +923,7 @@ export const AuthProvider = ({ children }) => {
       }
     })
   }
+
 
   async function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
     if (!brand?.config?.proposeDeal) {
@@ -959,13 +989,12 @@ export const AuthProvider = ({ children }) => {
         }
         let dealClone = cloneDeep(dealToCheck);
         if (matchingRemains === 0 && !dealClone.upsellDeal &&(!prefferedDealToApply || dealToCheck.id === prefferedDealToApply.id)) {
-          computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency);
+          let zoneMap = await getDeliveryZone(currentBrand()?.id, currentEstablishment()?.id, getOrderInCreation())
+
+          computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency, false, zoneMap);
           const restrictions = (dealClone.restrictionsApplied || [])
               .map(res => res.type).sort((a, b) => a.localeCompare(b));
           if (restrictions.length === 0) {
-
-
-            // setPrefferedDealToApply(null);
             let itemsCopyForDealUpdate = itemsInCart.filter(sku => !toRemoveSkuRef.includes(sku.extRef))
             let orderInCreationClone = cloneDeep(orderInCreation);
             orderInCreationClone.order.items = itemsCopyForDealUpdate;
@@ -990,7 +1019,7 @@ export const AuthProvider = ({ children }) => {
             dealToAdd = applyDealPrice(dealToAdd);
             //dealToAdd = applyDealPrice(dealToAdd);
             orderInCreationClone = addDealToCart(setGlobalDialog, dealToAdd, orderInCreationClone, null, true, currentBrand())
-            computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency);
+            computeItemRestriction(dealToAdd, currentEstablishment, currentService, orderInCreation, currency, false);
             if (!dealToAdd.restrictionsApplied || dealToAdd.restrictionsApplied.length === 0) {
               //let orderClone = cloneDeep(orderInCreationClone)
               await processOrderDiscount(orderInCreationClone, null, null, null, null, null, null, true);
@@ -1009,7 +1038,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (matchingRemains === 1 && dealClone.lines && dealClone.lines.length > 1 && missingLine && missingLineNumber !== -1 && brand?.config?.proposeDeal) {
-          computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency);
+          computeItemRestriction(dealClone, currentEstablishment, currentService, orderInCreation, currency, false);
           const restrictions = (dealClone.restrictionsApplied || [])
               .map(res => res.type).sort((a, b) => a.localeCompare(b));
           if (restrictions.length == 0) {
@@ -1055,7 +1084,11 @@ export const AuthProvider = ({ children }) => {
 
 
     if (updatedOrderMerge) {
-      setDealCandidates(updatedOrderMerge.candidateDeals)
+      // setDealCandidates(updatedOrderMerge.candidateDeals.filter(dc => !state.refusedDeals.find(rd => rd.uuid == dc.uuid
+      //     && rd.missingLineNumber == dc.missingLineNumber )))
+      let dealCandidateFilter = (updatedOrderMerge.candidateDeals || [])
+          .filter(dc => dc.missingLine.skus.filter(sku => !state.refusedDeals.map(d => d.extRef).includes(sku.extRef)).length > 0);
+      setDealCandidates(dealCandidateFilter)
     }
 
     return updatedOrderMerge?.candidateDeals;
@@ -1067,7 +1100,7 @@ export const AuthProvider = ({ children }) => {
     const getEstaFun = getEstaFunc || currentEstablishment
 
     const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, getOrderInCreation()?.deliveryMode)
-    processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
+    await processOrderInCreation(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()));
     await processOrderCharge(getEstaFun, currentService, orderInCreation, setGlobalDialog, setRedirectPageGlobal,
         getBrandCurrency(currentBrand()), currentBrand()?.id, (oldOrder?.charges || []));
@@ -1137,8 +1170,18 @@ export const AuthProvider = ({ children }) => {
         }
       }
     });
+    setRefusedDeals([]);
   }
 
+
+  const setRefusedDeals = (refusedDeals) => {
+    dispatch({
+      type: REFUSED_DEALS,
+      payload: {
+        refusedDeals: refusedDeals,
+      }
+    });
+  }
 
   const setDealCandidates = (dealCandidates) => {
     dispatch({
@@ -1310,6 +1353,7 @@ export const AuthProvider = ({ children }) => {
             getContextDataAuth,
             setEstanavOpen,
             setDealCandidates,
+            setRefusedDeals,
             contextDataState
           }}
       >

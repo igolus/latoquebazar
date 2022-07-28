@@ -1,6 +1,8 @@
 import moment from "moment";
 import cloneDeep from "clone-deep";
 import {
+    ORDER_DELIVERY_MODE_DELIVERY,
+    ORDER_DELIVERY_MODE_ON_THE_SPOT,
     PRICING_EFFECT_FIXED_PRICE,
     PRICING_EFFECT_PERCENTAGE,
     PRICING_EFFECT_PRICE,
@@ -23,6 +25,9 @@ import {getChargesQuery} from "../gql/chargesGql";
 import {getCouponCodeDiscount} from "../gql/productDiscountGql";
 import * as ga from '../../lib/ga'
 import {pixelAddDealToCart, pixelAddToCart, pixelAddToCartData} from "./faceBookPixelUtil";
+import axios from "axios";
+import config from "../conf/config.json";
+import {getDeliveryZone} from "@context/FirebaseAuthContext";
 
 const { uuid } = require('uuidv4');
 
@@ -782,6 +787,7 @@ export const RESTRICTION_DOW = "dow";
 export const RESTRICTION_BOOKING_TIME = "bookingTime";
 export const RESTRICTION_SAME_DAY = "sameDay";
 export const RESTRICTION_DELIVERY_ZONE = "deliveryZone";
+export const RESTRICTION_DELIVERY_ZONE_MAP = "deliveryZoneMap";
 export const RESTRICTION_UNAVAILABLE = "unavailable";
 export const RESTRICTION_DELIVERY = "delivery";
 export const RESTRICTION_DISTANCE = "distance";
@@ -1024,7 +1030,7 @@ export function processOrderDiscount(orderInCreation, brand, currentService, cur
                 // console.log("res coupon " + JSON.stringify(res, null, 2))
                 discount.restrictionsApplied = [];
                 computeItemRestriction(discount, currentEstablishment, currentService,
-                    orderInCreation, getBrandCurrency(brand));
+                    orderInCreation, getBrandCurrency(brand), false);
                 if (discount.restrictionsApplied && discount.restrictionsApplied.length > 0) {
                     //const couponDiscountItem = res.data?.getCouponCodeDiscount;
                     //alert("not valid");
@@ -1095,9 +1101,12 @@ export async function processOrderCharge(currentEstablishment, currentService, o
         return
     }
     let newCharges = [];
-    chargeItems.forEach(charge => {
+
+    for (let i = 0; i < chargeItems.length; i++) {
+        const charge = chargeItems[i];
         let chargeCopy = cloneDeep(charge);
-        let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true);
+        let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId, currentEstablishment()?.id, orderInCreation)
+        let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true, zoneMap);
 
         if (chargeCopy.restrictionsApplied.length > 0 && unMatching == 0) {
 
@@ -1111,7 +1120,25 @@ export async function processOrderCharge(currentEstablishment, currentService, o
             newCharges.push(chargeCopy)
             //orderInCreation.charges.push(chargeCopy);
         }
-    })
+    }
+    // chargeItems.forEach(charge => {
+    //     let chargeCopy = cloneDeep(charge);
+    //     let zoneMap = await getDeliveryZone(currentEstablishment().brandId, currentEstablishment().id)
+    //     let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true, zoneMap);
+    //
+    //     if (chargeCopy.restrictionsApplied.length > 0 && unMatching == 0) {
+    //
+    //         if (chargeCopy.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
+    //             let percent = parseFloat(chargeCopy.pricingValue);
+    //             chargeCopy.price = priceDetail.totalNoCharge * (percent / 100)
+    //         }
+    //         else if (chargeCopy.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
+    //             chargeCopy.price = parseFloat(chargeCopy.pricingValue);
+    //         }
+    //         newCharges.push(chargeCopy)
+    //         //orderInCreation.charges.push(chargeCopy);
+    //     }
+    // })
     let newChargePrice = newCharges.reduce((partialSum, a) => partialSum + a, 0);
     let oldChargePrice = oldCharges.reduce((partialSum, a) => partialSum + a, 0);
     if (newChargePrice !== oldChargePrice) {
@@ -1121,15 +1148,16 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     orderInCreation.charges = newCharges;
 }
 
-export function processOrderInCreation(currentEstablishment, currentService, orderInCreation,
+export async function processOrderInCreation(currentEstablishment, currentService, orderInCreation,
                                        setGlobalDialog, setRedirectPageGlobal, currency) {
 
     if (orderInCreation?.order?.items ) {
-        (orderInCreation?.order?.items).forEach(item => {
+        for (const item of (orderInCreation?.order?.items)) {
             const restrictionBefore = (item.restrictionsApplied || [])
                 .map(res => res.type).sort((a, b) => a.localeCompare(b));
-
-            computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency);
+            let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId,
+                currentEstablishment()?.id, orderInCreation)
+            computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, false, zoneMap);
             const restrictionAfter = (item.restrictionsApplied || [])
                 .map(res => res.type).sort((a, b) => a.localeCompare(b));
 
@@ -1137,20 +1165,19 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
                 JSON.stringify(restrictionBefore) !== JSON.stringify(restrictionAfter)) {
                 setGlobalDialog(builAlertRestrictionComponent(setRedirectPageGlobal));
             }
-        })
+        }
     }
 
     if (orderInCreation?.order?.deals) {
-        (orderInCreation?.order?.deals).forEach(item => {
-
-
+        for (const item of (orderInCreation?.order?.deals)) {
             let deal = item.deal;
 
             //alert("processOrderInCreation deal " + JSON.stringify(deal.restrictionsList || {}));
             const restrictionBefore = (deal.restrictionsApplied || [])
                 .map(res => res.type).sort((a, b) => a.localeCompare(b));
-
-            computeItemRestriction(deal, currentEstablishment, currentService, orderInCreation, currency);
+            let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId,
+                currentEstablishment()?.id, orderInCreation)
+            computeItemRestriction(deal, currentEstablishment, currentService, orderInCreation, currency, false, zoneMap);
             const restrictionAfter = (deal.restrictionsApplied || [])
                 .map(res => res.type).sort((a, b) => a.localeCompare(b));
 
@@ -1158,7 +1185,7 @@ export function processOrderInCreation(currentEstablishment, currentService, ord
                 JSON.stringify(restrictionBefore) !== JSON.stringify(restrictionAfter)) {
                 setGlobalDialog(builAlertRestrictionComponent(setRedirectPageGlobal));
             }
-        })
+        }
     }
 
 }
@@ -1172,8 +1199,8 @@ export function getRestrictionToApply(item, currentEstablishment) {
     return restrictionToApply;
 }
 
-export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch) {
-    let countMatching = 10;
+export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch, zoneMap) {
+    let countMatching = 11;
 
     if (!currentEstablishment()) {
         return;
@@ -1189,12 +1216,32 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
         })
     }
 
-    if (!item.restrictionsList || item.restrictionsList.length === 0 ) {
+    if (!item.restrictionsList || item.restrictionsList.length === 0) {
         return;
     }
     let restrictionToApply = getRestrictionToApply(item, currentEstablishment);
 
+    if (zoneMap) {
+        let condition = !restrictionToApply?.deliveryZonesMap?.includes(zoneMap);
+        if (invertMatch) {
+            condition = !condition;
+        }
+        if (condition) {
+            item.restrictionsApplied.push({
+                type: RESTRICTION_DELIVERY_ZONE_MAP,
+                description: RESTRICTION_DELIVERY_ZONE_MAP,
+                local: localStrings.deliveryZone,
+            })
+            countMatching--;
+        }
+
+    } else {
+        countMatching--;
+    }
+
+
     if (restrictionToApply && restrictionToApply?.deliveryZones
+        && orderInCreation.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY
         && restrictionToApply?.deliveryZones.length > 0) {
         let zoneId = orderInCreation.deliveryAddress?.zoneId
         let condition = !restrictionToApply?.deliveryZones.includes(zoneId);
@@ -1207,11 +1254,10 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 description: RESTRICTION_DELIVERY_ZONE,
                 local: localStrings.deliveryZone,
             })
-            countMatching --;
+            countMatching--;
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
 
 
@@ -1231,11 +1277,10 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 description: RESTRICTION_BOOKING_TIME,
                 local: localStrings.bookingTimeUnable,
             })
-            countMatching --;
+            countMatching--;
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
 
     if (currentService && restrictionToApply && restrictionToApply?.bookingAndDeliverySameDay) {
@@ -1251,11 +1296,10 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 description: RESTRICTION_SAME_DAY,
                 local: localStrings.bookingSameDay,
             })
-            countMatching --;
+            countMatching--;
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
 
     //condition day of week
@@ -1275,13 +1319,11 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 description: restrictionToApply.description,
                 local: localStrings.formatString(localStrings.unavailableDay, localDay),
             })
-            countMatching --;
+            countMatching--;
         }
+    } else {
+        countMatching--;
     }
-    else {
-        countMatching --;
-    }
-
 
 
     if (restrictionToApply?.serviceTypes && restrictionToApply?.serviceTypes.length > 0) {
@@ -1304,8 +1346,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 countMatching--;
             }
         }
-    }
-    else {
+    } else {
         countMatching--;
     }
     // alert("restrictionsApplied distanceInfo")
@@ -1326,19 +1367,16 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 condition = !condition
             }
 
-            if (condition)
-            {
+            if (condition) {
                 let local = "";
                 if (restrictionToApply.maxDeliveryDistance && restrictionToApply.minDeliveryDistance) {
-                    local =  localStrings.formatString(localStrings.deliveryDistanceMinMax,
+                    local = localStrings.formatString(localStrings.deliveryDistanceMinMax,
                         restrictionToApply.minDeliveryDistance, restrictionToApply.maxDeliveryDistance);
-                }
-                else if (!restrictionToApply.maxDeliveryDistance) {
-                    local =  localStrings.formatString(localStrings.deliveryDistanceMin,
+                } else if (!restrictionToApply.maxDeliveryDistance) {
+                    local = localStrings.formatString(localStrings.deliveryDistanceMin,
                         restrictionToApply.minDeliveryDistance);
-                }
-                else if (!restrictionToApply.minDeliveryDistance) {
-                    local =  localStrings.formatString(localStrings.deliveryDistanceMax,
+                } else if (!restrictionToApply.minDeliveryDistance) {
+                    local = localStrings.formatString(localStrings.deliveryDistanceMax,
                         restrictionToApply.maxDeliveryDistance);
                 }
                 //alert("restrictionsApplied distanceInfo add");
@@ -1347,12 +1385,11 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                     description: RESTRICTION_DISTANCE,
                     local: local,
                 })
-                countMatching --;
+                countMatching--;
             }
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
 
     //alert("restrictionToApply " + JSON.stringify(restrictionToApply || {}));
@@ -1367,19 +1404,16 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
             conditionMatch = !conditionMatch;
         }
 
-        if (conditionMatch)
-        {
+        if (conditionMatch) {
             let local = "";
             if (restrictionToApply.maxOrderAmount && restrictionToApply.minOrderAmount) {
-                local =  localStrings.formatString(localStrings.priceMinMax,
+                local = localStrings.formatString(localStrings.priceMinMax,
                     restrictionToApply.minOrderAmount, restrictionToApply.maxOrderAmount, currency);
-            }
-            else if (!restrictionToApply.maxOrderAmount) {
-                local =  localStrings.formatString(localStrings.priceMin,
+            } else if (!restrictionToApply.maxOrderAmount) {
+                local = localStrings.formatString(localStrings.priceMin,
                     restrictionToApply.minOrderAmount, currency);
-            }
-            else if (!restrictionToApply.minOrderAmount) {
-                local =  localStrings.formatString(localStrings.priceMax,
+            } else if (!restrictionToApply.minOrderAmount) {
+                local = localStrings.formatString(localStrings.priceMax,
                     restrictionToApply.maxOrderAmount, currency);
             }
             //alert("restrictionPrice price add");
@@ -1388,11 +1422,10 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 description: RESTRICTION_PRICE,
                 local: local,
             })
-            countMatching --;
+            countMatching--;
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
 
     //check date
@@ -1429,9 +1462,8 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 countMatching--;
             }
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
 
 
@@ -1472,8 +1504,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 countMatching--;
             }
         }
-    }
-    else {
+    } else {
         countMatching--;
     }
 
@@ -1482,7 +1513,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
     if (restrictionToApply && restrictionToApply.maxPerOrder) {
         let conditionMax = restrictionToApply.maxPerOrder && parseInt(item.quantity) >= restrictionToApply.maxPerOrder;
         if (invertMatch) {
-            conditionMax =! conditionMax;
+            conditionMax = !conditionMax;
         }
         if (conditionMax) {
             item.restrictionsApplied.push({
@@ -1490,26 +1521,25 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 description: RESTRICTION_MAX_ITEM,
                 local: localStrings.maxItems,
             })
-            countMatching --;
+            countMatching--;
 
         }
-    }
-    else {
-        countMatching --;
+    } else {
+        countMatching--;
     }
     return countMatching;
 }
 
 export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment,
-                                    currentService, brand) {
+                                          currentService, brand, zoneMap) {
     let allSkusWithProduct = [];
 
 
     if (product && product.skus) {
-        product.skus.forEach(sku => {
+        for (const sku of product.skus) {
             let copySku = {...sku}
 
-            if (!sku.optionListExtIds || sku.optionListExtIds.length == 0 ) {
+            if (!sku.optionListExtIds || sku.optionListExtIds.length == 0) {
                 if (orderInCreation && orderInCreation?.order && orderInCreation.order.items) {
                     let existing = orderInCreation.order.items.find(item => {
                         return sameItem(item, sku, []);
@@ -1525,8 +1555,9 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
                 let item = dealEdit.productAndSkusLines.find(line => line.lineNumber === dealLinNumber);
                 options = item ? item.options || [] : [];
             }
+
             computeItemRestriction(copySku, currentEstablishment, currentService, orderInCreation,
-                getBrandCurrency(brand))
+                getBrandCurrency(brand), false, zoneMap)
             //if (!sku.unavailableInEstablishmentIds || !sku.unavailableInEstablishmentIds.includes(currentEstablishment().id)) {
             if (sku.visible && !sku.onlyInDeal) {
                 allSkusWithProduct.push({
@@ -1535,7 +1566,7 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
                     options: options
                 });
             }
-        })
+        }
     }
     return allSkusWithProduct;
 }

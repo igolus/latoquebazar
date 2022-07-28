@@ -246,7 +246,7 @@ const AddressEditor = ({back}) => {
                                                         setLoadingAddress(true);
                                                         if (currentEstablishment()) {
                                                             let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                            setDistanceAndCheck(distInfo,
+                                                            await setDistanceAndCheck(distInfo,
                                                                 (maxDistanceReached) => {
                                                                     setDeliveryOut(maxDistanceReached)
                                                                 },

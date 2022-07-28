@@ -79,6 +79,7 @@ function ProductSelector({ productAndSku, options,
       "ref": option.extRef,
       "price": option.price,
       "defaultSelected": option.defaultSelected,
+      "noSelectOption": option.noSelectOption,
       "unavailableInEstablishmentIds": option.unavailableInEstablishmentIds
     }
   }
@@ -90,7 +91,7 @@ function ProductSelector({ productAndSku, options,
   function handleChangeRadio(optionListComplete, optionList, ref, noCallSetter) {
     //alert("options " + value);
     let itemSkuBookingNew = getNewSkuBooking()
-    let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extRef);
+    let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extId);
     let optionToSet = optionListComplete.find(optionComplete => optionComplete.ref == ref);
 
     itemSkuBookingNew.options = [...other, optionToSet];
@@ -110,15 +111,25 @@ function ProductSelector({ productAndSku, options,
       let other = itemSkuBookingNew.options.filter(option => option.ref !== optionComplete.ref);
       itemSkuBookingNew.options = [...other];
     }
+    if (!optionComplete.noSelectOption) {
+      itemSkuBookingNew.options = itemSkuBookingNew.options.filter(o => !o.noSelectOption ||
+          optionComplete.option_list_extRef != o.option_list_extRef);
+    }
+    else {
+      itemSkuBookingNew.options  = itemSkuBookingNew.options.filter(o => o.noSelectOption ||
+          optionComplete.option_list_extRef != o.option_list_extRef);
+    }
     if (!noCallSetter) {
       setterSkuEdit(itemSkuBookingNew);
     }
+    //return skuEdit.options.find(o => o.noSelectOption);
+
     return itemSkuBookingNew;
 
   }
 
   function getValueRadio(optionList) {
-    let option = productAndSku.options.find(option => option.option_list_extRef === optionList.extRef);
+    let option = productAndSku.options.find(option => option.option_list_extRef === optionList.extId);
     return option ? option.ref : null;
   }
 
@@ -259,6 +270,13 @@ function ProductSelector({ productAndSku, options,
     return currentEstablishment() && (optionComplete.unavailableInEstablishmentIds || []).includes(currentEstablishment().id);
   }
 
+  function noSelectOptionSelected(optionComplete) {
+    if (optionComplete.noSelectOption) {
+      return true;
+    }
+    return skuEdit.options.find(o => o.noSelectOption) == null;
+  }
+
   function getSelector(optionList) {
     if (!optionList.options) {
       return;
@@ -302,7 +320,7 @@ function ProductSelector({ productAndSku, options,
       return (
           <>
             <div id= {"selector" + optionList.id}>
-              {/*<p>{"selector" + optionList.id}</p>*/}
+
               <FormControl component="fieldset" >
                 <FormGroup>
                   <Box
@@ -312,6 +330,7 @@ function ProductSelector({ productAndSku, options,
 
                     {optionListComplete.map((optionComplete, key) =>
                         <>
+                          {/*<p>{JSON.stringify(optionComplete)}</p>*/}
                           <FormControlLabel style={{marginRight:'20px'}}
                                             control={<Checkbox value={optionComplete}
                                                 //defaultChecked={optionComplete.defaultSelected}

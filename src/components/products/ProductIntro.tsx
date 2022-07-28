@@ -29,6 +29,7 @@ import {grey} from '../../theme/themeColors'
 import useWindowSize from "@hook/useWindowSize";
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import {pixelViewContent} from "../../util/faceBookPixelUtil";
+import {getDeliveryZone} from "@context/FirebaseAuthContext";
 
 export interface ProductIntroProps {
     imgUrl?: string[]
@@ -102,44 +103,63 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
 
     useEffect(() => {
-        if (firstOrCurrentEstablishment() && brand) {
-            let productAndSkuBuilt;
-            if (skuIndex) {
-                productAndSkuBuilt = {
-                    ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, initialItem)[skuIndex]
-                };
-                if (initialItem) {
-                    productAndSkuBuilt.options = [...initialItem.options]
-                }
-                setProductAndSku({
-                    ...productAndSkuBuilt
-                });
-            } else {
+        const fetchData = async () => {
+            if (firstOrCurrentEstablishment() && brand) {
+                let productAndSkuBuilt;
+                let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId,
+                    currentEstablishment()?.id, getOrderInCreation())
+                if (skuIndex) {
+                    productAndSkuBuilt = {
+                        ...buildProductAndSkus(product, getOrderInCreation,
+                            lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, zoneMap)[skuIndex]
+                    };
+                    if (initialItem) {
+                        productAndSkuBuilt.options = [...initialItem.options]
+                    }
+                    setProductAndSku({
+                        ...productAndSkuBuilt
+                    });
+                } else {
 
-                productAndSkuBuilt = {
-                    ...buildProductAndSkus(product, getOrderInCreation,
-                        lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, initialItem)[0]
-                };
-                if (initialItem) {
-                    productAndSkuBuilt.options = [...initialItem.options]
+                    productAndSkuBuilt = {
+                        ...buildProductAndSkus(product, getOrderInCreation,
+                            lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, zoneMap)[0]
+                    };
+                    if (initialItem) {
+                        productAndSkuBuilt.options = [...initialItem.options]
+                    }
+                    setProductAndSku({
+                        ...productAndSkuBuilt,
+                        setGlobalDialog, setRedirectPageGlobal
+                    });
                 }
-                setProductAndSku({
-                    ...productAndSkuBuilt,
-                    setGlobalDialog, setRedirectPageGlobal
-                });
+                //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
             }
-            //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
         }
+        fetchData();
 
     }, [firstOrCurrentEstablishment(), brand])
 
-    const initialProductAndSku = {
-        ...buildProductAndSkus(product, null,
-            null, null, () => firstEsta, null, brand)[0]
-    }
+    // const [initialProductAndSku, setInitialProductAndSku] = useState(initialProductAndSku);
 
-    const [productAndSku, setProductAndSku] = useState(initialProductAndSku);
+
+    const [productAndSku, setProductAndSku] = useState();
+    useEffect(() => {
+            const fetchData = async () => {
+                let zoneMap = await getDeliveryZone(firstOrCurrentEstablishment()?.brandId,
+                    firstOrCurrentEstablishment()?.id, getOrderInCreation())
+                const first = buildProductAndSkus(product, null,
+                    null, null, () => firstEsta, null, brand, zoneMap)[0]
+                setProductAndSku({...first})
+            }
+            fetchData();
+            }
+        , [])
+    // const initialProductAndSku = {
+    //     ...buildProductAndSkus(product, null,
+    //         null, null, () => firstEsta, null, brand)[0]
+    // }
+
     const [valid, setValid] = useState(true);
     const [invalidIds, setInvalidIds] = useState([]);
     const {addToast} = useToasts()
@@ -183,10 +203,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
     function getButtonText(addButtonText) {
-        if (initialItem) {
-            return localStrings.updateCart;
-        }
         if (invalidIds.length === 0) {
+            if (initialItem) {
+                return localStrings.updateCart;
+            }
             return addButtonText || localStrings.addToCart;
         }
         let firstMissingId = invalidIds[0];
@@ -410,17 +430,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                             {options && options.length > 0 && !getFirstRestriction() &&
 
-                                    <ProductSelector options={options}
-                                                     productAndSku={productAndSku}
-                                                     setterSkuEdit={setProductAndSku}
-                                                     skuEdit={productAndSku}
-                                                     setterValid={setValid}
-                                                     setterInvalidIds={setInvalidIds}
-                                                     valid={valid}
-                                                     currency={currency}
-                                                     lineNumber={lineNumber}
-                                                     initialItem={initialItem}
-                                    />
+                                <ProductSelector options={options}
+                                                 productAndSku={productAndSku}
+                                                 setterSkuEdit={setProductAndSku}
+                                                 skuEdit={productAndSku}
+                                                 setterValid={setValid}
+                                                 setterInvalidIds={setInvalidIds}
+                                                 valid={valid}
+                                                 currency={currency}
+                                                 lineNumber={lineNumber}
+                                                 initialItem={initialItem}
+                                />
                             }
 
                             {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}

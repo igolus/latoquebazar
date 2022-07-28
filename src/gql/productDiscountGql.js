@@ -31,6 +31,7 @@ const common = `
         service
       }
       deliveryZones
+      deliveryZonesMap
       startDate
       endDate
       startTime
