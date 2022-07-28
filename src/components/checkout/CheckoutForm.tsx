@@ -164,6 +164,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     maxDistanceReached, setMaxDistanceReached, setLoginDialogOpen,setGlobalDialog,
     checkDealProposal, dealCandidates, setDealCandidates, setPrefferedDealToApply, orderUpdating, setRefusedDeals, refusedDeals} = useAuth();
   const [distanceInfo, setDistanceInfo] = useState(null);
+  const [zoneMap, setZoneMap] = useState(null);
 
   const loaded = React.useRef(false);
   const [paymentMethod, setPaymentMethod] = useState('delivery')
@@ -716,7 +717,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           (maxDistanceReached) => {
             setMaxDistanceReached(maxDistanceReached);
           },
-          setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
+          setDistanceInfo, setZoneMap, currentEstablishment, getOrderInCreation(),
+          setOrderInCreationNoLogic, currentBrand().id,  lat, lng);
     }
     return distInfo;
   }
@@ -733,7 +735,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.noSelectSlotMethod;
     }
 
-    if (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) {
+    if (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached && !zoneMap) {
       return localStrings.check.maxDistanceReached;
     }
 
@@ -793,7 +795,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         !getOrderInCreation().bookingSlot ||
         loading || getCartItems(getOrderInCreation).length == 0 ||
         (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
-        (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached) ||
+        (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached && !zoneMap) ||
         paymentMethod === "cc" && !paymentCardValid && !isPaymentSystemPay();
   }
 
@@ -880,7 +882,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
-        {/*<p>{JSON.stringify(refusedDeals)}</p>*/}
         <Dialog open={manualAddressOutOfBound} maxWidth="sm">
           <DialogContent className={classes.dialogContent}>
             <AlertHtmlLocal
@@ -1152,15 +1153,20 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                         <Card1 sx={{mb: '2rem'}}>
                           <>
 
-                            {distanceInfo && isDeliveryActive(currentEstablishment()) &&
+                            {isDeliveryActive(currentEstablishment()) &&
                             getOrderInCreation().deliveryAddress &&
                             getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                             <Box p={1}>
-                              <AlertHtmlLocal severity={maxDistanceReached ? "warning" : "success"}
-                                              title={maxDistanceReached ?
-                                                  localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                                              // content={localStrings.formatString(localStrings.distanceOnly,
-                                              //     (distanceInfo.distance / 1000))}
+                              <AlertHtmlLocal severity={maxDistanceReached && !zoneMap ? "warning" : "success"}
+                                              title={maxDistanceReached && !zoneMap ?
+                                                  localStrings.warningMessage.maxDistanceDelivery :
+                                                  (
+                                                      zoneMap ?
+                                                          localStrings.formatString(localStrings.warningMessage.maxDistanceDeliveryOkZone, zoneMap)
+                                                          :
+                                                          localStrings.warningMessage.maxDistanceDeliveryOk
+                                                  )
+                              }
                               />
                             </Box>
                             }
@@ -1284,7 +1290,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                               setMaxDistanceReached(maxDistanceReached);
                                               setAdressSearch(false);
                                             },
-                                            setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
+                                            setDistanceInfo, setZoneMap, currentEstablishment, getOrderInCreation(),
+                                            setOrderInCreationNoLogic, currentBrand().id,  lat, lng);
                                         updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance);
                                       } else {
                                         updateDeliveryAdress(label, lat, lng);
@@ -1299,7 +1306,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                             </Grid>
                             }
 
-                            {!maxDistanceReached &&
+                            {!maxDistanceReached && !zoneMap &&
                             <>
                               <Typography fontWeight="600" mb={2} mt={2}>
                                 {localStrings.customerDeliveryInformation}

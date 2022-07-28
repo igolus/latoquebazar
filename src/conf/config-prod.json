@@ -7,5 +7,6 @@
   "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
   "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",
   "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
-  "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment"
+  "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment",
+  "getMapByGeoPointUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getMapByGeoPoint"
 }
