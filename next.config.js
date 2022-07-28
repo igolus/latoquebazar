@@ -11,6 +11,7 @@ module.exports = withPWA({
         dest: "public",
         register: true,
         skipWaiting: true,
+        maximumFileSizeToCacheInBytes: 3000000,
 
     },
     modifyURLPrefix: {

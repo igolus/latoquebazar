@@ -27,6 +27,7 @@ import moment from "moment";
 import {cloneDeep} from "@apollo/client/utilities";
 import useWindowSize from "@hook/useWindowSize";
 import Image from "@component/BazarImage";
+import {getDeliveryZone} from "@context/FirebaseAuthContext";
 
 export interface ProductCard1Props {
   className?: string
@@ -220,16 +221,20 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   }
 
   useEffect(() => {
-    let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
-        null, null, currentEstablishment, currentService, brand);
-    setProductAndSkus(productAndSkusRes);
-    let minPriceSkus = cloneDeep(productAndSkusRes).sort((a,b) => {
-      return parseFloat(a.sku.price) -  parseFloat(b.sku.price);
-    })
-    let selected = productAndSkusRes && productAndSkusRes.length > 0 ? minPriceSkus[0] : null;
-    setSelectedProductSku(selected)
-    let indexCheapest = productAndSkusRes.findIndex( pandsku => pandsku.sku.extRef === selected.sku.extRef)
-    setSelectedSkuIndex(indexCheapest)
+    const fetchData = async () => {
+      let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId, currentEstablishment()?.id, getOrderInCreation())
+      let productAndSkusRes = buildProductAndSkus(product, getOrderInCreation(),
+          null, null, currentEstablishment, currentService, brand, zoneMap);
+      setProductAndSkus(productAndSkusRes);
+      let minPriceSkus = cloneDeep(productAndSkusRes).sort((a, b) => {
+        return parseFloat(a.sku.price) - parseFloat(b.sku.price);
+      })
+      let selected = productAndSkusRes && productAndSkusRes.length > 0 ? minPriceSkus[0] : null;
+      setSelectedProductSku(selected)
+      let indexCheapest = productAndSkusRes.findIndex(pandsku => pandsku.sku.extRef === selected.sku.extRef)
+      setSelectedSkuIndex(indexCheapest)
+    }
+    fetchData()
   }, [product])
 
   const {addToast} = useToasts();
