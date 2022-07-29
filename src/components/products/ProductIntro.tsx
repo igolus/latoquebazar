@@ -140,8 +140,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
     }, [firstOrCurrentEstablishment(), brand])
 
-    // const [initialProductAndSku, setInitialProductAndSku] = useState(initialProductAndSku);
-
 
     const [productAndSku, setProductAndSku] = useState();
     useEffect(() => {
@@ -270,6 +268,13 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 (getFirstRestriction() || getButtonText(addButtonText))
             }
         </BazarButton>;
+    }
+
+    function getInitialItem() {
+        if (lineNumber != null) {
+            return productAndSku;
+        }
+        return initialItem;
     }
 
     return (
@@ -439,7 +444,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                  valid={valid}
                                                  currency={currency}
                                                  lineNumber={lineNumber}
-                                                 initialItem={initialItem}
+                                                 initialItem={getInitialItem()}
                                 />
                             }
 

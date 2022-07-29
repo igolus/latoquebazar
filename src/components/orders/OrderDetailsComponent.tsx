@@ -144,51 +144,6 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     const theme = useTheme()
     console.log(theme.breakpoints.up('md'))
 
-    // const [order, setOrder] = useState(null)
-
-    // useEffect(async() => {
-    //     await refresh();
-    // }, [getContextData(), currentEstablishment(), dbUser])
-
-
-    // async function refresh() {
-    //     try {
-    //         setRefreshing(true)
-    //         //alert("refresh")
-    //         if (getContextData() && getContextData().brand && (establishmentIdParam || currentEstablishment()) && id) {
-    //             let result = await executeQueryUtil(getOrderByIdQuery(getContextData().brand.id,
-    //                 establishmentIdParam || currentEstablishment().id, id));
-    //             let orderSet = null;
-    //             if (result && result.data && result.data.getOrdersByOrderIdEstablishmentIdAndOrderId) {
-    //                 //alert( "result.data " + result.data)
-    //                 let order = result.data.getOrdersByOrderIdEstablishmentIdAndOrderId;
-    //                 setOrder(order);
-    //                 orderSet = order;
-    //                 setRefreshing(false)
-    //             }
-    //             else if (dbUser) {
-    //                 let result = await executeQueryUtil(getSiteUserOrderById(getContextData().brand.id, dbUser.id, id));
-    //                 if (result && result.data && result.data.getSiteUserOrderById) {
-    //                     let order = result.data.getSiteUserOrderById;
-    //                     setOrder(order);
-    //                     orderSet = order;
-    //                     setRefreshing(false);
-    //                     setNoStatus(true);
-    //                 }
-    //             }
-    //             if (orderSet == null) {
-    //                 router.push("/404");
-    //             }
-    //         }
-    //     }
-    //     catch (err) {
-    //         console.log(err)
-    //     }
-    //     finally {
-    //         setRefreshing(false)
-    //     }
-    //
-    // }
     function getImageStatus() {
         switch (order?.status) {
             case HUBRISE_ORDER_STATUS_NEW:
@@ -216,15 +171,6 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
             <DashboardPageHeader
                 title={localStrings.orderDetail}
                 icon={ShoppingBag}
-                // button={
-                //     <>
-                //         {!noStatus &&
-                //         <Button color="primary" variant="contained" onClick={refresh}>
-                //             {localStrings.refresh}
-                //         </Button>
-                //         }
-                //     </>
-                // }
             />
 
             <Card sx={{ p: '.2rem .2rem', mb: '0' }}>

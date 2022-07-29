@@ -1,4 +1,7 @@
 function callReactPixel(brand, doWithReactPixel) {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     import('react-facebook-pixel')
         .then((x) => x.default)
         .then((ReactPixel) => {
@@ -11,7 +14,9 @@ function callReactPixel(brand, doWithReactPixel) {
 }
 
 export const pixelAddDealToCart = (brand, deal) => {
-
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     let price = 0;
     if (!deal.deal.lines) {
         return;
@@ -36,6 +41,9 @@ export const pixelAddDealToCart = (brand, deal) => {
 }
 
 export const pixelAddToCart = (brand, productAndSku) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     callReactPixel(brand, ReactPixel => {
         ReactPixel.track('AddToCart', {
             content_type: 'product',
@@ -53,6 +61,9 @@ export const pixelAddToCart = (brand, productAndSku) => {
 }
 
 export const pixelAddToCartData = (brand, id, name, qte, price) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     callReactPixel(brand, ReactPixel => {
         ReactPixel.track('AddToCart', {
             content_type: 'product',
@@ -70,13 +81,16 @@ export const pixelAddToCartData = (brand, id, name, qte, price) => {
 
 
 export const pixelViewContent = (brand, productAndSku) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     callReactPixel(brand, ReactPixel => {
         ReactPixel.track('ViewContent', {
             content_type: 'product',
-            content_ids: [productAndSku.sku.id || productAndSku.sku.extRef],
-            content_name: productAndSku.sku.name,
-            content_category: productAndSku.product.category.category,
-            value: parseFloat(productAndSku.sku.price),
+            content_ids: [productAndSku?.sku?.id || productAndSku?.sku?.extRef],
+            content_name: productAndSku?.sku?.name,
+            content_category: productAndSku?.product?.category.category,
+            value: parseFloat(productAndSku?.sku?.price),
             currency: 'EUR',
             contents: [{
                 id: productAndSku.sku.id || productAndSku.sku.extRef,
@@ -87,12 +101,18 @@ export const pixelViewContent = (brand, productAndSku) => {
 }
 
 export const pixelCompleteRegistration = (brand) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     callReactPixel(brand, ReactPixel => {
         ReactPixel.track('CompleteRegistration', {});
     });
 }
 
 export const pixelPurchaseContent = (brand, orderInCreation) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     callReactPixel(brand, ReactPixel => {
         ReactPixel.track('Purchase', {
             content_type: 'product',
@@ -104,6 +124,9 @@ export const pixelPurchaseContent = (brand, orderInCreation) => {
 }
 
 export const pixelInitiateCheckout = (brand, orderInCreation) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return;
+    }
     callReactPixel(brand, ReactPixel => {
         let itemsPixel = getItemsPixel(orderInCreation);
         ReactPixel.track('InitiateCheckout', {
@@ -118,6 +141,9 @@ export const pixelInitiateCheckout = (brand, orderInCreation) => {
 
 
 function getItemsPixel(orderInCreation) {
+    if (process.env.NODE_ENV !== 'production') {
+        return [];
+    }
     let items = [];
 
     let itemsStandard = orderInCreation?.order?.items || [];
