@@ -6,12 +6,10 @@ import Head from 'next/head'
 import Router, {useRouter} from 'next/router'
 import nProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import React, {Fragment, useEffect, useState} from 'react'
+import React, {Fragment, useEffect} from 'react'
 import {ToastProvider} from "react-toast-notifications";
 import * as ga from '../lib/ga'
 import "../global.css";
-import {getBrandByIdQueryNoApollo} from "../src/gqlNoApollo/brandGqlNoApollo";
-import config from "../src/conf/config.json";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import {GetStaticProps} from "next";
@@ -29,39 +27,18 @@ nProgress.configure({ showSpinner: false })
 const App = ({ Component, pageProps, contextData}: any) => {
     const Layout = Component.layout || Fragment
     //const [brandConfig, setBrandConfig] = useState(null);
-    const [analyticsGoogleId, setAnalyticsGoogleId] = useState(null);
-    const [facebookPixelId, setFacebookPixelId] = useState(null);
+    // const [analyticsGoogleId, setAnalyticsGoogleId] = useState(null);
+    // const [facebookPixelId, setFacebookPixelId] = useState(null);
 
     const router = useRouter()
 
-    // useEffect(() => {
-    //     if (process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS) {
-    //         //alert("useEffect App")
-    //         const handleRouteChange = (url: string) => {
-    //             //alert("handleRouteChange")
-    //             ga.pageview(url)
-    //         }
-    //         //When the component is mounted, subscribe to router changes
-    //         //and log those page views
-    //         router.events.on('routeChangeComplete', handleRouteChange)
-    //
-    //         // If the component is unmounted, unsubscribe
-    //         // from the event with the `off` method
-    //         return () => {
-    //             router.events.off('routeChangeComplete', handleRouteChange)
-    //         }
-    //     }
-    // }, [router.events])
-
     useEffect(() => {
-        if (analyticsGoogleId) {
-            //alert("analyticsGoogleId " + analyticsGoogleId)
+        const analyticsGoogleId = pageProps?.contextData?.brand?.config?.analyticsGoogleId
+        if (analyticsGoogleId && process.env.NODE_ENV === 'production') {
             const handleRouteChange = (url: string) => {
                 //alert("handleRouteChange")
-                ga.pageview(url)
+                ga.pageview(url, analyticsGoogleId)
             }
-            //When the component is mounted, subscribe to router changes
-            //and log those page views
             router.events.on('routeChangeComplete', handleRouteChange)
 
             // If the component is unmounted, unsubscribe
@@ -73,7 +50,8 @@ const App = ({ Component, pageProps, contextData}: any) => {
     })
 
     useEffect(() => {
-        if (facebookPixelId) {
+        if (pageProps?.contextData?.brand?.config?.facebookPixelId) {
+            const facebookPixelId = pageProps?.contextData?.brand?.config?.facebookPixelId;
             console.log("facebookPixelId " + facebookPixelId)
             import('react-facebook-pixel')
                 .then((x) => x.default)
@@ -87,18 +65,7 @@ const App = ({ Component, pageProps, contextData}: any) => {
             return null;
         }
 
-    }, [router.events, facebookPixelId, analyticsGoogleId])
-
-    useEffect(() => {
-        // declare the data fetching function
-        const getBrand = async () => {
-            const resBrand = await getBrandByIdQueryNoApollo(config.brandId);
-            setAnalyticsGoogleId(resBrand?.getBrand?.config?.analyticsGoogleId)
-            setFacebookPixelId(resBrand?.getBrand?.config?.facebookPixelId)
-        }
-        getBrand()
-            .catch(console.error);
-    }, [])
+    }, [router.events])
 
     useEffect(async () => {
         // Remove the server-side injected CSS.
@@ -112,22 +79,26 @@ const App = ({ Component, pageProps, contextData}: any) => {
         // <div>
         <CacheProvider value={cache}>
             <Head>
-                <Head>
-                    {/*{contextData?.brand.iconUrl &&*/}
-                    {/*<link rel="shortcut icon" id="favicon"*/}
-                    {/*      href={contextData.brand.iconUrl || "/favicon"}/>*/}
-                    {/*}*/}
-                    {/*<script*/}
-                    {/*    type="text/javascript"*/}
-                    {/*    src={"https://maps.googleapis.com/maps/api/js?key=" + key + "&libraries=places"}*/}
-                    {/*/>*/}
-
-                    {/*</script>*/}
-
-                    {/*<script  type="text/javascript"*/}
-
-                    {/*         src={"https://maps.googleapis.com/maps/api/js?libraries=places&key=" + key} ></script>*/}
-                </Head>
+                {pageProps?.contextData?.brand?.config?.analyticsGoogleId &&
+                    <>
+                        <script
+                            async
+                            src={`https://www.googletagmanager.com/gtag/js?id=${pageProps?.contextData?.brand?.config?.analyticsGoogleId}`}
+                        />
+                        <script
+                            dangerouslySetInnerHTML={{
+                                __html: `
+                                    window.dataLayer = window.dataLayer || [];
+                                    function gtag(){dataLayer.push(arguments);}
+                                    gtag('js', new Date());
+                                    gtag('config', '${pageProps?.contextData?.brand?.config?.analyticsGoogleId}', {
+                                      page_path: window.location.pathname,
+                                    });
+                                  `,
+                            }}
+                        />
+                    </>
+                }
 
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="stylesheet" href="https://use.typekit.net/bcq8tyr.css" />
@@ -145,7 +116,7 @@ const App = ({ Component, pageProps, contextData}: any) => {
                 <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
             </Head>
             {/*<AppProvider>*/}
-
+            {/*<p>{JSON.stringify(pageProps.contextData.brand?.config || {})}</p>*/}
 
             <ToastProvider placement="bottom-left">
                 <MuiTheme>
@@ -163,22 +134,6 @@ const App = ({ Component, pageProps, contextData}: any) => {
     )
 
 }
-
-// export const getStaticProps: GetStaticProps = async (context) => {
-//     return await getStaticPropsUtil();
-// }
-
-// Only uncomment this method if you have blocking data requirements for
-// every single page in your application. This disables the ability to
-// perform automatic static optimization, causing every page in your app to
-// be server-side rendered.
-//
-// App.getInitialProps = async (appContext) => {
-//   // calls page's `getInitialProps` and fills `appProps.pageProps`
-//   const appProps = await App.getInitialProps(appContext);
-//
-//   return { ...appProps }
-// }
 
 export const getStaticProps: GetStaticProps = async (context) => {
     return await getStaticPropsUtil();
