@@ -20,20 +20,6 @@ export default class Bazar extends Document {
             <Html lang="fr">
                 <Head>
                     <link rel="manifest" href="/manifest.json" />
-
-                    {/*<script*/}
-                    {/*    src="/hotjar.js">*/}
-                    {/*</script>*/}
-
-
-                    {/*<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>*/}
-
-
-
-                    {/*<script defer*/}
-                    {/*    src="https://api.systempay.fr/static/js/krypton-client/V4.0/ext/classic.js">*/}
-                    {/*</script>*/}
-
                     <script defer src="//embed.typeform.com/next/embed.js"></script>
 
                     <link rel="apple-touch-icon" href="/iconApp.png"></link>
@@ -50,22 +36,7 @@ export default class Bazar extends Document {
                     />
 
                     {/* Global Site Tag (gtag.js) - Google Analytics */}
-                    <script
-                        async
-                        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
-                    />
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
-              page_path: window.location.pathname,
-            });
-          `,
-                        }}
-                    />
+
                 </Head>
                 <body>
                 <Main />

@@ -395,6 +395,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                 deal.deal.lines.forEach(line => {
                   delete line.quantity;
+                  line.pricingValue = line.pricingValueAfterDisc ? line.pricingValueAfterDisc.toString() : "0";
                   delete line.pricingValueAfterDisc;
                   if (typeof line.pricingValue !== "string") {
                     line.pricingValue = line.pricingValue.toString()
