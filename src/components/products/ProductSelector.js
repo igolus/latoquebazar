@@ -7,6 +7,7 @@ import Radio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
 import {makeStyles} from "@material-ui/styles";
 import useAuth from "@hook/useAuth";
+import cloneDeep from "clone-deep";
 
 export const OPTION_LIST_SINGLE = "single";
 export const OPTION_LIST_MULTIPLE = "multiple";
@@ -52,10 +53,13 @@ function ProductSelector({ productAndSku, options,
 
   const classes = useStyles();
   const {dealEdit, currentEstablishment} = useAuth();
+  //const [initialItemState, setInitialItem] = useState(null);
 
   useEffect(() => {
     if (initialItem) {
-      productAndSku.options = [...initialItem.options]
+      //productAndSku = cloneDeep(productAndSku)
+      // productAndSku.options = [...initialItem.options]
+      setterSkuEdit({...productAndSku, options:[...initialItem.options]})
     }
   }, [])
 
@@ -73,7 +77,7 @@ function ProductSelector({ productAndSku, options,
   function buildOption(optionList, option) {
     return {
       "option_list_name": optionList.extName,
-      "option_list_extRef": optionList.extRef || optionList.extId,
+      "option_list_extRef": optionList.extId || optionList.extRef,
       "option_list_internal_name": optionList.name,
       "name": option.name || option.extName,
       "ref": option.extRef,
@@ -91,7 +95,8 @@ function ProductSelector({ productAndSku, options,
   function handleChangeRadio(optionListComplete, optionList, ref, noCallSetter) {
     //alert("options " + value);
     let itemSkuBookingNew = getNewSkuBooking()
-    let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extId);
+    let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extRef
+        && option.option_list_extRef !== optionList.extId);
     let optionToSet = optionListComplete.find(optionComplete => optionComplete.ref == ref);
 
     itemSkuBookingNew.options = [...other, optionToSet];
@@ -129,7 +134,8 @@ function ProductSelector({ productAndSku, options,
   }
 
   function getValueRadio(optionList) {
-    let option = productAndSku.options.find(option => option.option_list_extRef === optionList.extId);
+    let option = productAndSku.options.find(option => option.option_list_extRef === optionList.extRef ||
+        option.option_list_extRef === optionList.extId);
     return option ? option.ref : null;
   }
 
@@ -250,12 +256,6 @@ function ProductSelector({ productAndSku, options,
           })
 
         }
-        //
-        // let fistDefault = optionListComplete.find(option => option.defaultSelected);
-        // alert("fistDefault " + fistDefault)
-        // if (fistDefault) {
-        //   handleChangeRadio(optionListComplete, optionList, fistDefault.ref)
-        // }
       }
 
     })
@@ -353,6 +353,7 @@ function ProductSelector({ productAndSku, options,
 
   return (
       <>
+        {/*<p>{JSON.stringify(productAndSku)}</p>*/}
         <Box
         >
           {productAndSku && productAndSku.sku && productAndSku?.sku?.optionListExtIds && productAndSku?.sku?.optionListExtIds.map((optionId, key) => {
