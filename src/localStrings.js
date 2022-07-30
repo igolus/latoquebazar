@@ -130,7 +130,7 @@ let localStrings = new LocalizedStrings({
         maxItems: "Nombre d'elements maximum atteind",
 
         restrictionApplies: "Ce produit n'est pas toujours disponible",
-        noAvail: "Désolé il n'y a plus de créneau disponible, essayez à un autre moment",
+        noAvail: "Désolé il n'y a pas de créneau disponible, essayez à un autre moment",
         selectDeliveryModesToGetSlots: "Selectionner un mode de livraison pour afficher les creneaux.",
         shareOnFacebook: "Partager ce produit sur facebook",
         back: "Retour",
