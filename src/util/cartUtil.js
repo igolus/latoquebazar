@@ -1531,7 +1531,7 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
 }
 
 export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dealEdit, currentEstablishment,
-                                          currentService, brand, zoneMap) {
+                                          currentService, brand) {
     let allSkusWithProduct = [];
 
 
@@ -1556,8 +1556,8 @@ export function buildProductAndSkus(product, orderInCreation, dealLinNumber, dea
                 options = item ? item.options || [] : [];
             }
 
-            computeItemRestriction(copySku, currentEstablishment, currentService, orderInCreation,
-                getBrandCurrency(brand), false, zoneMap)
+            // computeItemRestriction(copySku, currentEstablishment, currentService, orderInCreation,
+            //     getBrandCurrency(brand), false, zoneMap)
             //if (!sku.unavailableInEstablishmentIds || !sku.unavailableInEstablishmentIds.includes(currentEstablishment().id)) {
             if (sku.visible && !sku.onlyInDeal) {
                 allSkusWithProduct.push({

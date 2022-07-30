@@ -58,8 +58,8 @@ function ProductSelector({ productAndSku, options,
   useEffect(() => {
     if (initialItem) {
       //productAndSku = cloneDeep(productAndSku)
-      // productAndSku.options = [...initialItem.options]
-      setterSkuEdit({...productAndSku, options:[...initialItem.options]})
+      productAndSku.options = [...initialItem.options]
+      //setterSkuEdit({...productAndSku, options:[...initialItem.options]})
     }
   }, [])
 
