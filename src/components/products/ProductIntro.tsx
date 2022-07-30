@@ -10,12 +10,12 @@ import FlexBox from '../FlexBox'
 import ReactMarkdown from 'react-markdown'
 import localStrings from "../../localStrings";
 import useAuth from "@hook/useAuth";
-import {addToCartOrder, buildProductAndSkus, updateCartOrder} from '../../util/cartUtil'
+import {addToCartOrder, buildProductAndSkus, computeItemRestriction, updateCartOrder} from '../../util/cartUtil'
 import {useToasts} from "react-toast-notifications";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {
     formatPrice,
-    formatProductAndSkuName,
+    formatProductAndSkuName, getBrandCurrency,
     getFirstRestrictionDescription,
     getFirstRestrictionItem
 } from "../../util/displayUtil";
@@ -102,16 +102,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }
 
 
+    const [productAndSku, setProductAndSku] = useState(null);
+
     useEffect(() => {
         const fetchData = async () => {
             if (firstOrCurrentEstablishment() && brand) {
                 let productAndSkuBuilt;
-                let zoneMap = await getDeliveryZone(currentEstablishment()?.brandId,
-                    currentEstablishment()?.id, getOrderInCreation())
+
                 if (skuIndex) {
                     productAndSkuBuilt = {
                         ...buildProductAndSkus(product, getOrderInCreation,
-                            lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, zoneMap)[skuIndex]
+                            lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[skuIndex]
                     };
                     if (initialItem) {
                         productAndSkuBuilt.options = [...initialItem.options]
@@ -123,7 +124,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                     productAndSkuBuilt = {
                         ...buildProductAndSkus(product, getOrderInCreation,
-                            lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand, zoneMap)[0]
+                            lineNumber, dealEdit, firstOrCurrentEstablishment, currentService, brand)[0]
                     };
                     if (initialItem) {
                         productAndSkuBuilt.options = [...initialItem.options]
@@ -133,6 +134,20 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                         setGlobalDialog, setRedirectPageGlobal
                     });
                 }
+
+                getDeliveryZone(currentEstablishment()?.brandId,
+                    currentEstablishment()?.id, getOrderInCreation()).then(zoneMap => {
+                    let copySku = {...productAndSkuBuilt.sku}
+                    computeItemRestriction(copySku, currentEstablishment, currentService, getOrderInCreation(),
+                        getBrandCurrency(brand), false, zoneMap);
+
+                    setProductAndSku({
+                        ...productAndSkuBuilt,
+                        sku: copySku,
+                        setGlobalDialog, setRedirectPageGlobal
+                    });
+
+                })
                 //return {...buildProductAndSkus(product, getOrderInCreation, lineNumber, dealEdit, currentEstablishment, currentService)[0]};
             }
         }
@@ -141,18 +156,17 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
     }, [firstOrCurrentEstablishment(), brand])
 
 
-    const [productAndSku, setProductAndSku] = useState();
-    useEffect(() => {
-            const fetchData = async () => {
-                let zoneMap = await getDeliveryZone(firstOrCurrentEstablishment()?.brandId,
-                    firstOrCurrentEstablishment()?.id, getOrderInCreation())
-                const first = buildProductAndSkus(product, null,
-                    null, null, () => firstEsta, null, brand, zoneMap)[0]
-                setProductAndSku({...first})
-            }
-            fetchData();
-            }
-        , [])
+    // useEffect(() => {
+    //         const fetchData = async () => {
+    //             let zoneMap = await getDeliveryZone(firstOrCurrentEstablishment()?.brandId,
+    //                 firstOrCurrentEstablishment()?.id, getOrderInCreation())
+    //             const first = buildProductAndSkus(product, null,
+    //                 null, null, () => firstEsta, null, brand, zoneMap)[0]
+    //             setProductAndSku({...first})
+    //         }
+    //         fetchData();
+    //         }
+    //     , [])
     // const initialProductAndSku = {
     //     ...buildProductAndSkus(product, null,
     //         null, null, () => firstEsta, null, brand)[0]
