@@ -67,6 +67,7 @@ const common = `
       numberOfDeliveryMan
       maxPreparationTimePerSlot
       excludedPaymentMethods
+      disabled
     }
     closingSlots {
       uuid   
