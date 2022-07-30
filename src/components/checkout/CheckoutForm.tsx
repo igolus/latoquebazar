@@ -654,8 +654,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     //(orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal)
   }
 
-  function setDeliveryMode(deliveryMode: string) {
+  async function setDeliveryMode(deliveryMode: string) {
     setExpectedPaymentMethods([])
+    await setOrderInCreationNoLogic({
+      ...getOrderInCreation(),
+      deliveryMode: deliveryMode,
+      bookingSlot: null,
+    })
     setOrderInCreation({
       ...getOrderInCreation(),
       deliveryMode: deliveryMode,

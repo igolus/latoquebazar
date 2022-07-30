@@ -30,7 +30,7 @@ const setHourFromString = (momentDate, hourSt) => {
 
 function getDaySettings(establishment, dowString, inverseOrder) {
   return establishment?.serviceSetting && establishment.serviceSetting.daySetting &&
-      establishment.serviceSetting.daySetting.filter(item => item.day === dowString)
+      establishment.serviceSetting.daySetting.filter(item => item.day === dowString && !item.disabled)
           .sort((setting1, setting2) => {
             let val1 = parseInt(setting1.startHourBooking.replace(':', ''));
             let val2 = parseInt(setting2.startHourBooking.replace(':', ''));
