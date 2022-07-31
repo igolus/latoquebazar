@@ -19,7 +19,7 @@ import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {uuid} from "uuidv4";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import {getDeliveryDistanceWithFetch} from "../../util/displayUtil";
-import {setDistanceAndCheck} from "@component/address/AdressCheck";
+import {distanceAndCheck} from "@component/address/AdressCheck";
 
 const AddressEditor = ({back}) => {
 
@@ -191,13 +191,13 @@ const AddressEditor = ({back}) => {
                     />
 
                     <Card1>
-                        {deliveryOut &&
-                                <AlertHtmlLocal severity={"warning"}
-                                                title={localStrings.warning}
-                                                content={localStrings.tooFarAddress}
-                                                marginBottom={25}
-                                />
-                        }
+                        {/*{deliveryOut &&*/}
+                        {/*        <AlertHtmlLocal severity={"warning"}*/}
+                        {/*                        title={localStrings.warning}*/}
+                        {/*                        content={localStrings.tooFarAddress}*/}
+                        {/*                        marginBottom={25}*/}
+                        {/*        />*/}
+                        {/*}*/}
 
 
                         <Formik
