@@ -39,7 +39,7 @@ const AddressEditor = ({back}) => {
 
     const [adressValue, setAdressValue] = useState("");
     const [loading, setLoading] = useState(false);
-    const [deliveryOut, setDeliveryOut] = useState(false);
+    //const [deliveryOut, setDeliveryOut] = useState(false);
     const [loadingAddress, setLoadingAddress] = useState(false);
     // const [distanceInfo, setDistanceInfo] = useState(null);
     // const [maxDistanceReached, setMaxDistanceReached] = useState(false);
@@ -244,14 +244,14 @@ const AddressEditor = ({back}) => {
                                                     //disabled={adressEditLock}
                                                     setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
                                                         setLoadingAddress(true);
-                                                        if (currentEstablishment()) {
-                                                            let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                            await setDistanceAndCheck(distInfo,
-                                                                (maxDistanceReached) => {
-                                                                    setDeliveryOut(maxDistanceReached)
-                                                                },
-                                                                null, currentEstablishment);
-                                                        }
+                                                        // if (currentEstablishment()) {
+                                                        //     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                        //     await setDistanceAndCheck(distInfo,
+                                                        //         (maxDistanceReached) => {
+                                                        //             setDeliveryOut(maxDistanceReached)
+                                                        //         },
+                                                        //         null, currentEstablishment);
+                                                        // }
                                                         //setAdressValue(label)
                                                         updateDeliveryAdress(label, lat, lng, placeId);
                                                         setLoadingAddress(false);
@@ -285,7 +285,7 @@ const AddressEditor = ({back}) => {
 
                                     <Button  variant="contained" color="primary"
                                              style={{textTransform: "none"}}
-                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress || deliveryOut}
+                                             disabled={id === "new" && !adressInfo || !checkoutSchema(id).isValidSync(values) || loadingAddress}
                                              type="submit">
                                         {getSubmitText()}
                                     </Button>
