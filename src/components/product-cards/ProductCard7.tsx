@@ -318,7 +318,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                           disabled={item.quantity === 0 || itemHaveRestriction(item)}
                           sx={{p: '5px'}}
                           onClick={() => decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation,
-                              item.uuid, checkDealProposal, currentEstablishment)}
+                              item.uuid, checkDealProposal, currentEstablishment, currentBrand)}
                       >
                         <Remove fontSize="small"/>
                       </Button>

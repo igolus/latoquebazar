@@ -251,6 +251,7 @@ let localStrings = new LocalizedStrings({
         selectPickupTimeSlot: "Sélectionner un créneau de récupération",
         priceToPay: "Montant à payer",
         pricePaid: "Montant payé",
+        pendingPayment: "Paiement en attente",
         remainingToPay: "Reste a payer: {0}",
 
         totalNoTax: "Total hors taxes",
@@ -263,6 +264,7 @@ let localStrings = new LocalizedStrings({
 
         totalTTC: "Total TTC",
         deliveryFee: "Frais de livraisons",
+        deliveryFeeExternal: "Frais de livraisons partenaire externe",
         totalFee: "Total frais",
 
         deliverToOtherAddress: "Livrer a une autre adresse",
@@ -398,9 +400,17 @@ let localStrings = new LocalizedStrings({
         hrorderStatusAwaitingCollection: "Pret a récuperer",
         hrorderStatusinDelivery: "Livraison en cours",
         hrorderStatusCompleted: "Finalisé",
+        orderStatusPendingPayment: "En attente de payment",
         hrorderStatusRejected: "Rejetée",
         hrorderStatusCancelled: "Annulé",
         hrorderStatusDeliveryFailed: "Echec livraison",
+
+        stuartFollowUrl: "Lien de suivi Stuart",
+        stuartFollowUrlContent: "Clicker ici pour suivre la progression de votre commande",
+
+        stuartLoadingTitle: "Verification de possibilité de livraison",
+        stuartLoading: "Nous verifions si la livraison est possible",
+
 
         check: {
             fieldRequired: "Le champ {0} est obligatoire",
@@ -439,9 +449,13 @@ let localStrings = new LocalizedStrings({
             minimalPriceForDeliveryNoReached: "La livraison n'est disponible que pour un montant minimum de {0} €",
             deliveryUnavailable: "Livraison non disponible",
             paymentIssue: "Un problème est survenu avec votre paiement",
-            profileNotActivated: "Votre compte n'est pas encore actif, vérifier votre email et activer votre compte en cliquant sur le lien contenu dans le mail d'activation, puis connectez-vous de nouveau"
+            profileNotActivated: "Votre compte n'est pas encore actif, vérifier votre email et activer votre compte en cliquant sur le lien contenu dans le mail d'activation, puis connectez-vous de nouveau",
+            deliveryFeeOccurs: "Les frais de livraison a votre charge s'élèvent à {0} {1}",
+            stuartDeliveryPossible: "Livraison disponible !",
+            stuartDeliveryImpossible: "Livraison non disponible !",
+            stuartConnectionIssue: "Nous rencontrons des problemes pour communiquer avec le service de livraison externe",
+            stuartOutOfRange: "L'addresse de livraison est en dehors de la zone courverte",
         },
-
         notif: {
             accountCreated: "Compte cree",
             dealAddedToCart: "Offre ajouté au panier",

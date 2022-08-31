@@ -99,10 +99,6 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
 
     }, [currentBrand(), currentEstablishment(), id])
 
-    // useEffect(async () => {
-    //     registerMessaging();
-    // }, [])
-
     useEffect(() => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side')
@@ -141,6 +137,14 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
                                         content={localStrings.formatString(localStrings.orderCompletedThanks,
                                             currentBrand() ? currentBrand().brandName : "")}
                         />
+                        {order?.stuartFollowUrl &&
+                            <AlertHtmlLocal severity="info"
+                                            title={localStrings.stuartFollowUrl}
+
+                            >
+                                <a href={order.stuartFollowUrl} target="new"><strong>{localStrings.stuartFollowUrlContent}</strong></a>
+                            </AlertHtmlLocal>
+                        }
                         {currentBrand()?.config?.notifEmailConfig?.sendMailOnlineOrdering &&
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.mailSent}

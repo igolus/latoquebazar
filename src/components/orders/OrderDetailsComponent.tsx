@@ -50,6 +50,7 @@ import {useCollectionData, useDocumentData} from "react-firebase-hooks/firestore
 import config from "../../conf/config.json";
 import moment from "moment";
 import firebase from "../../lib/firebase";
+import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 
 // const StyledFlexbox = styled(FlexBox)(({ theme }) => ({
 //     flexDirection: 'row',
@@ -214,6 +215,15 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
 
                 </div>
             </Card>
+
+            {order?.stuartFollowUrl &&
+                <AlertHtmlLocal severity="info"
+                                title={localStrings.stuartFollowUrl}
+
+                >
+                    <a href={order.stuartFollowUrl} target="new">{localStrings.stuartFollowUrlContent}</a>
+                </AlertHtmlLocal>
+            }
 
             <OrderContent order={order} contextData={getContextData()}/>
 

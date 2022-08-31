@@ -4,12 +4,14 @@ import filterDataGql from "../apolloClient/gqlUtil";
 const common = `
   id
   loyaltyPoints
+  stuartFollowUrl
   tempOrder
   creationDate
   orderNumber
   hubriseId
   establishmentId
   status
+  stuartStatus
   totalPrice
   totalPreparationTime
   valueDiscount
