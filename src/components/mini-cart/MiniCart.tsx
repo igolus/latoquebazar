@@ -207,7 +207,7 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
 
                             {/*<p>{JSON.stringify(chargeItem)}</p>*/}
                             <Box fontWeight={600} fontSize="14px" color="primary.main" mt={0.5}>
-                                {chargeItem.price.toFixed(2) +  " " + currency}
+                                {chargeItem?.price?.toFixed(2) +  " " + currency}
                             </Box>
                             {chargeItem.restrictionsList && chargeItem.restrictionsList.length === 1 &&
                                 <Tiny2 color="grey.600">
@@ -314,7 +314,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                         decreaseDealCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid)
                                     }
                                     else {
-                                        decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid)
+                                        decreaseCartQte(setGlobalDialog, getOrderInCreation(), setOrderInCreation, item.uuid,
+                                            false, currentEstablishment, currentBrand)
                                     }
                                 }}
                                 disabled={item.quantity === 1}

@@ -17,6 +17,7 @@ export const ORDER_STATUS_FINISHED = "finished";
 export const ORDER_STATUS_DELIVERING = "in_delivery";
 export const ORDER_STATUS_PREPARATION = "in_preparation";
 export const ORDER_STATUS_READY = "awaiting_shipment";
+export const ORDER_STATUS_PENDING_PAYMENT = "pending_payment";
 
 export const HUBRISE_ORDER_STATUS_NEW = "new";
 export const HUBRISE_ORDER_STATUS_RECEIVED = "received";
@@ -119,9 +120,10 @@ export const getOrderStatus = (localStrings) => {
       name: localStrings.hrorderStatusCompleted,
       value: ORDER_STATUS_COMPLETE,
     },
-
-
-
+    {
+      name: localStrings.orderStatusPendingPayment,
+      value: ORDER_STATUS_PENDING_PAYMENT,
+    },
     {
       name: localStrings.hrorderStatusNew,
       value: HUBRISE_ORDER_STATUS_NEW,

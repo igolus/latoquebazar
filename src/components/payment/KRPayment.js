@@ -5,6 +5,7 @@ import axios from "axios";
 import ClipLoaderComponent from "@component/ClipLoaderComponent";
 import {uuid} from "uuidv4";
 import {getOrderAmount} from "@component/checkout/CheckoutForm";
+import {systemPayTokenUrl, systemPayValidatePaymentUrl} from "../../conf/configUtil";
 
 const config = require('../../conf/config.json');
 
@@ -50,7 +51,7 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
     useEffect(() => {
         setLoading(true);
         let formToken;
-        const urlToken = config.systemPayTokenUrl + "/" + brandId;
+        const urlToken = systemPayTokenUrl() + "/" + brandId;
 
         if (amount === 0) {
             return;
@@ -89,7 +90,7 @@ const KRPayment = ({text, disabled, errorCallBack, paidCallBack, brandId, email,
                         checkingPayCallBack();
                     }
                     axios
-                        .post(config.systemPayValidatePaymentUrl + "/" + brandId, paymentData)
+                        .post(systemPayValidatePaymentUrl() + "/" + brandId, paymentData)
                         .then(response => {
                             if (response.status === 200 && paidCallBack) {
                                 paidCallBack(orderUuid, paymentData.clientAnswer.transactions[0].uuid)
