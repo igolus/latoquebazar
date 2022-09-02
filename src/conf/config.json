@@ -4,16 +4,9 @@
   "appName": "Bakery Street",
   "siteUrl": "https://bakerystreet.vercel.app",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
-  "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
-  "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
-  "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",
-  "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
-  "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment/stripe/charge2",
-  "systemPayTokenUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayToken",
-  "systemPayValidatePaymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/servicepayment/systemPayValidatePayment",
+  "baseServiceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/",
   "siteBaseUrl": "https://commandes.by-bhappy.com",
   "defaultMapZoom": 16,
   "defaultMapLng": 7.107135,
   "defaultMapLat": 43.622040
-
 }
