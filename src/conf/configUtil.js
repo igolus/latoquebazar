@@ -15,10 +15,10 @@ export function paymentUrl() {
     return config.baseServiceUrl + 'charge'
 }
 export function systemPayTokenUrl() {
-    return config.baseServiceUrl + 'systemPayToken'
+    return config.baseServiceUrl + 'servicepayment/systemPayToken'
 }
 export function systemPayValidatePaymentUrl() {
-    return config.baseServiceUrl + 'systemPayValidatePayment'
+    return config.baseServiceUrl + 'servicepayment/systemPayValidatePayment'
 }
 export function getMapByGeoPointUrl() {
     return config.baseServiceUrl + 'getMapByGeoPoint'
