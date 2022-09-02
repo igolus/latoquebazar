@@ -400,7 +400,7 @@ let localStrings = new LocalizedStrings({
         hrorderStatusAwaitingCollection: "Pret a récuperer",
         hrorderStatusinDelivery: "Livraison en cours",
         hrorderStatusCompleted: "Finalisé",
-        orderStatusPendingPayment: "En attente de payment",
+        orderStatusPendingPayment: "En attente de paiement",
         hrorderStatusRejected: "Rejetée",
         hrorderStatusCancelled: "Annulé",
         hrorderStatusDeliveryFailed: "Echec livraison",

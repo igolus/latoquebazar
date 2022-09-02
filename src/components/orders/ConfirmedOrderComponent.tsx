@@ -142,7 +142,9 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
                                             title={localStrings.stuartFollowUrl}
 
                             >
-                                <a href={order.stuartFollowUrl} target="new"><strong>{localStrings.stuartFollowUrlContent}</strong></a>
+                                <a href={order.stuartFollowUrl} target="new">
+                                    <p style={{textDecoration:"underline"}}>{localStrings.stuartFollowUrlContent}</p>
+                                </a>
                             </AlertHtmlLocal>
                         }
                         {currentBrand()?.config?.notifEmailConfig?.sendMailOnlineOrdering &&

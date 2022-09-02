@@ -221,7 +221,9 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                                 title={localStrings.stuartFollowUrl}
 
                 >
-                    <a href={order.stuartFollowUrl} target="new">{localStrings.stuartFollowUrlContent}</a>
+                    <a href={order.stuartFollowUrl} target="new">
+                        <p style={{textDecoration:"underline"}}>{localStrings.stuartFollowUrlContent}</p>
+                    </a>
                 </AlertHtmlLocal>
             }
 
