@@ -196,7 +196,7 @@ export const buildTimeSlots = (establishment, getBookingSlotsOccupancy, orderInC
           closed: isClosed(startDate, establishment),
           totalPreparionTime: slotOccupancy?.totalPreparationTime || 0,
           deliveryNumber: slotOccupancy?.deliveryNumber || 0,
-          locked: slotOccupancy?.locked
+          locked: slotOccupancy?.locked,
         })
         iterDate = moment(iterDate.add(slotDuration, 'minutes'));
       }
@@ -288,7 +288,7 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
 }
 
 function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode,
-                        selectedKeyParam, setterSelectedKey, brandId, disableNextDay, excludedPaymentsSetter}) {
+                        selectedKeyParam, setterSelectedKey, brandId, disableNextDay, excludedPaymentsSetter, globalDisabled}) {
 
   const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation, currentBrand} = useAuth();
@@ -339,19 +339,6 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     }
   };
 
-
-  // useEffect(() => {
-  //   let offset = getOffset(getOrderInCreation().deliveryMode, currentEstablishmentOrFirst());
-  //   setOffset(offset)
-  // }, [getOrderInCreation().deliveryMode])
-
-  // useEffect(async () => {
-  //   if (currentEstablishmentOrFirst()) {
-  //     let res = await getBookingSlotsOccupancyQueryNoApollo(brandId, currentEstablishmentOrFirst().id);
-  //     setBookingSlotsOccupancy(res.getBookingSlotsOccupancyByBrandIdAndEstablishmentId);
-  //   }
-  // }, [currentEstablishmentOrFirst()])
-
   useEffect(() => {
     let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
         moment(), deliveryMode, excludedPaymentsSetter);
@@ -363,7 +350,8 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
       let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
           moment(), deliveryMode, excludedPaymentsSetter);
       setTimeSlots(timeSlotsData);
-    }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 120000);
+
+    }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 45000);
     return () => clearInterval(interval);
   }, []);
 
@@ -383,9 +371,9 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     }
   }
 
-  useEffect(() => {
-    selectFirstSlot();
-  }, [getOrderInCreation().deliveryMode, getOrderInCreation().bookingSlot])
+  // useEffect(() => {
+  //   //selectFirstSlot();
+  // }, [getOrderInCreation().deliveryMode, getOrderInCreation().bookingSlot])
 
 
   useEffect(() => {
@@ -683,7 +671,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
                             {/*<p>butt</p>*/}
                             <BazarButton variant="contained"
                                 //disabled={!value.available && !isSelectedSlot(value)}
-                                         disabled={isSlotUnavailable(value)}
+                                         disabled={isSlotUnavailable(value) || globalDisabled}
                                 //disabled={!enoughTimeForPreparation(value)}
                                          color={isSelectedSlot(value) ? "primary" : "inherit"}
                                          onClick={() => select(value)}

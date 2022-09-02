@@ -1,6 +1,6 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import {Alert, Box, Button, Divider, Typography} from '@material-ui/core'
+import {Alert, Button, Divider, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {
@@ -12,14 +12,12 @@ import {
 } from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import moment from "moment";
-import {ORDER_DELIVERY_MODE_DELIVERY, TOP_STICKY} from "../../util/constants";
+import {ORDER_DELIVERY_MODE_DELIVERY, ORDER_STATUS_PENDING_PAYMENT, TOP_STICKY} from "../../util/constants";
 import {Tiny2} from "@component/Typography";
 import ReactMarkdown from "react-markdown";
 import CouponCode from "@component/checkout/CouponCode";
 import 'moment/locale/fr'
-import {success} from "@theme/themeColors";
-import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import MdRender from "@component/MdRender";
+import {getMessagDeliveryAddress} from "@component/checkout/CheckoutForm";
 
 const config = require("../../conf/config.json");
 
@@ -40,7 +38,8 @@ export interface OrderAmountSummaryProps {
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
                                                                   modeOrdered,orderSource, contextData, hideCoupon}) => {
 
-    const {getOrderInCreation, currentBrand, currentEstablishment, setEstanavOpen, dbUser} = useAuth();
+    const {getOrderInCreation, currentBrand, currentEstablishment,
+        setEstanavOpen, dbUser, stuartError, stuartAmount, zoneMap} = useAuth();
     const [priceDetails, setPriceDetails] = useState({});
     const {maxDistanceReached} = useAuth();
 
@@ -79,18 +78,33 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
         }
     }
 
+    function getDeliveryAdressMessage() {
+        return getOrderInCreation()?.deliveryAddress?.address || "-";
+        // if (!maxDistanceReached) {
+        //     return getOrderInCreation()?.deliveryAddress?.address || "-";
+        // }
+        // let messagDeliveryAddress = getMessagDeliveryAddress(currentEstablishment,
+        //     getOrderInCreation(), maxDistanceReached, stuartError, stuartAmount, zoneMap);
+        // return messagDeliveryAddress?.message || "-";
+    }
+
+    function getAmountRemainingMessage() {
+        if (getOrder()?.status === ORDER_STATUS_PENDING_PAYMENT) {
+            return  localStrings.pendingPayment
+        }
+        if (getRemainingToPay(getOrder()) === 0) {
+            return  localStrings.pricePaid;
+        }
+        return localStrings.formatString(localStrings.remainingToPay,
+            getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()));
+    }
+
     return (
         <Card1 style={{position: 'sticky', top: TOP_STICKY}}>
             {/*{JSON.stringify(getOrder())}*/}
             {modeOrdered &&
                 <Typography fontWeight={fontWeight} mb={0} mt={.5}>
-
-                    {getRemainingToPay(getOrder()) === 0 ?
-                        localStrings.pricePaid
-                        :
-                        localStrings.formatString(localStrings.remainingToPay,
-                            getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()))
-                    }
+                    {getAmountRemainingMessage()}
                 </Typography>
             }
 
@@ -100,7 +114,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                         <Typography color="grey.600">{chargeItem.name}</Typography>
                         <FlexBox alignItems="flex-end">
                             <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
-                                {chargeItem.price.toFixed(2)} {currency}
+                                {chargeItem?.price?.toFixed(2)} {currency}
                             </Typography>
                         </FlexBox>
                     </FlexBox>
@@ -183,9 +197,9 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                             <Typography fontWeight={fontWeight} mb={0} mt={.25}>
                                 {localStrings.deliveryAdress}
                             </Typography>
-
                             <Typography color="grey.600" fontSize={fontSize}>
-                                {maxDistanceReached ? localStrings.tooFarAddress : getOrder().deliveryAddress.address}
+                                {getDeliveryAdressMessage()}
+                                {/*{maxDistanceReached ? localStrings.tooFarAddress : getOrder().deliveryAddress.address}*/}
                             </Typography>
 
                         </>

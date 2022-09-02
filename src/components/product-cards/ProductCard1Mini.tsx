@@ -399,7 +399,7 @@ const ProductCard1Mini: React.FC<ProductCard1MiniProps> = ({
                         onClick={() => {
                           if (selectedProductAndSku?.sku.uuid) {
                             decreaseCartQte(getOrderInCreation(), setOrderInCreation, selectedProductAndSku?.sku.uuid,
-                                checkDealProposal, currentEstablishment)
+                                checkDealProposal, currentEstablishment, currentBrand)
                           }
                         }}
                     >

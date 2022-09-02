@@ -147,6 +147,7 @@ export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
         added.name,
         1,
         added.price,
+        () => brand
     )
 
     pixelAddToCartData(brand, added.extRef,
@@ -157,7 +158,7 @@ export function increaseDealCartQte(setGlobalDialog, orderInCreation, setOrderIn
 
 
 export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCreation, uuid,
-                                checkDealProposal, currentEstablishment) {
+                                checkDealProposal, currentEstablishment, currentBrand) {
     //alert("uuid " + uuid)
     let discPointExists = isDiscPointExists(orderInCreation);
     let itemToChange = orderInCreation.order.items.find(itemOrder => itemOrder.uuid === uuid);
@@ -200,9 +201,12 @@ export function decreaseCartQte(setGlobalDialog, orderInCreation, setOrderInCrea
 
     ga.gaRemoveFromCart(
         removed.extRef,
+        getFullNameProduct(removed.productName, removed.name),
         removed.name,
         1,
         removed.price,
+        currentEstablishment,
+        currentBrand
     )
 
     if (checkDealProposal && currentEstablishment && !discPointExists) {
@@ -240,6 +244,7 @@ export async function increaseCartQte(setGlobalDialog, orderInCreation, setOrder
         added.name,
         1,
         added.price,
+        () => brand
     )
 
     pixelAddToCartData(brand, added.extRef,
@@ -287,7 +292,7 @@ export function deleteItemInCart(setGlobalDialog, orderInCreation, setOrderInCre
 
     ga.gaRemoveFromCart(
         removed.extRef,
-        removed.name,
+        getFullNameProduct(removed.productName, removed.name),
         1,
         removed.price,
     )
@@ -534,6 +539,7 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
         dealToAdd.deal.name,
         1,
         price,
+        () => brand
     )
 
     pixelAddDealToCart(brand, deal);
@@ -547,7 +553,7 @@ export function addDealToCart(setGlobalDialog, deal, orderInCreation, setOrderIn
 
 
 export function addDiscountToCart(discount, orderInCreation, setOrderInCreation) {
-    if (!orderInCreation || !orderInCreation()) {
+    if (!orderInCreation || !setOrderInCreation()) {
         return;
     }
 
@@ -555,6 +561,48 @@ export function addDiscountToCart(discount, orderInCreation, setOrderInCreation)
     setOrderInCreation({
         ...orderInCreation(),
         discounts: [...existingOrder.discounts || [], {...discount}]
+    })
+}
+
+export function getChargeDeliveryToAdd(charge, orderInCreation, removeStuart) {
+    if (!orderInCreation || !charge) {
+        return null;
+    }
+
+    let existingOrder = orderInCreation;
+
+    let existingCharges = (existingOrder.charges || []).filter(c => !removeStuart || !c.start);
+    return [...existingCharges, {...charge}]
+
+}
+
+
+export function addChargeToCart(charge, orderInCreation,
+                                     setOrderInCreation, removeStuart) {
+    if (!orderInCreation || !setOrderInCreation) {
+        return;
+    }
+
+    let existingOrder = orderInCreation;
+
+    let existingCharges = (existingOrder.charges || []).filter(c => !removeStuart || !c.start);
+
+    setOrderInCreation({
+        ...orderInCreation,
+        charges: [...existingCharges, {...charge}]
+    })
+}
+
+export function removeStuartChargeToCart(charge, orderInCreation,
+                                setOrderInCreation) {
+    if (!orderInCreation || !setOrderInCreation) {
+        return;
+    }
+
+    let existingOrder = orderInCreation;
+    setOrderInCreation({
+        ...orderInCreation,
+        charges: [...existingOrder.charges.filter(c => !c.stuart)]
     })
 }
 
@@ -597,6 +645,11 @@ export function updateCartOrder(setGlobalDialog, productAndSku, initialItem, ord
         itemToModify.options = productAndSku.options;
         setOrderInCreation(orderInCreation, null, null, null, prefferedDealToApply)
     }
+}
+
+
+export function getFullNameProduct(productName, skuName) {
+    return productName + "/" + skuName;
 }
 
 export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
@@ -649,9 +702,10 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
         }
         ga.gaAddToCart(
             productAndSku.sku.id || productAndSku.sku.extRef,
-            productAndSku.sku.name,
+            getFullNameProduct(productAndSku.product.name, productAndSku.sku.name),
             1,
             productAndSku.sku.price,
+            () => brand
         )
 
         pixelAddToCart(brand, productAndSku)
@@ -696,6 +750,7 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
         productAndSku.sku.name,
         1,
         productAndSku.sku.price,
+        () => brand
     )
 
     pixelAddToCart(brand, productAndSku)
@@ -984,7 +1039,7 @@ export function revertDiscountedPrices(orderInCreation) {
     //revert price
     for (let i = 0; i < charges.length; i++) {
         const charge = charges[i];
-        if (charge.nonDiscountedPrice) {
+        if (charge?.nonDiscountedPrice) {
             charge.price = parseFloat(charge.nonDiscountedPrice).toFixed(2)
         }
     }
@@ -999,13 +1054,6 @@ export function revertDiscountedPrices(orderInCreation) {
             if (productAndSkusLine.nonDiscountedPrice) {
                 productAndSkusLine.price = parseFloat(productAndSkusLine.nonDiscountedPrice).toFixed(2)
             }
-            // let options = item.options;
-            // for (let i = 0; i < options.length; i++) {
-            //     const option = options[i];
-            //     if (option.nonDiscountedPrice) {
-            //         option.price = option.nonDiscountedPrice;
-            //     }
-            // }
         }
     }
     return orderInCreationClone;
@@ -1093,7 +1141,7 @@ export async function processOrderCharge(currentEstablishment, currentService, o
     if (!brandId || !orderInCreation) {
         return;
     }
-    orderInCreation.charges = [];
+    const stuartCharges = (orderInCreation.charges || []).filter(c => c?.stuart);
     let res = await executeQueryUtil(getChargesQuery(brandId));
     let chargeItems = res?.data?.getChargesByBrandId || [];
     let priceDetail = computePriceDetail(orderInCreation)
@@ -1121,31 +1169,13 @@ export async function processOrderCharge(currentEstablishment, currentService, o
             //orderInCreation.charges.push(chargeCopy);
         }
     }
-    // chargeItems.forEach(charge => {
-    //     let chargeCopy = cloneDeep(charge);
-    //     let zoneMap = await getDeliveryZone(currentEstablishment().brandId, currentEstablishment().id)
-    //     let unMatching = computeItemRestriction(chargeCopy, currentEstablishment, currentService, orderInCreation, currency, true, zoneMap);
-    //
-    //     if (chargeCopy.restrictionsApplied.length > 0 && unMatching == 0) {
-    //
-    //         if (chargeCopy.pricingEffect === PRICING_EFFECT_PERCENTAGE) {
-    //             let percent = parseFloat(chargeCopy.pricingValue);
-    //             chargeCopy.price = priceDetail.totalNoCharge * (percent / 100)
-    //         }
-    //         else if (chargeCopy.pricingEffect === PRICING_EFFECT_FIXED_PRICE) {
-    //             chargeCopy.price = parseFloat(chargeCopy.pricingValue);
-    //         }
-    //         newCharges.push(chargeCopy)
-    //         //orderInCreation.charges.push(chargeCopy);
-    //     }
-    // })
     let newChargePrice = newCharges.reduce((partialSum, a) => partialSum + a, 0);
     let oldChargePrice = oldCharges.reduce((partialSum, a) => partialSum + a, 0);
     if (newChargePrice !== oldChargePrice) {
         let orderInCreationWithoutCharges = removeDiscountPoints(cloneDeep(orderInCreation), setGlobalDialog);
         orderInCreation.discounts = orderInCreationWithoutCharges.discounts;
     }
-    orderInCreation.charges = newCharges;
+    orderInCreation.charges = [...stuartCharges, ...newCharges];
 }
 
 export async function processOrderInCreation(currentEstablishment, currentService, orderInCreation,

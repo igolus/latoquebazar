@@ -1,3 +1,5 @@
+import {getActivationEmailLinkUrl, getResetAccountLinkUrl, sendEmailUrl} from "../conf/configUtil";
+
 const config = require('../conf/config.json')
 
 export const getResetMailLink = async (email) => {
@@ -13,7 +15,7 @@ export const getResetMailLink = async (email) => {
     };
 
     let response = await fetch(
-        config.getResetAccountLinkUrl + "?email=" + email,
+        getResetAccountLinkUrl() + "?email=" + email,
         requestOptions);
     let resJson;
     try {
@@ -38,7 +40,7 @@ export const getActivationMailLink = async (email) => {
   };
 
   let response = await fetch(
-      config.getActivationEmailLinkUrl + "?email=" + email,
+      getActivationEmailLinkUrl() + "?email=" + email,
       requestOptions);
   let resJson;
   try {
@@ -82,7 +84,7 @@ export const sendMailMessage = async (currentBrand, currentEstablishment, conten
     };
 
     let response = await fetch(
-      config.sendEmailUrl + "/message/" + currentBrand.id +
+      sendEmailUrl() + "/message/" + currentBrand.id +
       "/" + currentEstablishment.id,
       requestOptions);
     let resJson;

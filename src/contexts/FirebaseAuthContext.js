@@ -38,6 +38,7 @@ import {getCategoriesByIdQuery} from "../gql/productCategoryGql";
 import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
 import {isDealValuable} from "@component/products/UpSellDeal";
+import {getMapByGeoPointUrl} from "../conf/configUtil";
 // import axios from "axios";
 
 const CURRENCY = 'CURRENCY';
@@ -61,6 +62,12 @@ const CONTEXT_DATA = 'CONTEXT_DATA';
 const ESTA_NAV_OPEN = 'ESTA_NAV_OPEN';
 const DEAL_CANDIDATES = 'DEAL_CANDIDATES';
 const REFUSED_DEALS = 'REFUSED_DEALS';
+const STUART_ERROR = "STUART_ERROR";
+const STUART_CURRENCY = "STUART_CURRENCY";
+const STUART_AMOUNT = "STUART_AMOUNT";
+const ZONE_MAP = "ZONE_MAP";
+
+
 // const PREFFERED_DEAL_TO_APPLY = 'PREFFERED_DEAL_TO_APPLY';
 
 const encKey = 'dcb21c08-03ed-4496-b67e-94202038a07d';
@@ -76,7 +83,7 @@ export async function getDeliveryZone(brandId, establishmentId, orderInCreation)
   if (orderInCreation.deliveryAddress && orderInCreation.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) {
     let lng = orderInCreation.deliveryAddress.lng;
     let lat = orderInCreation.deliveryAddress.lat;
-    let res = await axios.get(config.getMapByGeoPointUrl + '?brandId=' + brandId
+    let res = await axios.get(getMapByGeoPointUrl() + '?brandId=' + brandId
         + '&establishmentId=' + establishmentId + '&lat=' + lat + '&lng=' + lng);
 
     return res.data?.zone;
@@ -121,6 +128,10 @@ const initialAuthState = {
   dealEdit: null,
   bookingSlotStartDate: moment(),
   maxDistanceReached: true,
+  stuartError: null,
+  stuartAmount: null,
+  stuartCurrency: null,
+  zoneMap: null,
   loginDialogOpen: false,
   justCreatedOrder: null,
   loginOnGoing: false,
@@ -252,6 +263,38 @@ const reducer = (state, action) => {
       };
     }
 
+    case STUART_AMOUNT: {
+      const { stuartAmount } = action.payload;
+      return {
+        ...state,
+        stuartAmount: stuartAmount,
+      };
+    }
+
+    case STUART_ERROR: {
+      const { stuartError } = action.payload;
+      return {
+        ...state,
+        stuartError: stuartError,
+      };
+    }
+
+    case STUART_CURRENCY: {
+      const { stuartCurrency } = action.payload;
+      return {
+        ...state,
+        stuartCurrency: stuartCurrency,
+      };
+    }
+
+    case ZONE_MAP: {
+      const { zoneMap } = action.payload;
+      return {
+        ...state,
+        zoneMap: zoneMap,
+      };
+    }
+
     case LOGIN_DIALOG_OPEN: {
       const { loginDialogOpen } = action.payload;
       return {
@@ -335,6 +378,11 @@ const AuthContext = createContext({
   resetOrderInCreation: () => {},
 
   setMaxDistanceReached:() => {},
+  setStuartError:() => {},
+  setStuartAmount:() => {},
+  setStuartCurrency:() => {},
+  setZoneMap:() => {},
+
 
   setDealEdit: () => {},
 
@@ -1120,7 +1168,7 @@ export const AuthProvider = ({ contextData, children }) => {
         orderInCreation: updatedOrderMerge?.newOrder || orderInCreation,
       }
     });
-    if (localStorage && !doNotupdateLocalStorage && orderInCreation.order) {
+    if (localStorage && !doNotupdateLocalStorage && orderInCreation?.order) {
 
       let orderInCreationCopy = cloneDeep(updatedOrderMerge?.newOrder || orderInCreation)
       delete orderInCreationCopy["bookingSlot"]
@@ -1206,6 +1254,42 @@ export const AuthProvider = ({ contextData, children }) => {
       type: MAX_DISTANCE_REACHED,
       payload: {
         maxDistanceReached: value,
+      }
+    });
+  }
+
+  const setStuartError = (value) => {
+    dispatch({
+      type: STUART_ERROR,
+      payload: {
+        stuartError: value,
+      }
+    });
+  }
+
+  const setStuartAmount = (value) => {
+    dispatch({
+      type: STUART_AMOUNT,
+      payload: {
+        stuartAmount: value,
+      }
+    });
+  }
+
+  const setStuartCurrency = (value) => {
+    dispatch({
+      type: STUART_CURRENCY,
+      payload: {
+        stuartCurrency: value,
+      }
+    });
+  }
+
+  const setZoneMap = (value) => {
+    dispatch({
+      type: ZONE_MAP,
+      payload: {
+        zoneMap: value,
       }
     });
   }
@@ -1339,6 +1423,10 @@ export const AuthProvider = ({ contextData, children }) => {
             setDealEdit,
             setBookingSlotStartDate,
             setMaxDistanceReached,
+            setStuartError,
+            setStuartAmount,
+            setStuartCurrency,
+            setZoneMap,
             setLoginDialogOpen,
             setLoginOnGoing,
             setJustCreatedOrder,
