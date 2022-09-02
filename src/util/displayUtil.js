@@ -15,6 +15,7 @@ import localStrings from "../localStrings";
 import axios from "axios";
 import {DINNER_PERIOD, LUNCH_PERIOD} from "@component/form/BookingSlots";
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
+import {distanceApiUrl} from "../conf/configUtil";
 
 const config = require('../conf/config.json')
 
@@ -210,8 +211,8 @@ export const computePriceDetail = (orderInCreation) => {
     let totalPreparationTime= 0;
     let taxDetail = {};
     (orderInCreation?.charges || []).forEach(charge => {
-        totalCharge += charge.price;
-        nonDiscountedTotal += charge.nonDiscountedPrice || charge.price;
+        totalCharge += charge?.price;
+        nonDiscountedTotal += charge?.nonDiscountedPrice || charge?.price;
     });
 
     orderInCreation?.order?.items.forEach(item => {
@@ -345,7 +346,7 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
 
 
 
-    let res = await axios.get(config.distanceUrl + '?origins='+
+    let res = await axios.get(distanceApiUrl() + '?origins='+
         origins + '&destinations=' + destinations + '&key=' + config.googleKey);
     let distanceInfo;
     if (res && res.data && res.data.rows && res.data.rows.length > 0) {
@@ -361,7 +362,7 @@ export const getDeliveryDistanceWithFetch = async (establishment, lat, lng, addr
         for (let i = 0; i < establishment.deliveryZones.length; i++) {
             const deliveryZone = establishment.deliveryZones[i];
             origins =  deliveryZone.lat + "," + deliveryZone.lng;
-            res = await axios.get(config.distanceUrl + '?origins='+
+            res = await axios.get(distanceApiUrl() + '?origins='+
                 origins + '&destinations=' + destinations + '&key=' + config.googleKey);
             if (res && res.data && res.data.rows && res.data.rows.length > 0) {
                 //alert(JSON.stringify(res.data.rows[0].elements[0].distance.value))
