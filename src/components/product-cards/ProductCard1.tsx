@@ -403,7 +403,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               // console.log("getOrderInCreation() " + JSON.stringify(getOrderInCreation(), null,2))
                               if (selectedProductAndSku?.sku.uuid) {
                                 decreaseCartQte(setGlobalDialog, getOrderInCreation(),
-                                    setOrderInCreation, selectedProductAndSku?.sku.uuid, checkDealProposal, currentEstablishment )
+                                    setOrderInCreation, selectedProductAndSku?.sku.uuid, checkDealProposal, currentEstablishment, currentBrand)
                               }
                             }}
                         >

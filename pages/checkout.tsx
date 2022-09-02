@@ -62,7 +62,8 @@ const Checkout:React.FC<Checkout> = ({contextData}) => {
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
           {/*<RightPanel getContextData={getContextData}/>*/}
-          <OrderAmountSummary currency={getBrandCurrency(getContextData()?.brand)} contextData={getContextData()}/>
+          <OrderAmountSummary
+              currency={getBrandCurrency(getContextData()?.brand)} contextData={getContextData()}/>
           {/*<CouponCode contextData={getContextData()}/>*/}
         </Grid>
 

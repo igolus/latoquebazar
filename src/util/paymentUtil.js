@@ -1,4 +1,5 @@
 import axios from "axios";
+import {paymentUrl} from "../conf/configUtil";
 
 const config = require('../conf/config.json')
 
@@ -9,7 +10,7 @@ export const postStripePayment = async (useElements, useStripe) => {
 
     const { token } = await stripe.createToken()
 
-    const order = await axios.post(config.paymentUrl, {
+    const order = await axios.post(paymentUrl(), {
         amount: "200",
         source: token.id,
         receipt_email: 'igolus@gmail.com'

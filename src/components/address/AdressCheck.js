@@ -1,27 +1,83 @@
-import React, {useState} from 'react';
+import React from 'react';
 import localStrings from "../../localStrings";
-import {Alert, Button} from "@material-ui/core";
-import GoogleMapsAutocomplete from "@component/map/GoogleMapsAutocomplete";
-import Card1 from "@component/Card1";
-import {getDeliveryDistanceWithFetch, getMaxDistanceDelivery, isDeliveryActive} from "../../util/displayUtil";
-import useAuth from "@hook/useAuth";
-import Box from "@material-ui/core/Box";
+import {getEstablishmentSettings} from "../../util/displayUtil";
 import axios from "axios";
+import {uuid} from "uuidv4";
+import {getMapByGeoPointUrl, stuartApiUrl} from "../../conf/configUtil";
+import {getStuartAmountAndRound} from "@component/checkout/CheckoutForm";
 
-export const DIST_INFO = 'distInfo';
 const config = require('../../conf/config.json');
 
-export function setDistanceAndCheckNoCall(distanceInfo, setMaxDistanceReached, maxDist, setDistanceInfo) {
-    let distKm = distanceInfo.distance / 1000;
-    //alert("distKm " + distKm)
-    setMaxDistanceReached(distKm > maxDist)
-    //alert("setDistanceInfo " + JSON.stringify(distanceInfo))
-    setDistanceInfo(distanceInfo)
-}
+export const ACCES_ERROR = "ACCESS_ERROR";
+export const OUT_OF_RANGE = "OUT_OF_RANGE";
 
-export async function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
-                                    setDistanceInfo, setZoneMap,
-                                    currentEstablishment, orderInCreation, setOrderInCreation, brandId, lat, lng) {
+export async function distanceAndCheck(distanceInfo,
+                        currentEstablishment, orderInCreation, brandId, lat, lng, bookingSlot, address, contextData) {
+
+
+
+    let ret = {
+        maxDistanceReached:false,
+        amount: null,
+        currency: null,
+        error: null,
+        charge: null,
+        distanceInfo: null,
+        zoneMap: null
+    }
+
+    let deliveryStuartClientId = getEstablishmentSettings(currentEstablishment(), 'deliveryStuartClientId');
+    let deliveryStuartClientSecret = getEstablishmentSettings(currentEstablishment(), 'deliveryStuartClientSecret');
+    let deliveryStuartActive = getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive');
+
+    if (deliveryStuartActive && deliveryStuartClientId && deliveryStuartClientSecret && bookingSlot &&
+        bookingSlot?.startDate && bookingSlot?.endDate) {
+        const url = stuartApiUrl() + '/jobPricing/' + brandId + '/' + currentEstablishment().id;
+        try {
+            let res = await axios.post(url, {
+                ...orderInCreation,
+                bookingSlot: bookingSlot,
+                deliveryAddress: {
+                    address: address
+                }
+            });
+            if (res.data.error) {
+                ret.maxDistanceReached = true;
+                ret.error = res.data.error;
+                return ret;
+            }
+            if (res.data.amount) {
+                const charge = {
+                    id: uuid(),
+                    stuart: true,
+                    name: localStrings.deliveryFeeExternal,
+                    extRef: "",
+                    pricingEffect: "fixed_price",
+                    pricingValue: getStuartAmountAndRound(res.data.amount.toFixed(2), currentEstablishment, contextData),
+                    price: parseFloat(getStuartAmountAndRound(res.data.amount, currentEstablishment, contextData)),
+                }
+
+                ret.maxDistanceReached = false;
+                ret.amount = res.data.amount.toFixed(2);
+                ret.currency = res.data.currency;
+                ret.charge = charge;
+                return ret;
+            }
+            ret.maxDistanceReached = false;
+            //setMaxDistanceReached(true);
+        }
+        catch (error) {
+            console.log(error);
+            ret.error = ACCES_ERROR;
+        }
+        return ret;
+    }
+    if (deliveryStuartActive) {
+        ret.maxDistanceReached = true;
+        return ret;
+    }
+
+
     if (!distanceInfo) {
         return;
     }
@@ -35,99 +91,23 @@ export async function setDistanceAndCheck(distanceInfo, setMaxDistanceReached,
         if (distKm <= zone.maxDistance) {
             inZone = true;
             deliveryZoneId = zone.zoneId;
-            if (setDistanceInfo) {
-                setDistanceInfo(zone);
-            }
-
+            ret.distanceInfo = zone;
             break;
         }
     }
     distanceInfo.deliveryZoneId = deliveryZoneId
 
-    let res = await axios.get(config.getMapByGeoPointUrl + '?brandId='+ brandId
+    let res = await axios.get(getMapByGeoPointUrl() + '?brandId='+ brandId
         + '&establishmentId=' + currentEstablishment().id + '&lat=' + lat + '&lng=' + lng);
 
     if (res.data && res.data.zone) {
-        setZoneMap(res.data.zone)
-        setMaxDistanceReached(false);
+        ret.zoneMap = res.data.zone;
+        ret.maxDistanceReached = false;
         inZone = true;
     }
     else {
-        setZoneMap(null)
+        ret.zoneMap = null;
     }
-    setMaxDistanceReached(!inZone);
+    ret.maxDistanceReached = !inZone;
+    return ret;
 }
-
-function AdressCheck({closeCallBack}) {
-    const [addressValue, setAddressValue] = useState("");
-    const [addressData, setAddressData] = useState({});
-    const [distanceInfo, setDistanceInfo] = useState(null);
-    const [maxDistanceReached, setMaxDistanceReached] = useState(false);
-
-    const {currentEstablishment, getOrderInCreation, setOrderInCreation, setOrderInCreationNoLogic} = useAuth();
-
-    return(
-        <>
-            {currentEstablishment() &&
-            <Card1>
-                {/*<p>{JSON.stringify(distanceInfo)}</p>*/}
-                <Box p={1}>
-                    <Alert severity="info" style={{marginBottom: 2}}>{localStrings.info.checkAddessInfo}</Alert>
-                </Box>
-                {distanceInfo && isDeliveryActive(currentEstablishment()) &&
-                <Box p={1}>
-                    <Alert severity={maxDistanceReached ? "warning" : "success"} style={{marginBottom: 2}}>
-                        {maxDistanceReached ?
-                            localStrings.warningMessage.maxDistanceDelivery : localStrings.warningMessage.maxDistanceDeliveryOk}
-                        {/*{*/}
-                        {/*    localStrings.formatString(localStrings.distanceOnly,*/}
-                        {/*        (distanceInfo.distance / 1000))*/}
-                        {/*}*/}
-
-                    </Alert>
-                </Box>
-                }
-                <Box p={1}>
-                    <GoogleMapsAutocomplete noKeyKnown
-                                            required
-                                            setterValueSource={setAddressValue}
-                                            valueSource={addressValue}
-                                            setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                                //let dist = await getDeliveryDistance(currentEstablishment(), lat, lng);
-
-
-
-                                                setAddressData({
-                                                    address: label,
-                                                    lat: lat,
-                                                    lng: lng,
-                                                    placeId: placeId,
-                                                })
-
-                                                if (currentEstablishment()) {
-                                                    let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                    await setDistanceAndCheck(distInfo, setMaxDistanceReached,
-                                                        setDistanceInfo, currentEstablishment, getOrderInCreation(), setOrderInCreationNoLogic);
-                                                }
-                                            }}/>
-                </Box>
-
-                <Box p={1}>
-                    <Button variant="contained"
-                            onClick={() => {
-                                //localStorage.setItem(DIST_INFO, JSON.stringify(addressData));
-                                if (closeCallBack) {
-                                    closeCallBack();
-                                }
-                            }}
-                            color="primary" type="button" fullWidth>
-                        {localStrings.validateAdress}
-                    </Button>
-                </Box>
-            </Card1>
-            }
-        </>
-    )
-};
-
-export default AdressCheck;

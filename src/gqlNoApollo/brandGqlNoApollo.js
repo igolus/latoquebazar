@@ -61,6 +61,7 @@ const common = `
     paymentWebConfig {
       paymentType
       activateOnlinePayment
+      forceOnlinePaymentDelivery
       stripePublicKey
       systemPayPublicKey
       systemPayEndPoint
