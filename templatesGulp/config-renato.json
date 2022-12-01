@@ -3,6 +3,7 @@
   "brandId": "TivVlOvOjzVXwjzL6NFR",
   "appName": "renato",
   "siteUrl": "https://commandes.by-bhappy.com/",
+  "baseServiceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
   "distanceUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/distanceApi",
   "sendEmailUrl": "https://us-central1-latoque-b23f1.cloudfunctions.net/sendMail",

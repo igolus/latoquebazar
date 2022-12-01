@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: undefined
+Host: https://renato.vercel.app/
 
 # Sitemaps
-Sitemap: undefined/sitemap.xml
+Sitemap: https://renato.vercel.app/sitemap.xml

@@ -461,8 +461,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                  initialItem={getInitialItem()}
                                 />
                             }
-
-                            {/*<p>{JSON.stringify(productAndSku || {})}</p>*/}
                             {!disableAdd &&
                                 <div style={{
                                     width: '100%',
