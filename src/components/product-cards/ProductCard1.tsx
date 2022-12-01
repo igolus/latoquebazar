@@ -175,14 +175,10 @@ function getUnavailability(product, currentEstablishment, selectedProductAndSku)
 }
 
 export function isProductUnavailable(product, currentEstablishment, selectedProductAndSku) {
-  //console.log("isProductUnavailable" + product.name + "/" + product.skus.length );
-  // console.log("product " + JSON.stringify(product) );
-  // console.log("selectedProductAndSku " + JSON.stringify(selectedProductAndSku) );
   if (product.skus.length === 1 && getUnavailability(product, currentEstablishment, selectedProductAndSku)) {
     return true;
   }
   if (product.skus.length > 1) {
-    // console.log("product.skus.length > 1");
     if (!product.skus.find(sku => !isSkuUnavailableInEstablishment(sku, currentEstablishment)))
     {
       return true;
@@ -241,14 +237,14 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [productAndSkus, setProductAndSkus] = useState([])
   const [selectedProductAndSku, setSelectedProductSku] = useState(null)
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
-  const [open, setOpen] = useState(false);
+  const [productPopupOpen, setProductPopupOpen] = useState(false);
   const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand,
     setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
   const toggleDialog = useCallback(() => {
-    setOpen((open) => !open)
+    setProductPopupOpen((open) => !open)
   }, [])
 
 
@@ -313,9 +309,10 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
 
         <FlexBox>
           {(!fullView && width <= WIDTH_DISPLAY_MOBILE) &&
-          <Box sx={{maxWidth: "100px"}} mr={1}>
-            <Link href={buildProductDetailRef()}>
-              <a>
+          <Box sx={{maxWidth: "100px"}} mr={3}>
+            {/*<Link href={buildProductDetailRef()}>*/}
+            {/*  <a>*/}
+            <Button onClick={() => setProductPopupOpen(true)}>
                 <Image
                     style={{objectFit: "cover"}}
 
@@ -325,8 +322,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     display="block"
                     alt={product.name}
                 />
-              </a>
-            </Link>
+            </Button>
+            {/*  </a>*/}
+            {/*</Link>*/}
           </Box>
           }
 
@@ -364,13 +362,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                   {tag.color ?
                       <Chip
                           sx={{backgroundColor: tag.color, color: 'white'}}
-                          //className={classes.offerChip}
                           size="small"
                           label={tag.tag}
                       />
                       :
                       <Chip
-                          //className={classes.offerChip}
                           color={"primary"}
                           size="small"
                           label={tag.tag}
@@ -397,10 +393,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                             sx={{padding: '3px', minWidth: '25px', ml: '5px', mr: '5px'}}
                             disabled={getQteInCart(selectedProductAndSku, getOrderInCreation()) == 0}
                             onClick={() => {
-                              // alert("remove" + selectedProductAndSku?.sku.uuid)
-                              //
-                              // console.log("remove " + JSON.stringify(selectedProductAndSku, null,2))
-                              // console.log("getOrderInCreation() " + JSON.stringify(getOrderInCreation(), null,2))
                               if (selectedProductAndSku?.sku.uuid) {
                                 decreaseCartQte(setGlobalDialog, getOrderInCreation(),
                                     setOrderInCreation, selectedProductAndSku?.sku.uuid, checkDealProposal, currentEstablishment, currentBrand)
@@ -433,7 +425,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                 //   setSelectedProductSku(selectedWithUuid)
                                 // }
                               } else {
-                                setOpen(true);
+                                setProductPopupOpen(true);
                               }
                             }}
                         >
@@ -458,7 +450,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                             getOrderInCreation(), setOrderInCreation, addToast, null,
                             checkDealProposal, currentEstablishment, currentBrand());
                       } else {
-                        setOpen(true);
+                        setProductPopupOpen(true);
                       }
                     }}
                 >
@@ -556,7 +548,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 root: classes.backDrop,
               },
             }}
-            open={open}
+            open={productPopupOpen}
             maxWidth={false}
             onClose={toggleDialog}>
           <DialogContent className={classes.dialogContent}>
@@ -577,7 +569,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                               }
                             };
                             setSelectedProductSku(newPAndSku)
-                            setOpen(false)
+                            setProductPopupOpen(false)
 
                           }}
             />

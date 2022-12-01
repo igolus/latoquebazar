@@ -87,7 +87,7 @@ const list = [
     href: '/',
   },
   {
-    title: localStrings.categories,
+    title: localStrings.menu,
     icon: CategoryOutlinedColor,
     href: '/mobile-category-nav',
   },

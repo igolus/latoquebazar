@@ -281,6 +281,7 @@ let localStrings = new LocalizedStrings({
         confirmAction: "Confirmer",
         order: "Commande",
         categories: "Catégories",
+        menu: "Carte",
         tags: "Tags",
         selectDeal: "Choisir les produits",
         choose: "Choisir",
