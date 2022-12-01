@@ -1056,6 +1056,7 @@ export const AuthProvider = ({ contextData, children }) => {
 
             dealToAdd.productAndSkusLines.forEach(productAndSkusLine => {
               productAndSkusLine.quantity = 1;
+              productAndSkusLine.lineNumber = productAndSkusLine.lineIndex;
               delete productAndSkusLine.restrictionsApplied;
               delete productAndSkusLine.productExtName;
               delete productAndSkusLine.uuid;

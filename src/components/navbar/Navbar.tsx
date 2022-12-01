@@ -233,7 +233,7 @@ const Navbar: React.FC<NavbarProps> = ({ navListOpen , contextData, }) => {
                   ml={1.25}
                   color="grey.600"
               >
-                {localStrings.categories}
+                {localStrings.menu}
                 {/*Categories 2*/}
               </Box>
               <ChevronRight className="dropdown-icon" fontSize="small" />
