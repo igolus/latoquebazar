@@ -1344,12 +1344,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         <Box p={1}>
                                           <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
                                               maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
-                                                          title={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                              maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}
+
                                           >
                                             {checkAddLoading &&
                                                 <CircularProgress size={30} className={classes.buttonProgress}/>
                                             }
+                                            <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
                                           </AlertHtmlLocal>
                                         </Box>
                                     }
