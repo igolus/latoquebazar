@@ -1068,8 +1068,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
           <DialogContent className={classes.dialogContent}>
             <AlertHtmlLocal
                 severity="warning"
-                title={localStrings.tooFarAddress}
+                //title={localStrings.tooFarAddress}
             >
+              {localStrings.tooFarAddress}
             </AlertHtmlLocal>
           </DialogContent>
 
