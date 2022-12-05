@@ -380,9 +380,10 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                             {!valid && !getFirstRestriction() &&
                                 <Box mb={2} sx={{maxWidth:"285px"}}>
                                     <AlertHtmlLocal severity={"warning"}
-                                                    title={localStrings.warningMessage.optionMandatory}
                                                     content={""}
-                                    />
+                                    >
+                                        {localStrings.warningMessage.optionMandatory}
+                                    </AlertHtmlLocal>
                                 </Box>
                             }
                             {getFirstRestrictionDescription(productAndSku?.sku) &&

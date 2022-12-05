@@ -1,4 +1,4 @@
-import React, {createContext, useEffect, useReducer, useState} from 'react';
+import React, {createContext, useCallback, useEffect, useReducer, useState} from 'react';
 import firebase from '../lib/firebase';
 import localStrings from "../localStrings";
 import {CURRENCY_EUR} from "../util/Currencies";
@@ -972,8 +972,8 @@ export const AuthProvider = ({ contextData, children }) => {
     })
   }
 
-
-  async function processDealMerge(currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) {
+  const processDealMerge = useCallback(
+  async (currentEstablishment, currentService, orderInCreation, currency, brand, prefferedDealToApply) => {
     if (!brand?.config?.proposeDeal) {
       return null;
     }
@@ -1122,9 +1122,10 @@ export const AuthProvider = ({ contextData, children }) => {
       candidateDeals: candidateDeals,
       newOrder: orderInCreation
     }
-  }
+  }, [currentEstablishment])
 
-  async function checkDealProposal(orderInCreation, getEstaFunc) {
+  const checkDealProposal = useCallback(
+  async (orderInCreation, getEstaFunc) => {
     const getEstaFun = getEstaFunc || currentEstablishment
     const currentService = getCurrentService(getEstaFun(), state.bookingSlotStartDate, orderInCreation?.deliveryMode)
 
@@ -1141,9 +1142,11 @@ export const AuthProvider = ({ contextData, children }) => {
     }
 
     return updatedOrderMerge?.candidateDeals;
-  }
+  }, [currentEstablishment])
 
-  const setOrderInCreation = async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal) => {
+  const setOrderInCreation = useCallback(
+
+      async (orderInCreation, doNotupdateLocalStorage, getEstaFunc, dbUser, prefferedDealToApply, doNotProposeDeal) => {
     const oldOrder = getOrderInCreation();
 
     const getEstaFun = getEstaFunc || currentEstablishment
@@ -1199,7 +1202,7 @@ export const AuthProvider = ({ contextData, children }) => {
         actions: []
       })
     }
-  }
+  }, [currentEstablishment]);
 
   const resetOrderInCreation = () => {
     dispatch({
