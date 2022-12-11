@@ -60,8 +60,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productRevie
 
     function getContextData() {
         if (getContextDataAuth() && getContextDataAuth().products.find(p => p.id === id)) {
+            //console.log("case1")
             return getContextDataAuth()
         }
+        //console.log("case2" + contextData.establishments)
         return contextData;
     }
 
@@ -255,7 +257,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productRevie
 
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
-                          firstEsta={getContextData().establishments[0]}
+                          firstEsta={getContextData()?.establishments[0]}
                           brand={getContextData().brand}
                           currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate, getOrderInCreation()?.deliveryMode)}
                           faceBookShare={getContextData().brand?.config?.socialWebConfig?.enableShareOnFacebookButton}

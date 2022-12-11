@@ -137,7 +137,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
 
     }
   }
-  const {getOrderInCreation, setOrderInCreation, currentEstablishment} = useAuth();
+  const {currentEstablishment, setSelectEstaOpen} = useAuth();
 
   const classes = useStyles({ hoverEffect })
   const { state, dispatch } = useAppContext()
@@ -227,16 +227,29 @@ const DealCard1: React.FC<DealCard1Props> = ({
               //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
               //width="65px"
           >
-            <Link href={buildProductDetailRef()}>
-              <Button
-                  disabled={getFirstRestrictionItem(deal)}
-                  variant="outlined"
-                  color="primary"
-                  sx={{padding: '3px', ml: '5px', mr: '5px'}}
-              >
-                {getFirstRestrictionItem(deal) || localStrings.choose}
-              </Button>
-            </Link>
+            {currentEstablishment() ?
+
+                <Link href={buildProductDetailRef()}>
+                  <Button
+                      disabled={getFirstRestrictionItem(deal)}
+                      variant="outlined"
+                      color="primary"
+                      sx={{padding: '3px', ml: '5px', mr: '5px'}}
+                  >
+                    {getFirstRestrictionItem(deal) || localStrings.choose}
+                  </Button>
+                </Link>
+                :
+                <Button
+                    disabled={getFirstRestrictionItem(deal)}
+                    onClick={() => setSelectEstaOpen(true)}
+                    variant="outlined"
+                    color="primary"
+                    sx={{padding: '3px', ml: '5px', mr: '5px'}}
+                >
+                  {getFirstRestrictionItem(deal) || localStrings.choose}
+                </Button>
+            }
           </Box>
         </FlexBox>
     );

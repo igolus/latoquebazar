@@ -207,6 +207,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                   xs={12} key={ind}>
                                 {item.type === TYPE_PRODUCT && !restrictedskuRefs &&
                                 <ProductCard1 {...itemShop}
+                                              contextData={contextData}
                                               brand={contextData.brand}
                                               currentService={currentService}
                                               product={item}

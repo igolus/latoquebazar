@@ -771,7 +771,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       await executeMutationUtil(query)
     }
     if (orderId != 0) {
-      router.push('/confirmed/confirmedOrder?orderId=' + orderId)
+      router.push('/confirmed/confirmedOrder?orderId=' + orderId + '&establishmentId=' + currentEstablishment().id)
     }
   }
 

@@ -264,7 +264,7 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
   let currentDate = moment()
   let allDaySettings = [];
   for (let i = 1; i < 9; i++) {
-    let daySettings = getDaySettings(establishment, getDowStringFromDowInt(dateCurrent.day()), true);
+    let daySettings = getDaySettings(establishment, getDowStringFromDowInt(dateCurrent.day()), true) || [];
     for (let j=0; j<daySettings.length; j++) {
       let daySetting = daySettings[j];
       if (!limit || allDaySettings.length < limit) {
