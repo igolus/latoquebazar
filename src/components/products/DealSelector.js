@@ -22,6 +22,7 @@ import {
     PRICING_EFFECT_UNCHANGED,
     WIDTH_DISPLAY_MOBILE
 } from "../../util/constants";
+import {green} from "@material-ui/core/colors";
 
 export function applyDealPrice(deal) {
     if (deal.deal.lines.length !== deal.productAndSkusLines.length) {
@@ -197,6 +198,9 @@ function DealSelector({ deal, contextData }) {
                 BackdropProps={{
                     classes: {
                         root: classes.backDrop,
+                        buttonProgress: {
+                            color: green[500],
+                        },
                     },
                 }}
                 open={confirmDealDialogOpen}

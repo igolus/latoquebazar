@@ -93,9 +93,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
-        //alert("id " + id)
         establishmentIdParam = params?.get("establishmentId");
-        //alert("orderId " + id);
     }
     catch (err) {
 
@@ -127,7 +125,7 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
             db.collection(BRAND_COLLECTION)
                 .doc(config.brandId)
                 .collection(ESTABLISHMENT_COLLECTION)
-                .doc(currentEstablishmentOrFirst().id)
+                .doc(establishmentIdParam || "0")
                 .collection(ORDER_COLLECTION)
                 .doc(getOrderId())
             //.where('endDate', '<=', getEndDateSeconds())

@@ -9,7 +9,12 @@ import {getSiteUserByIdQuery} from "../gql/siteUserGql";
 import moment from "moment";
 import {establishmentsQuery} from "../gql/establishmentGql";
 import {getBrandByIdQuery} from "../gql/brandGql";
-import {BRAND_COLLECTION, ORDER_DELIVERY_MODE_DELIVERY, RELOAD_COLLECTION} from "../util/constants"
+import {
+  BRAND_COLLECTION,
+  ORDER_DELIVERY_MODE_DELIVERY,
+  RELOAD_COLLECTION,
+  WIDTH_DISPLAY_MOBILE
+} from "../util/constants"
 import {makeStyles} from "@material-ui/styles";
 import {getActivationMailLink, getResetMailLink, sendMailMessage} from "../util/mailUtil";
 import {getCustomerOrdersOnlyIdQuery} from "../gql/orderGql";
@@ -22,7 +27,7 @@ import {
   processOrderInCreation
 } from "../util/cartUtil";
 import {getCurrentService} from "@component/form/BookingSlots";
-import {Button, Dialog, DialogActions, DialogContent} from "@material-ui/core";
+import {Button, Dialog, DialogActions, DialogContent, Typography} from "@material-ui/core";
 import Router from 'next/router'
 import {computePriceDetail, getBrandCurrency} from "../util/displayUtil";
 import {
@@ -39,6 +44,11 @@ import Box from "@material-ui/core/Box";
 import {applyDealPrice} from "@component/products/DealSelector";
 import {isDealValuable} from "@component/products/UpSellDeal";
 import {getMapByGeoPointUrl} from "../conf/configUtil";
+import SelectEsta from "@component/SelectEsta";
+import MdRender from "@component/MdRender";
+import LocationOn from '@material-ui/icons/LocationOn'
+import useWindowSize from "@hook/useWindowSize";
+import Menu from '@material-ui/icons/Menu';
 // import axios from "axios";
 
 const CURRENCY = 'CURRENCY';
@@ -91,14 +101,6 @@ export async function getDeliveryZone(brandId, establishmentId, orderInCreation)
   }
   return null;
 }
-
-// const useStyles = makeStyles(() => ({
-//   dialogContent: {
-//     paddingBottom: '1.25rem',
-//     backgroundColor: palette.background.default
-//     //maxWidth: "750px"
-//   },
-// }))
 
 const useStyles = makeStyles(() => ({
   dialogContent: {
@@ -407,7 +409,8 @@ const AuthContext = createContext({
   setRefusedDeals: () => {},
 });
 
-const expireTimeSeconds = 1800;
+//const expireTimeSeconds = 1800;
+const expireTimeSeconds = 120;
 export const reloadId = "1";
 
 const categoryType= "category";
@@ -420,10 +423,14 @@ const updateAction= "update";
 const deleteAction= "delete";
 const createAction= "create";
 
-const localStorageEstaKey = "defaultEstaId";
+const ESTA_KEY = "storedEstaId";
+const CART_KEY = "orderInCreation";
+
 export const AuthProvider = ({ contextData, children }) => {
+  const width = useWindowSize()
   const [contextDataState, setContextDataState] = useState(null)
-  const [candidateDeal, setCandidateDeal] = useState(null)
+  const [selectEstaOpen, setSelectEstaOpen] = useState(false)
+  const [displayInfoEsta, setDisplayInfoEsta] = useState(false)
 
   function updateItem(dataType, getFunc, res, contextDataParam) {
     if (!contextDataParam) {
@@ -646,6 +653,8 @@ export const AuthProvider = ({ contextData, children }) => {
               await setOrderInCreation(orderInCreationParsed, true, null);
             }
             else {
+              localStorage.removeItem(CART_KEY);
+              localStorage.removeItem(ESTA_KEY);
               resetOrderInCreation();
             }
           } catch (err) {
@@ -801,9 +810,7 @@ export const AuthProvider = ({ contextData, children }) => {
         contextData: contextData,
       }
     });
-    // if (!noUpdate) {
     setContextDataState(contextData);
-    // }
   }
 
   const getContextDataAuth = () => {
@@ -905,13 +912,22 @@ export const AuthProvider = ({ contextData, children }) => {
           establishmentList: estas,
         }
       });
-      console.log("setEstablishment " + estas[0].id);
-      let estaToSet = estas[0];
-      let localEstId = localStorage.getItem(localStorageEstaKey);
-      if (localEstId) {
-        estaToSet = estas.find(esta => esta.id === localEstId);
+      //console.log("setEstablishment " + estas[0].id);
+
+      if (estas.length == 1) {
+        let estaToSet = estas[0];
+        console.log("setEstablishment single establishment");
+        await setEstablishment(estaToSet);
       }
-      await setEstablishment(estaToSet || estas[0]);
+      else {
+        let localEstId = localStorage.getItem(ESTA_KEY);
+        if (localEstId) {
+          console.log("setEstablishment from storage" + estas[0].id);
+          var estaToSet = estas.find(esta => esta.id === localEstId);
+          await setEstablishment(estaToSet);
+        }
+      }
+      //await setEstablishment(estaToSet || estas[0]);
     }
     dispatch({
       type: BRAND,
@@ -922,7 +938,8 @@ export const AuthProvider = ({ contextData, children }) => {
   }
 
   const currentEstablishment = () => {
-    return state.establishment || (getContextDataAuth()?.establishments && getContextDataAuth().establishments[0])
+    return state.establishment;
+    //return state.establishment || (getContextDataAuth()?.establishments && getContextDataAuth().establishments[0])
   }
 
   const setEstablishment = async (establishment) => {
@@ -939,7 +956,7 @@ export const AuthProvider = ({ contextData, children }) => {
       setOrderInCreation(orderInCreationCopy, false, () => establishment);
     }
 
-    localStorage.setItem(localStorageEstaKey , establishment.id);
+    localStorage.setItem(ESTA_KEY , establishment.id);
 
   }
 
@@ -956,8 +973,6 @@ export const AuthProvider = ({ contextData, children }) => {
     var user = firebase.auth().currentUser;
     return user;
   };
-
-  const CART_KEY = "orderInCreation";
 
   const getOrderInCreation = () => {
     return state.orderInCreation;
@@ -1134,8 +1149,6 @@ export const AuthProvider = ({ contextData, children }) => {
 
 
     if (updatedOrderMerge) {
-      // setDealCandidates(updatedOrderMerge.candidateDeals.filter(dc => !state.refusedDeals.find(rd => rd.uuid == dc.uuid
-      //     && rd.missingLineNumber == dc.missingLineNumber )))
       let dealCandidateFilter = (updatedOrderMerge.candidateDeals || [])
           .filter(dc => dc.missingLine.skus.filter(sku => !state.refusedDeals.map(d => d.extRef).includes(sku.extRef)).length > 0);
       setDealCandidates(dealCandidateFilter)
@@ -1446,9 +1459,58 @@ export const AuthProvider = ({ contextData, children }) => {
             setEstanavOpen,
             setDealCandidates,
             setRefusedDeals,
-            contextDataState
+            contextDataState,
+            setSelectEstaOpen,
+            setDisplayInfoEsta
           }}
       >
+
+
+
+        <Dialog
+            open={selectEstaOpen}
+        >
+          <DialogContent>
+            <SelectEsta contextData={getContextDataAuth()} closeCallBack={(esta) => {
+              setSelectEstaOpen(false)
+              if (esta) {
+                setDisplayInfoEsta(true);
+              }
+            }}/>
+          </DialogContent>
+        </Dialog>
+
+
+        <Dialog
+            open={displayInfoEsta}
+            onClose={() => setDisplayInfoEsta(false)}
+        >
+          <DialogContent>
+            <AlertHtmlLocal
+                severity="success"
+                title={localStrings.selectedEsta}
+            >
+              {width <= WIDTH_DISPLAY_MOBILE ?
+                  <Typography>
+                    {localStrings.formatString(localStrings.chooseEsta1, currentEstablishment()?.establishmentName || "")}
+                    <Menu/>{localStrings.chooseEsta2}
+                  </Typography>
+                  :
+                  <Typography>
+                    {localStrings.formatString(localStrings.chooseEsta1, currentEstablishment()?.establishmentName || "")}
+                    <LocationOn/>{localStrings.chooseEsta2}
+                  </Typography>
+              }
+            </AlertHtmlLocal>
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setDisplayInfoEsta(false)} color="primary">
+              {localStrings.IUnderstand}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      {/*<p>{JSON.stringify(getContextDataAuth())}</p>*/}
 
         {state.globalDialog &&
         <Dialog open={state.globalDialog} maxWidth="sm"

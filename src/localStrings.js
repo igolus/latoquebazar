@@ -3,6 +3,13 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        chooseEsta: "Choisir l'établissement",
+        chooseEsta1: "Vous avez choisi l'établissement {0} vous pouvez changer à tous moment en clickant sur l'icone ",
+        chooseEsta2: " Dans la barre d'action du haut",
+        noSlotToday: "Pas de créneaux possibles aujourd'hui",
+        pickupOnSpot: "A recupérer sur place",
+        onTheSpot: "Sur place",
+
         editOptions: "Changer les options",
         editProductMenu: "Changer les produits",
         pendingPointsGain: "Vous gagnez {0} points avec cette commande",
@@ -84,6 +91,7 @@ let localStrings = new LocalizedStrings({
         IUnderstand: "J'ai compris",
         setClosestEsta: "Sélectionnez l'établissement le plus proche",
         selectEsta: "Sélectionnez votre établissement",
+        selectEsta2: "Sélectionner un établissement",
         changeEsta: "Changer d'etablissement",
         selectedEsta: "Etablissement selectionné",
         cgvAccept: "J'accepte les termes et conditions",

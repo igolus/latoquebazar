@@ -34,7 +34,7 @@ const itemPerPage = 10;
 
 
 const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
-  const {dbUser} = useAuth();
+  const {dbUser, currentEstablishment} = useAuth();
   const brandId = contextData.brand.id;
   const currency = getBrandCurrency(contextData.brand);
   const [sourceOrders, setSourceOrders] = useState(null);
@@ -58,6 +58,7 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
         let orders;
         if (result && result.data) {
           orders = result.data.getSiteUser.orders;
+          //orders = orders.filter(order => order.establishmentId == currentEstablishment()?.id)
           orders.sort((order1,order2) =>
               parseFloat(order2.creationDate) - parseFloat(order1.creationDate));
           setSourceOrders(orders)

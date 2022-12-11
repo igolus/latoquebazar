@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function PresenterSelect({icon, title, subtitle, selected, onCLickCallBack, loading}) {
+function PresenterSelect({icon, title, subtitle, selected, onCLickCallBack, loading, additionalTexts}) {
     const classes = useStyles();
     return (
         <Box
@@ -37,6 +37,7 @@ function PresenterSelect({icon, title, subtitle, selected, onCLickCallBack, load
                 <Typography>
                     {subtitle}
                 </Typography>
+                {additionalTexts}
             </Box>
             {loading &&
                 <Box

@@ -29,6 +29,7 @@ import SelectEsta from '../SelectEsta';
 import PhoneIcon from '@material-ui/icons/Phone';
 import useWindowSize from "@hook/useWindowSize";
 import Sidenav from "@component/sidenav/Sidenav";
+import localStrings from "../../localStrings";
 
 type HeaderProps = {
     className?: string
@@ -78,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
     const [sideNavOpen, setSideNavOpen] = useState(false)
     const router = useRouter()
     const {currentUser, getOrderInCreation, loginDialogOpen, setLoginDialogOpen,
-        dbUser, currentEstablishment, setEstanavOpen, estanavOpen} = useAuth();
+        dbUser, currentEstablishment, setEstanavOpen, estanavOpen, setDisplayInfoEsta} = useAuth();
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('xs'))
     const logoUrl = contextData ? contextData.brand?.logoUrl : null;
@@ -151,6 +152,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                         </IconButton>
 
                         <Sidenav open={sideNavOpen} toggleSidenav={toggleSidenav}
+                                 nbEsta={contextData?.establishments ? contextData?.establishments.length : 0}
                                  extraPages={contextData?.extraPages || []}/>
                     </>
                 }
@@ -190,7 +192,8 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     </Box>
 
                     {contextData && contextData.establishments && contextData.establishments.length > 1 &&
-                    <Tooltip title={firstOrCurrentEstablishment(currentEstablishment, contextData).establishmentName}>
+                    // <Tooltip title={firstOrCurrentEstablishment(currentEstablishment, contextData).establishmentName}>
+                    <Tooltip title={localStrings.chooseEsta}>
                         <Box
                             component={IconButton}
                             ml={2.5}
@@ -245,7 +248,13 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     }}
                     open={estanavOpen} anchor="top" onClose={() => setEstanavOpen(false)}>
                     {/*<h1>HEADER</h1>*/}
-                    <SelectEsta contextData={contextData} closeCallBack={() => setEstanavOpen(false)}/>
+                    <SelectEsta contextData={contextData} closeCallBack={(esta) => {
+                        setEstanavOpen(false);
+                        if (esta) {
+                            setDisplayInfoEsta(true);
+                        }
+
+                    }}/>
                 </Drawer>
                 }
             </Container>
