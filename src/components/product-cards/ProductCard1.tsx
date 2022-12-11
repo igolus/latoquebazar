@@ -28,6 +28,7 @@ import {cloneDeep} from "@apollo/client/utilities";
 import useWindowSize from "@hook/useWindowSize";
 import Image from "@component/BazarImage";
 import {getDeliveryZone} from "@context/FirebaseAuthContext";
+import SelectEsta from "@component/SelectEsta";
 
 export interface ProductCard1Props {
   className?: string
@@ -205,7 +206,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      options,
                                                      currency,
                                                      currentService,
-                                                     fullView
+                                                     fullView,
                                                    }) => {
 
   const width = useWindowSize()
@@ -239,7 +240,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
   const [selectedSkuIndex, setSelectedSkuIndex] = useState(0)
   const [productPopupOpen, setProductPopupOpen] = useState(false);
   const {getOrderInCreation, setOrderInCreation, currentEstablishment, currentBrand,
-    setGlobalDialog, setRedirectPageGlobal, checkDealProposal} = useAuth();
+    setGlobalDialog, setRedirectPageGlobal, checkDealProposal, setSelectEstaOpen} = useAuth();
 
   const classes = useStyles({ hoverEffect })
 
@@ -443,7 +444,11 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
                     sx={{padding: '3px', ml: '5px', mr: '5px'}}
                     onClick={() => {
-                      //alert("add To cart")
+                      if (!currentEstablishment()) {
+                        setSelectEstaOpen(true);
+                        return;
+                      }
+
                       if (!isProductAndSkuGetOption(selectedProductAndSku) && getQteInCart(selectedProductAndSku, getOrderInCreation()) > 0) {
                         //addToCartOrder(setGlobalDialog, selectedProductAndSku, getOrderInCreation(), setOrderInCreation, addToast);
                         addToCartOrder(setGlobalDialog, selectedProductAndSku,
@@ -456,8 +461,6 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                 >
                   {selectedProductAndSku &&
                   <>
-
-                    {/*{JSON.stringify(selectedProductAndSku)}*/}
                     {getAddToCartElement()}
                   </>
                   }
@@ -541,6 +544,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
         <div className={classes.details}>
           {getProductPresentationAndInteration()}
         </div>
+
 
         <Dialog
             BackdropProps={{

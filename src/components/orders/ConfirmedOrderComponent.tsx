@@ -22,10 +22,12 @@ export interface ConfirmedOrderComponentProps {
 const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}) => {
     const router = useRouter();
     let id;
+    let establishmentIdParam;
     let params = {};
     try {
         params = new URLSearchParams(window.location.search)
         id = params?.get("orderId");
+        establishmentIdParam = params?.get("establishmentId");
         //alert("orderId " + id);
     }
     catch (err) {
@@ -45,7 +47,6 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
     useEffect(() => {
             const reloadUser = async () => {
                 let result = await executeQueryUtil(getSiteUserByIdQuery(currentBrand() ? currentBrand().id : contextData.brand.id, dbUser.id));
-                //alert("result.data.getSiteUser " + JSON.stringify(result.data.getSiteUser))
                 setDbUser({
                     ...dbUser,
                     loyaltyPoints: result.data.getSiteUser?.loyaltyPoints || 0
@@ -63,7 +64,6 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
 
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(false);
-    //const [token, setToken] = useState(null);
 
     const registerMessaging = async () => {
         try {
@@ -73,13 +73,8 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
                 await messaging.requestPermission();
                 const token = await messaging.getToken();
                 console.log("token ", token);
-                //alert("token" + token);
-                //setToken(token);
                 await executeMutationUtil(addSiteUserMessagingToken(currentBrand().id, dbUser.id, token));
             }
-            // else {
-            //     alert("no brand")
-            // }
         }
         catch (err) {
             console.log(err);
@@ -87,17 +82,15 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
     }
 
     useEffect(async () => {
-        if (currentBrand() && currentEstablishment()) {
+        if (currentBrand() && establishmentIdParam) {
             setLoading(true);
-            //alert("id " + id)
-            let res = await executeQueryUtil(getOrderByIdQuery(currentBrand().id, currentEstablishment().id, id));
-            //alert("res " + JSON.stringify(res))
+            let res = await executeQueryUtil(getOrderByIdQuery(currentBrand().id, establishmentIdParam || "0", id));
             setOrder(res?.data?.getOrdersByOrderIdEstablishmentIdAndOrderId);
             setLoading(false);
             await registerMessaging();
         }
 
-    }, [currentBrand(), currentEstablishment(), id])
+    }, [currentBrand(), currentEstablishment(), id, establishmentIdParam])
 
     useEffect(() => {
         // Remove the server-side injected CSS.

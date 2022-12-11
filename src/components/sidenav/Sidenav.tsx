@@ -7,6 +7,7 @@ import {useRouter} from "next/router";
 import navbarNavigations from "@data/navbarNavigations";
 import useAuth from "@hook/useAuth";
 import Link from "next/link";
+import localStrings from "../../localStrings";
 
 const useStyles = makeStyles(() => ({
   handle: {
@@ -22,6 +23,7 @@ export interface SidenavProps {
   toggleSidenav?: () => void
   extraPages: any
   profileSideBar: boolean
+  nbEsta: number
 }
 
 const Sidenav: React.FC<SidenavProps> = ({
@@ -31,11 +33,12 @@ const Sidenav: React.FC<SidenavProps> = ({
   handle,
   toggleSidenav,
   extraPages,
-  profileSideBar
+  profileSideBar,
+  nbEsta
 }) => {
   const [sidenavOpen, setSidenavOpen] = useState(open)
   const classes = useStyles()
-  const {dbUser} = useAuth()
+  const {dbUser, setEstanavOpen} = useAuth()
   const { pathname } = useRouter()
 
   const checkRouteMatch = (href: string, regExpMatch: string) => {
@@ -71,7 +74,8 @@ const Sidenav: React.FC<SidenavProps> = ({
             </IconButton>
           </Box>
           <Box paddingX={2} paddingBottom={2}>
-            {navbarNavigations(dbUser, extraPages, profileSideBar).map((nav, key) =>
+            {
+              navbarNavigations(dbUser, extraPages, profileSideBar).map((nav, key) =>
                 <Box marginTop={1} key={key}>
                   <Link href={nav.url}>
                     <Button
@@ -85,6 +89,22 @@ const Sidenav: React.FC<SidenavProps> = ({
                 </Box>
             )}
 
+            {nbEsta > 1 &&
+                <Box marginTop={1}>
+                  {/*<Link href={nav.url}>*/}
+                    <Button
+                        variant="outlined"
+                        onClick={() => {
+                          setEstanavOpen(true);
+                          setSidenavOpen(false);
+                        }}
+                        color="primary"
+                        fullWidth
+                    >
+                      {localStrings.selectEsta2}
+                    </Button>
+                </Box>
+            }
           </Box>
         </Box>
 

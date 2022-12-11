@@ -261,7 +261,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
                         {getEsta().address}
                     </Typography>
 
-                    {contextData.establishments && contextData.establishments.length > 1 &&
+                    {!modeOrdered && contextData.establishments && contextData.establishments.length > 1 &&
                         <Button variant="contained" color="primary" type="button" fullWidth
                                 onClick={() => setEstanavOpen(true)}
                                 style={{marginTop: "5px"}}
