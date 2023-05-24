@@ -12,6 +12,8 @@ import DealCard7 from "../product-cards/DealCard7";
 import ProductCard7 from "../product-cards/ProductCard7";
 
 function OrderContent({ order, contextData, modeConfirmed }) {
+
+    const language = contextData?.brand?.config?.language || 'fr';
     return (
         <>
             <Card sx={{ p: '0px', mb: '30px' }}>
@@ -44,7 +46,7 @@ function OrderContent({ order, contextData, modeConfirmed }) {
                                 {localStrings.orderDate}
                             </Typography>
                             <Typography fontSize="14px">
-                                {moment(parseFloat(order.creationDate)).locale("fr").calendar()}
+                                {moment(parseFloat(order.creationDate)).locale(language).calendar()}
                             </Typography>
                         </FlexBox>
                         }

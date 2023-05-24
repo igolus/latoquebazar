@@ -16,7 +16,7 @@ import {formatProductAndSkuName} from "../../util/displayUtil";
 import localStrings from "../../localStrings";
 import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/MiniCart";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
-import ProductIntro from "@component/products/ProductIntro";
+import ProductIntro, {formatPriceLocal} from "@component/products/ProductIntro";
 import {makeStyles} from "@material-ui/styles";
 import {MuiThemeProps} from "@theme/theme";
 
@@ -134,6 +134,7 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                                                    }) => {
 
   const classes = useStyles()
+  const language = contextData?.brand?.config?.language || 'fr';
   const {getOrderInCreation, setOrderInCreation,
     currentBrand,
     setGlobalDialog, checkDealProposal, currentEstablishment} = useAuth();
@@ -220,7 +221,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                   </Span>
                   {!itemHaveRestriction(item) &&
                       <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
-                        {" " + parseFloat(item.price).toFixed(2) + " " + currency}
+                        {/*{" " + parseFloat(item.price).toFixed(2) + " " + currency}*/}
+                        {" " + formatPriceLocal(parseFloat(item.price).toFixed(2), currency, language)}
                       </Span>
                   }
                 </div>
@@ -239,7 +241,8 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                                     {option.price +  " " + currency} x {item.quantity}
                                   </Span>
                                   <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
-                                    {(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}
+                                    {/*{(parseFloat(option.price) * item.quantity).toFixed(2) + " " + currency}*/}
+                                    {formatPriceLocal((parseFloat(option.price) * item.quantity).toFixed(2) , currency, language)}
                                   </Span>
                                 </>
                             }
@@ -274,10 +277,12 @@ const ProductCard7: React.FC<ProductCard7Props> = ({
                 {!itemHaveRestriction(item) &&
                     <FlexBox flexWrap="wrap" alignItems="center">
                       <Span color="grey.600" mr={1}>
-                        {getPriceWithOptions(item, true).toFixed(2) + " " + currency} x {item.quantity}
+                        {/*{getPriceWithOptions(item, true).toFixed(2) + " " + currency} x {item.quantity}*/}
+                        {formatPriceLocal(getPriceWithOptions(item, true).toFixed(2), currency, language)} x {item.quantity}
                       </Span>
                       <Span fontWeight={600} color="primary.main" mr={2}>
-                        {" " + localStrings.total + ": " + (getPriceWithOptions(item, true) * item.quantity).toFixed(2) + " " + currency}
+                        {/*{" " + localStrings.total + ": " + (getPriceWithOptions(item, true) * item.quantity).toFixed(2) + " " + currency}*/}
+                        {" " + localStrings.total + ": " + formatPriceLocal((getPriceWithOptions(item, true) * item.quantity).toFixed(2),  currency, language)}
                       </Span>
                     </FlexBox>
                 }

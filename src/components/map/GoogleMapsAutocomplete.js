@@ -7,18 +7,9 @@ import localStrings from '../../localStrings';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import {makeStyles} from "@material-ui/styles";
 import BazarTextField from "@component/BazarTextField";
+import useAuth from "@hook/useAuth";
 
 const config = require("../../conf/config.json")
-
-// const DarkerDisabledAutoComplete = withStyles({
-//     root: {
-//         marginRight: 8,
-//         "& .MuiInputBase-root.Mui-disabled": {
-//             color: "rgba(0, 0, 0, 0.6)" // (default alpha is 0.38)
-//         }
-//     }
-// })(Autocomplete);
-
 
 
 export function loadScript(src, position, id) {
@@ -59,6 +50,7 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                                                    borderColor, border, borderRadius}) {
     const classes = useStyles();
 
+    const {currentBrand} = useAuth()
 
     useEffect(() => {
         async function loadMaps() {
@@ -145,7 +137,7 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
         fetch(
             {
                 input: inputValue,
-                componentRestrictions: {country: 'fr'},
+                componentRestrictions: {country: currentBrand().country || 'fr'},
             },
             (results) => {
                 if (active) {

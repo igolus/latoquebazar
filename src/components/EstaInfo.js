@@ -12,7 +12,7 @@ import {getMarkers} from "@component/SelectEsta";
 const config = require("../conf/config.json");
 
 const EstaInfo = ({selectedEsta, contextData}) => {
-
+    const language = contextData?.brand?.config?.language || 'fr';
     return (
         <Container sx={{ mb: '70px' }}>
             {/*<h1>CONTACT INFO TODO</h1>*/}
@@ -58,7 +58,7 @@ const EstaInfo = ({selectedEsta, contextData}) => {
             </Card1>
 
             <Card1 sx={{mb: '2rem'}}>
-                <ClosingDays firstEsta={selectedEsta}/>
+                <ClosingDays firstEsta={selectedEsta} language={language}/>
             </Card1>
 
             {/*<GoogleMap widthp={refDiv.current.width}/>*/}

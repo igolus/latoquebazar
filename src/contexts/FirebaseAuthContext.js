@@ -1353,7 +1353,8 @@ export const AuthProvider = ({ contextData, children }) => {
   useEffect(async () => {
     let res = await executeQueryUtil(getBrandByIdQuery(config.brandId));
     if (res && res.data) {
-      setBrand(res.data.getBrand)
+      setBrand(res.data.getBrand);
+      localStrings.setLanguage(res.data.getBrand.config?.language || 'fr');
     }
   }, [])
 

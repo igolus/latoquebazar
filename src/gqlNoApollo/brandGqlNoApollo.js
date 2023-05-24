@@ -11,6 +11,7 @@ const common = `
   publicUrls
   logoPath
   logoUrl
+  country
   iconPath
   iconUrl
   demoSite
@@ -21,6 +22,7 @@ const common = `
     customHomePageSourceVariables
     currency
     siteUrl
+    language
     googleKey
     facebookPixelId
     analyticsGoogleId

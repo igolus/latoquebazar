@@ -21,7 +21,7 @@ export interface CartProps {
 }
 
 const Cart:React.FC<CartProps> = ({contextData}) => {
-
+  const language = contextData?.brand?.config?.language || 'fr';
   const {getContextDataAuth} = useAuth();
 
   function getContextData() {
@@ -106,7 +106,9 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
               <OrderAmountSummary
                   hideCoupon
                   currency={getBrandCurrency(getContextData()?.brand)}
-                  hideDetail contextData={getContextData()}/>
+                  hideDetail contextData={getContextData()}
+
+              />
             </Grid>
           </Grid>
         </CheckoutNavLayout>

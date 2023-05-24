@@ -6,13 +6,13 @@ import {Typography} from "@material-ui/core";
 import moment from "moment";
 import Card1 from "@component/Card1";
 
-const ClosingDayItem = ({slot}) => {
+const ClosingDayItem = ({slot, language}) => {
     if (!slot) {
         return (<></>);
     }
 
-    let dateStart = moment.unix(slot.startDate).locale("fr").calendar();
-    let dateEnd = moment.unix(slot.endDate).locale("fr").calendar();
+    let dateStart = moment.unix(slot.startDate).locale(language).calendar();
+    let dateEnd = moment.unix(slot.endDate).locale(language).calendar();
 
     return (<TableRow sx={{ my: '1rem', padding: '6px 18px' }}>
         <Typography className="pre" m={0.75} textAlign="left">
@@ -21,7 +21,7 @@ const ClosingDayItem = ({slot}) => {
     </TableRow>);
 }
 
-const ClosingDays = ({firstEsta}) => {
+const ClosingDays = ({firstEsta, language}) => {
     const {currentEstablishment} = useAuth();
 
     function firstOrCurrentEstablishment() {
@@ -46,27 +46,9 @@ const ClosingDays = ({firstEsta}) => {
                 {localStrings.closingDays}
             </Typography>
 
-            {/*<TableRow*/}
-            {/*    sx={{*/}
-            {/*        display: { xs: 'none', md: 'flex' },*/}
-            {/*        padding: '0px 18px',*/}
-            {/*        background: 'none',*/}
-            {/*    }}*/}
-            {/*    elevation={0}*/}
-            {/*>*/}
-            {/*    <H5 color="grey.600" my="0px" mx={0.75} textAlign="left">*/}
-            {/*        {localStrings.closingDays}*/}
-            {/*    </H5>*/}
-            {/*    /!*<H5 color="grey.600" my="0px" mx={0.75} textAlign="left">*!/*/}
-            {/*    /!*    {localStrings.schedules}*!/*/}
-            {/*    /!*</H5>*!/*/}
-
-            {/*    /!*<H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>*!/*/}
-            {/*</TableRow>*/}
-
             {
                 closingSlots.map((item, key) =>
-                    <ClosingDayItem slot={item}/>
+                    <ClosingDayItem slot={item} language={language}/>
                 )
             }
 

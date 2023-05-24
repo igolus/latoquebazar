@@ -38,7 +38,7 @@ import {
 } from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import ReactMarkdown from "react-markdown";
-import ProductIntro from "@component/products/ProductIntro";
+import ProductIntro, {formatPriceLocal} from "@component/products/ProductIntro";
 import {makeStyles} from "@material-ui/styles";
 import {MuiThemeProps} from "@theme/theme";
 
@@ -83,6 +83,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
     const [currency, setcurrency] = useState("");
     const [clickedItem, setClickedItem] = useState(null);
 
+    const language = contextData?.brand?.config?.language || 'fr';
+
     useEffect(() => {
         setItemNumber(getItemNumberInCart(getOrderInCreation))
         if (contextData) {
@@ -109,6 +111,34 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
             setClickedItem(item)
             setOpenProductDetail(true);
         }
+    }
+
+    function formartPriceTinyDeal<T>(item: T) {
+        if (language == 'fr') {
+            return getPriceWithOptions(item, false).toFixed(2) + " " + currency + " x" + item.quantity;
+        }
+        return currency + " " + getPriceWithOptions(item, false).toFixed(2) + " x" + item.quantity;
+     }
+
+    function formatPriceTinyProduct<T>(item: T) {
+        if (language == 'fr') {
+            return getPriceWithOptions(item, true).toFixed(2) + " " + currency + " x" + item.quantity;
+        }
+        return currency + " " + getPriceWithOptions(item, true).toFixed(2)  + " x" + item.quantity;
+    }
+
+    function formatPriceOptionDeal<T>(item: T) {
+        if (language == 'fr') {
+            return (getPriceWithOptions(item, false) * item.quantity).toFixed(2) + " " + currency;
+        }
+        return currency + " " +  (getPriceWithOptions(item, false) * item.quantity).toFixed(2);
+    }
+
+    function fomatPriceOptionProduct<T>(item: T) {
+        if (language == 'fr') {
+            return (getPriceWithOptions(item, true) * item.quantity).toFixed(2) + " " + currency;
+        }
+        return currency + " " + (getPriceWithOptions(item, true) * item.quantity).toFixed(2);
     }
 
     return (
@@ -411,18 +441,18 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                                 <>
                                     <Tiny color="grey.600">
                                         {item.type === TYPE_DEAL &&
-                                            getPriceWithOptions(item, false).toFixed(2) + " " + currency + " x" + item.quantity
+                                            formartPriceTinyDeal(item)
                                         }
                                         {item.type === TYPE_PRODUCT &&
-                                            getPriceWithOptions(item, true).toFixed(2) + " " + currency + " x" + item.quantity
+                                            formatPriceTinyProduct(item)
                                         }
                                     </Tiny>
                                     <Box fontWeight={600} fontSize="14px" color="primary.main" mt={0.5}>
                                         {item.type === TYPE_DEAL &&
-                                            (getPriceWithOptions(item, false) * item.quantity).toFixed(2) + " " + currency
+                                            formatPriceOptionDeal(item)
                                         }
                                         {item.type === TYPE_PRODUCT &&
-                                            (getPriceWithOptions(item, true) * item.quantity).toFixed(2)  + " " + currency
+                                            fomatPriceOptionProduct(item)
                                         }
                                     </Box>
                                 </>
@@ -474,7 +504,8 @@ const MiniCart: React.FC<MiniCartProps> = ({ toggleSidenav , contextData}) => {
                             fullWidth
                             onClick={toggleSidenav}
                         >
-                            {localStrings.checkOutNow} ({computePriceDetail(getOrderInCreation()).total.toFixed(2) + " " + getBrandCurrency(contextData ? contextData.brand : null)})
+                            {/*{localStrings.checkOutNow} ({computePriceDetail(getOrderInCreation()).total.toFixed(2) + " " + getBrandCurrency(contextData ? contextData.brand : null)})*/}
+                            {localStrings.checkOutNow} ({formatPriceLocal(computePriceDetail(getOrderInCreation()).total.toFixed(2), currency, language )})
                             {/*{localStrings.checkOutNow}*/}
                         </BazarButton>
                     </Link>

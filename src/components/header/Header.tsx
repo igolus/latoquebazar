@@ -123,7 +123,7 @@ const Header: React.FC<HeaderProps> = ({ isFixed, className , contextData}) => {
                     <Link href="/">
                         <a>
                             {logoUrl &&
-                            <Image mb={0.5} src={logoUrl} alt={brandName || "logo"}/>
+                            <img mb={0.5} src={logoUrl} alt={brandName || "logo"} style={{maxHeight: '100px'}}/>
                             }
                         </a>
                     </Link>

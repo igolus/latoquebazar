@@ -24,9 +24,11 @@ export interface OrderRowProps {
     price: number
     currency: string
   }
+  currency: string,
+  language: string
 }
 
-const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
+const OrderRow: React.FC<OrderRowProps> = ({ item, currency, language }) => {
   const getColor = (status: string) => {
     switch (status) {
       case ORDER_STATUS_NEW:
@@ -56,29 +58,13 @@ const OrderRow: React.FC<OrderRowProps> = ({ item, currency }) => {
             {item.orderNumber}
           </H5>
 
-          {/*<Box m={0.75} width={"25px"}>*/}
-          {/*  <Chip*/}
-          {/*    size="small"*/}
-          {/*    label={formatOrderStatus(item.status, localStrings)}*/}
-          {/*    sx={{*/}
-          {/*      p: '0.25rem 0.5rem',*/}
-          {/*      fontSize: 12,*/}
-          {/*      color: !!getColor(item.status)*/}
-          {/*        ? `${getColor(item.status)}.900`*/}
-          {/*        : 'inherit',*/}
-          {/*      backgroundColor: !!getColor(item.status)*/}
-          {/*        ? `${getColor(item.status)}.100`*/}
-          {/*        : 'none',*/}
-          {/*    }}*/}
-          {/*  />*/}
-          {/*</Box>*/}
           <br/>
           <Typography className="pre" m={0.75} textAlign="left" sx={{width: 250}}>
             {formatOrderConsumingModeGrid(item, localStrings)}
           </Typography>
           <Typography className="pre" m={0.75} textAlign="left">
             {/*{item.creationDate}*/}
-            {moment(parseFloat(item.creationDate)).locale("fr").calendar()}
+            {moment(parseFloat(item.creationDate)).locale(language).calendar()}
             {/*{format(new Date(item.creationDate), 'MMM dd, yyyy')}*/}
           </Typography>
           <Typography m={0.75} textAlign="left">

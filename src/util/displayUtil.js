@@ -580,12 +580,12 @@ export const getOrderBookingSlotEndDate = (order) => {
     return moment.unix(order.bookingSlot.endDate);
 }
 
-export const formatOrderDeliveryDateSlot = (order) => {
+export const formatOrderDeliveryDateSlot = (order, language) => {
     if (!order) {
         return "";
     }
     return getOrderBookingSlotStartDate(order)
-            .locale("fr")
+            .locale(language)
             .calendar() + " - " +
         getOrderBookingSlotEndDate(order)
             .format("HH:mm");
