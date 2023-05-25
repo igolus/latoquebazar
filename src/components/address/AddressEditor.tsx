@@ -202,12 +202,6 @@ const AddressEditor = ({back}) => {
 
                         <Formik
                             initialValues={initialValues(id, dbUser, adressInfo)}
-
-                            // initialValues={{
-                            //     name: "INITIAL",
-                            //     //address: '',
-                            //     additionalInformation: "ADD INFO"
-                            // }}
                             validationSchema={checkoutSchema(id)}
                             onSubmit={handleFormSubmit}
                         >
@@ -234,7 +228,6 @@ const AddressEditor = ({back}) => {
                                             }
                                             <Grid item md={12} xs={12}>
                                                 <GoogleMapsAutocomplete
-                                                    //ref={autocomp}
                                                     noKeyKnown
                                                     required
                                                     setterValueSource={setAdressValue}

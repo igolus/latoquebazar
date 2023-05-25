@@ -55,6 +55,14 @@ export interface ProductIntroProps {
     initialItem: any
 }
 
+export function formatPriceLocal(price, currency, language) {
+
+    if (language === 'fr') {
+        return price + " " +  currency;
+    }
+    return currency + " " + price;
+}
+
 const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        imgUrl = [],
                                                        title,
@@ -76,7 +84,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                        currentService,
                                                        disableFacebook,
                                                        changeSelectionCallBack,
-                                                       initialItem
+                                                       initialItem,
+                                                       language
                                                    }) => {
 
     const width = useWindowSize()
@@ -139,7 +148,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                     currentEstablishment()?.id, getOrderInCreation()).then(zoneMap => {
                     let copySku = {...productAndSkuBuilt.sku}
                     computeItemRestriction(copySku, currentEstablishment, currentService, getOrderInCreation(),
-                        getBrandCurrency(brand), false, zoneMap);
+                        getBrandCurrency(brand), false, zoneMap, language);
 
                     setProductAndSku({
                         ...productAndSkuBuilt,
@@ -154,23 +163,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         fetchData();
 
     }, [firstOrCurrentEstablishment(), brand])
-
-
-    // useEffect(() => {
-    //         const fetchData = async () => {
-    //             let zoneMap = await getDeliveryZone(firstOrCurrentEstablishment()?.brandId,
-    //                 firstOrCurrentEstablishment()?.id, getOrderInCreation())
-    //             const first = buildProductAndSkus(product, null,
-    //                 null, null, () => firstEsta, null, brand, zoneMap)[0]
-    //             setProductAndSku({...first})
-    //         }
-    //         fetchData();
-    //         }
-    //     , [])
-    // const initialProductAndSku = {
-    //     ...buildProductAndSkus(product, null,
-    //         null, null, () => firstEsta, null, brand)[0]
-    // }
 
     const [valid, setValid] = useState(true);
     const [invalidIds, setInvalidIds] = useState([]);
@@ -278,7 +270,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
             {isSkuUnavailableInEstablishment(productAndSku?.sku, currentEstablishment) ?
                 localStrings.unavailable
                 :
-                //(addButtonText || (getFirstRestriction() || getButtonText()))
                 (getFirstRestriction() || getButtonText(addButtonText))
             }
         </BazarButton>;
@@ -290,6 +281,8 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
         }
         return initialItem;
     }
+
+
 
     return (
         <>
@@ -304,7 +297,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                 />
             </Dialog>
 
-            {/*<p>{JSON.stringify(invalidIds)}</p>*/}
             <Box width="100%">
                 {productAndSku ?
                     <Grid container spacing={1} justifyContent="space-around">
@@ -349,22 +341,6 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                         </Box>
                                     ))}
                                 </FlexBox>
-                                {/*{width <= WIDTH_DISPLAY_MOBILE && productAndSku?.sku?.optionListExtIds && productAndSku?.sku?.optionListExtIds.length > 0 &&*/}
-
-                                {/*    <FlexBox justifyContent="center" mb={1} mt={1}>*/}
-
-                                {/*        /!*<Box ml={2} mt={"16px"}>*!/*/}
-                                {/*        <a href="#selector">*/}
-                                {/*        <BazarButton*/}
-                                {/*            variant="outlined"*/}
-                                {/*            color="primary"*/}
-                                {/*        >*/}
-                                {/*            {localStrings.selectOptions}*/}
-                                {/*        </BazarButton>*/}
-                                {/*        </a>*/}
-                                {/*        /!*</Box>*!/*/}
-                                {/*    </FlexBox>*/}
-                                {/*}*/}
                             </Box>
                         </Grid>
 
@@ -378,7 +354,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                 }
                             </H1>
                             {!valid && !getFirstRestriction() &&
-                                <Box mb={2} sx={{maxWidth:"285px"}}>
+                                <Box mb={2} sx={{maxWidth: "285px"}}>
                                     <AlertHtmlLocal severity={"warning"}
                                                     content={""}
                                     >
@@ -443,7 +419,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
 
                             <Box>
                                 <h2 color="primary.main" mb={0.5} lineHeight="1">
-                                    {formatPrice(productAndSku.sku?.price)} {currency}
+                                    {formatPriceLocal(formatPrice(productAndSku.sku?.price), currency, language)}
                                 </h2>
                             </Box>
                             <MdRender content={product.shortDescription}/>
@@ -460,6 +436,7 @@ const ProductIntro: React.FC<ProductIntroProps> = ({
                                                  currency={currency}
                                                  lineNumber={lineNumber}
                                                  initialItem={getInitialItem()}
+                                                 language={language}
                                 />
                             }
                             {!disableAdd &&

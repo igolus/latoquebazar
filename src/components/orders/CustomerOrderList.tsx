@@ -34,6 +34,7 @@ const itemPerPage = 10;
 
 
 const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
+  const language = contextData?.brand?.config?.language || 'fr';
   const {dbUser, currentEstablishment} = useAuth();
   const brandId = contextData.brand.id;
   const currency = getBrandCurrency(contextData.brand);
@@ -161,7 +162,7 @@ const CustomerOrderList: React.FC<CustomerOrderListProps> = ({contextData}) => {
                               }
                               <StyledTableCell align="left">{item.orderNumber}</StyledTableCell>
                               <StyledTableCell align="left" >{formatOrderConsumingModeGrid(item, localStrings)}</StyledTableCell>
-                              <StyledTableCell align="left">{moment(parseFloat(item.creationDate)).locale("fr").calendar()}</StyledTableCell>
+                              <StyledTableCell align="left">{moment(parseFloat(item.creationDate)).locale(language).calendar()}</StyledTableCell>
                               <StyledTableCell align="left">{(item.totalPrice || 0).toFixed(2)} {currency}</StyledTableCell>
                               {!isMobile &&
                               <StyledTableCell align="right">

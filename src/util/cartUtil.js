@@ -1229,7 +1229,7 @@ export function getRestrictionToApply(item, currentEstablishment) {
     return restrictionToApply;
 }
 
-export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch, zoneMap) {
+export function computeItemRestriction(item, currentEstablishment, currentService, orderInCreation, currency, invertMatch, zoneMap, language) {
     let countMatching = 11;
 
     if (!currentEstablishment()) {
@@ -1474,14 +1474,14 @@ export function computeItemRestriction(item, currentEstablishment, currentServic
                 let local = "";
                 if (restrictionEndMoment && restrictionStartMoment) {
                     local = localStrings.formatString(localStrings.dateMinMax,
-                        restrictionStartMoment.locale("fr").calendar(),
-                        restrictionEndMoment.locale("fr").calendar());
+                        restrictionStartMoment.locale(language).calendar(),
+                        restrictionEndMoment.locale(language).calendar());
                 } else if (restrictionStartMoment) {
                     local = localStrings.formatString(localStrings.dateMin,
-                        restrictionStartMoment.locale("fr").calendar());
+                        restrictionStartMoment.locale(language).calendar());
                 } else if (restrictionEndMoment) {
                     local = localStrings.formatString(localStrings.dateMax,
-                        restrictionEndMoment.locale("fr").calendar());
+                        restrictionEndMoment.locale(language).calendar());
                 }
                 //alert("restrictionDate add");
                 item.restrictionsApplied.push({
