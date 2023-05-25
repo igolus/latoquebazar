@@ -54,7 +54,7 @@ const EstaInfo = ({selectedEsta, contextData}) => {
                 <Typography variant="h6" fontWeight="600" mb={4}>
                     {localStrings.openingHours}
                 </Typography>
-                <OpeningHours firstEsta={selectedEsta}/>
+                <OpeningHours firstEsta={selectedEsta} language={language}/>
             </Card1>
 
             <Card1 sx={{mb: '2rem'}}>

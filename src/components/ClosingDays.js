@@ -15,6 +15,7 @@ const ClosingDayItem = ({slot, language}) => {
     let dateEnd = moment.unix(slot.endDate).locale(language).calendar();
 
     return (<TableRow sx={{ my: '1rem', padding: '6px 18px' }}>
+        {/*<p>{language}</p>*/}
         <Typography className="pre" m={0.75} textAlign="left">
             {localStrings.formatString(localStrings.closingPeriod, dateStart, dateEnd)}
         </Typography>
