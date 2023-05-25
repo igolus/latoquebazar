@@ -7,7 +7,7 @@ import OrderRow from './OrderRow'
 
 export interface VendorOrderListProps {}
 
-const VendorOrderList: React.FC<VendorOrderListProps> = () => {
+const VendorOrderList: React.FC<VendorOrderListProps> = ({language}) => {
   return (
     <Fragment>
       <TableRow
@@ -34,7 +34,7 @@ const VendorOrderList: React.FC<VendorOrderListProps> = () => {
       </TableRow>
 
       {orderList.map((item, ind) => (
-        <OrderRow item={item} key={ind} />
+        <OrderRow item={item} key={ind} language={language}/>
       ))}
 
       <FlexBox justifyContent="center" mt={5}>

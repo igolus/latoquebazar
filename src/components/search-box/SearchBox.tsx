@@ -122,8 +122,6 @@ const SearchBox = () => {
                 onKeyDown={(e) => {
                   if(e.keyCode == 13){
                     searchTrigger()
-                    //console.log('value', e.target.value);
-                    // put the login here
                   }
                 }}
 
@@ -174,17 +172,6 @@ const SearchBox = () => {
                   ),
                 }}
             />
-          {/*</form>*/}
-
-          {/*{!!resultList.length && (*/}
-          {/*  <Card className={classes.searchResultCard} elevation={2}>*/}
-          {/*    {resultList.map((item) => (*/}
-          {/*      <Link href={`/product/search/${item}`} key={item}>*/}
-          {/*        <MenuItem key={item}>{item}</MenuItem>*/}
-          {/*      </Link>*/}
-          {/*    ))}*/}
-          {/*  </Card>*/}
-          {/*)}*/}
         </Box>
       </>
   )

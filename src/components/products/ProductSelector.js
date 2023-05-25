@@ -33,8 +33,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function displayWithPrice (name, price, currency, optionDisabled) {
-  let display = name + " " + parseFloat(price).toFixed(2) + " " + currency;
+export function displayWithPrice (name, price, currency, optionDisabled, language) {
+  let display;
+  if (language === 'fr') {
+    display = name + " " + parseFloat(price).toFixed(2) + " " + currency;
+  }
+  else {
+    display = name + " " + currency + " " + parseFloat(price).toFixed(2);
+  }
+
   if (optionDisabled) {
     display += " " + localStrings.unavailable;
   }
@@ -49,7 +56,7 @@ function ProductSelector({ productAndSku, options,
                            nextCallBack, nextTitle, previousCallBack, canGoPrevious,
                            setterSkuEdit, currency, skuEdit,
                            setterValid, setterInvalidIds,
-                           valid, lineNumber, initialItem}) {
+                           valid, lineNumber, initialItem, language}) {
 
   const classes = useStyles();
   const {dealEdit, currentEstablishment} = useAuth();
@@ -301,7 +308,7 @@ function ProductSelector({ productAndSku, options,
                     {optionListComplete.map((optionComplete, key) =>
                         <>
                           <FormControlLabel  style={{marginRight:'20px'}} key={key} value={optionComplete.ref} control={<Radio disabled={optionDisabled(optionComplete)}/>}
-                                             label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))} />
+                                             label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete), language)} />
                         </>
                     )}
                   </Box>
@@ -337,7 +344,7 @@ function ProductSelector({ productAndSku, options,
                                                                disabled={optionDisabled(optionComplete) || !checkQuantity(optionList, optionComplete)}
                                                                checked={isCheckSelect(optionComplete)}
                                                                onChange={(event) => handleChangeSelect(optionComplete)} />}
-                                            label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete))}
+                                            label={displayWithPrice(optionComplete.name, optionComplete.price, currency, optionDisabled(optionComplete), language)}
                           />
                         </>
                     )}

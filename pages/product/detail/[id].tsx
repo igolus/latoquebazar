@@ -40,7 +40,7 @@ export interface ProductDetailsProps {
 const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productReviews}) => {
     const config = require('../../../src/conf/config.json');
     const router = useRouter();
-
+    const language = contextData?.brand?.config?.language || 'fr';
     const { id } = router.query
     let productId = id;
 
@@ -257,6 +257,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productRevie
 
             {selectedProduct &&
             <ProductIntro product={selectedProduct}
+                          language={language}
                           firstEsta={getContextData()?.establishments[0]}
                           brand={getContextData().brand}
                           currentService={getCurrentService(currentEstablishment(), bookingSlotStartDate, getOrderInCreation()?.deliveryMode)}
@@ -276,10 +277,10 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({contextData, productRevie
                     textColor="primary"
                 >
                     <Tab className="inner-tab" label={localStrings.allergens} value="allergens"/>
-                    {selectedProduct?.description.trim() !== "" &&
+                    {selectedProduct?.description?.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.description} value="description"/>
                     }
-                    {selectedProduct?.additionalInformation.trim() !== "" &&
+                    {selectedProduct?.additionalInformation?.trim() !== "" &&
                     <Tab className="inner-tab" label={localStrings.additionalInformation} value="additionalInformation"/>
                     }
                     <Tab className="inner-tab" label={localStrings.reviews} value="reviews"/>

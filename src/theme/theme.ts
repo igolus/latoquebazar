@@ -114,7 +114,7 @@ const bazarTheme = createTheme({
 
 
         h1:  {
-          fontFamily: 'Selfie_Regular',
+          // fontFamily: 'Selfie_Regular',
           fontSize: '50px !important',
         },
         // h2:  {

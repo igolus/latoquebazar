@@ -5,13 +5,12 @@ import {Box, Button, Chip, Dialog, DialogContent, IconButton,} from '@material-u
 import Add from '@material-ui/icons/Add'
 import Close from '@material-ui/icons/Close'
 import Remove from '@material-ui/icons/Remove'
-import RemoveRedEye from '@material-ui/icons/RemoveRedEye'
 import {CSSProperties, makeStyles} from '@material-ui/styles'
 import {MuiThemeProps} from '@theme/theme'
 import Link from 'next/link'
 import React, {Fragment, useCallback, useEffect, useState} from 'react'
 import FlexBox from '../FlexBox'
-import ProductIntro from '../products/ProductIntro'
+import ProductIntro, {formatPriceLocal} from '../products/ProductIntro'
 import {ORDER_DELIVERY_MODE_DELIVERY, SEP, WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import {
   addToCartOrder,
@@ -28,7 +27,6 @@ import {cloneDeep} from "@apollo/client/utilities";
 import useWindowSize from "@hook/useWindowSize";
 import Image from "@component/BazarImage";
 import {getDeliveryZone} from "@context/FirebaseAuthContext";
-import SelectEsta from "@component/SelectEsta";
 
 export interface ProductCard1Props {
   className?: string
@@ -207,6 +205,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      currency,
                                                      currentService,
                                                      fullView,
+                                                     language
                                                    }) => {
 
   const width = useWindowSize()
@@ -353,7 +352,9 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
             {selectedProductAndSku && selectedProductAndSku?.sku.price &&
             <FlexBox alignItems="center" mt={0.5}>
               <Box pr={1} fontWeight="600" color="primary.main">
-                {parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}
+                {formatPriceLocal(parseFloat(selectedProductAndSku.sku.price).toFixed(2),
+                    currency, language)}
+                {/*{parseFloat(selectedProductAndSku.sku.price).toFixed(2)} {currency}*/}
               </Box>
             </FlexBox>
             }

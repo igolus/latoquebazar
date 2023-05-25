@@ -5,6 +5,7 @@ const common = `
   id
   stripeStatus
   brandName
+  country
   brandSiteName
   creationDate
   publicUrls
@@ -19,6 +20,7 @@ const common = `
     smsNotif
     currency
     siteUrl
+    language
     googleKey
     facebookPixelId
     analyticsGoogleId

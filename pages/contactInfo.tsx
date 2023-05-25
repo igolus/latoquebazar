@@ -88,7 +88,7 @@ const ContactInfoPage:React.FC<IndexPageProps> = ({contextData}) => {
                     textColor="secondary"
                     variant="scrollable"
                 >
-                    {(contextData.establishments || []).map((esta, key) =>
+                    {(contextData?.establishments || []).map((esta, key) =>
                         <Tab key={key}
                              label={esta.establishmentName} value={esta.id} />
                     )}

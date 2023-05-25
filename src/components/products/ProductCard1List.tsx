@@ -38,7 +38,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
 
     //let categoryConverted = convertProductName(category);
-
+    const language = contextData?.brand?.config?.language || 'fr';
     var productMapper = (product) => {
         return {
             "id": product.id,
@@ -214,6 +214,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                               faceBookShare={contextData.brand?.config?.socialWebConfig?.enableShareOnFacebookButton}
                                               options={contextData.options}
                                               currency={getBrandCurrency(contextData.brand)}
+                                              language={language}
                                 />
                                 }
                                 {item.type === TYPE_DEAL &&

@@ -5,8 +5,9 @@ import localStrings from "../localStrings";
 import {Box} from "@material-ui/system";
 import {Typography} from "@material-ui/core";
 import {ORDER_DELIVERY_MODE_ON_THE_SPOT} from "../util/constants";
+import moment from "moment";
 
-const OpeningHourRow = ({index, daySetting}) => {
+const OpeningHourRow = ({index, daySetting, language}) => {
     if (!daySetting) {
         return (<></>);
     }
@@ -41,6 +42,21 @@ const OpeningHourRow = ({index, daySetting}) => {
         item.deliveryMode === ORDER_DELIVERY_MODE_ON_THE_SPOT &&
         item.day === englishDay)
 
+    function formatHours(item) {
+        if (language === 'en') {
+            let start = "";
+            let end = "";
+            if (item.startHourBooking) {
+                start = moment(item.startHourBooking, 'HH:mm').format('hh:mm A');
+            }
+            if (item.endHourService) {
+                end = moment(item.endHourService, 'HH:mm').format('hh:mm A');
+            }
+            return (start || "") + "-" + (end || "");
+        }
+        return (item.startHourBooking || "") + "-" + (item.endHourService || "");
+    }
+
     return (<TableRow sx={{ my: '1rem', padding: '6px 18px' }}>
         <Typography className="pre" m={0.75} textAlign="left">
             {day}
@@ -48,15 +64,14 @@ const OpeningHourRow = ({index, daySetting}) => {
         <Box m={0.75}>
             {daySettingCurrent.sort((a,b) => b.startHourBooking < a.endHourService ? 1 : -1).map((item, key) =>
                 <Typography textAlign="left" key={key}>
-                    {(item.startHourBooking || "") + "-" + (item.endHourService || "")}
+                    {formatHours(item)}
                 </Typography>
             )}
         </Box>
-
     </TableRow>);
 }
 
-const OpeningHours = ({firstEsta}) => {
+const OpeningHours = ({firstEsta, language}) => {
     // const {currentEstablishment} = useAuth();
     //
     // function firstOrCurrentEstablishment() {
@@ -90,13 +105,13 @@ const OpeningHours = ({firstEsta}) => {
             {/*<H5 flex="0 0 0 !important" color="grey.600" px={2.75} py={0.5} my={0}></H5>*/}
         </TableRow>
 
-        <OpeningHourRow daySetting={daySetting} index={1}/>
-        <OpeningHourRow daySetting={daySetting} index={2}/>
-        <OpeningHourRow daySetting={daySetting} index={3}/>
-        <OpeningHourRow daySetting={daySetting} index={4}/>
-        <OpeningHourRow daySetting={daySetting} index={5}/>
-        <OpeningHourRow daySetting={daySetting} index={6}/>
-        <OpeningHourRow daySetting={daySetting} index={7}/>
+        <OpeningHourRow daySetting={daySetting} index={1} language={language}/>
+        <OpeningHourRow daySetting={daySetting} index={2} language={language}/>
+        <OpeningHourRow daySetting={daySetting} index={3} language={language}/>
+        <OpeningHourRow daySetting={daySetting} index={4} language={language}/>
+        <OpeningHourRow daySetting={daySetting} index={5} language={language}/>
+        <OpeningHourRow daySetting={daySetting} index={6} language={language}/>
+        <OpeningHourRow daySetting={daySetting} index={7} language={language}/>
 
 
     </>);

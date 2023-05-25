@@ -6,7 +6,7 @@ import localStrings from '../../localStrings';
 import useAuth from "@hook/useAuth";
 import {
   BOOKING_SLOT_OCCUPANCY_COLLECTION,
-  BRAND_COLLECTION, ESTABLISHMENT_COLLECTION,
+  BRAND_COLLECTION, ESTABLISHMENT_COLLECTION, ORDER_COLLECTION,
   ORDER_DELIVERY_MODE_ALL,
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT, RELOAD_COLLECTION
@@ -20,7 +20,8 @@ import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import firebase from "../../lib/firebase";
 import config from "../../conf/config.json";
 import {reloadId} from "@context/FirebaseAuthContext";
-import {useCollectionData} from "react-firebase-hooks/firestore";
+import {useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
+import {getHourFormat} from "@component/checkout/OrderAmountSummary";
 
 const setHourFromString = (momentDate, hourSt) => {
   let hourSplit = hourSt.split(':');
@@ -290,6 +291,8 @@ function getPreviousDaySettingsFromDate(dateStart, establishment, limit) {
 function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode,
                         selectedKeyParam, setterSelectedKey, brandId, disableNextDay, excludedPaymentsSetter, globalDisabled}) {
 
+
+  const language = contextData?.brand?.config?.language || 'fr';
   const {currentEstablishment, getOrderInCreation
     , bookingSlotStartDate, setBookingSlotStartDate, orderInCreation, currentBrand} = useAuth();
 
@@ -314,30 +317,33 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           }
       );
 
-  // db.collection(BRAND_COLLECTION)
-  //     .doc(config.brandId)
-  //     .collection(ESTABLISHMENT_COLLECTION)
-  //     .doc(currentEstablishmentOrFirst().id)
-  //     .collection(BOOKING_SLOT_OCCUPANCY_COLLECTION)
-  //     .onSnapshot((doc) => {
-  //       //console.log(doc.data());
-  //     });
+  const [establishmentDb, loadingEstablishmentDb, errorEstablishmentDb] =
+      useDocumentData(
+          db.collection(BRAND_COLLECTION)
+              .doc(config.brandId)
+              .collection(ESTABLISHMENT_COLLECTION)
+              .doc(currentEstablishmentOrFirst().id)
+          //.where('endDate', '<=', getEndDateSeconds())
+          ,
+          {
+            snapshotListenOptions: { includeMetadataChanges: true },
+          }
+      );
 
-  //const [bookingSlotStartDate, setBookingSlotStartDate] = useState(startDateParam);
-
-  //const [bookingSlotsOccupancy, setBookingSlotsOccupancy] = useState([]);
-  //const [offset, setOffset] = useState(null);
   const [reload, setReload] = useState(true);
   const [timeSlots, setTimeSlots] = useState(null);
-  // const [slotSelected, setSlotSelected] = useState(false);
+  const [orderClosed, setOrderClosed] = useState(null);
 
 
   const select = (value) => {
     if (selectCallBack) {
       selectCallBack(value);
-      //setSlotSelected(true);
     }
   };
+
+  useEffect(() => {
+    checkOrderClosed();
+  }, [establishmentDb]);
 
   useEffect(() => {
     let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
@@ -350,7 +356,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
       let timeSlotsData = buildTimeSlots(currentEstablishmentOrFirst(), () => bookingSlotsOccupancyData, getOrderInCreation,
           moment(), deliveryMode, excludedPaymentsSetter);
       setTimeSlots(timeSlotsData);
-
+      checkOrderClosed();
     }, parseInt(process.env.REFRESH_SLOTS_OCCUPANCY) || 45000);
     return () => clearInterval(interval);
   }, []);
@@ -370,10 +376,6 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
       }
     }
   }
-
-  // useEffect(() => {
-  //   //selectFirstSlot();
-  // }, [getOrderInCreation().deliveryMode, getOrderInCreation().bookingSlot])
 
 
   useEffect(() => {
@@ -430,7 +432,7 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     if (!service) {
       return "-";
     }
-    return service.dateStart.locale('fr').calendar() + " - " + service.endHourService.format("HH:mm");
+    return service.dateStart.locale(language).calendar() + " - " + service.endHourService.format(getHourFormat(language));
   }
 
   function allClosed() {
@@ -551,6 +553,37 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
     return localStrings.selectPickupTimeSlot;
   }
 
+  function checkOrderClosed() {
+    if (!establishmentDb) {
+      return;
+    }
+    let closeLimit = establishmentDb?.closeLimit;
+    if (!closeLimit) {
+      setOrderClosed(false)
+    }
+    let limit = moment(parseFloat(closeLimit));
+    if (limit.isAfter()) {
+      setOrderClosed(true)
+    }
+    else {
+      setOrderClosed(false)
+    }
+  }
+
+  function formatOrderClosed() {
+    let closeLimit = establishmentDb?.closeLimit;
+    if (!closeLimit) {
+      return false;
+    }
+    let limit = moment(parseFloat(closeLimit));
+    if (language === 'fr') {
+      return localStrings.formatString(localStrings.closeUntil, limit.format("HH:mm"))
+    }
+    else {
+      return localStrings.formatString(localStrings.closeUntil, limit.format("hh:mm A"))
+    }
+  }
+
   return (
       <div>
 
@@ -558,13 +591,8 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
           {getSelectTimeSlotText()}
         </Typography>
 
-        {/*<p>{JSON.stringify(timeSlots)}</p>*/}
-        {/*<p>{timeSlots.allSlots.length}</p>*/}
-        {/*<p>{offset}</p>*/}
         {bookingSlotStartDate && reload &&
-        // <>
         <div style={{ width: '100%' }}>
-          {/*<p>{JSON.stringify(bookingSlotsOccupancyData)}</p>*/}
 
           <Box
               display="flex"
@@ -653,26 +681,35 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
               m={1}
           >
 
+            {/*<p>{JSON.stringify(establishmentDb)}</p>*/}
+
             {allClosed() === true &&
             <AlertHtmlLocal severity="warning" content={localStrings.closed}></AlertHtmlLocal>
             }
 
+            {orderClosed &&
+              <Typography variant="h4">
+                {formatOrderClosed()}
+              </Typography>
+            }
+            {/*<p>{JSON.stringify(timeSlots)}</p>*/}
+            {/*<p>{orderClosed ? "y" : "n"}</p>*/}
+            {/*<p>{JSON.stringify(timeSlots?.allSlots.find(slot => !isSlotUnavailable(slot)))}</p>*/}
+            {/*<div style={{visibility: orderClosed ? 'none' : 'block'}}>*/}
             {
               !allClosed() && timeSlots && timeSlots.allSlots &&
                 timeSlots.allSlots.find(slot => !isSlotUnavailable(slot)) != null &&
                 timeSlots.allSlots.map((value, key) => {
                     let format =
-                        value.startDate.format('HH:mm')
+                        value.startDate.format(getHourFormat(language))
                         + "-"
-                        + value.endDate.format('HH:mm')
+                        + value.endDate.format(getHourFormat(language))
                     if (slotInTime(value) && slotAlavailableInMode(value)) {
                       return (
-                          <Box m={1}>
+                          <Box m={1} style={{display: (orderClosed ? 'none' : 'block')}}>
                             {/*<p>butt</p>*/}
                             <BazarButton variant="contained"
-                                //disabled={!value.available && !isSelectedSlot(value)}
                                          disabled={isSlotUnavailable(value) || globalDisabled}
-                                //disabled={!enoughTimeForPreparation(value)}
                                          color={isSelectedSlot(value) ? "primary" : "inherit"}
                                          onClick={() => select(value)}
                             >{(value.closed ? localStrings.closed : format)}</BazarButton>
@@ -681,6 +718,8 @@ function BookingSlots({contextData, selectCallBack, startDateParam, deliveryMode
                     }
                   }
               )}
+            {/*</div>*/}
+
 
 
 
