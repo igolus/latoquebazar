@@ -112,6 +112,9 @@ export function getStuartAmountAndRound(initalAmount : any, currentEstablishment
 export function getMessagDeliveryAddress(currentEstablishment, orderInCreation, maxDistanceReached, stuartError, stuartAmount, zoneMap) {
   const ret = {};
   if (getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive')) {
+    if (!orderInCreation.bookingSlot) {
+      return null;
+    }
     if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
       return null;
     }
@@ -1070,7 +1073,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                 severity="warning"
                 //title={localStrings.tooFarAddress}
             >
-              {localStrings.tooFarAddress}
+              {localStrings.
+                  tooFarAddress}
             </AlertHtmlLocal>
           </DialogContent>
 
@@ -1456,7 +1460,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                 valueSource={adressValue}
                                                 setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
                                                   //let distInfo;
-                                                  if (currentEstablishment()) {
+                                                  if (currentEstablishment() && (getOrderInCreation().bookingSlot || !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
                                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
                                                     //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
                                                     setCheckAddLoading(true);
