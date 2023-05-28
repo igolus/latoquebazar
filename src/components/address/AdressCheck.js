@@ -72,7 +72,7 @@ export async function distanceAndCheck(distanceInfo,
         }
         return ret;
     }
-    if (deliveryStuartActive) {
+    if (deliveryStuartActive && bookingSlot) {
         ret.maxDistanceReached = true;
         return ret;
     }
