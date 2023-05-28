@@ -116,7 +116,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
 
         if (tagsSelected && tagsSelected.length > 0) {
             filteredProduct = filteredProduct.filter(product => {
-                return product.tags.map(t => t.id).some(id => tagsSelected.map(t => t.id).includes(id));
+                return product.tags?.map(t => t.id).some(id => tagsSelected.map(t => t.id).includes(id));
             })
         }
 
