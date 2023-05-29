@@ -67,6 +67,10 @@ const common = `
       stripePublicKey
       systemPayPublicKey
       systemPayEndPoint
+      merchantID,
+      merchantSecret,
+      countryCode,
+      currencyCode,
     }
     carouselWebConfig {
       id
