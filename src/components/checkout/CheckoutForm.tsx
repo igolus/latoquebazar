@@ -19,7 +19,7 @@ import {
 import {Formik} from 'formik'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
@@ -29,7 +29,7 @@ import {
   ORDER_STATUS_NEW,
   PAYMENT_METHOD_SYSTEMPAY,
   PAYMENT_MODE_STRIPE,
-  PAYMENT_MODE_SYSTEM_PAY, PRICING_EFFECT_FIXED_PRICE
+  PAYMENT_MODE_SYSTEM_PAY, PAYMENT_MODE_TAKE_PAYMENTS, PRICING_EFFECT_FIXED_PRICE
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -77,6 +77,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import UpSellDeal from "@component/products/UpSellDeal";
 import {Base64} from 'js-base64';
 import {pixelInitiateCheckout, pixelPurchaseContent} from "../../util/faceBookPixelUtil";
+import TakePaymentPopup from  './TakePaymentPopup'
 
 const config = require('../../conf/config.json')
 
@@ -163,25 +164,6 @@ function isStuartActive(currentEstablishment, contextData) {
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
-  function removeGoogleMapScript() {
-    console.debug('removing google script...');
-    let keywords = ['maps.googleapis'];
-
-    //Remove google from BOM (window object)
-    window.google = undefined;
-
-    //Remove google map scripts from DOM
-    let scripts = document.head.getElementsByTagName("script");
-    for (let i = scripts.length - 1; i >= 0; i--) {
-      let scriptSource = scripts[i].getAttribute('src');
-      if (scriptSource != null) {
-        if (keywords.filter(item => scriptSource.includes(item)).length) {
-          scripts[i].remove();
-          // scripts[i].parentNode.removeChild(scripts[i]);
-        }
-      }
-    }
-  }
 
   let stripe;
   let elements;
@@ -190,7 +172,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     elements = useElements();
   }
   const classes = useStyles();
-  const autocomp = useRef(null);
   const [cgvChecked, setCgvChecked] = React.useState(false);
   const [pickupAlert, setPickupAlert] = React.useState(false);
 
@@ -206,9 +187,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [selectedSlotKey, setSelectedSlotKey] = useState(null);
   const [adressValue, setAdressValue] = useState("");
   const [adressSearch, setAdressSearch] = useState(false);
-  // const [stuartAmount, setStuartAmount] = useState(null);
-  // const [stuartCurrency, setStuartCurrency] = useState(null);
-  // const [stuartError, setStuartError] = useState(null);
   const [checkAddLoading, setCheckAddLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -239,20 +217,16 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [manualAddressOutOfBound, setManualAddressOutOfBound] = useState(false);
   const [priceDetails, setPriceDetails] = useState(false);
   const [excludedPayments, setExcludedPayments]=useState([]);
+  const [displayTakePaymentsDialog, setDisplayTakePaymentsDialog]=useState(false);
+  const [uuidPayment, setUuidPayment] = useState("");
+
+  useEffect(() => {
+    setUuidPayment(uuid());
+  }, [])
 
   useEffect(() => {
     pixelInitiateCheckout(currentBrand(), getOrderInCreation())
   }, [])
-
-  // useEffect(() => {
-  //   setRefusedDeals([]);
-  // }, [])
-
-  // useEffect(() => {
-  //   if (!currentBrand()?.config?.paymentWebConfig?.activateOnlinePayment) {
-  //     setPaymentMethod("delivery");
-  //   }
-  // }, [currentBrand()])
 
   useEffect(() => {
     setPaymentMethod(
@@ -263,14 +237,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   useEffect(() => {
     setPriceDetails(computePriceDetail(getOrderInCreation()))
   }, [getOrderInCreation])
-
-  // useEffect(() => {
-  //   setSelectedAddId(getOrderInCreation()?.deliveryAddress?.id);
-  // }, [])
-
-  // useEffect(() => {
-  //   ga.gaCheckout(getOrderInCreation(), currentBrand())
-  // }, [])
 
   useEffect(() => {
     if (currentEstablishment() &&
@@ -321,27 +287,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       setRefusedDeals([]);
       pixelInitiateCheckout(currentBrand(), getOrderInCreation())
 
-      // if (
-      //     (!isStuartActive(currentEstablishment, contextData) && (!getOrderInCreation()?.deliveryAddress ||
-      //         dbUser?.userProfileInfo?.address == getOrderInCreation()?.deliveryAddress?.address)) &&
-      //     !selectedAddId &&
-      //     (dbUser || bookWithoutAccount) &&
-      //     isDeliveryActive(currentEstablishment())) {
-      //   await setAddMain()
-      // }
     };
 
     initEffect()
-    // }, [getOrderInCreation()])
   }, [])
-
-
-  // useEffect(() => {
-  //   if (isStuartActive(currentEstablishment, contextData))  {
-  //     //&& getOrderInCreation()?.deliveryAddress && !getOrderInCreation()?.deliveryAddress.id) {
-  //     resetDeliveryAddress()
-  //   }
-  // }, [])
 
 
   function firstOrCurrentEstablishment() {
@@ -442,6 +391,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   const handleFormSubmit = async (values: any, transactionId: string, uuidvalue: string) => {
+
+    if (isPaymentTakepayment()) {
+      setDisplayTakePaymentsDialog(true)
+      return;
+    }
     let errorOccured;
     setLoading(true);
     let orderId = 0;
@@ -970,7 +924,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         loading || getCartItems(getOrderInCreation).length == 0 ||
         (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
         (getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && maxDistanceReached && !zoneMap) ||
-        paymentMethod === "cc" && !paymentCardValid && !isPaymentSystemPay();
+        paymentMethod === "cc" && (!paymentCardValid && !isPaymentSystemPay()) && !isPaymentTakepayment();
   }
 
   function isPaymentSystemPay() {
@@ -989,6 +943,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return currentBrand()?.config?.paymentWebConfig?.paymentType === PAYMENT_MODE_STRIPE
   }
 
+  function isPaymentTakepayment() {
+    return currentBrand()?.config?.paymentWebConfig?.paymentType === PAYMENT_MODE_TAKE_PAYMENTS
+  }
 
   function getEmailCustomer(values) {
     if (bookWithoutAccount) {
@@ -1063,10 +1020,30 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
 
+  const paymentPopup = useMemo(() => {
+
+    let amount = computePriceDetail(orderInCreation).total;
+    return (<TakePaymentPopup brandId={currentBrand()?.id} amount={amount} uuidPayment={uuidPayment}/>)
+  }, [currentBrand]);
+
+
 
   return (
       <>
-        {/*<p>{JSON.stringify(getOrderInCreation() || {})}</p>*/}
+
+        <p>{uuidPayment}</p>
+        <Dialog open={displayTakePaymentsDialog} fullScreen style={{overflow: 'hidden'}}>
+          <DialogContent style={{padding: 0}}>
+            {paymentPopup}
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={() => setDisplayTakePaymentsDialog(false)} color="primary">
+              {localStrings.cancel}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Dialog open={manualAddressOutOfBound} maxWidth="sm">
           <DialogContent className={classes.dialogContent}>
             <AlertHtmlLocal
@@ -1494,11 +1471,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   }
                                                 }}/>
                                           </Grid>
-                                          {/*{adressSearch &&*/}
-                                          {/*    <Grid item xs={2} lg={2} >*/}
-                                          {/*      <CircularProgress className={classes.buttonProgress}/>*/}
-                                          {/*    </Grid>*/}
-                                          {/*}*/}
                                         </Grid>
                                     }
 
@@ -1516,7 +1488,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                 className={classes.textField}
                                                 name="customerDeliveryInformation"
                                                 placeholder={localStrings.customerDeliveryInformationPlaceHolder}
-                                                //label={!useMyAdress || localStrings.additionalInformation}
                                                 fullWidth
                                                 sx={{mb: '1rem'}}
                                                 onBlur={handleBlur}
@@ -1641,11 +1612,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                           severity="warning"
                                           title={localStrings.stuartLoadingTitle}
                                           content={localStrings.stuartLoading}>
-                                        {/*<CircularProgress size={50} className={classes.buttonProgress}/>*/}
                                       </AlertHtmlLocal>
 
                                   }
-                                  {/*{(!isStuartActive(currentEstablishment, contextData) || !checkAddLoading) &&*/}
                                   {(checkAddLoading || selectedAddId !== getOrderInCreation()?.deliveryAddress?.id) &&
                                       <Box
                                           display="flex"
@@ -1666,7 +1635,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       startDateParam={moment()}
                                       selectCallBack={(bookingSlot) => {
                                         setSelectedBookingSlot(bookingSlot, null);
-                                        if (isStuartActive(currentEstablishment, contextData)) {
+                                        if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && isStuartActive(currentEstablishment, contextData)) {
                                           setCheckAddLoading(true);
                                           distanceAndCheck(null,
                                               currentEstablishment, getOrderInCreation(),
@@ -1686,21 +1655,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       selectedKeyParam={selectedSlotKey}
                                       setterSelectedKey={setSelectedSlotKey}
                                       brandId={contextData && contextData?.brand?.id}
-                                  />
-                                  {/*    :*/}
-                                  {/*    <>*/}
-                                  {/*      {checkAddLoading &&*/}
-                                  {/*          <Box*/}
-                                  {/*              display="flex"*/}
-                                  {/*              justifyContent="center"*/}
-                                  {/*              alignItems="center"*/}
-                                  {/*              p={1}*/}
-                                  {/*          >*/}
-                                  {/*            <CircularProgress size={50} className={classes.buttonProgress}/>*/}
-                                  {/*          </Box>*/}
-                                  {/*      }*/}
-                                  {/*    </>*/}
-                                  {/*}*/}
+                                      />
                                 </Card1>
                             }
 
@@ -1921,7 +1876,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                 </>
                             }
 
-                            {stuartAmount && stuartCurrency && !checkAddLoading &&
+                            {stuartAmount && stuartCurrency && !checkAddLoading && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                                 <AlertHtmlLocal
                                     severity="warning"
                                     title={localStrings.warning}
