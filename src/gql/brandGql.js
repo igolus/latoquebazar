@@ -49,7 +49,10 @@ const common = `
       stripePublicKey
       systemPayPublicKey
       systemPayEndPoint
-      
+      merchantID,
+      merchantSecret,
+      countryCode,
+      currencyCode,
     }
     socialWebConfig {
       facebookUrl
