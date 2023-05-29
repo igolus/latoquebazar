@@ -61,6 +61,7 @@ export const USER_STATUS_DELIVERING = "delivering";
 
 export const PAYMENT_MODE_STRIPE = "stripe";
 export const PAYMENT_MODE_SYSTEM_PAY = "systemPay";
+export const PAYMENT_MODE_TAKE_PAYMENTS = "takepayments";
 
 export const WIDTH_DISPLAY_MOBILE = 900;
 
