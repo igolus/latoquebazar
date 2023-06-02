@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CompleteProfile = ({closeCallBack}) => {
+const CompleteProfile = ({closeCallBack, language}) => {
   const classes = useStyles();
   const {addToast} = useToasts();
   const [passwordVisibility, setPasswordVisibility] = useState(false)
@@ -138,7 +138,7 @@ const CompleteProfile = ({closeCallBack}) => {
       useFormik({
         onSubmit: handleFormSubmit,
         initialValues,
-        validationSchema: formSchema,
+        validationSchema: formSchema(language),
       })
 
   // function setFieldValueFromLocalStorage(setFieldValue: (field: string, value: any, shouldValidate?: (boolean | undefined)) => (Promise<FormikErrors<any>> | Promise<void>)) {
@@ -350,32 +350,23 @@ const CompleteProfile = ({closeCallBack}) => {
 
 export const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
-const formSchema = yup.object().shape({
-  lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-  //address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
-  phoneNumber: yup.string()
-      .test(
-          'goodFormat',
-          localStrings.check.badPhoneFormat,
-          value => {
-            if (!value) {
-              return false
-            }
-            const phoneNumber = parsePhoneNumber(value, 'FR');
-            //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
-            return phoneNumber?.isValid();
-          })
-
-  // phoneNumber: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}'))
-  //     .matches(phoneRegExp, localStrings.check.badPhoneFormat),
-  // agreement: yup
-  //     .bool()
-  //     .test(
-  //         'agreement',
-  //         localStrings.check.termsAndConditionsMandatory,
-  //         (value) => value === true
-  //     )
-  //     .required(localStrings.check.termsAndConditionsMandatory),
-})
+const formSchema = (language) => {
+  return yup.object().shape({
+    lastName: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+    //address: yup.string().required(localStrings.formatString(localStrings.requiredField, '${path}')),
+    phoneNumber: yup.string()
+        .test(
+            'goodFormat',
+            localStrings.check.badPhoneFormat,
+            value => {
+              if (!value) {
+                return false
+              }
+              const phoneNumber = parsePhoneNumber(value, language === 'fr' ? 'FR' : 'UK');
+              //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
+              return phoneNumber?.isValid();
+            })
+  })
+}
 
 export default CompleteProfile
