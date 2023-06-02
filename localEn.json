@@ -222,7 +222,7 @@
   "priceToPay": "Amount to be paid",
   "pricePaid": "Payroll amount",
   "pendingPayment": "Payment pending",
-  "remainingToPay": "\"Reste a payer: {0}\"",
+  "remainingToPay": "Reste a payer: {0}",
   "totalNoTax": "Total hors taxes",
   "totalCharge": "Total costs",
   "totalTax": "Total TVA",

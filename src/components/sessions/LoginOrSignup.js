@@ -6,7 +6,7 @@ import PassordReset from "@component/sessions/PassordReset";
 
 const LoginOrSignup = ({closeCallBack, contextData}) => {
     const [lostPassword, setLostPassword] = useState(false)
-
+    const language = contextData?.brand?.config?.language || 'fr';
     const {getDbUser, user, dbUser, setDbUser, loginOnGoing, currentUser} = useAuth();
     useEffect(() => {
         if (dbUser && closeCallBack) {
@@ -24,7 +24,7 @@ const LoginOrSignup = ({closeCallBack, contextData}) => {
         return (<Login contextData={contextData} closeCallBack={closeCallBack} callBackBackToLostPassword={() => setLostPassword(true)}/>);
     }
     if (!dbUser && !loginOnGoing) {
-        return (<CompleteProfile closeCallBack={closeCallBack}/>);
+        return (<CompleteProfile closeCallBack={closeCallBack} language={language}/>);
     }
     // else {
         //closeCallBack();
