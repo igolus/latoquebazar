@@ -2,6 +2,7 @@ const axios = require('axios');
 const local = require('./localFr.js');
 const {localFr} = require("./localFr");
 const fs = require("fs");
+const source  = require('./frtranslation.json');
 
 const options = (text) => {
     return {
@@ -13,7 +14,7 @@ const options = (text) => {
             from: 'fr'
         },
         headers: {
-            'X-RapidAPI-Key': '8rbrtaQVCzmshSYl7LcI21Q2yoCnp1qT2N0jsnnXCRw0J0lqgO',
+            'X-RapidAPI-Key': '***',
             'X-RapidAPI-Host': 'nlp-translation.p.rapidapi.com'
         }
     }
@@ -31,7 +32,7 @@ async function translateAll() {
     // console.log(translate);
 
     const translate = {};
-    const keys = Object.keys(localFr.fr);
+    const keys = Object.keys(source);
 
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
@@ -40,20 +41,20 @@ async function translateAll() {
         if (typeof value === 'string') {
             translate[key] = await callTranstale(value);
         }
-        else {
-            translate[key] = {};
-            const keysInside = Object.keys(value);
-            for (let j = 0; j < keysInside.length; j++) {
-                const keysInsideElement = keysInside[j];
-                valueInside = localFr.fr[key][keysInsideElement];
-                translate[key][keysInsideElement] = await callTranstale(valueInside);
-            }
-        }
+        // else {
+        //     translate[key] = {};
+        //     const keysInside = Object.keys(value);
+        //     for (let j = 0; j < keysInside.length; j++) {
+        //         const keysInsideElement = keysInside[j];
+        //         valueInside = localFr.fr[key][keysInsideElement];
+        //         translate[key][keysInsideElement] = await callTranstale(valueInside);
+        //     }
+        // }
     }
 
 
 
-    fs.writeFile("localEn.json", JSON.stringify(translate, null, 2), (error) => {
+    fs.writeFile("localEn2.json", JSON.stringify(translate, null, 2), (error) => {
         // throwing the error
         // in case of a writing problem
         if (error) {

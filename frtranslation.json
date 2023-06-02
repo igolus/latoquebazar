@@ -1,0 +1,28 @@
+{
+  "newOrderSms": "Nouvelle commande en ligne la toque magique: {0} {1}EUR {2} {3} {4}",
+  "reviewCreatedOnline": "Nouvel avis sur le produit: {0}",
+  "reviewUpdatedOnline": "Avis mis a jour sur le produit: {0}",
+
+  "orderRejectedTitle": "Votre commande numérotée {0} a été rejetée",
+  "cancelledOrder": "Votre commande numérotée {0} a été annulée",
+  "cancelledOrderRefund": "Votre paiement en attente a été annulé, contacter le commerce pour plus d'information",
+  "orderCreatedOnline": "Nouvelle Commande en ligne: {0}",
+  "orderCreatedExternal": "Nouvelle Commande externe: {0}",
+  "statusUpdatedOrder": "Votre commande N°{0} est en statut \"{1}\"",
+  "new": "Nouveau",
+  "in_preparation": "en preparation",
+  "received": "reçu",
+  "received": "accepté",
+  "awaiting_shipment": "prét pour la livraison",
+  "awaiting_collection": "prét pour recuperation",
+  "in_delivery": "en livraison",
+  "completed": "completé",
+  "rejected": "rejeté",
+  "cancelled": "annulé",
+  "delivery_failed": "livraison echouée",
+  "delivery": "livraison",
+  "pickupOnSpot": "Click and collect",
+  "onTheSpot": "Sur place",
+  "paymentDoneOnline": "Paiement effectué en ligne",
+  "expectedPayment": "Paiements attendus: "
+}
