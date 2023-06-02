@@ -105,7 +105,10 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             return  localStrings.pricePaid;
         }
         return localStrings.formatString(localStrings.remainingToPay,
-            getRemainingToPay(getOrder()).toFixed(2) + getBrandCurrency(currentBrand()));
+            formatPriceLocal(
+                getRemainingToPay(getOrder()).toFixed(2),
+                getBrandCurrency(currentBrand()),
+                language));
     }
 
     return (

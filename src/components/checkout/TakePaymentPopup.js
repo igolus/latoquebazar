@@ -27,7 +27,7 @@ function TakePaymentPopup({brandId, amount, uuidPayment}) {
             {/*<p>{sourceHtml}</p>*/}
 
             {sourceHtml ?
-                <iframe onLoad={onLoadIFrame} src={sourceHtml}
+                <iframe src={sourceHtml}
                         height={height - 63} width="100%"
                 ></iframe>
                 :

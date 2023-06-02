@@ -23,13 +23,14 @@ import React, {useEffect, useMemo, useRef, useState} from 'react'
 import * as yup from 'yup'
 import localStrings from "../../localStrings";
 import {
+  BRAND_COLLECTION, ESTABLISHMENT_COLLECTION, ORDER_COLLECTION,
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
   ORDER_STATUS_NEW,
   PAYMENT_METHOD_SYSTEMPAY,
   PAYMENT_MODE_STRIPE,
-  PAYMENT_MODE_SYSTEM_PAY, PAYMENT_MODE_TAKE_PAYMENTS, PRICING_EFFECT_FIXED_PRICE
+  PAYMENT_MODE_SYSTEM_PAY, PAYMENT_MODE_TAKE_PAYMENTS, PRICING_EFFECT_FIXED_PRICE, TAKE_PAYMENT_TEMP_COLLECTION
 } from "../../util/constants";
 import BookingSlots from '../../components/form/BookingSlots';
 import useAuth from "@hook/useAuth";
@@ -78,6 +79,8 @@ import UpSellDeal from "@component/products/UpSellDeal";
 import {Base64} from 'js-base64';
 import {pixelInitiateCheckout, pixelPurchaseContent} from "../../util/faceBookPixelUtil";
 import TakePaymentPopup from  './TakePaymentPopup'
+import firebase from "../../lib/firebase";
+import {useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
 
 const config = require('../../conf/config.json')
 
@@ -110,29 +113,38 @@ export function getStuartAmountAndRound(initalAmount : any, currentEstablishment
   return (Math.round(amount * 100) / 100).toFixed(2);
 }
 
+function getStuartMessage(orderInCreation, stuartError, stuartAmount, ret: {}) {
+  if (orderInCreation?.deliveryMode !== ORDER_DELIVERY_MODE_DELIVERY) {
+    return null;
+  }
+
+  if (!orderInCreation.bookingSlot) {
+    return null;
+  }
+  if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
+    return null;
+  }
+  if (stuartError === ACCES_ERROR) {
+    ret.message = localStrings.warningMessage.stuartConnectionIssue;
+    ret.severity = "error";
+    return ret
+  }
+  if (stuartError === OUT_OF_RANGE) {
+    ret.message = localStrings.warningMessage.stuartOutOfRange;
+    ret.severity = "error";
+    return ret
+  }
+  //console.log(stuartError)
+  ret.message = localStrings.warningMessage.stuartDeliveryPossible;
+  ret.severity = "success";
+  return ret
+}
+
 export function getMessagDeliveryAddress(currentEstablishment, orderInCreation, maxDistanceReached, stuartError, stuartAmount, zoneMap) {
+
   const ret = {};
   if (getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive')) {
-    if (!orderInCreation.bookingSlot) {
-      return null;
-    }
-    if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
-      return null;
-    }
-    if (stuartError === ACCES_ERROR) {
-      ret.message = localStrings.warningMessage.stuartConnectionIssue;
-      ret.severity = "error";
-      return ret
-    }
-    if (stuartError === OUT_OF_RANGE) {
-      ret.message = localStrings.warningMessage.stuartOutOfRange;
-      ret.severity = "error";
-      return ret
-    }
-    //console.log(stuartError)
-    ret.message = localStrings.warningMessage.stuartDeliveryPossible;
-    ret.severity = "success";
-    return ret
+    return getStuartMessage(orderInCreation, stuartError, stuartAmount, ret);
   }
 
   ret.message =  maxDistanceReached && !zoneMap ?
@@ -161,10 +173,11 @@ function isStuartActive(currentEstablishment, contextData) {
   return getEstablishmentSettings(firstOrCurrentEstablishment(currentEstablishment, contextData), 'deliveryStuartActive');
 }
 
+var paymentOk = false;
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
-
-
+  const formRef = useRef()
+  const language = contextData?.brand?.config?.language || 'fr';
   let stripe;
   let elements;
   if (!noStripe) {
@@ -220,9 +233,39 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   const [displayTakePaymentsDialog, setDisplayTakePaymentsDialog]=useState(false);
   const [uuidPayment, setUuidPayment] = useState("");
 
+
+  const db = firebase.firestore();
+
   useEffect(() => {
-    setUuidPayment(uuid());
-  }, [])
+
+    let tempId = uuid();
+    db.collection(BRAND_COLLECTION)
+        .doc(config.brandId)
+        .collection(TAKE_PAYMENT_TEMP_COLLECTION)
+        .where("uuidPayment", "==", tempId)
+        .onSnapshot((snapshot) => {
+          snapshot.docChanges().forEach(async (change) => {
+            if (change.type === "added" || change.type === "modified") {
+              //console.log("New city: ", change.doc.data());
+              let data = change.doc.data();
+              // alert("Current data: " + data);
+              setDisplayTakePaymentsDialog(false);
+              if (data.responseStatus !== "0") {
+                setCheckoutError(data.responseMessage)
+              }
+              else {
+                paymentOk = true;
+                if (formRef.current) {
+                  formRef.current.handleSubmit()
+                }
+                //await handleFormSubmit()
+              }
+            }
+          });
+        });
+
+    setUuidPayment(tempId);
+  }, [currentBrand()])
 
   useEffect(() => {
     pixelInitiateCheckout(currentBrand(), getOrderInCreation())
@@ -392,9 +435,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   const handleFormSubmit = async (values: any, transactionId: string, uuidvalue: string) => {
 
-    if (isPaymentTakepayment()) {
-      setDisplayTakePaymentsDialog(true)
-      return;
+    if (isPaymentTakepayment() && paymentMethod === "cc" && !paymentOk) {
+      if (!paymentOk) {
+        setDisplayTakePaymentsDialog(true)
+        return;
+      }
+
     }
     let errorOccured;
     setLoading(true);
@@ -640,7 +686,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       }
 
       dataOrder.expectedPayments = expectedPaymentMethods;
-      if (paymentMethod === "cc" && !isPaymentSystemPay() && !getPaymentOnDeliveryValue()) {
+      if (paymentMethod === "cc" && !isPaymentSystemPay() && !isPaymentTakepayment() && !getPaymentOnDeliveryValue()) {
         dataOrder.tempOrder = true;
       }
 
@@ -664,6 +710,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
       }
 
+      if (isPaymentTakepayment()) {
+        dataOrder.payments = [{
+          uuid: uuid(),
+          valuePayment: PAYMENT_MODE_TAKE_PAYMENTS,
+          amount: detailPrice.total.toFixed(2)
+        }]
+      }
+
       if (dataOrder.payments) {
         dataOrder.payments.forEach(payment => {
           payment.uuid = uuid();
@@ -674,14 +728,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         })
       }
 
-      if (paymentMethod === "cc" && !noStripe && !isPaymentSystemPay() && getPaymentOnDeliveryValue()) {
+      if (paymentMethod === "cc" && !noStripe && isPaymentStripe() && getPaymentOnDeliveryValue()) {
         const paymentMethodReq = await processPaymentMethod(values);
         dataOrder.paymentMethodId = paymentMethodReq.paymentMethod.id;
       }
 
       result = await executeMutationUtil(createOrderMutation(currentBrand.id, currentEstablishment().id, dataOrder));
       orderId = result.data.addOrder.id;
-      if (paymentMethod === "cc" && !noStripe && !isPaymentSystemPay() &&
+      if (paymentMethod === "cc" && !noStripe && isPaymentStripe() &&
           (!getPaymentOnDeliveryValue() || getOrderInCreation().deliveryMode !== ORDER_DELIVERY_MODE_DELIVERY)) {
         let payResult = await processPayment(result.data.addOrder.id, values, dataOrder);
 
@@ -875,7 +929,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       return localStrings.check.noItemInCart;
     }
 
-    if (!checkoutSchema(bookWithoutAccount).isValidSync(values)) {
+    if (!checkoutSchema(bookWithoutAccount, language).isValidSync(values)) {
       return localStrings.check.badContactInfo;
     }
 
@@ -919,7 +973,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     return (paymentMethod === "delivery" && expectedPaymentMethods.length === 0 && priceDetails.total > 0) ||
         !cgvChecked ||
         (isDeliveryPriceDisabled() && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
-        !checkoutSchema(bookWithoutAccount).isValidSync(values) ||
+        !checkoutSchema(bookWithoutAccount, language).isValidSync(values) ||
         !getOrderInCreation().bookingSlot ||
         loading || getCartItems(getOrderInCreation).length == 0 ||
         (!getOrderInCreation()?.deliveryAddress && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY) ||
@@ -1030,8 +1084,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
   return (
       <>
-
-        <p>{uuidPayment}</p>
+        {/*<p>{JSON.stringify(tempTakePayment|| {})}</p>*/}
         <Dialog open={displayTakePaymentsDialog} fullScreen style={{overflow: 'hidden'}}>
           <DialogContent style={{padding: 0}}>
             {paymentPopup}
@@ -1170,8 +1223,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                   <>
                     {/*<p>{JSON.stringify(getOrderInCreation())}</p>*/}
                     <Formik
+                        innerRef={formRef}
                         initialValues={getInitialValues(dbUser)}
-                        validationSchema={checkoutSchema(bookWithoutAccount)}
+                        validationSchema={checkoutSchema(bookWithoutAccount, language)}
                         onSubmit={(values) => handleFormSubmit(values, null, null)}
                     >
 
@@ -1606,15 +1660,41 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   }
 
 
+                                  {/*{isStuartActive(currentEstablishment, contextData)*/}
+                                  {/*    && checkAddLoading && getOrderInCreation().bookingSlot &&*/}
+                                  {/*    <AlertHtmlLocal*/}
+                                  {/*        severity="warning"*/}
+                                  {/*        title={localStrings.stuartLoadingTitle}*/}
+                                  {/*        content={localStrings.stuartLoading}>*/}
+                                  {/*    </AlertHtmlLocal>*/}
+
+                                  {/*}*/}
+
                                   {isStuartActive(currentEstablishment, contextData)
-                                      && checkAddLoading && getOrderInCreation().bookingSlot &&
-                                      <AlertHtmlLocal
-                                          severity="warning"
-                                          title={localStrings.stuartLoadingTitle}
-                                          content={localStrings.stuartLoading}>
-                                      </AlertHtmlLocal>
+                                      && getOrderInCreation().bookingSlot && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                                      <>
+                                       {checkAddLoading ?
+                                              <AlertHtmlLocal
+                                                  severity="warning"
+                                                  title={localStrings.stuartLoadingTitle}
+                                                  content={localStrings.stuartLoading}>
+                                              </AlertHtmlLocal>
+                                           :
+                                             <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                 maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
+
+                                             >
+                                               {checkAddLoading &&
+                                                   <CircularProgress size={30} className={classes.buttonProgress}/>
+                                               }
+                                               <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                   maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
+                                             </AlertHtmlLocal>
+                                       }
+                                      </>
 
                                   }
+
                                   {(checkAddLoading || selectedAddId !== getOrderInCreation()?.deliveryAddress?.id) &&
                                       <Box
                                           display="flex"
@@ -1655,7 +1735,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       selectedKeyParam={selectedSlotKey}
                                       setterSelectedKey={setSelectedSlotKey}
                                       brandId={contextData && contextData?.brand?.id}
-                                      />
+                                  />
                                 </Card1>
                             }
 
@@ -1979,7 +2059,7 @@ const getInitialValues = (dbUser) => {
 
 export const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
-const checkoutSchema = (bookWithoutAccount) => {
+const checkoutSchema = (bookWithoutAccount, language) => {
 
   if (bookWithoutAccount) {
     return yup.object().shape({
@@ -1993,7 +2073,7 @@ const checkoutSchema = (bookWithoutAccount) => {
                     if (!value) {
                       return false;
                     }
-                    const phoneNumber = parsePhoneNumber(value, 'FR');
+                    const phoneNumber = parsePhoneNumber(value, language === 'fr' ? 'FR' : 'UK');
                     //console.log("phoneNumber " + JSON.stringify(phoneNumber, null, 2))
                     return phoneNumber?.isValid();
                   })
