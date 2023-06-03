@@ -6,9 +6,10 @@ import CategorySectionCreator from '../CategorySectionCreator'
 import ProductCard1 from '@component/product-cards/ProductCard1'
 import DealCard1 from "@component/product-cards/DealCard1";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
-import {getBrandCurrency} from "../../util/displayUtil";
+import {firstOrCurrentEstablishment, getBrandCurrency} from "../../util/displayUtil";
 import Food from "@component/icons/Food";
 import localStrings from "../../localStrings";
+import useAuth from "@hook/useAuth";
 
 export interface Section2Props {
   contextData?: any
@@ -19,8 +20,8 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
   const [visibleSlides, setVisibleSlides] = useState(4)
   const width = useWindowSize()
   const [productDisplay, setProductDisplay] = React.useState([]);
-
-
+  const language = contextData?.brand?.config?.language || 'fr';
+  const {currentEstablishment} = useAuth()
 
   const getProductsAndDeals = () => {
     return contextData.products.concat(contextData.deals)
@@ -88,14 +89,21 @@ const Section2:React.FC<Section2Props> = ({contextData}) => {
                           brand={contextData.brand}
                           product={item}
                           options={contextData.options}
-                          currency={getBrandCurrency(contextData.brand)}/>
+                          currency={getBrandCurrency(contextData.brand)}
+                          language={language}
+                          firstOrCurrentEstablishment={firstOrCurrentEstablishment(currentEstablishment, contextData)}
+                      />
                       }
                       {item.type === TYPE_DEAL &&
                       <DealCard1
                           {...itemShop}
                           deal={item}
                           options={contextData.options}
-                          currency={getBrandCurrency(contextData.brand)}/>
+                          currency={getBrandCurrency(contextData.brand)}
+                          language={language}
+                          firstOrCurrentEstablishment={firstOrCurrentEstablishment(currentEstablishment, contextData)}
+
+                      />
                       }
                       {/*<ProductCard1*/}
                       {/*  id={ind}*/}

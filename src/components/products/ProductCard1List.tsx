@@ -3,7 +3,12 @@ import ProductCard1 from '@component/product-cards/ProductCard1'
 import {Grid, Pagination} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import {FilterProps} from "@component/products/ProductFilterCard";
-import {convertCatName, getBrandCurrency, getMininimalSkuPrice} from "../../util/displayUtil";
+import {
+    convertCatName,
+    firstOrCurrentEstablishment,
+    getBrandCurrency,
+    getMininimalSkuPrice
+} from "../../util/displayUtil";
 import {TYPE_DEAL, TYPE_PRODUCT} from "../../util/constants";
 import DealCard1 from "@component/product-cards/DealCard1";
 import {PRICE_ASC, PRICE_DESC} from "@component/products/ProductList";
@@ -215,6 +220,7 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                               options={contextData.options}
                                               currency={getBrandCurrency(contextData.brand)}
                                               language={language}
+                                              firstOrCurrentEstablishment={firstOrCurrentEstablishment(currentEstablishment, contextData)}
                                 />
                                 }
                                 {item.type === TYPE_DEAL &&
@@ -222,7 +228,11 @@ const ProductCard1List: React.FC<ProductCard1ListProps> = ({filter,
                                               currentService={currentService}
                                               deal={item}
                                               options={contextData.options}
-                                              currency={getBrandCurrency(contextData.brand)}/>
+                                              currency={getBrandCurrency(contextData.brand)}
+                                                language={language}
+                                              firstOrCurrentEstablishment={firstOrCurrentEstablishment(currentEstablishment, contextData)}
+
+                                />
                                 }
                             </Grid>
                         )

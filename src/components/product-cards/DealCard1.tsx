@@ -15,6 +15,7 @@ import {getFirstRestrictionItem, getPriceDeal} from "../../util/displayUtil";
 import useWindowSize from "@hook/useWindowSize";
 import {WIDTH_DISPLAY_MOBILE} from "../../util/constants";
 import Image from "@component/BazarImage";
+import {formatPriceLocal} from "@component/products/ProductIntro";
 
 export interface DealCard1Props {
   className?: string
@@ -126,7 +127,9 @@ const DealCard1: React.FC<DealCard1Props> = ({
                                                options,
                                                currency,
                                                currentService,
-                                               fullView
+                                               fullView,
+                                               firstOrCurrentEstablishment,
+                                               language
                                              }) => {
 
   const width = useWindowSize()
@@ -203,7 +206,10 @@ const DealCard1: React.FC<DealCard1Props> = ({
 
             <FlexBox alignItems="center" mt={0.5}>
               <Box pr={1} fontWeight="600" color="primary.main">
-                {(getPriceDeal(deal) || 0).toFixed(2)} {currency}
+
+                {formatPriceLocal((getPriceDeal(deal) || 0).toFixed(2),
+                    currency, language)}
+                {/*{(getPriceDeal(deal) || 0).toFixed(2)} {currency}*/}
               </Box>
             </FlexBox>
 
@@ -227,7 +233,7 @@ const DealCard1: React.FC<DealCard1Props> = ({
               //justifyContent={!!cartItem?.qty ? 'space-between' : 'flex-start'}
               //width="65px"
           >
-            {currentEstablishment() ?
+            {firstOrCurrentEstablishment ?
 
                 <Link href={buildProductDetailRef()}>
                   <Button
