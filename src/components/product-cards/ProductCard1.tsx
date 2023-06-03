@@ -27,6 +27,7 @@ import {cloneDeep} from "@apollo/client/utilities";
 import useWindowSize from "@hook/useWindowSize";
 import Image from "@component/BazarImage";
 import {getDeliveryZone} from "@context/FirebaseAuthContext";
+import {firstOrCurrentEstablishment} from "../../util/displayUtil";
 
 export interface ProductCard1Props {
   className?: string
@@ -205,7 +206,8 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                                                      currency,
                                                      currentService,
                                                      fullView,
-                                                     language
+                                                     language,
+                                                     firstOrCurrentEstablishment
                                                    }) => {
 
   const width = useWindowSize()
@@ -445,7 +447,7 @@ const ProductCard1: React.FC<ProductCard1Props> = ({
                     disabled={getUnavailability(product, currentEstablishment, selectedProductAndSku)}
                     sx={{padding: '3px', ml: '5px', mr: '5px'}}
                     onClick={() => {
-                      if (!currentEstablishment()) {
+                      if (!firstOrCurrentEstablishment) {
                         setSelectEstaOpen(true);
                         return;
                       }

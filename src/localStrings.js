@@ -3,7 +3,7 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
-        closeUntil: "Les commandes sont indisponible jusqu'a: {0}\"",
+        closeUntil: "Les commandes sont indisponibles jusqu'a: {0}",
         chooseEsta: "Choisir l'établissement",
         chooseEsta1: "Vous avez choisi l'établissement {0} vous pouvez changer à tous moment en clickant sur l'icone ",
         chooseEsta2: " Dans la barre d'action du haut",
