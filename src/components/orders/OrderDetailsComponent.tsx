@@ -41,6 +41,7 @@ import {useDocumentData} from "react-firebase-hooks/firestore";
 import config from "../../conf/config.json";
 import firebase from "../../lib/firebase";
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
+import ClipLoaderComponent from "@component/ClipLoaderComponent";
 
 export interface OrderDetailsProps {
     contextData?: any
@@ -133,110 +134,117 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                 icon={ShoppingBag}
             />
 
-            <Card sx={{ p: '.2rem .2rem', mb: '0' }}>
-                <div style={{width: '100%'}}>
-                    {isMobile &&
-                        <>
-                            <Box sx={{display: 'flex', justifyContent: 'center'}}>
-                                <Box m={5}>
-                                    <BazarImage width={120} height={120} src={getImageStatus()}/>
-                                </Box>
-                            </Box>
+            {!loading ?
+                <>
+                    <Card sx={{ p: '.2rem .2rem', mb: '0' }}>
+                        <div style={{width: '100%'}}>
+                            {isMobile &&
+                                <>
+                                    <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                                        <Box m={5}>
+                                            <BazarImage width={120} height={120} src={getImageStatus()}/>
+                                        </Box>
+                                    </Box>
 
-                            <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
-                                <Box mt={7}>
-                                    <H2 my="0px" lineHeight="1" whiteSpace="pre">
-                                        {localStrings.orderStatus}
-                                    </H2>
-                                    <H5 mt={0} mb={2} mt={2}>
-                                        {getTextStatus(order, localStrings)}
-                                    </H5>
+                                    <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
+                                        <Box mt={7}>
+                                            <H2 my="0px" lineHeight="1" whiteSpace="pre">
+                                                {localStrings.orderStatus}
+                                            </H2>
+                                            <H5 mt={0} mb={2} mt={2}>
+                                                {getTextStatus(order, localStrings)}
+                                            </H5>
+                                        </Box>
+                                    </Box>
+                                </>
+                            }
+                            {!isMobile &&
+                                <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
+                                    <Box m={5} justifyContent={"center"}>
+                                        {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
+                                        <BazarImage width={120} height={120} src={getImageStatus()}/>
+                                    </Box>
+                                    <Box mt={7}>
+                                        <H2 my="0px" lineHeight="1" whiteSpace="pre">
+                                            {localStrings.orderStatus}
+                                        </H2>
+                                        <H5 mt={0} mb={2} mt={2}>
+                                            {getTextStatus(order, localStrings)}
+                                        </H5>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </>
+                            }
+
+                        </div>
+                    </Card>
+
+                    {order?.stuartFollowUrl &&
+                        <AlertHtmlLocal severity="info"
+                                        title={localStrings.stuartFollowUrl}
+
+                        >
+                            <a href={order.stuartFollowUrl} target="new">
+                                <p style={{textDecoration:"underline"}}>{localStrings.stuartFollowUrlContent}</p>
+                            </a>
+                        </AlertHtmlLocal>
                     }
-                    {!isMobile &&
-                        <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
-                            <Box m={5} justifyContent={"center"}>
-                                {/*<BazarImage width={120} height={120} src={"/assets/images/IconsDelivery/Get_box.png"}/>*/}
-                                <BazarImage width={120} height={120} src={getImageStatus()}/>
-                            </Box>
-                            <Box mt={7}>
-                                <H2 my="0px" lineHeight="1" whiteSpace="pre">
-                                    {localStrings.orderStatus}
-                                </H2>
-                                <H5 mt={0} mb={2} mt={2}>
-                                    {getTextStatus(order, localStrings)}
+
+                    <OrderContent order={order} contextData={getContextData()}/>
+
+
+                    <Grid container spacing={3}>
+                        <Grid item lg={6} md={6} xs={12}>
+                            <Card sx={{ p: '20px 30px' }}>
+                                <H5 mt={0} mb={2}>
+                                    {localStrings.deliveryMode}
                                 </H5>
-                            </Box>
-                        </Box>
-                    }
+                                <Paragraph fontSize="14px" my="0px">
+                                    {formatOrderConsumingMode(order, localStrings)}
+                                </Paragraph>
 
-                </div>
-            </Card>
+                                {order &&
+                                    order.status !== ORDER_STATUS_COMPLETE &&
+                                    <>
+                                        <H5 mt={0} mb={2} mt={2}>
+                                            {order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? localStrings.deliveryHour
+                                                : localStrings.pickupHour}
+                                        </H5>
+                                        <Paragraph fontSize="14px" my="0px">
+                                            {formatOrderDeliveryDateSlot(order, language)}
+                                        </Paragraph>
+                                    </>
+                                }
 
-            {order?.stuartFollowUrl &&
-                <AlertHtmlLocal severity="info"
-                                title={localStrings.stuartFollowUrl}
+                                {order &&
+                                    order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
+                                    <>
+                                        <H5 mt={0} mb={2} mt={2}>
+                                            {localStrings.deliveryAdress}
+                                        </H5>
+                                        <Paragraph fontSize="14px" my="0px">
+                                            {order?.deliveryAddress?.address}
+                                        </Paragraph>
+                                    </>
+                                }
 
-                >
-                    <a href={order.stuartFollowUrl} target="new">
-                        <p style={{textDecoration:"underline"}}>{localStrings.stuartFollowUrlContent}</p>
-                    </a>
-                </AlertHtmlLocal>
+                            </Card>
+                        </Grid>
+                        <Grid item lg={6} md={6} xs={12}>
+                            <OrderAmountSummary
+                                hideCoupon={true}
+                                contextData={getContextData()}
+                                orderSource={order}
+                                modeOrdered
+                                currency={getBrandCurrency(getContextData() ? getContextData().brand : null)}
+                                hideDetail/>
+
+                        </Grid>
+                    </Grid>
+                </>
+                :
+                <ClipLoaderComponent/>
             }
 
-            <OrderContent order={order} contextData={getContextData()}/>
-
-
-            <Grid container spacing={3}>
-                <Grid item lg={6} md={6} xs={12}>
-                    <Card sx={{ p: '20px 30px' }}>
-                        <H5 mt={0} mb={2}>
-                            {localStrings.deliveryMode}
-                        </H5>
-                        <Paragraph fontSize="14px" my="0px">
-                            {formatOrderConsumingMode(order, localStrings)}
-                        </Paragraph>
-
-                        {order &&
-                            order.status !== ORDER_STATUS_COMPLETE &&
-                            <>
-                                <H5 mt={0} mb={2} mt={2}>
-                                    {order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY ? localStrings.deliveryHour
-                                        : localStrings.pickupHour}
-                                </H5>
-                                <Paragraph fontSize="14px" my="0px">
-                                    {formatOrderDeliveryDateSlot(order, language)}
-                                </Paragraph>
-                            </>
-                        }
-
-                        {order &&
-                            order.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
-                            <>
-                                <H5 mt={0} mb={2} mt={2}>
-                                    {localStrings.deliveryAdress}
-                                </H5>
-                                <Paragraph fontSize="14px" my="0px">
-                                    {order?.deliveryAddress?.address}
-                                </Paragraph>
-                            </>
-                        }
-
-                    </Card>
-                </Grid>
-                <Grid item lg={6} md={6} xs={12}>
-                    <OrderAmountSummary
-                        hideCoupon={true}
-                        contextData={getContextData()}
-                        orderSource={order}
-                        modeOrdered
-                        currency={getBrandCurrency(getContextData() ? getContextData().brand : null)}
-                        hideDetail/>
-
-                </Grid>
-            </Grid>
         </>
     )
 }
