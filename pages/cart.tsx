@@ -58,7 +58,7 @@ const Cart:React.FC<CartProps> = ({contextData}) => {
 
                 //<p>{JSON.stringify(item)}</p>
                 if (item.type === TYPE_DEAL) {
-                  return(<DealCard7 key={key} deal={item} currency={currency} products={getContextData() ? getContextData().products : []}/>)
+                  return(<DealCard7 key={key} deal={item} currency={currency} contextData={getContextData()} products={getContextData() ? getContextData().products : []}/>)
                 }
                 else if (item.type === TYPE_PRODUCT) {
                   return(<ProductCard7 key={key}
