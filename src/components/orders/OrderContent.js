@@ -63,6 +63,7 @@ function OrderContent({ order, contextData, modeConfirmed }) {
                         if (item.type === TYPE_DEAL) {
                             return(<DealCard7 key={item.id}
                                               deal={item}
+                                              contextData={contextData}
                                               modeOrder
                                               currency={currency}
                                               products={contextData ? contextData.products : []}/>)

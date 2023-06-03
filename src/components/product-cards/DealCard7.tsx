@@ -16,6 +16,7 @@ import {itemHaveRestriction, itemRestrictionMax} from "@component/mini-cart/Mini
 import AlertHtmlLocal from "@component/alert/AlertHtmlLocal";
 import Link from "next/link";
 import EditIcon from "@material-ui/icons/Edit";
+import {formatPriceLocal} from "@component/products/ProductIntro";
 
 export interface DealCard7Props {
     id: string | number
@@ -36,9 +37,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
                                                  products,
                                                  deal,
                                                  currency,
-                                                 modeOrder
+                                                 modeOrder,
+                                                 contextData
                                              }) => {
-
+    const language = contextData?.brand?.config?.language || 'fr';
     const item = deal.deal;
     const {getOrderInCreation, setOrderInCreation, setGlobalDialog, currentBrand} = useAuth();
     let imgUrl = "/assets/images/Icon_Sandwich.png";
@@ -114,7 +116,9 @@ const DealCard7: React.FC<DealCard7Props> = ({
 
                     {!itemHaveRestriction(item) &&
                         <Span fontWeight={600} color="primary.main" fontSize="14px" mr={2}>
-                            {" " + getPriceDeal(item).toFixed(2) + " " + currency}
+                            {formatPriceLocal(" " + getPriceDeal(item).toFixed(2),
+                                currency, language)}
+                            {/*{" " + getPriceDeal(item).toFixed(2) + " " + currency}*/}
                         </Span>
                     }
                 </>
@@ -141,10 +145,10 @@ const DealCard7: React.FC<DealCard7Props> = ({
                                 {!itemHaveRestriction(item) &&
                                     <>
                                         <Span color="grey.600" fontSize="14px" mr={1}>
-                                            {getPricingValueDeal(key).toFixed(2) + " " + currency} x {deal.quantity}
+                                            {formatPriceLocal(getPricingValueDeal(key).toFixed(2) + " ", currency, language)} x {deal.quantity}
                                         </Span>
                                         <Span color="grey.600" fontSize="14px" color="primary.main" mr={2}>
-                                            {(getPricingValueDeal(key) * deal.quantity).toFixed(2) + " " + currency}
+                                            {formatPriceLocal((getPricingValueDeal(key) * deal.quantity).toFixed(2) + " ", currency, language)}
                                         </Span>
                                     </>
                                 }
@@ -158,17 +162,12 @@ const DealCard7: React.FC<DealCard7Props> = ({
                                                 {option.name}
                                             </Span>
                                             <Span color="grey.700" fontSize="12px"  mr={1}>
-                                                {option.price +  " " + currency} x {deal.quantity}
+                                                {formatPriceLocal(option.price, currency, language)} x {deal.quantity}
                                             </Span>
                                             <Span fontWeight={600} color="primary.main" fontSize="12px" mr={2}>
-                                                {(parseFloat(option.price) * deal.quantity).toFixed(2) + " " + currency}
+                                                {formatPriceLocal((parseFloat(option.price) * deal.quantity).toFixed(2), currency, language)}
                                             </Span>
                                         </FlexBox>
-
-                                    //   <Span key={key} className="title" fontWeight="200" fontSize="14px" mb={1}>
-                                    //   {option.name} {}
-                                    // </Span>
-
                                 )
                             }
 
