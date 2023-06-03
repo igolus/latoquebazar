@@ -27,6 +27,6 @@ export function stuartApiUrl() {
     return config.baseServiceUrl + 'servicestuart'
 }
 export function takePaymentIframeUrl() {
-    return 'http://localhost:5001/latoqueprod/us-central1/servicepayment/takepayments'
-    //return config.baseServiceUrl + 'servicepayment/takepayments';
+    //return 'http://localhost:5001/latoqueprod/us-central1/servicepayment/takepayments'
+    return config.baseServiceUrl + 'servicepayment/takepayments';
 }
