@@ -593,7 +593,7 @@ export function addChargeToCart(charge, orderInCreation,
     })
 }
 
-export function removeStuartChargeToCart(charge, orderInCreation,
+export function removeStuartChargeToCart(orderInCreation,
                                 setOrderInCreation) {
     if (!orderInCreation || !setOrderInCreation) {
         return;
@@ -682,7 +682,7 @@ export function addToCartOrder(setGlobalDialog, productAndSku, orderInCreation,
     }
 
     let deals = [];
-    if (orderInCreation?.order.deals) {
+    if (orderInCreation?.order?.deals) {
         deals = [...orderInCreation.order.deals]
     }
 
