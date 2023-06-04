@@ -440,8 +440,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         setDisplayTakePaymentsDialog(true)
         return;
       }
-
     }
+    paymentOk = false;
     let errorOccured;
     setLoading(true);
     let orderId = 0;
