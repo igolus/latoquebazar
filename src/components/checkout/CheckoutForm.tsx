@@ -59,7 +59,7 @@ import {
 import {addErrorMutation} from '../../gql/errorGql'
 
 import {green} from "@material-ui/core/colors";
-import {addDiscountToCart, addToCartOrder, getCartItems} from "../../util/cartUtil";
+import {addDiscountToCart, addToCartOrder, getCartItems, removeStuartChargeToCart} from "../../util/cartUtil";
 import ClipLoaderComponent from "../../components/ClipLoaderComponent"
 import {CardElement, useElements, useStripe} from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -129,11 +129,17 @@ function getStuartMessage(orderInCreation, stuartError, stuartAmount, ret: {}) {
     ret.severity = "error";
     return ret
   }
-  if (stuartError === OUT_OF_RANGE) {
+  else if (stuartError === OUT_OF_RANGE) {
     ret.message = localStrings.warningMessage.stuartOutOfRange;
     ret.severity = "error";
     return ret
   }
+  else if (stuartError) {
+    ret.message = stuartError;
+    ret.severity = "error";
+    return ret
+  }
+
   //console.log(stuartError)
   ret.message = localStrings.warningMessage.stuartDeliveryPossible;
   ret.severity = "success";
@@ -798,6 +804,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       setOrderInCreationNoLogic({
         ...getOrderInCreation(),
         bookingSlot: bookingSlot,
+        //charges: [orderInCreationCopy.charges.filter(c => !c.stuart)]
       });
     }
   }
@@ -832,6 +839,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       ...getOrderInCreation(),
       charges: [charge],
       deliveryMode: deliveryMode || getOrderInCreation().deliveryMode,
+      bookingSlot: null,
       deliveryAddress: {
         address: address,
         lat: lat,
@@ -841,6 +849,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         customerDeliveryInformation: customerDeliveryInformation,
         distance: distance,
         zoneId: zoneId,
+
       },
     }, false, null, null, null, true)
   }
@@ -1424,6 +1433,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   subtitle={dbUser?.userProfileInfo?.address}
                                                   selected={selectedAddId === "main"}
                                                   onCLickCallBack={async () => {
+                                                    //await resetBookingSlot();
                                                     await setAddMain();
                                                   }}
                                               />
@@ -1450,7 +1460,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                         item.customerDeliveryInformation || "",
                                                         distInfo?.distance,
                                                         distInfo.deliveryZoneId,
-                                                        charge
+                                                        charge,
+                                                        null,
+                                                        true
                                                     );
                                                   }}
                                               />
@@ -1491,7 +1503,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                 valueSource={adressValue}
                                                 setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
                                                   //let distInfo;
-                                                  if (currentEstablishment() && (getOrderInCreation().bookingSlot || !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
+                                                  if (currentEstablishment() && (getOrderInCreation().bookingSlot && !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
+
+
                                                     let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
                                                     //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
                                                     setCheckAddLoading(true);
@@ -1521,6 +1535,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                     setCheckAddLoading(false);
                                                     updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId, data.charge);
                                                   } else {
+                                                    setSelectedAddId(null);
                                                     updateDeliveryAdress(label, lat, lng);
                                                   }
                                                 }}/>
@@ -1695,7 +1710,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
                                   }
 
-                                  {(checkAddLoading || selectedAddId !== getOrderInCreation()?.deliveryAddress?.id) &&
+                                  {/*{(checkAddLoading || selectedAddId !== getOrderInCreation()?.deliveryAddress?.id) &&*/}
+                                  {(checkAddLoading) &&
                                       <Box
                                           display="flex"
                                           justifyContent="center"
@@ -1707,7 +1723,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   }
                                   <BookingSlots
                                       globalDisabled={checkAddLoading ||
-                                          selectedAddId !== getOrderInCreation()?.deliveryAddress?.id ||
                                           (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && !getOrderInCreation().deliveryAddress) }
                                       excludedPaymentsSetter={setExcludedPayments}
                                       contextData={contextData}
@@ -1715,6 +1730,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       startDateParam={moment()}
                                       selectCallBack={(bookingSlot) => {
                                         setSelectedBookingSlot(bookingSlot, null);
+                                        //if (getOrderInCreation().deliveryMode !== ORDER_DELIVERY_MODE_DELIVERY) {
+                                          //removeStuartChargeToCart(getOrderInCreation(), setOrderInCreation)
+                                        //}
                                         if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && isStuartActive(currentEstablishment, contextData)) {
                                           setCheckAddLoading(true);
                                           distanceAndCheck(null,
