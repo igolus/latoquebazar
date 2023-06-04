@@ -27,8 +27,8 @@ import {
   ORDER_DELIVERY_MODE_DELIVERY,
   ORDER_DELIVERY_MODE_PICKUP_ON_SPOT,
   ORDER_SOURCE_ONLINE,
-  ORDER_STATUS_NEW,
-  PAYMENT_METHOD_SYSTEMPAY,
+  ORDER_STATUS_NEW, PAYMENT_METHOD_STRIPE,
+  PAYMENT_METHOD_SYSTEMPAY, PAYMENT_METHOD_TAKE_PAYMENTS,
   PAYMENT_MODE_STRIPE,
   PAYMENT_MODE_SYSTEM_PAY, PAYMENT_MODE_TAKE_PAYMENTS, PRICING_EFFECT_FIXED_PRICE, TAKE_PAYMENT_TEMP_COLLECTION
 } from "../../util/constants";
@@ -704,7 +704,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
 
         dataOrder.payments = [{
           uuid: uuid(),
-          valuePayment: PAYMENT_MODE_STRIPE,
+          valuePayment: PAYMENT_METHOD_STRIPE,
           amount: detailPrice.total.toFixed(2)
         }]
 
@@ -713,7 +713,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       if (isPaymentTakepayment()) {
         dataOrder.payments = [{
           uuid: uuid(),
-          valuePayment: PAYMENT_MODE_TAKE_PAYMENTS,
+          valuePayment: PAYMENT_METHOD_TAKE_PAYMENTS,
           amount: detailPrice.total.toFixed(2)
         }]
       }

@@ -413,6 +413,7 @@ let localStrings = new LocalizedStrings({
         hrorderStatusDeliveryFailed: "Echec livraison",
 
         stuartFollowUrl: "Lien de suivi Stuart",
+        stuartIssue: "Un probleme est survenu avec notre partenaire de livraison merce de contacter le restaurant !!",
         stuartFollowUrlContent: "Clicker ici pour suivre la progression de votre commande",
 
         stuartLoadingTitle: "Verification de possibilité de livraison",
@@ -876,7 +877,8 @@ let localStrings = new LocalizedStrings({
         "hrorderStatusRejected": "Rejected",
         "hrorderStatusCancelled": "Canceled",
         "hrorderStatusDeliveryFailed": "Delivery failure",
-        "stuartFollowUrl": "\"Stuart tracking link\"",
+        "stuartFollowUrl": "Stuart tracking link",
+        stuartIssue: "An issue has occred with our delivery partners please contact the restaurant !!",
         "stuartFollowUrlContent": "Click here to follow the progress of your order",
         "stuartLoadingTitle": "Verification of possibility of delivery",
         "stuartLoading": "We check if the delivery is possible",
