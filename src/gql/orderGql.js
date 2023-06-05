@@ -5,6 +5,8 @@ const common = `
   id
   loyaltyPoints
   stuartFollowUrl
+  stuartErrorMessage
+  stuartError
   tempOrder
   creationDate
   orderNumber

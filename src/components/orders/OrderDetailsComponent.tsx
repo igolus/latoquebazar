@@ -178,6 +178,15 @@ const OrderDetailsComponent:React.FC<OrderDetailsProps> = ({contextData}) => {
                         </div>
                     </Card>
 
+                    {(order?.stuartError || order?.stuartErrorMessage) &&
+                        <AlertHtmlLocal severity="error"
+                                        title={localStrings.stuartIssue}
+
+                        >
+                            <p style={{textDecoration:"underline"}}>{order?.stuartError + "/" + order?.stuartErrorMessage}</p>
+                        </AlertHtmlLocal>
+                    }
+
                     {order?.stuartFollowUrl &&
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.stuartFollowUrl}
