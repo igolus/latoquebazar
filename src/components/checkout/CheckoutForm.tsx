@@ -1316,7 +1316,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                           <AlertHtmlLocal severity={"warning"}
                                                           title={localStrings.warningMessage.deliveryUnavailable}
                                                           content={localStrings.formatString(localStrings.warningMessage.minimalPriceForDeliveryNoReached,
-                                                              currentEstablishment().serviceSetting.minimalDeliveryOrderPrice)}
+                                                              currentEstablishment().serviceSetting.minimalDeliveryOrderPrice, contextData.brand.config.currency)}
                                           >
                                             <Box display="flex" flexDirection="row-reverse">
                                               <Box mt={2}>
