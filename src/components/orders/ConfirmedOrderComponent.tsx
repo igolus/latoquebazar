@@ -125,11 +125,24 @@ const ConfirmedOrderComponent:React.FC<ConfirmedOrderComponent> = ({contextData}
                     />
 
                     <div style={{marginBottom: "2"}}>
+
+                        {(order?.stuartError || order?.stuartErrorMessage) &&
+                            <AlertHtmlLocal severity="error"
+                                            title={localStrings.stuartIssue}
+
+                            >
+                                <p style={{textDecoration:"underline"}}>{order?.stuartError + "/" + order?.stuartErrorMessage}</p>
+                            </AlertHtmlLocal>
+                        }
+
                         <AlertHtmlLocal severity="info"
                                         title={localStrings.orderCompleted}
                                         content={localStrings.formatString(localStrings.orderCompletedThanks,
                                             currentBrand() ? currentBrand().brandName : "")}
                         />
+
+
+
                         {order?.stuartFollowUrl &&
                             <AlertHtmlLocal severity="info"
                                             title={localStrings.stuartFollowUrl}

@@ -122,7 +122,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
             {(getOrder()?.charges || []).map((chargeItem, key) =>
                 <>
-                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={0}>
+                   <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={0}>
                         <Typography color="grey.600">{chargeItem.name}</Typography>
                         <FlexBox alignItems="flex-end">
                             <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">

@@ -188,6 +188,7 @@ export const getOrderStatus = (localStrings) => {
 // export const HUBRISE_ORDER_STATUS_DELIVERY_FAILED= "delivery_failed";
 export const PAYMENT_METHOD_STRIPE = "PAYMENT_METHOD_STRIPE";
 export const PAYMENT_METHOD_SYSTEMPAY = "PAYMENT_METHOD_SYSTEMPAY";
+export const PAYMENT_METHOD_TAKE_PAYMENTS = "PAYMENT_METHOD_TAKE_PAYMENTS";
 
 export const getPaymentMethods = (localStrings) => {
   return  [
