@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import TextField from '@material-ui/core/TextField';
-import {Autocomplete, IconButton, Tooltip} from '@material-ui/core';
+import {Autocomplete, Button, IconButton, InputLabel, MenuItem, Select, Tooltip} from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import throttle from 'lodash/throttle';
 import localStrings from '../../localStrings';
@@ -8,6 +8,8 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import {makeStyles} from "@material-ui/styles";
 import BazarTextField from "@component/BazarTextField";
 import useAuth from "@hook/useAuth";
+import FormControl from "@material-ui/core/FormControl";
+import Client from 'getaddress-api'
 
 const config = require("../../conf/config.json")
 
@@ -47,12 +49,15 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                                                    valueSource, setterValueSource, noKeyKnown,
                                                    placeholderArg,
                                                    required, error, helperText, disabled, useTextField,
-                                                   borderColor, border, borderRadius}) {
+                                                   borderColor, border, borderRadius, modeUk}) {
     const classes = useStyles();
 
     const {currentBrand} = useAuth()
 
     useEffect(() => {
+        // if (modeUk) {
+        //     return;
+        // }
         async function loadMaps() {
             let timer1 = setTimeout(() => {
                 if (typeof window !== 'undefined' && !loaded.current) {
@@ -101,6 +106,9 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
         setValue = setterValueSource;
     }
     const [locked , setLocked] = useState(lockmode != null)
+    const [postCode , setpostCode] = useState("");
+    const [adresssResult , setAdresssResult] = useState([]);
+    const [selectedAdressIndex , setSelectedAdressIndex] = useState(-1);
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState([]);
     const loaded = React.useRef(false);
@@ -119,12 +127,23 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
     );
 
     React.useEffect(() => {
+
+        if (modeUk) {
+            if (window.google) {
+                geocoder.current = new window.google.maps.Geocoder();
+            }
+            return;
+        }
+
         let active = true;
 
         if (autocompleteService && !autocompleteService.current && !geocoder.current && window.google) {
             autocompleteService.current = new window.google.maps.places.AutocompleteService();
             geocoder.current = new window.google.maps.Geocoder();
         }
+
+
+
         if (!autocompleteService && !autocompleteService.current) {
             return undefined;
         }
@@ -161,6 +180,115 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
         };
     }, [value, inputValue, fetch]);
 
+
+    async function searchAdress() {
+        if (postCode !== '') {
+            const api = new Client("YwHgnjYpQU2x61KmKcHaBA39602");
+            const findResult = await api.find(postCode);
+            if(findResult.isSuccess)
+            {
+                const success = findResult.toSuccess();
+                setAdresssResult(success?.addresses?.addresses);
+                // console.log(JSON.stringify(success, null, 2));
+            }
+        }
+    }
+
+    function formatAdress(item) {
+        if (!item?.formatted_address) {
+            return null;
+        }
+        return item.formatted_address.filter(v => v !== '').join(' ').trim();
+    }
+
+    function handleChangeSelectAdress(event) {
+
+        const formattedAdress = formatAdress(adresssResult[event.target.value]);
+        if (!formattedAdress) {
+            return
+        }
+
+        if (window.google && !geocoder.current) {
+            geocoder.current = new window.google.maps.Geocoder();
+        }
+
+        setSelectedAdressIndex(event.target.value)
+        geocoder.current.geocode({
+            'address': formattedAdress
+        }, (responses, status) => {
+            if (status == 'OK') {
+                let lat = responses[0].geometry.location.lat();
+                let lng = responses[0].geometry.location.lng();
+                let placeId = responses[0].place_id;
+                //setValue(formattedAdress);
+                if (setValueCallback) {
+                    setValueCallback(
+                        formattedAdress,
+                        placeId,
+                        null,
+                        null,
+                        null,
+                        lat,
+                        lng
+                    )
+                }
+                //console.log(lat, lng);
+            }
+        })
+    }
+
+
+    if (modeUk) {
+        return (
+            <Grid
+                container
+            >
+                {/*<h1>modeUk</h1>*/}
+                {/*<p>{postCode}</p>*/}
+                {/*<p>{JSON.stringify(adresssResult)}</p>*/}
+                <Grid
+                    item
+                    md={12}
+                    xs={12}
+                    style={{margin: 0}}
+                    border={border}
+                    borderColor={borderColor}
+                    borderRadius={borderRadius}
+                >
+                    <Grid item lg={12} xs={12} paddingBottom="15px">
+                        <TextField
+                            label={localStrings.postCode}
+                            fullWidth
+                            onChange={(e) => setpostCode(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item lg={12} xs={12} paddingBottom="15px">
+                        <Button variant="contained" color="primary" type="button" fullWidth
+                                onClick={searchAdress}
+                                style={{textTransform: "none"}}
+                        >
+                            {localStrings.getAddress}
+                        </Button>
+                    </Grid>
+                    <Grid item lg={12} xs={12} paddingBottom="15px">
+                        <FormControl fullWidth>
+                            <InputLabel>{localStrings.selectAddress}</InputLabel>
+                            <Select
+                                value={selectedAdressIndex}
+                                label={localStrings.selectAddress}
+                                onChange={handleChangeSelectAdress}
+                            >
+                                {(adresssResult || []).map((item, key) =>
+                                    <MenuItem value={key} key={key}>{formatAdress(item)}</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                </Grid>
+            </Grid>
+        )
+    }
+
     return (
 
 
@@ -175,9 +303,6 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                 borderColor={borderColor}
                 borderRadius={borderRadius}
             >
-                {/*<p>{JSON.stringify(options)}</p>*/}
-
-
                 <Autocomplete
                     className={classes.autocomplete}
                     noOptionsText={localStrings.noAdresseFound}
@@ -232,17 +357,6 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                     renderInput={(params) => (
                         // <form noValidate>
                         <form autocomplete="off">
-
-                            {/*<TextField*/}
-                            {/*    name="phone"*/}
-                            {/*    label={localStrings.phone}*/}
-                            {/*    fullWidth*/}
-                            {/*    onBlur={handleBlur}*/}
-                            {/*    onChange={handleChange}*/}
-                            {/*    value={values.phone || ''}*/}
-                            {/*    error={!!touched.phone && !!errors.phone}*/}
-                            {/*    helperText={touched.phone && errors.phone}*/}
-                            {/*/>*/}
                             {useTextField ?
                                 <TextField {...params}
                                     //style={{height: "44px"}}
@@ -274,37 +388,6 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
 
                         </form>
                     )}
-                    //     renderOption={(option) => {
-                    //         if (!option || !option.structured_formatting) {
-                    //             return;
-                    //         }
-                    //         const matches = option.structured_formatting.main_text_matched_substrings;
-                    //         const parts = parse(
-                    //             option.structured_formatting.main_text,
-                    //             matches.map((match) => [match.offset, match.offset + match.length]),
-                    //         );
-                    //
-                    //         return (
-                    //             <Grid container alignItems="center">
-                    //                 <Grid item>
-                    //                     <LocationOnIcon className={classes.icon} />
-                    //                 </Grid>
-                    //                 <Grid item xs>
-                    //                     {parts.map((part, index) => (
-                    //                         <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                    //   {part.text}
-                    // </span>
-                    //                     ))}
-                    //
-                    //                     <Typography variant="body2" color="textSecondary">
-                    //                         {option.structured_formatting.secondary_text}
-                    //                     </Typography>
-                    //                 </Grid>
-                    //
-                    //
-                    //             </Grid>
-                    //         );
-                    //     }}
                 />
 
 
@@ -312,18 +395,18 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
             </Grid>
 
             {lockmode &&
-            <Grid
-                item
-                md={1}
-                xs={1}
-            >
+                <Grid
+                    item
+                    md={1}
+                    xs={1}
+                >
 
-                <Tooltip title={locked ? localStrings.unlock : localStrings.lock}>
-                    <IconButton aria-label="delete" onClick={() => setLocked(!locked)}>
-                        <LockOpenIcon fontSize="large" />
-                    </IconButton>
-                </Tooltip>
-            </Grid>
+                    <Tooltip title={locked ? localStrings.unlock : localStrings.lock}>
+                        <IconButton aria-label="delete" onClick={() => setLocked(!locked)}>
+                            <LockOpenIcon fontSize="large" />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
             }
         </Grid>
     );

@@ -3,6 +3,9 @@ import React from 'react';
 
 let localStrings = new LocalizedStrings({
     fr: {
+        selectAddress: "Selectionner l'adresse",
+        getAddress: "Obtenir l'adressee",
+        postCode: "Code postal",
         closeUntil: "Les commandes sont indisponibles jusqu'a: {0}",
         chooseEsta: "Choisir l'établissement",
         chooseEsta1: "Vous avez choisi l'établissement {0} vous pouvez changer à tous moment en clickant sur l'icone ",
@@ -343,7 +346,8 @@ let localStrings = new LocalizedStrings({
         forgotPassword: "Mot de passe oublié",
         address: "Adresse",
         deliveryAdress: "Adresse de livraison",
-        selectDeliveryAdress: "Choisir l'adresse de livraison",
+        selectDeliveryAdress: "Choisir votre adresse de livraison préférée",
+        selectDeliveryAdressManual: "Choisir l'adresse de livraison manuellement",
         email: "Email",
         firstName: "Prenom",
         lastName: "Nom",
@@ -513,6 +517,9 @@ let localStrings = new LocalizedStrings({
 
     },
     en: {
+        selectAddress: "Select address",
+        getAddress: "Get address",
+        postCode: "Post code",
         closeUntil: "Orders are unavailable until: {0}",
         "chooseEsta": "Choose the establishment",
         "chooseEsta1": "You have chosen the establishment {0} you can change at any time by clicking on the icon",
@@ -795,7 +802,7 @@ let localStrings = new LocalizedStrings({
         "profileDesc": "Information from your Profile",
         "myAccount": "My account",
         "myOrders": "My orders",
-        "myAddresses": "My adresses",
+        "myAddresses": "My addresses",
         "addNewAddress": "add a new address",
         "modifyAddress": "Modify an address",
         "modifyMainAddress": "Change my main address",
@@ -816,10 +823,11 @@ let localStrings = new LocalizedStrings({
         "forgotPassword": "Forgot your password",
         "address": "Address",
         "deliveryAdress": "Delivery address",
-        "selectDeliveryAdress": "Choose delivery address",
+        "selectDeliveryAdress": "Choose your preferred delivery address",
+        "selectDeliveryAdressManual": "Choose the delivery address manually",
         "email": "Email",
         "firstName": "First name",
-        "lastName": "Nom",
+        "lastName": "Last Name",
         "termsAndConditions": "Terms and conditions",
         "activateAccount": "activate my account",
         "completeAccount": "Complete my account",

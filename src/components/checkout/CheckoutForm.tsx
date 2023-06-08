@@ -1375,10 +1375,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   </>
                                 </Card1>
                             }
-                            {/*<p>{stuartAmount}</p>*/}
-                            {/*<p>{getOrderInCreation()?.deliveryAddress?.address}</p>*/}
-                            {/*<p>{getOrderInCreation()?.deliveryMode}</p>*/}
-                            {/*<p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(), maxDistanceReached, stuartError, stuartAmount, zoneMap)}</p>*/}
                             {(dbUser || bookWithoutAccount) && isDeliveryActive(currentEstablishment()) && getOrderInCreation() && getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                                 <Card1 sx={{mb: '2rem'}}>
                                   <>
@@ -1483,64 +1479,71 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                     }
 
                                     {(!dbUser || !useMyAdress) &&
-                                        <Grid container spacing={3}>
-                                          {/*<Box display="flex" p={1}>*/}
-                                          {/*<Grid item xs={adressSearch ? 10 : 12} lg={adressSearch ? 10 : 12} ml={adressSearch ? 0 : 2} mr={adressSearch ? 0 : 2}>*/}
-                                          <Grid item xs={12} lg={12} ml={2} mr={2}>
-                                            <GoogleMapsAutocomplete
-                                                //ref={autocomp}
-                                                borderColor={customAddressSelected && "primary.main"}
-                                                border={customAddressSelected ? 4 : 0}
-                                                borderRadius={"8px"}
-                                                placeholderArg={dbUser ?
-                                                    localStrings.fillAddressDeliveryConnected : localStrings.fillAddressDelivery}
-                                                noKeyKnown
-                                                required
-                                                setterValueSource={(value) => {
-                                                  setAdressSearch(true);
-                                                  setAdressValue(value);
-                                                }}
-                                                valueSource={adressValue}
-                                                setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
-                                                  //let distInfo;
-                                                  if (currentEstablishment() && (getOrderInCreation().bookingSlot && !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
+                                        <>
+                                          <Typography fontWeight="600" mb={2} mt={2} variant="h5">
+                                            {localStrings.selectDeliveryAdress}
+                                          </Typography>
+
+                                          <Grid container spacing={3}>
+                                            {/*<Box display="flex" p={1}>*/}
+                                            {/*<Grid item xs={adressSearch ? 10 : 12} lg={adressSearch ? 10 : 12} ml={adressSearch ? 0 : 2} mr={adressSearch ? 0 : 2}>*/}
+                                            <Grid item xs={12} lg={12} ml={2} mr={2}>
+                                              <GoogleMapsAutocomplete
+                                                  modeUk={currentBrand()?.country === 'gb'}
+                                                  //ref={autocomp}
+                                                  borderColor={customAddressSelected && "primary.main"}
+                                                  border={customAddressSelected ? 4 : 0}
+                                                  borderRadius={"8px"}
+                                                  placeholderArg={dbUser ?
+                                                      localStrings.fillAddressDeliveryConnected : localStrings.fillAddressDelivery}
+                                                  noKeyKnown
+                                                  required
+                                                  setterValueSource={(value) => {
+                                                    setAdressSearch(true);
+                                                    setAdressValue(value);
+                                                  }}
+                                                  valueSource={adressValue}
+                                                  setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                                    //let distInfo;
+                                                    if (currentEstablishment() && (getOrderInCreation().bookingSlot && !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
 
 
-                                                    let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                    //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
-                                                    setCheckAddLoading(true);
-                                                    const data = await distanceAndCheck(distInfo,
-                                                        currentEstablishment, getOrderInCreation(),
-                                                        currentBrand().id,  lat, lng,
-                                                        getOrderInCreation().bookingSlot, label, contextData);
+                                                      let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                      //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
+                                                      setCheckAddLoading(true);
+                                                      const data = await distanceAndCheck(distInfo,
+                                                          currentEstablishment, getOrderInCreation(),
+                                                          currentBrand().id,  lat, lng,
+                                                          getOrderInCreation().bookingSlot, label, contextData);
 
-                                                    if (maxDistanceReached) {
-                                                      //setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
+                                                      if (maxDistanceReached) {
+                                                        //setDeliveryMode(ORDER_DELIVERY_MODE_PICKUP_ON_SPOT);
+                                                        setSelectedAddId(null);
+                                                        setCustomAddressSelected(false)
+                                                        setManualAddressOutOfBound(true);
+                                                      }
+                                                      else {
+                                                        setCustomAddressSelected(true)
+                                                        setSelectedAddId(null);
+                                                      }
+                                                      setMaxDistanceReached(data.maxDistanceReached);
+                                                      setAdressSearch(false);
+                                                      setZoneMap(data.zoneMap);
+                                                      setMaxDistanceReached(data.maxDistanceReached);
+                                                      setDistanceInfo(data.distanceInfo);
+                                                      setStuartError(data.error);
+                                                      setStuartAmountAndRound(data);
+                                                      setStuartCurrency(data.currency);
+                                                      setCheckAddLoading(false);
+                                                      updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId, data.charge);
+                                                    } else {
                                                       setSelectedAddId(null);
-                                                      setCustomAddressSelected(false)
-                                                      setManualAddressOutOfBound(true);
+                                                      updateDeliveryAdress(label, lat, lng);
                                                     }
-                                                    else {
-                                                      setCustomAddressSelected(true)
-                                                      setSelectedAddId(null);
-                                                    }
-                                                    setMaxDistanceReached(data.maxDistanceReached);
-                                                    setAdressSearch(false);
-                                                    setZoneMap(data.zoneMap);
-                                                    setMaxDistanceReached(data.maxDistanceReached);
-                                                    setDistanceInfo(data.distanceInfo);
-                                                    setStuartError(data.error);
-                                                    setStuartAmountAndRound(data);
-                                                    setStuartCurrency(data.currency);
-                                                    setCheckAddLoading(false);
-                                                    updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId, data.charge);
-                                                  } else {
-                                                    setSelectedAddId(null);
-                                                    updateDeliveryAdress(label, lat, lng);
-                                                  }
-                                                }}/>
+                                                  }}/>
+                                            </Grid>
                                           </Grid>
-                                        </Grid>
+                                        </>
                                     }
 
                                     {!maxDistanceReached && !zoneMap &&
@@ -1688,24 +1691,24 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                   {isStuartActive(currentEstablishment, contextData)
                                       && getOrderInCreation().bookingSlot && getOrderInCreation()?.deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                                       <>
-                                       {checkAddLoading ?
-                                              <AlertHtmlLocal
-                                                  severity="warning"
-                                                  title={localStrings.stuartLoadingTitle}
-                                                  content={localStrings.stuartLoading}>
-                                              </AlertHtmlLocal>
-                                           :
-                                             <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                 maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
+                                        {checkAddLoading ?
+                                            <AlertHtmlLocal
+                                                severity="warning"
+                                                title={localStrings.stuartLoadingTitle}
+                                                content={localStrings.stuartLoading}>
+                                            </AlertHtmlLocal>
+                                            :
+                                            <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
 
-                                             >
-                                               {checkAddLoading &&
-                                                   <CircularProgress size={30} className={classes.buttonProgress}/>
-                                               }
-                                               <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                   maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
-                                             </AlertHtmlLocal>
-                                       }
+                                            >
+                                              {checkAddLoading &&
+                                                  <CircularProgress size={30} className={classes.buttonProgress}/>
+                                              }
+                                              <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                  maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
+                                            </AlertHtmlLocal>
+                                        }
                                       </>
 
                                   }
@@ -1731,7 +1734,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                       selectCallBack={(bookingSlot) => {
                                         setSelectedBookingSlot(bookingSlot, null);
                                         //if (getOrderInCreation().deliveryMode !== ORDER_DELIVERY_MODE_DELIVERY) {
-                                          //removeStuartChargeToCart(getOrderInCreation(), setOrderInCreation)
+                                        //removeStuartChargeToCart(getOrderInCreation(), setOrderInCreation)
                                         //}
                                         if (getOrderInCreation().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY && isStuartActive(currentEstablishment, contextData)) {
                                           setCheckAddLoading(true);

@@ -228,6 +228,7 @@ const AddressEditor = ({back}) => {
                                             }
                                             <Grid item md={12} xs={12}>
                                                 <GoogleMapsAutocomplete
+                                                    modeUk={currentBrand()?.country === 'gb'}
                                                     noKeyKnown
                                                     required
                                                     setterValueSource={setAdressValue}
