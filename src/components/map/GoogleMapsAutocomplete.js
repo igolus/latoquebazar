@@ -275,9 +275,6 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
             <Grid
                 container
             >
-                {/*<h1>modeUk</h1>*/}
-                {/*<p>{postCode}</p>*/}
-                {/*<p>{JSON.stringify(adresssResult)}</p>*/}
                 <Grid
                     item
                     md={12}
@@ -289,8 +286,8 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                 >
                     <Grid item lg={12} xs={12} paddingBottom="15px">
                         <TextField
-                            error={!isPostCodeCorrect() }
-                            helperText={!isPostCodeCorrect() ? localStrings.check.invalidPostCode : null}
+                            error={!isPostCodeCorrect() && postCode !== ''}
+                            helperText={!isPostCodeCorrect() && postCode !== ''? localStrings.check.invalidPostCode : null}
                             label={localStrings.postCode}
                             value={postCode}
                             fullWidth

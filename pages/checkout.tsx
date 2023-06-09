@@ -1,8 +1,8 @@
 import CheckoutForm from '@component/checkout/CheckoutForm'
 import OrderAmountSummary from '@component/checkout/OrderAmountSummary'
 import CheckoutNavLayout from '@component/layout/CheckoutNavLayout'
-import {Grid} from '@material-ui/core'
-import React from 'react'
+import {Divider, Grid} from '@material-ui/core'
+import React, {useState} from 'react'
 import {GetStaticProps} from "next";
 import {getStaticPropsUtil} from "../src/nextUtil/propsBuilder";
 import {getBrandCurrency} from "../src/util/displayUtil";
@@ -23,6 +23,7 @@ const Checkout:React.FC<Checkout> = ({contextData}) => {
   }
 
   const {currentBrand} = useAuth();
+  const [addressLoading, setAddressLoading] = useState(false);
 
   let publicKey = currentBrand()?.config?.paymentWebConfig?.stripePublicKey;
   //console.log("publicKey" + publicKey)
@@ -50,24 +51,28 @@ const Checkout:React.FC<Checkout> = ({contextData}) => {
           {stripePromise ?
               <Elements stripe={stripePromise}>
                 <CheckoutForm
-                    contextData={getContextData()}/>
+                    setAddressLoading={setAddressLoading}
+                    contextData={getContextData()}
+                    noStripe={false}
+                    addressLoading={addressLoading}
+                />
               </Elements>
               :
               <CheckoutForm
                   contextData={getContextData()}
+                  setAddressLoading={setAddressLoading}
                   noStripe={true}
+                  addressLoading={addressLoading}
               />
           }
 
         </Grid>
         <Grid item lg={4} md={4} xs={12}>
-          {/*<RightPanel getContextData={getContextData}/>*/}
           <OrderAmountSummary
-              currency={getBrandCurrency(getContextData()?.brand)} contextData={getContextData()}/>
-          {/*<CouponCode contextData={getContextData()}/>*/}
+              loading={addressLoading}
+              currency={getBrandCurrency(getContextData()?.brand)}
+              contextData={getContextData()}/>
         </Grid>
-
-
       </Grid>
     </CheckoutNavLayout>
     </>
