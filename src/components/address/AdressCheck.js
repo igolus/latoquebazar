@@ -47,20 +47,24 @@ export async function distanceAndCheck(distanceInfo,
                 return ret;
             }
             if (res.data.amount) {
+                let stuartAmountAndRound = getStuartAmountAndRound(res.data.amount.toFixed(2), currentEstablishment, contextData);
                 const charge = {
                     id: uuid(),
                     stuart: true,
                     name: localStrings.deliveryFeeExternal,
                     extRef: "",
                     pricingEffect: "fixed_price",
-                    pricingValue: getStuartAmountAndRound(res.data.amount.toFixed(2), currentEstablishment, contextData),
+                    pricingValue: stuartAmountAndRound,
                     price: parseFloat(getStuartAmountAndRound(res.data.amount, currentEstablishment, contextData)),
                 }
 
                 ret.maxDistanceReached = false;
                 ret.amount = res.data.amount.toFixed(2);
                 ret.currency = res.data.currency;
-                ret.charge = charge;
+                if (parseFloat(stuartAmountAndRound) > 0) {
+                    ret.charge = charge;
+                }
+
                 return ret;
             }
             ret.maxDistanceReached = false;
