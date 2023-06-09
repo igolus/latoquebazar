@@ -105,6 +105,8 @@ const useStyles = makeStyles((theme) => ({
 export interface CheckoutFormProps {
   contextData: any
   noStripe: boolean
+  setAddressLoading: any
+  addressLoading: any
 }
 
 export function getStuartAmountAndRound(initalAmount : any, currentEstablishment: any, contextData: any) {
@@ -182,7 +184,7 @@ function isStuartActive(currentEstablishment, contextData) {
 
 var paymentOk = false;
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAddressLoading, addressLoading}) => {
   const formRef = useRef()
   const language = contextData?.brand?.config?.language || 'fr';
   let stripe;
@@ -1058,7 +1060,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         "main",
         dbUser?.userProfileInfo?.customerDeliveryInformation,
         distInfo?.distance,
-        null,
+        distInfo?.deliveryZoneId,
         charge,
         deliveryMode
     );
@@ -1433,7 +1435,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                           {dbUser?.userProfileInfo?.address &&
                                              <>
                                               <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                                                {dbUser?.userProfileInfo?.address ? localStrings.selectDeliveryAdressManualAlternate : localStrings.selectDeliveryAdressManual }
+                                                {/*{dbUser?.userProfileInfo?.address ? localStrings.selectDeliveryAdressManualAlternate : localStrings.selectDeliveryAdressManual }*/}
+                                                {localStrings.selectDeliveryAdress}
                                               </Typography>
 
                                               <PresenterSelect
@@ -1443,7 +1446,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   selected={selectedAddId === "main"}
                                                   onCLickCallBack={async () => {
                                                     //await resetBookingSlot();
+                                                    setAddressLoading(true);
                                                     await setAddMain();
+                                                    setAddressLoading(false);
                                                   }}
                                               />
                                              </>
@@ -1457,6 +1462,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   subtitle={item.address}
                                                   selected={selectedAddId === item.id}
                                                   onCLickCallBack={async () => {
+                                                    setAddressLoading(true);
                                                     setSelectedAddId(item.id);
                                                     const {distInfo, charge} = await checkDistance(item.lat, item.lng, item.address);
                                                     setAdressValue(null);
@@ -1469,11 +1475,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                         //item.additionalInformation,
                                                         item.customerDeliveryInformation || "",
                                                         distInfo?.distance,
-                                                        distInfo.deliveryZoneId,
+                                                        distInfo?.deliveryZoneId,
                                                         charge,
                                                         null,
                                                         true
                                                     );
+                                                    setAddressLoading(false);
                                                   }}
                                               />
                                           )}
@@ -1495,7 +1502,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                     {(!dbUser || !useMyAdress) &&
                                         <>
                                           <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                                            {localStrings.selectDeliveryAdressManual}
+                                            {dbUser?.userProfileInfo?.address ? localStrings.selectDeliveryAdressManualAlternate : localStrings.selectDeliveryAdressManual }
                                           </Typography>
 
                                           <Grid container spacing={3}>
@@ -1518,6 +1525,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   }}
                                                   valueSource={adressValue}
                                                   setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                                    setAddressLoading(true);
                                                     //let distInfo;
                                                     if (currentEstablishment() && (getOrderInCreation().bookingSlot && !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
                                                       let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
@@ -1557,6 +1565,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                           getOrderInCreation().bookingSlot, label, contextData);
                                                       updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId);
                                                     }
+                                                    setAddressLoading(false);
                                                   }}/>
                                             </Grid>
                                           </Grid>
@@ -2060,9 +2069,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             type="submit"
                                             //endIcon={<SaveIcon />}
                                             disabled={
-                                                isPaymentDisabled(values) || orderUpdating || checkAddLoading
+                                                isPaymentDisabled(values) || orderUpdating || checkAddLoading || addressLoading
                                             }
-                                            endIcon={loading ?
+                                            endIcon={(loading || addressLoading)?
                                                 <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
                                         >
                                           {getSubmitText(values)}
