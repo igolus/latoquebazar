@@ -348,6 +348,7 @@ let localStrings = new LocalizedStrings({
         deliveryAdress: "Adresse de livraison",
         selectDeliveryAdress: "Choisir votre adresse de livraison préférée",
         selectDeliveryAdressManual: "Choisir l'adresse de livraison manuellement",
+        selectDeliveryAdressManualAlternate: "Ou choisir l'adresse de livraison manuellement",
         email: "Email",
         firstName: "Prenom",
         lastName: "Nom",
@@ -433,6 +434,7 @@ let localStrings = new LocalizedStrings({
             passwordsMatch: 'Les mots de passe doivent être les mêmes',
             reTypePassword: "Fournir le mot de passe une nouvelle fois",
             invalidEmail: "eMail invalide",
+            invalidPostCode: "Code postal invalid",
             noDaySetting: "Pas de créneau configuré",
 
             noSelectPaymentMethod: "Aucune méthode de paiments selectionné",
@@ -653,7 +655,7 @@ let localStrings = new LocalizedStrings({
         "useCustomAdresses": "Use another address",
         "backToHome": "Back to home page",
         "backNav": "Go back",
-        "personalInformation": "Please fill your personal information",
+        "personalInformation": "Please fill your contact information",
         "seeInfo": "See useful information",
         "bookingadditionalInformationNotes": "Note for order",
         "bookingadditionalInformationNotesPlaceHolder": "Indicate for example \"Well-done meat\" or \"Without mayonnaise\", ...",
@@ -825,6 +827,7 @@ let localStrings = new LocalizedStrings({
         "deliveryAdress": "Delivery address",
         "selectDeliveryAdress": "Choose your preferred delivery address",
         "selectDeliveryAdressManual": "Choose the delivery address manually",
+        "selectDeliveryAdressManualAlternate": "Or choose the delivery address manually",
         "email": "Email",
         "firstName": "First name",
         "lastName": "Last Name",
@@ -898,7 +901,8 @@ let localStrings = new LocalizedStrings({
             "termsAndConditionsMandatory": "You must accept the terms and conditions",
             "passwordsMatch": "Passwords must be the same",
             "reTypePassword": "Provide password again",
-            "invalidEmail": "eMail invalide",
+            "invalidEmail": "invalid email",
+            "invalidPostCode": "Invalid post code",
             "noDaySetting": "No slot configured",
             "noSelectPaymentMethod": "No payment method selected",
             "noSelectSlotMethod": "None Time slot selected",
@@ -912,7 +916,7 @@ let localStrings = new LocalizedStrings({
         "info": {
             "resetPassword": "An email has been sent to {0} to reset the password",
             "checkAddessInfo": "To find out if you are eligible for home delivery, please provide an address",
-            "connectToOrder": "In order to keep track of your orders and to guarantee better follow-up, we advise you to place the order in online mode. If you have a Google account, It will only take a few seconds!!"
+            "connectToOrder": "In order to keep track of your orders and to guarantee better follow-up, we advise you to place the order using an account. If you have a Google account, It will only take a few seconds!!"
         },
         "warningMessage": {
             "noMainAddDefined": "Your main address is not defined",

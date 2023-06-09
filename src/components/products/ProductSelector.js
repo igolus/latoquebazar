@@ -8,6 +8,7 @@ import FormControl from '@material-ui/core/FormControl';
 import {makeStyles} from "@material-ui/styles";
 import useAuth from "@hook/useAuth";
 import cloneDeep from "clone-deep";
+import ClipLoaderComponent from "@component/ClipLoaderComponent";
 
 export const OPTION_LIST_SINGLE = "single";
 export const OPTION_LIST_MULTIPLE = "multiple";
@@ -59,7 +60,7 @@ function ProductSelector({ productAndSku, options,
                            valid, lineNumber, initialItem, language}) {
 
   const classes = useStyles();
-  const {dealEdit, currentEstablishment} = useAuth();
+  const {dealEdit, currentEstablishment, getContextDataAuth} = useAuth();
   //const [initialItemState, setInitialItem] = useState(null);
 
   useEffect(() => {
@@ -105,7 +106,9 @@ function ProductSelector({ productAndSku, options,
     let other = itemSkuBookingNew.options.filter(option => option.option_list_extRef !== optionList.extRef
         && option.option_list_extRef !== optionList.extId);
     let optionToSet = optionListComplete.find(optionComplete => optionComplete.ref == ref);
-
+    if (!optionToSet) {
+      return;
+    }
     itemSkuBookingNew.options = [...other, optionToSet];
     if (!noCallSetter) {
       setterSkuEdit(itemSkuBookingNew);
@@ -290,6 +293,10 @@ function ProductSelector({ productAndSku, options,
     }
 
     let optionListComplete = optionList.options.map(option => buildOption(optionList, option))
+
+    if (!getContextDataAuth()) {
+      return <ClipLoaderComponent/>
+    }
 
     if (optionList.type === OPTION_LIST_SINGLE) {
       return (

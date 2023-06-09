@@ -121,7 +121,8 @@ function getStuartMessage(orderInCreation, stuartError, stuartAmount, ret: {}) {
   if (!orderInCreation.bookingSlot) {
     return null;
   }
-  if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
+  // if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
+  if (!orderInCreation.bookingSlot?.startDate) {
     return null;
   }
   if (stuartError === ACCES_ERROR) {
@@ -793,10 +794,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function setSelectedBookingSlot(bookingSlot, charge) {
+    const chargeWithoutStuart = (getOrderInCreation().charges || []).filter(c => !c.stuart)
+
     if (charge) {
       setOrderInCreation({
         ...getOrderInCreation(),
-        charges: [charge],
+        charges: [...chargeWithoutStuart, charge],
         bookingSlot: bookingSlot,
       });
     }
@@ -804,7 +807,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       setOrderInCreationNoLogic({
         ...getOrderInCreation(),
         bookingSlot: bookingSlot,
-        //charges: [orderInCreationCopy.charges.filter(c => !c.stuart)]
+        charges: [...chargeWithoutStuart]
       });
     }
   }
@@ -886,7 +889,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     if (!doNotCheckBookingSlot && !getOrderInCreation().bookingSlot || !data.amount) {
       return;
     }
-    setStuartAmount(getStuartAmountAndRound(data.amount, currentEstablishment, contextData));
+    let stuartAmountAndRound = getStuartAmountAndRound(data.amount, currentEstablishment, contextData);
+    if (parseFloat(stuartAmountAndRound) > 0) {
+      setStuartAmount(stuartAmountAndRound);
+    }
+    else {
+      setStuartAmount(null);
+    }
+
   }
 
 
@@ -1395,9 +1405,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                           </AlertHtmlLocal>
                                         </Box>
                                     }
-                                    <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                                      {localStrings.selectDeliveryAdress}
-                                    </Typography>
+
 
                                     {dbUser &&
                                         <>
@@ -1423,6 +1431,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                           }
 
                                           {dbUser?.userProfileInfo?.address &&
+                                             <>
+                                              <Typography fontWeight="600" mb={2} mt={2} variant="h5">
+                                                {dbUser?.userProfileInfo?.address ? localStrings.selectDeliveryAdressManualAlternate : localStrings.selectDeliveryAdressManual }
+                                              </Typography>
+
                                               <PresenterSelect
                                                   icon={faAddressCard}
                                                   title={localStrings.mainAddress}
@@ -1433,6 +1446,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                     await setAddMain();
                                                   }}
                                               />
+                                             </>
                                           }
 
                                           {dbUser?.userProfileInfo?.address && (dbUser?.userProfileInfo?.otherAddresses || []).map((item, key) =>
@@ -1481,7 +1495,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                     {(!dbUser || !useMyAdress) &&
                                         <>
                                           <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                                            {localStrings.selectDeliveryAdress}
+                                            {localStrings.selectDeliveryAdressManual}
                                           </Typography>
 
                                           <Grid container spacing={3}>
@@ -1506,8 +1520,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
                                                     //let distInfo;
                                                     if (currentEstablishment() && (getOrderInCreation().bookingSlot && !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
-
-
                                                       let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
                                                       //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
                                                       setCheckAddLoading(true);
@@ -1538,7 +1550,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                       updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId, data.charge);
                                                     } else {
                                                       setSelectedAddId(null);
-                                                      updateDeliveryAdress(label, lat, lng);
+                                                      let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                      await distanceAndCheck(distInfo,
+                                                          currentEstablishment, getOrderInCreation(),
+                                                          currentBrand().id,  lat, lng,
+                                                          getOrderInCreation().bookingSlot, label, contextData);
+                                                      updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId);
                                                     }
                                                   }}/>
                                             </Grid>
