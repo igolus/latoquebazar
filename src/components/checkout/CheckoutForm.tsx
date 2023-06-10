@@ -880,7 +880,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAd
         getOrderInCreation() &&
         currentEstablishment().serviceSetting &&
         currentEstablishment().serviceSetting.minimalDeliveryOrderPrice &&
-        computePriceDetail(getOrderInCreation()).total + totalDiscounts < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
+        computePriceDetail(getOrderInCreation()).totalNoCharge + totalDiscounts < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
   }
 
   const handlePaymentMethodChange = ({ target: { name } }: any) => {
@@ -1397,13 +1397,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAd
                                         <Box p={1}>
                                           <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
                                               maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
-
+                                              title={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                  maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}
                                           >
                                             {checkAddLoading &&
                                                 <CircularProgress size={30} className={classes.buttonProgress}/>
                                             }
-                                            <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
                                           </AlertHtmlLocal>
                                         </Box>
                                     }
@@ -1720,19 +1719,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAd
                                         {checkAddLoading ?
                                             <AlertHtmlLocal
                                                 severity="warning"
-                                                title={localStrings.stuartLoadingTitle}
-                                                content={localStrings.stuartLoading}>
+                                                title={localStrings.stuartLoading}>
                                             </AlertHtmlLocal>
                                             :
                                             <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
                                                 maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
-
+                                                title={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                    maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}
                                             >
                                               {checkAddLoading &&
                                                   <CircularProgress size={30} className={classes.buttonProgress}/>
                                               }
-                                              <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                  maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
                                             </AlertHtmlLocal>
                                         }
                                       </>
