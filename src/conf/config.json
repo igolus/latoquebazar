@@ -9,6 +9,5 @@
   "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
   "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment",
   "getMapByGeoPointUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getMapByGeoPoint",
-  "baseServiceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/",
-  
+  "baseServiceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/"
 }
