@@ -1,12 +1,13 @@
 {
-  "graphQlUrl": "http://localhost:5001/latoque-b23f1/us-central1/graphQlApi",
-  "brandId": "xMBbSif3SeIWF5SKZlQj",
-  "appName": "lumpini",
+  "graphQlUrl": "https://us-central1-latoqueprod.cloudfunctions.net/graphQlApi",
+  "brandId": "Gg2q8w0MtR6APuxuZcus",
+  "appName": "testhurise",
   "googleKey": "AIzaSyDc9rHf2zgpYqgkKgXGX4BNUOdcZbCrwEQ",
-  "distanceUrl": "http://localhost:5001/latoque-b23f1/us-central1/distanceApi",
-  "sendEmailUrl": "http://localhost:5001/latoque-b23f1/us-central1/sendMail",
-  "getResetAccountLinkUrl": "http://localhost:5001/latoque-b23f1/us-central1/getPasswordLink",
-  "getActivationEmailLinkUrl": "http://localhost:5001/latoque-b23f1/us-central1/activateMailLink",
-  "paymentUrl": "http://localhost:5001/latoque-b23f1/us-central1/payment/stripe/charge",
-  "getMapByGeoPointUrl": "http://localhost:5001/latoque-b23f1/us-central1/getMapByGeoPoint"
+  "distanceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/distanceApi",
+  "sendEmailUrl": "https://us-central1-latoqueprod.cloudfunctions.net/sendMail",
+  "getResetAccountLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getPasswordLink",
+  "getActivationEmailLinkUrl": "https://us-central1-latoqueprod.cloudfunctions.net/activateMailLink",
+  "paymentUrl": "https://us-central1-latoqueprod.cloudfunctions.net/payment",
+  "getMapByGeoPointUrl": "https://us-central1-latoqueprod.cloudfunctions.net/getMapByGeoPoint",
+  "baseServiceUrl": "https://us-central1-latoqueprod.cloudfunctions.net/"
 }
