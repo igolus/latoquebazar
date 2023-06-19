@@ -1,6 +1,6 @@
 import Card1 from '@component/Card1'
 import FlexBox from '@component/FlexBox'
-import {Alert, Button, Divider, Typography} from '@material-ui/core'
+import {Alert, Button, CircularProgress, Divider, Typography} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useAuth from "@hook/useAuth";
 import {
@@ -32,6 +32,7 @@ export interface OrderAmountSummaryProps {
     modeOrdered: boolean
     orderSource: any
     contextData: any
+    loading: boolean
 }
 
 export function getHourFormat(language) {
@@ -43,7 +44,7 @@ export function getHourFormat(language) {
 }
 
 const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDetail,
-                                                                  modeOrdered,orderSource, contextData, hideCoupon}) => {
+                                                                  modeOrdered,orderSource, contextData, hideCoupon, loading}) => {
 
     // console.log("contextData " + JSON.stringify(contextData));
     const language = contextData?.brand?.config?.language || 'fr';
@@ -89,12 +90,6 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
     function getDeliveryAdressMessage() {
         return getOrderInCreation()?.deliveryAddress?.address || "-";
-        // if (!maxDistanceReached) {
-        //     return getOrderInCreation()?.deliveryAddress?.address || "-";
-        // }
-        // let messagDeliveryAddress = getMessagDeliveryAddress(currentEstablishment,
-        //     getOrderInCreation(), maxDistanceReached, stuartError, stuartAmount, zoneMap);
-        // return messagDeliveryAddress?.message || "-";
     }
 
     function getAmountRemainingMessage() {
@@ -122,7 +117,7 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
 
             {(getOrder()?.charges || []).map((chargeItem, key) =>
                 <>
-                   <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={0}>
+                    <FlexBox key={key} justifyContent="space-between" alignItems="center" mb={0}>
                         <Typography color="grey.600">{chargeItem.name}</Typography>
                         <FlexBox alignItems="flex-end">
                             <Typography fontSize={fontSize} fontWeight={fontWeight} lineHeight="1">
@@ -205,19 +200,20 @@ const OrderAmountSummary:React.FC<OrderAmountSummaryProps> = ({currency, hideDet
             {!hideDetail &&
                 <>
 
-                    {getOrder() && getOrder().deliveryAddress &&
+                    {getOrder()  &&
                         getOrder().deliveryMode === ORDER_DELIVERY_MODE_DELIVERY &&
                         <>
                             <Divider sx={{mb: 0}}/>
-
                             <Typography fontWeight={fontWeight} mb={0} mt={.25}>
                                 {localStrings.deliveryAdress}
                             </Typography>
-                            <Typography color="grey.600" fontSize={fontSize}>
-                                {getDeliveryAdressMessage()}
-                                {/*{maxDistanceReached ? localStrings.tooFarAddress : getOrder().deliveryAddress.address}*/}
-                            </Typography>
-
+                            {loading ?
+                                <CircularProgress size={30}/>
+                                :
+                                <Typography color="grey.600" fontSize={fontSize}>
+                                    {getDeliveryAdressMessage()}
+                                </Typography>
+                            }
                         </>
                     }
                     {/*<Divider sx={{mb: '1rem'}}/>*/}

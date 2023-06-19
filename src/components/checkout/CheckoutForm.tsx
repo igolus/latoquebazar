@@ -105,6 +105,8 @@ const useStyles = makeStyles((theme) => ({
 export interface CheckoutFormProps {
   contextData: any
   noStripe: boolean
+  setAddressLoading: any
+  addressLoading: any
 }
 
 export function getStuartAmountAndRound(initalAmount : any, currentEstablishment: any, contextData: any) {
@@ -121,7 +123,8 @@ function getStuartMessage(orderInCreation, stuartError, stuartAmount, ret: {}) {
   if (!orderInCreation.bookingSlot) {
     return null;
   }
-  if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
+  // if (!orderInCreation.bookingSlot?.startDate || (!stuartError && !stuartAmount)) {
+  if (!orderInCreation.bookingSlot?.startDate) {
     return null;
   }
   if (stuartError === ACCES_ERROR) {
@@ -181,7 +184,7 @@ function isStuartActive(currentEstablishment, contextData) {
 
 var paymentOk = false;
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAddressLoading, addressLoading}) => {
   const formRef = useRef()
   const language = contextData?.brand?.config?.language || 'fr';
   let stripe;
@@ -793,10 +796,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
   }
 
   function setSelectedBookingSlot(bookingSlot, charge) {
+    const chargeWithoutStuart = (getOrderInCreation().charges || []).filter(c => !c.stuart)
+
     if (charge) {
       setOrderInCreation({
         ...getOrderInCreation(),
-        charges: [charge],
+        charges: [...chargeWithoutStuart, charge],
         bookingSlot: bookingSlot,
       });
     }
@@ -804,7 +809,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
       setOrderInCreationNoLogic({
         ...getOrderInCreation(),
         bookingSlot: bookingSlot,
-        //charges: [orderInCreationCopy.charges.filter(c => !c.stuart)]
+        charges: [...chargeWithoutStuart]
       });
     }
   }
@@ -875,7 +880,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         getOrderInCreation() &&
         currentEstablishment().serviceSetting &&
         currentEstablishment().serviceSetting.minimalDeliveryOrderPrice &&
-        computePriceDetail(getOrderInCreation()).total + totalDiscounts < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
+        computePriceDetail(getOrderInCreation()).totalNoCharge + totalDiscounts < currentEstablishment().serviceSetting.minimalDeliveryOrderPrice;
   }
 
   const handlePaymentMethodChange = ({ target: { name } }: any) => {
@@ -886,7 +891,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
     if (!doNotCheckBookingSlot && !getOrderInCreation().bookingSlot || !data.amount) {
       return;
     }
-    setStuartAmount(getStuartAmountAndRound(data.amount, currentEstablishment, contextData));
+    let stuartAmountAndRound = getStuartAmountAndRound(data.amount, currentEstablishment, contextData);
+    if (parseFloat(stuartAmountAndRound) > 0) {
+      setStuartAmount(stuartAmountAndRound);
+    }
+    else {
+      setStuartAmount(null);
+    }
+
   }
 
 
@@ -1048,7 +1060,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
         "main",
         dbUser?.userProfileInfo?.customerDeliveryInformation,
         distInfo?.distance,
-        null,
+        distInfo?.deliveryZoneId,
         charge,
         deliveryMode
     );
@@ -1385,19 +1397,16 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         <Box p={1}>
                                           <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
                                               maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
-
+                                              title={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                  maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}
                                           >
                                             {checkAddLoading &&
                                                 <CircularProgress size={30} className={classes.buttonProgress}/>
                                             }
-                                            <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
                                           </AlertHtmlLocal>
                                         </Box>
                                     }
-                                    <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                                      {localStrings.selectDeliveryAdress}
-                                    </Typography>
+
 
                                     {dbUser &&
                                         <>
@@ -1423,6 +1432,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                           }
 
                                           {dbUser?.userProfileInfo?.address &&
+                                             <>
+                                              <Typography fontWeight="600" mb={2} mt={2} variant="h5">
+                                                {/*{dbUser?.userProfileInfo?.address ? localStrings.selectDeliveryAdressManualAlternate : localStrings.selectDeliveryAdressManual }*/}
+                                                {localStrings.selectDeliveryAdress}
+                                              </Typography>
+
                                               <PresenterSelect
                                                   icon={faAddressCard}
                                                   title={localStrings.mainAddress}
@@ -1430,9 +1445,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   selected={selectedAddId === "main"}
                                                   onCLickCallBack={async () => {
                                                     //await resetBookingSlot();
+                                                    setAddressLoading(true);
                                                     await setAddMain();
+                                                    setAddressLoading(false);
                                                   }}
                                               />
+                                             </>
                                           }
 
                                           {dbUser?.userProfileInfo?.address && (dbUser?.userProfileInfo?.otherAddresses || []).map((item, key) =>
@@ -1443,6 +1461,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   subtitle={item.address}
                                                   selected={selectedAddId === item.id}
                                                   onCLickCallBack={async () => {
+                                                    setAddressLoading(true);
                                                     setSelectedAddId(item.id);
                                                     const {distInfo, charge} = await checkDistance(item.lat, item.lng, item.address);
                                                     setAdressValue(null);
@@ -1455,11 +1474,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                         //item.additionalInformation,
                                                         item.customerDeliveryInformation || "",
                                                         distInfo?.distance,
-                                                        distInfo.deliveryZoneId,
+                                                        distInfo?.deliveryZoneId,
                                                         charge,
                                                         null,
                                                         true
                                                     );
+                                                    setAddressLoading(false);
                                                   }}
                                               />
                                           )}
@@ -1481,7 +1501,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                     {(!dbUser || !useMyAdress) &&
                                         <>
                                           <Typography fontWeight="600" mb={2} mt={2} variant="h5">
-                                            {localStrings.selectDeliveryAdress}
+                                            {dbUser?.userProfileInfo?.address ? localStrings.selectDeliveryAdressManualAlternate : localStrings.selectDeliveryAdressManual }
                                           </Typography>
 
                                           <Grid container spacing={3}>
@@ -1504,10 +1524,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                   }}
                                                   valueSource={adressValue}
                                                   setValueCallback={async (label, placeId, city, postcode, citycode, lat, lng) => {
+                                                    setAddressLoading(true);
                                                     //let distInfo;
                                                     if (currentEstablishment() && (getOrderInCreation().bookingSlot && !getEstablishmentSettings(currentEstablishment(), 'deliveryStuartActive') ) ) {
-
-
                                                       let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
                                                       //alert("distInfo?.distance " + JSON.stringify(distInfo || {}))
                                                       setCheckAddLoading(true);
@@ -1538,8 +1557,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                                       updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId, data.charge);
                                                     } else {
                                                       setSelectedAddId(null);
-                                                      updateDeliveryAdress(label, lat, lng);
+                                                      let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
+                                                      await distanceAndCheck(distInfo,
+                                                          currentEstablishment, getOrderInCreation(),
+                                                          currentBrand().id,  lat, lng,
+                                                          getOrderInCreation().bookingSlot, label, contextData);
+                                                      updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId);
                                                     }
+                                                    setAddressLoading(false);
                                                   }}/>
                                             </Grid>
                                           </Grid>
@@ -1694,19 +1719,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                         {checkAddLoading ?
                                             <AlertHtmlLocal
                                                 severity="warning"
-                                                title={localStrings.stuartLoadingTitle}
-                                                content={localStrings.stuartLoading}>
+                                                title={localStrings.stuartLoading}>
                                             </AlertHtmlLocal>
                                             :
                                             <AlertHtmlLocal severity={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
                                                 maxDistanceReached, stuartError, stuartAmount, zoneMap)?.severity}
-
+                                                title={getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
+                                                    maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}
                                             >
                                               {checkAddLoading &&
                                                   <CircularProgress size={30} className={classes.buttonProgress}/>
                                               }
-                                              <p>{getMessagDeliveryAddress(currentEstablishment, getOrderInCreation(),
-                                                  maxDistanceReached, stuartError, stuartAmount, zoneMap)?.message}</p>
                                             </AlertHtmlLocal>
                                         }
                                       </>
@@ -2043,9 +2066,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe}) => {
                                             type="submit"
                                             //endIcon={<SaveIcon />}
                                             disabled={
-                                                isPaymentDisabled(values) || orderUpdating || checkAddLoading
+                                                isPaymentDisabled(values) || orderUpdating || checkAddLoading || addressLoading
                                             }
-                                            endIcon={loading ?
+                                            endIcon={(loading || addressLoading)?
                                                 <CircularProgress size={30} className={classes.buttonProgress}/> : <></>}
                                         >
                                           {getSubmitText(values)}
