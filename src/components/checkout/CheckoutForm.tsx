@@ -1124,8 +1124,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAd
                 severity="warning"
                 //title={localStrings.tooFarAddress}
             >
-              {localStrings.
-                  tooFarAddress}
+              {localStrings.tooFarAddress}
             </AlertHtmlLocal>
           </DialogContent>
 
@@ -1546,7 +1545,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAd
                                                         setSelectedAddId(null);
                                                       }
                                                       setMaxDistanceReached(data.maxDistanceReached);
-                                                      setAdressSearch(false);
+                                                      //setAdressSearch(false);
                                                       setZoneMap(data.zoneMap);
                                                       setMaxDistanceReached(data.maxDistanceReached);
                                                       setDistanceInfo(data.distanceInfo);
@@ -1558,10 +1557,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({contextData, noStripe, setAd
                                                     } else {
                                                       setSelectedAddId(null);
                                                       let distInfo = await getDeliveryDistanceWithFetch(currentEstablishment(), lat, lng);
-                                                      await distanceAndCheck(distInfo,
+                                                      const data = await distanceAndCheck(distInfo,
                                                           currentEstablishment, getOrderInCreation(),
                                                           currentBrand().id,  lat, lng,
                                                           getOrderInCreation().bookingSlot, label, contextData);
+
+                                                      setMaxDistanceReached(data.maxDistanceReached);
+                                                      //setAdressSearch(false);
+                                                      setZoneMap(data.zoneMap);
+                                                      setMaxDistanceReached(data.maxDistanceReached);
+                                                      setDistanceInfo(data.distanceInfo);
+
                                                       updateDeliveryAdress(label, lat, lng, null, null, null, distInfo?.distance, distInfo?.deliveryZoneId);
                                                     }
                                                     setAddressLoading(false);
