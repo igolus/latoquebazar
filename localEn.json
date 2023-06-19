@@ -388,7 +388,7 @@
   "info": {
     "resetPassword": "An email has been sent to {0} to reset the password",
     "checkAddessInfo": "To find out if you are eligible for home delivery, please provide an address",
-    "connectToOrder": "In order to keep track of your orders and to guarantee better follow-up, we advise you to place the order in online mode. If you have a Google account, It will only take a few seconds!!"
+    "connectToOrder": "In order to keep track of your orders and to guarantee better follow-up, we advise you to place the order in using an account. If you have a Google account, It will only take a few seconds!!"
   },
   "warningMessage": {
     "noMainAddDefined": "Your main address is not defined",

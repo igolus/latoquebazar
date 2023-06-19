@@ -1,6 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import TextField from '@material-ui/core/TextField';
-import {Autocomplete, Button, IconButton, InputLabel, MenuItem, Select, Tooltip} from '@material-ui/core';
+import {
+    Autocomplete,
+    Button,
+    CircularProgress,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Tooltip
+} from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import throttle from 'lodash/throttle';
 import localStrings from '../../localStrings';
@@ -10,6 +19,8 @@ import BazarTextField from "@component/BazarTextField";
 import useAuth from "@hook/useAuth";
 import FormControl from "@material-ui/core/FormControl";
 import Client from 'getaddress-api'
+import BazarButton from "@component/BazarButton";
+import {green} from "@material-ui/core/colors";
 
 const config = require("../../conf/config.json")
 
@@ -107,13 +118,12 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
     }
     const [locked , setLocked] = useState(lockmode != null)
     const [postCode , setpostCode] = useState("");
+    const [loadAddresses , setLoadAddresses] = useState(false);
     const [adresssResult , setAdresssResult] = useState([]);
-    const [selectedAdressIndex , setSelectedAdressIndex] = useState(-1);
+    const [selectedAdressIndex , setSelectedAdressIndex] = useState(null);
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState([]);
     const loaded = React.useRef(false);
-
-
 
     const fetch = React.useMemo(
         () =>
@@ -182,16 +192,29 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
 
 
     async function searchAdress() {
-        if (postCode !== '') {
-            const api = new Client("YwHgnjYpQU2x61KmKcHaBA39602");
-            const findResult = await api.find(postCode);
-            if(findResult.isSuccess)
-            {
-                const success = findResult.toSuccess();
-                setAdresssResult(success?.addresses?.addresses);
-                // console.log(JSON.stringify(success, null, 2));
+        setLoadAddresses(true)
+        try {
+            if (postCode !== '') {
+                const api = new Client("YwHgnjYpQU2x61KmKcHaBA39602");
+                const findResult = await api.find(postCode);
+                if(findResult.isSuccess)
+                {
+                    const success = findResult.toSuccess();
+                    setAdresssResult(success?.addresses?.addresses);
+                    if (success?.addresses?.addresses.length > 0) {
+                        setSelectedAdressIndex(null);
+                    }
+                }
+                else {
+                    console.log("Unable to load adresses")
+                }
+
             }
         }
+        finally {
+            setLoadAddresses(false)
+        }
+
     }
 
     function formatAdress(item) {
@@ -238,14 +261,20 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
     }
 
 
+    function isPostCodeCorrect() {
+        if (!postCode) {
+            return false;
+        }
+        const postCodeTrim = postCode.trim();
+        const regex = new RegExp('([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\\s?[0-9][A-Za-z]{2})');
+        return regex.test(postCodeTrim)
+    }
+
     if (modeUk) {
         return (
             <Grid
                 container
             >
-                {/*<h1>modeUk</h1>*/}
-                {/*<p>{postCode}</p>*/}
-                {/*<p>{JSON.stringify(adresssResult)}</p>*/}
                 <Grid
                     item
                     md={12}
@@ -257,33 +286,46 @@ export default function GoogleMapsAutocomplete({title, setValueCallback, initial
                 >
                     <Grid item lg={12} xs={12} paddingBottom="15px">
                         <TextField
+                            error={!isPostCodeCorrect() && postCode !== ''}
+                            helperText={!isPostCodeCorrect() && postCode !== ''? localStrings.check.invalidPostCode : null}
                             label={localStrings.postCode}
+                            value={postCode}
                             fullWidth
                             onChange={(e) => setpostCode(e.target.value)}
                         />
                     </Grid>
                     <Grid item lg={12} xs={12} paddingBottom="15px">
-                        <Button variant="contained" color="primary" type="button" fullWidth
+                        <Button variant="contained" color="primary" fullWidth
                                 onClick={searchAdress}
                                 style={{textTransform: "none"}}
+                                disabled={!isPostCodeCorrect()}
+                                // endIcon={<CircularProgress style={{color: green[500]}} size={30}/>}
+                                //endIcon={<h1>TEST</h1>}
+                                endIcon={loadAddresses ?
+                                    <CircularProgress size={30} style={{color: green[500]}}/> : <></>}
                         >
                             {localStrings.getAddress}
                         </Button>
                     </Grid>
-                    <Grid item lg={12} xs={12} paddingBottom="15px">
-                        <FormControl fullWidth>
-                            <InputLabel>{localStrings.selectAddress}</InputLabel>
-                            <Select
-                                value={selectedAdressIndex}
-                                label={localStrings.selectAddress}
-                                onChange={handleChangeSelectAdress}
-                            >
-                                {(adresssResult || []).map((item, key) =>
-                                    <MenuItem value={key} key={key}>{formatAdress(item)}</MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
-                    </Grid>
+
+                    {adresssResult && adresssResult.length > 0 &&
+                        <Grid item lg={12} xs={12} paddingBottom="15px">
+                            <FormControl fullWidth>
+                                <InputLabel>{localStrings.selectAddress}</InputLabel>
+                                <Select
+                                    value={selectedAdressIndex}
+                                    placeholder={localStrings.selectAddress}
+                                    label={localStrings.selectAddress}
+                                    onChange={handleChangeSelectAdress}
+                                >
+                                    {(adresssResult || []).map((item, key) =>
+                                        <MenuItem value={key} key={key}>{formatAdress(item)}</MenuItem>
+                                    )}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    }
+
                 </Grid>
             </Grid>
         )
